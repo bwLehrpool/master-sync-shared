@@ -1,0 +1,8 @@
+/testing
+/.settings
+/.project
+/.classpath
+/target
+/gen-java
+*~
+*.swp
