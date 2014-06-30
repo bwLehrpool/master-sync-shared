@@ -11,14 +11,12 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum AuthorizationError implements org.apache.thrift.TEnum {
-  GENERIC_ERROR(0),
-  NOT_AUTHENTICATED(1),
-  NO_PERMISSION(2);
+public enum UploadError implements org.apache.thrift.TEnum {
+  INVALID_CRC(0);
 
   private final int value;
 
-  private AuthorizationError(int value) {
+  private UploadError(int value) {
     this.value = value;
   }
 
@@ -33,14 +31,10 @@ public enum AuthorizationError implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static AuthorizationError findByValue(int value) { 
+  public static UploadError findByValue(int value) { 
     switch (value) {
       case 0:
-        return GENERIC_ERROR;
-      case 1:
-        return NOT_AUTHENTICATED;
-      case 2:
-        return NO_PERMISSION;
+        return INVALID_CRC;
       default:
         return null;
     }
