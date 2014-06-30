@@ -34,6 +34,10 @@ enum ImageDataError {
 	UNKNOWN_IMAGE
 }
 
+enum UploadError {
+	INVALID_CRC
+}
+
 exception AuthorizationException {
 	1: AuthorizationError number,
 	2: string message
@@ -57,6 +61,11 @@ exception ImageDataException {
 	2: string message
 }
 
+exception UploadException {
+	1: UploadError numberm
+	2: string message
+}
+
 struct UserInfo {
 	1: string userId,
 	2: string firstName,
@@ -74,6 +83,15 @@ struct FtpCredentials {
 	1: string username,
 	2: string password,
 	3: string filename
+}
+
+struct UploadInfos {
+	1: string token,
+	2: list<i32> missingBlocks
+}
+
+struct DownloadInfos {
+	1: string token
 }
 
 struct ServerSessionData {
@@ -107,13 +125,9 @@ service ImageServer {
 	
 	ServerSessionData serverAuthenticate(1:string organization, 2:binary challengeResponse) throws (1:ServerAuthenticationException failure),
 	
-	FtpCredentials submitImage(1:string serverSessionId, 2:ImageData imageDescription) throws (1:AuthorizationException failure, 2: ImageDataException failure2),
+	UploadInfos submitImage(1:string serverSessionId, 2:ImageData imageDescription) throws (1:AuthorizationException failure, 2: ImageDataException failure2, 3: UploadException failure3),
 	
-	bool finishedUpload(1:string ftpUser, 2:ImageData imageDescription) throws (1: ImageDataException failure),
-	
-	FtpCredentials getImage(1:UUID uuid, 2:string serverSessionId) throws (1:AuthorizationException failure, 2: ImageDataException failure2),
-	
-	bool finishedDownload(1:string ftpUser)
+	DownloadInfos getImage(1:UUID uuid, 2:string serverSessionId) throws (1:AuthorizationException failure, 2: ImageDataException failure2),
 
 }
 
