@@ -1,0 +1,253 @@
+package org.openslx.filetransfer;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+
+public class Uploader {
+	// Some member variables.
+	private SSLSocketFactory sslSocketFactory;
+	private SSLSocket satelliteSocket;
+	private DataOutputStream dataToServer;
+	private DataInputStream dataFromServer;
+	private String TOKEN = null;
+	private String RANGE = null;
+	
+	private static String pathToTrustStore =
+			"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
+
+	
+	
+	/***********************************************************************//**
+	 * Constructor for satellite uploader.
+	 * Tries to connect to specific ip and port and sending type of action.
+	 * @param ip
+	 * @param port
+	 * @throws IOException 
+	 * @throws KeyStoreException 
+	 * @throws CertificateException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
+	 * @throws UnknownHostException 
+	 */
+	public Uploader(String ip, int port) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException {
+		char[] passphrase = "test123".toCharArray();
+		
+	    KeyStore keystore = KeyStore.getInstance("JKS");
+	    keystore.load(new FileInputStream(pathToTrustStore), passphrase);
+	    
+	    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+	    tmf.init(keystore);
+
+	    SSLContext context = SSLContext.getInstance("SSLv3");
+	    TrustManager[] trustManagers = tmf.getTrustManagers();
+
+	    context.init(null, trustManagers, null);
+		
+		sslSocketFactory = context.getSocketFactory();
+		
+		satelliteSocket = (SSLSocket) sslSocketFactory.createSocket(ip, port);
+		
+		dataToServer = new DataOutputStream(satelliteSocket.getOutputStream());
+		dataToServer.writeByte('U');
+		dataFromServer = new DataInputStream(satelliteSocket.getInputStream());
+	}
+	
+	/***********************************************************************//**
+	 * Constructor for master uploader.
+	 * Sends back the socket for datatransfer.
+	 * @throws IOException 
+	 */
+	public Uploader(SSLSocket socket) throws IOException {
+		satelliteSocket = socket;
+		dataToServer = new DataOutputStream(satelliteSocket.getOutputStream());
+		dataFromServer = new DataInputStream(satelliteSocket.getInputStream());
+	}
+	
+	/***********************************************************************//**
+	 * Method for sending token from satellite to master.
+	 * Needfull for getting to know what should happens over connection.
+	 * @param t
+	 */
+	public void sendToken(String token) throws IOException {
+		TOKEN = token;
+		String sendToken = "TOKEN=" + TOKEN;
+		byte[] data = sendToken.getBytes(StandardCharsets.UTF_8);
+		dataToServer.writeByte(data.length);
+		dataToServer.write(data);
+	}
+	
+	/***********************************************************************//**
+	 * Getter for TOKEN.
+	 */
+	public String getToken() {
+		if (TOKEN != null)
+			return TOKEN;
+		return null;
+	}
+	
+	/***********************************************************************//**
+	 * Method to send range of the file, which should be uploaded.
+	 * Helpful for knowing how much was already uploaded if
+	 * connection aborts.
+	 * @param a
+	 * @param b
+	 * @throws IOException 
+	 */
+	public void sendRange(int a, int b) throws IOException {
+		RANGE = a + ":" + b;
+		String sendRange = "RANGE=" + RANGE;
+		byte[] data = sendRange.getBytes(StandardCharsets.UTF_8);
+		dataToServer.writeByte(data.length);
+		dataToServer.write(data);
+		dataToServer.writeByte(0);
+	}
+	
+	/***********************************************************************//**
+	 * Getter for RANGE.
+	 * @return
+	 */
+	public String getRange() {
+		if (RANGE != null)
+			return RANGE;
+		return null;
+	}
+	
+	/***********************************************************************//**
+	 * Getter for beginning of RANGE.
+	 * @return
+	 */
+	public int getStartOfRange() {
+		if (RANGE != null) {
+			String[] splitted = RANGE.split(":");
+			return Integer.parseInt(splitted[0]);
+		}
+		return -1;
+	}
+	
+	/***********************************************************************//**
+	 * Getter for end of RANGE.
+	 * @return
+	 */
+	public int getEndOfRange() {
+		if (RANGE != null) {
+			String[] splitted = RANGE.split(":");
+			return Integer.parseInt(splitted[1]);
+		}
+		return -1;
+	}
+	
+	/***********************************************************************//**
+	 * Method for returning difference of current Range.
+	 * @return
+	 */
+	public int getDiffOfRange() {
+		if (getStartOfRange() == -1 || getEndOfRange() == -1) {
+			return -1;
+		}
+		int diff = Math.abs(getEndOfRange() - getStartOfRange()); 
+		return diff;
+	}
+	
+	/***********************************************************************//**
+	 * Method for reading MetaData, like TOKEN and FileRange.
+	 * Split incoming bytes after first '=' and store value to specific
+	 * variable.
+	 * @throws IOException 
+	 */
+	public Boolean readMetaData() {
+		try {
+			while (true) {
+				byte[] incoming = new byte[255];
+				
+				// First get length.
+				dataFromServer.read(incoming, 0, 1);
+				int length = incoming[0];
+				// System.out.println("length: " + length);
+				
+				if (length == 0) // Stop if 0 was read.
+					break;
+				
+				/**
+				 *  Read the next available bytes and split by '=' for
+				 *  getting TOKEN or RANGE.
+				 */
+				int hasRead = 0;
+				while (hasRead < length) {
+					int ret = dataFromServer.read(incoming, hasRead, length - hasRead);
+					if (ret == -1) {
+						System.out.println("Error in reading Metadata occured!");
+						return false;
+					}
+					hasRead += ret;
+				}
+				String data = new String(incoming, "UTF-8");
+				// System.out.println(data);
+				
+				String[] splitted = data.split("=");
+				// System.out.println("splitted[0]: " + splitted[0]);
+				// System.out.println("splitted[1]: " + splitted[1]);
+				if (splitted[0] != null && splitted[0].equals("TOKEN")) {
+					if (splitted[1] != null)
+						TOKEN = splitted[1];
+					System.out.println("TOKEN: " + TOKEN);
+				}
+				else if (splitted[0].equals("RANGE")) {
+					if (splitted[1] != null)
+						RANGE = splitted[1];
+					System.out.println("RANGE: " + RANGE);
+				}
+			}
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
+
+	/***********************************************************************//**
+	 * Method for sending File with filename.
+	 * @param filename
+	 * @throws IOException 
+	 */
+	public void sendFile(String filename) throws IOException {
+		RandomAccessFile file = new RandomAccessFile(new File(filename), "r");
+		if (getStartOfRange() == -1) {
+			file.close();
+			return;
+		}
+		file.seek(getStartOfRange());
+		
+		byte[] data = new byte[255];
+		int hasRead = 0;
+		int length = getDiffOfRange();
+		System.out.println("diff of Range: " + length);
+		while (hasRead < length) {
+			int ret = file.read(data, hasRead, length - hasRead);
+			if (ret == -1) {
+				System.out.println("Error occured in Uploader.sendFile()," 
+						+ " while reading from File to send.");
+				file.close();
+				return;
+			}
+			hasRead += ret;
+		}
+		file.close();
+		dataToServer.write(data, 0, length);
+	}
+}

@@ -1,0 +1,86 @@
+package org.openslx.filetransfer;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.KeyManagementException;
+
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+
+public class Listener {
+	private IncomingEvent incomingEvent;
+	/*
+	private static String pathToKeyStore =
+			"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
+			*/
+	private SSLContext context;
+
+	
+	/***********************************************************************//**
+	 * Constructor for class Listener, which gets an instance of IncomingEvent.
+	 * @param e
+	 */
+	public Listener(IncomingEvent e, SSLContext context) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, KeyManagementException, UnrecoverableKeyException {
+		this.incomingEvent = e;
+		this.context = context;
+		/*
+	    char[] passphrase = "test123".toCharArray();
+	    KeyStore keystore = KeyStore.getInstance("JKS");
+	    keystore.load(new FileInputStream(pathToKeyStore), passphrase);
+	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+	    kmf.init(keystore, passphrase);
+	    context = SSLContext.getInstance("SSLv3");
+	    KeyManager[] keyManagers = kmf.getKeyManagers();
+
+	    context.init(keyManagers, null, null);
+	    */
+	}
+	
+	/***********************************************************************//**
+	 * Method listen, should run from Master Server. Listen for incoming
+	 * connection, and start Downloader or Uploader.
+	 * @throws Exception
+	 */
+	public void listen() throws Exception {
+		SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
+		SSLServerSocket welcomeSocket =
+				(SSLServerSocket) sslServerSocketFactory.createServerSocket(6789);
+		
+		while (true) {
+			SSLSocket connectionSocket = (SSLSocket) welcomeSocket.accept();
+			
+			byte[] b = new byte[1];
+			int length = connectionSocket.getInputStream().read(b);
+			
+			System.out.println(length);
+			
+			// Ascii - Code: 'U' = 85 ; 'D' = 68.
+			if (b[0] == 85) {
+				System.out.println("U erkannt --> Downloader starten");
+				// --> start Downloader(socket).
+				String filename = "output.txt";
+				Downloader d = new Downloader(connectionSocket, filename);
+				incomingEvent.incomingDownloader(d);
+			}
+			else if (b[0] == 68) {
+				System.out.println("D erkannt --> Uploader starten");
+				// --> start Uploader(socket).
+				Uploader u = new Uploader(connectionSocket);
+				incomingEvent.incomingUploader(u);
+				
+			}
+			else {
+				System.out.println("Müll empfangen");
+				connectionSocket.close();
+			}
+		}
+	}
+}
