@@ -27,8 +27,6 @@ public class Downloader {
 	private DataInputStream dataFromServer;
 	private String TOKEN = null;
 	private String RANGE = null;
-	private static String pathToTrustStore =
-			"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
 	private String outputFilename;
 	
 	/***********************************************************************//**

@@ -29,11 +29,6 @@ public class Uploader {
 	private String TOKEN = null;
 	private String RANGE = null;
 	
-	private static String pathToTrustStore =
-			"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
-
-	
-	
 	/***********************************************************************//**
 	 * Constructor for satellite uploader.
 	 * Tries to connect to specific ip and port and sending type of action.
@@ -46,20 +41,7 @@ public class Uploader {
 	 * @throws KeyManagementException 
 	 * @throws UnknownHostException 
 	 */
-	public Uploader(String ip, int port) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException {
-		char[] passphrase = "test123".toCharArray();
-		
-	    KeyStore keystore = KeyStore.getInstance("JKS");
-	    keystore.load(new FileInputStream(pathToTrustStore), passphrase);
-	    
-	    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-	    tmf.init(keystore);
-
-	    SSLContext context = SSLContext.getInstance("SSLv3");
-	    TrustManager[] trustManagers = tmf.getTrustManagers();
-
-	    context.init(null, trustManagers, null);
-		
+	public Uploader(String ip, int port, SSLContext context) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException {
 		sslSocketFactory = context.getSocketFactory();
 		
 		satelliteSocket = (SSLSocket) sslSocketFactory.createSocket(ip, port);
