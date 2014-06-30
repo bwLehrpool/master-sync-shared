@@ -35,6 +35,27 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+<!-- 					<archive>
+						<manifest>
+							<mainClass>org.openslx.satellitedaemon.App</mainClass>
+						</manifest>
+					</archive> -->
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
