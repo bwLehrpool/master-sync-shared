@@ -3,12 +3,10 @@ package org.openslx.filetransfer;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -16,8 +14,6 @@ import java.security.cert.CertificateException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 
 public class Downloader {
 	// Some instance variables.
@@ -28,6 +24,7 @@ public class Downloader {
 	private String TOKEN = null;
 	private String RANGE = null;
 	private String outputFilename = null;
+	private String ERROR = null;
 	
 	/***********************************************************************//**
 	 * Constructor for satellite downloader.
@@ -228,10 +225,17 @@ public class Downloader {
 						RANGE = splitted[1];
 					System.out.println("RANGE: '" + RANGE + "'");
 				}
+				else if (splitted[0].equals("ERROR")) {
+					if (splitted[1] != null)
+						ERROR = splitted[1];
+					System.err.println("ERROR: " + ERROR);
+					this.close();
+					return false;
+				}
 			}
-		} catch (IOException e) {
-			throw e;
-			// return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
 		return true;
 	}
@@ -255,17 +259,37 @@ public class Downloader {
 			hasRead += ret;
 		}
 		
-		RandomAccessFile file = new RandomAccessFile(new File(outputFilename), "rw");
-		file.seek(getStartOfRange());
-		file.write(incoming, 0, length);
-		file.close();
+		RandomAccessFile file;
+		try {
+			file = new RandomAccessFile(new File(outputFilename), "rw");
+			file.seek(getStartOfRange());
+			file.write(incoming, 0, length);
+			file.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 	
 	/***********************************************************************//**
-	 * Method for closing connection, if download has finished.
+	 * Method for sending error Code to server. For example in case of wrong
+	 * token, send code for wrong token.
+	 * @throws IOException 
 	 */
-	public void close() {
-		
+	public void sendErrorCode(String errString) throws IOException {
+		String sendError = "ERROR=" + errString;
+		byte[] data = sendError.getBytes(StandardCharsets.UTF_8);
+		dataToServer.writeByte(data.length);
+		dataToServer.write(data);
+	}
+	
+	/***********************************************************************//**
+	 * Method for closing connection, if download has finished.
+	 * @throws IOException 
+	 */
+	public void close() throws IOException {
+		this.satelliteSocket.close();
 	}
 }

@@ -3,14 +3,11 @@ package org.openslx.filetransfer;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
-import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
@@ -18,8 +15,6 @@ import java.security.cert.CertificateException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 
 public class Uploader {
 	// Some member variables.
@@ -29,6 +24,7 @@ public class Uploader {
 	private DataInputStream dataFromServer;
 	private String TOKEN = null;
 	private String RANGE = null;
+	private String ERROR = null;
 	
 	/***********************************************************************//**
 	 * Constructor for satellite uploader.
@@ -196,6 +192,13 @@ public class Uploader {
 						RANGE = splitted[1];
 					System.out.println("RANGE: " + RANGE);
 				}
+				else if (splitted[0].equals("ERROR")) {
+					if (splitted[1] != null)
+						ERROR = splitted[1];
+					System.err.println("ERROR: " + ERROR);
+					this.close();
+					return false;
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -209,42 +212,57 @@ public class Uploader {
 	 * @param filename
 	 * @throws IOException 
 	 */
-	public Boolean sendFile(String filename) throws IOException {
-		RandomAccessFile file; 
+	public Boolean sendFile(String filename) { 
 		try {
-			file = new RandomAccessFile(new File(filename), "r");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return false;
-		}
-		
-		if (getStartOfRange() == -1) {
-			file.close();
-			return false;
-		}
-		file.seek(getStartOfRange());
-		
-		byte[] data = new byte[255];
-		int hasRead = 0;
-		int length = getDiffOfRange();
-		System.out.println("diff of Range: " + length);
-		while (hasRead < length) {
-			int ret = file.read(data, hasRead, length - hasRead);
-			if (ret == -1) {
-				System.out.println("Error occured in Uploader.sendFile()," 
-						+ " while reading from File to send.");
+			RandomAccessFile file = new RandomAccessFile(new File(filename), "r");
+				
+			if (getStartOfRange() == -1) {
 				file.close();
 				return false;
 			}
-			hasRead += ret;
-		}
-		file.close();
-		try {
+			file.seek(getStartOfRange());
+			
+			byte[] data = new byte[255];
+			int hasRead = 0;
+			int length = getDiffOfRange();
+			System.out.println("diff of Range: " + length);
+			while (hasRead < length) {
+				int ret = file.read(data, hasRead, length - hasRead);
+				if (ret == -1) {
+					System.out.println("Error occured in Uploader.sendFile()," 
+							+ " while reading from File to send.");
+					file.close();
+					return false;
+				}
+				hasRead += ret;
+			}
+			file.close();
+			
 			dataToServer.write(data, 0, length);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
+	}
+	
+	/***********************************************************************//**
+	 * Method for sending error Code to server. For example in case of wrong
+	 * token, send code for wrong token.
+	 * @throws IOException 
+	 */
+	public void sendErrorCode(String errString) throws IOException {
+		String sendError = "ERROR=" + errString;
+		byte[] data = sendError.getBytes(StandardCharsets.UTF_8);
+		dataToServer.writeByte(data.length);
+		dataToServer.write(data);
+	}
+	
+	/***********************************************************************//**
+	 * Method for closing connection, if download has finished.
+	 * @throws IOException 
+	 */
+	public void close() throws IOException {
+		this.satelliteSocket.close();
 	}
 }

@@ -33,51 +33,41 @@ import javax.net.ssl.TrustManagerFactory;
 
 public class ClassTest {
 	public static void main(String[] args) throws Exception {
+		String pathToKeyStore =
+				"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
+	    char[] passphrase = "test123".toCharArray();
+	    KeyStore keystore = KeyStore.getInstance("JKS");
+	    keystore.load(new FileInputStream(pathToKeyStore), passphrase);
+	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+	    kmf.init(keystore, passphrase);
+	    SSLContext context = SSLContext.getInstance("SSLv3");
+	    KeyManager[] keyManagers = kmf.getKeyManagers();
 
-		new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					String pathToKeyStore =
-							"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
-				    char[] passphrase = "test123".toCharArray();
-				    KeyStore keystore = KeyStore.getInstance("JKS");
-				    keystore.load(new FileInputStream(pathToKeyStore), passphrase);
-				    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-				    kmf.init(keystore, passphrase);
-				    SSLContext context = SSLContext.getInstance("SSLv3");
-				    KeyManager[] keyManagers = kmf.getKeyManagers();
+	    context.init(keyManagers, null, null);
 
-				    context.init(keyManagers, null, null);
-
-					new Listener(new Test(), context, 6789).listen();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}	
-			}
-		}).start();
+		Listener listener = new Listener(new Test(), context, 6789);
+		listener.start();
 		
 		Thread.sleep(5000);
 		
 		String pathToTrustStore =
 				"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
 
-	    char[] passphrase = "test123".toCharArray();
-	    KeyStore keystore = KeyStore.getInstance("JKS");
+	    passphrase = "test123".toCharArray();
+	    keystore = KeyStore.getInstance("JKS");
 	    keystore.load(new FileInputStream(pathToTrustStore), passphrase);
 
 	    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 	    tmf.init(keystore);
 
-	    SSLContext context = SSLContext.getInstance("SSLv3");
+	    context = SSLContext.getInstance("SSLv3");
 	    TrustManager[] trustManagers = tmf.getTrustManagers();
 
 	    context.init(null, trustManagers, null);
 
 		
 		Downloader d = new Downloader("localhost", 6789, context);
+		d.setOutputFilename("output.txt");
 		d.sendToken("xyz");
 		while (d.readMetaData())
 			d.readBinary();
