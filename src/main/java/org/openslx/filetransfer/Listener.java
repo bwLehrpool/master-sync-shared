@@ -1,16 +1,11 @@
 package org.openslx.filetransfer;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.KeyManagementException;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
-public class Listener implements Runnable{
+public class Listener extends Thread {
 	private IncomingEvent incomingEvent;
 	/*
 	private static String pathToKeyStore =
@@ -51,7 +46,7 @@ public class Listener implements Runnable{
 		SSLServerSocket welcomeSocket =
 				(SSLServerSocket) sslServerSocketFactory.createServerSocket(this.port);
 		
-		while (true) {
+		while (!isInterrupted()) {
 			SSLSocket connectionSocket = (SSLSocket) welcomeSocket.accept();
 			
 			byte[] b = new byte[1];
