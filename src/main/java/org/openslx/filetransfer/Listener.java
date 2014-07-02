@@ -10,7 +10,7 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
-public class Listener {
+public class Listener implements Runnable{
 	private IncomingEvent incomingEvent;
 	/*
 	private static String pathToKeyStore =
@@ -46,7 +46,7 @@ public class Listener {
 	 * connection, and start Downloader or Uploader.
 	 * @throws Exception
 	 */
-	public void listen() throws Exception {
+	private void listen() throws Exception {
 		SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
 		SSLServerSocket welcomeSocket =
 				(SSLServerSocket) sslServerSocketFactory.createServerSocket(this.port);
@@ -77,6 +77,16 @@ public class Listener {
 				System.out.println("Müll empfangen");
 				connectionSocket.close();
 			}
+		}
+	}
+
+	@Override
+	public void run() {
+		try {
+			this.listen();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }
