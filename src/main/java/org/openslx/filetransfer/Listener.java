@@ -5,11 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.KeyManagementException;
 
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -22,15 +17,17 @@ public class Listener {
 			"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
 			*/
 	private SSLContext context;
+	private int port;
 
 	
 	/***********************************************************************//**
 	 * Constructor for class Listener, which gets an instance of IncomingEvent.
 	 * @param e
 	 */
-	public Listener(IncomingEvent e, SSLContext context) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, KeyManagementException, UnrecoverableKeyException {
+	public Listener(IncomingEvent e, SSLContext context, int port) {
 		this.incomingEvent = e;
 		this.context = context;
+		this.port = port;
 		/*
 	    char[] passphrase = "test123".toCharArray();
 	    KeyStore keystore = KeyStore.getInstance("JKS");
@@ -52,7 +49,7 @@ public class Listener {
 	public void listen() throws Exception {
 		SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
 		SSLServerSocket welcomeSocket =
-				(SSLServerSocket) sslServerSocketFactory.createServerSocket(6789);
+				(SSLServerSocket) sslServerSocketFactory.createServerSocket(this.port);
 		
 		while (true) {
 			SSLSocket connectionSocket = (SSLSocket) welcomeSocket.accept();
