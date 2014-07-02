@@ -38,6 +38,7 @@ public class Downloader {
 	 * @throws KeyManagementException 
 	 */
 	public Downloader(String ip, int port, SSLContext context) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException {
+		// TODO: Remove old code, that's why we have git.. ;)
 		/*
 	    char[] passphrase = "test123".toCharArray();
 	    KeyStore keystore = KeyStore.getInstance("JKS");
@@ -127,10 +128,8 @@ public class Downloader {
 	 * Method for reading incoming token for identification.
 	 * @throws IOException
 	 */
-	public String getToken() throws IOException {
-		if (TOKEN != null)
-			return TOKEN;
-		return null;
+	public String getToken() {
+		return TOKEN;
 	}
 	
 	/***********************************************************************//**
@@ -138,9 +137,7 @@ public class Downloader {
 	 * Helpful for knowing how much is already downloaded if connection aborts.
 	 */
 	public String getRange() {
-		if (RANGE != null)
-			return RANGE;
-		return null;
+		return RANGE;
 	}
 	
 	/***********************************************************************//**

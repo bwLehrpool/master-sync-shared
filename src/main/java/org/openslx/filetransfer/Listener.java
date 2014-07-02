@@ -5,6 +5,8 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
+// TODO: (all files) apply formatting using strg+shift+f *after* importing scheme from ./extras/
+
 public class Listener extends Thread {
 	private IncomingEvent incomingEvent;
 	/*
@@ -41,22 +43,24 @@ public class Listener extends Thread {
 	 * connection, and start Downloader or Uploader.
 	 * @throws Exception
 	 */
-	private void listen() throws Exception {
+	private void listen() throws Exception { // TODO: Handle exceptions in function to keep going
 		SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
 		SSLServerSocket welcomeSocket =
 				(SSLServerSocket) sslServerSocketFactory.createServerSocket(this.port);
 		
 		while (!isInterrupted()) {
 			SSLSocket connectionSocket = (SSLSocket) welcomeSocket.accept();
+			connectionSocket.setSoTimeout(2000); // 2 second timeout enough? Maybe even use a small thread pool for handling accepted connections
+			// TODO: Handle SocketTimeoutException for all reads and writes in Downloader and Uploader
 			
 			byte[] b = new byte[1];
 			int length = connectionSocket.getInputStream().read(b);
 			
 			System.out.println(length);
 			
-			// Ascii - Code: 'U' = 85 ; 'D' = 68.
+			// Ascii - Code: 'U' = 85 ; 'D' = 68. TODO: byte constant as class member
 			if (b[0] == 85) {
-				System.out.println("U erkannt --> Downloader starten");
+				System.out.println("U erkannt --> Downloader starten"); // TODO: Use Logger (see masterserver code for example)
 				// --> start Downloader(socket).
 				Downloader d = new Downloader(connectionSocket);
 				incomingEvent.incomingDownloader(d);
