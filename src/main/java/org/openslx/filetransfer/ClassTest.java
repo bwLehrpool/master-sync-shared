@@ -77,7 +77,7 @@ public class ClassTest {
 	    context.init(null, trustManagers, null);
 
 		
-		Downloader d = new Downloader("localhost", 6789, "output.txt", context);
+		Downloader d = new Downloader("localhost", 6789, context);
 		d.sendToken("xyz");
 		while (d.readMetaData())
 			d.readBinary();
