@@ -74,6 +74,11 @@ public class Listener extends Thread {
 			}
 		}
 	}
+	
+	public int getPort()
+	{
+		return this.port;
+	}
 
 	@Override
 	public void run() {
