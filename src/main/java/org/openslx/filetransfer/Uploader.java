@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.UnknownHostException;
@@ -197,6 +198,7 @@ public class Uploader {
 				}
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
@@ -207,11 +209,18 @@ public class Uploader {
 	 * @param filename
 	 * @throws IOException 
 	 */
-	public void sendFile(String filename) throws IOException {
-		RandomAccessFile file = new RandomAccessFile(new File(filename), "r");
+	public Boolean sendFile(String filename) throws IOException {
+		RandomAccessFile file; 
+		try {
+			file = new RandomAccessFile(new File(filename), "r");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
 		if (getStartOfRange() == -1) {
 			file.close();
-			return;
+			return false;
 		}
 		file.seek(getStartOfRange());
 		
@@ -225,11 +234,17 @@ public class Uploader {
 				System.out.println("Error occured in Uploader.sendFile()," 
 						+ " while reading from File to send.");
 				file.close();
-				return;
+				return false;
 			}
 			hasRead += ret;
 		}
 		file.close();
-		dataToServer.write(data, 0, length);
+		try {
+			dataToServer.write(data, 0, length);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 }

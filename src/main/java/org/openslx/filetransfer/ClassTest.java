@@ -20,6 +20,7 @@ package org.openslx.filetransfer;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.security.KeyStore;
@@ -117,7 +118,14 @@ public class ClassTest {
 // Implementing IncomingEvent for testing case.
 class Test implements IncomingEvent {
 	public void incomingUploader(Uploader uploader) throws IOException {
-		RandomAccessFile file = new RandomAccessFile(new File("test.txt"), "rw");
+		RandomAccessFile file;
+		try {
+			file = new RandomAccessFile(new File("test.txt"), "r");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return;
+		}
+		
 		long length = file.length();
 		file.close();
 		
@@ -133,6 +141,7 @@ class Test implements IncomingEvent {
 	}
 	
 	public void incomingDownloader(Downloader downloader) throws IOException {
+		downloader.setOutputFilename("output.txt");
 		while (downloader.readMetaData())
 			downloader.readBinary();
 	}

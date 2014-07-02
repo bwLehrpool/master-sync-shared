@@ -66,8 +66,7 @@ public class Listener {
 			if (b[0] == 85) {
 				System.out.println("U erkannt --> Downloader starten");
 				// --> start Downloader(socket).
-				String filename = "output.txt";
-				Downloader d = new Downloader(connectionSocket, filename);
+				Downloader d = new Downloader(connectionSocket);
 				incomingEvent.incomingDownloader(d);
 			}
 			else if (b[0] == 68) {

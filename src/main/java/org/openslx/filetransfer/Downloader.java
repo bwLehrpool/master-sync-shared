@@ -27,7 +27,7 @@ public class Downloader {
 	private DataInputStream dataFromServer;
 	private String TOKEN = null;
 	private String RANGE = null;
-	private String outputFilename;
+	private String outputFilename = null;
 	
 	/***********************************************************************//**
 	 * Constructor for satellite downloader.
@@ -40,9 +40,7 @@ public class Downloader {
 	 * @throws NoSuchAlgorithmException 
 	 * @throws KeyManagementException 
 	 */
-	public Downloader(String ip, int port, String filename, SSLContext context) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException {
-		outputFilename = filename;
-		
+	public Downloader(String ip, int port, SSLContext context) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException {
 		/*
 	    char[] passphrase = "test123".toCharArray();
 	    KeyStore keystore = KeyStore.getInstance("JKS");
@@ -73,13 +71,32 @@ public class Downloader {
 	 * @param socket
 	 * @throws IOException 
 	 */
-	public Downloader(SSLSocket socket, String filename) throws IOException {
-		outputFilename = filename;
+	public Downloader(SSLSocket socket) throws IOException {
 		satelliteSocket = socket;
 		dataToServer = new DataOutputStream(satelliteSocket.getOutputStream());
 		dataFromServer = new DataInputStream(satelliteSocket.getInputStream());
 	}
 
+	/***********************************************************************//**
+	 * Method for setting outputFilename.
+	 * @param filename
+	 */
+	public void setOutputFilename(String filename)
+	{
+		outputFilename = filename;
+	}
+	
+	/***********************************************************************//**
+	 * Method for getting outputFilename.
+	 * @return Return outputFilename or null.
+	 */
+	public String getOutputFilename()
+	{
+		if (outputFilename != null)
+			return outputFilename;
+		return null;
+	}
+	
 	/***********************************************************************//**
 	 * Method for sending token for identification from satellite to master.
 	 * @param t
