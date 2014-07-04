@@ -21,6 +21,7 @@ public class CRCChecker
 	 * @param crcFile The crcFile to check against
 	 * @param blocks The blocks to check
 	 * @return List of blocks where the crc matches, or null if the crc file is corrupted
+	 * @throws IOException When crc file could not be read
 	 */
 	public static List<Integer> checkCRC( String imageFile, String crcFile, List<Integer> blocks ) throws IOException
 	{
