@@ -7,8 +7,6 @@ import java.util.zip.CRC32;
 
 import org.apache.log4j.Logger;
 
-// TODO: Move to master-sync-shared, sattelite daemon might want to check images too
-
 public class CRCChecker
 {
 
