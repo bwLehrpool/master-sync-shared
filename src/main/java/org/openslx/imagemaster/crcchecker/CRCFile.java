@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class CRCFile
 	 * 
 	 * @param filename
 	 */
-	CRCFile( String filename )
+	public CRCFile( String filename )
 	{
 		this.file = new File( filename );
 	}
