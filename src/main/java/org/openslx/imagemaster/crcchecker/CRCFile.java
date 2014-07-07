@@ -86,21 +86,11 @@ public class CRCFile
 	 * 
 	 * @param blockNumber
 	 * @return The crcSum or 0 if the block number is invalid
-	 * @throws IOException
+	 * @throws IOException If the crcSums could not be loaded from file
 	 */
 	public int getCRCSum( int blockNumber ) throws IOException
 	{
-		if ( crcSums == null ) {
-			// the crcSums were not read yet
-			DataInputStream dis = new DataInputStream( new FileInputStream( file ) );
-			crcSums = new ArrayList<>();
-			for ( int i = 0; i < file.length() / 4; i++ ) {
-				int s = dis.readInt();
-				if ( i > 0 )
-					crcSums.add( s );	// skip the first crcSum because it's the sum over the crcFile
-			}
-			dis.close();
-		}
+		if (crcSums == null) loadSums();
 
 		if ( blockNumber < 0 )
 			return 0;
@@ -110,7 +100,26 @@ public class CRCFile
 		return crcSums.get( blockNumber );
 	}
 	
-	public List<Integer> getCrcSums() {
+	/**
+	 * Returns the loaded crcSums.
+	 * @return The loaded crcSums
+	 * @throws IOException If the crcSums could not be loaded from file
+	 */
+	public List<Integer> getCrcSums() throws IOException {
+		if (crcSums == null) loadSums();
 		return this.crcSums;
+	}
+	
+	private void loadSums() throws IOException
+	{
+		// the crcSums were not read yet
+		DataInputStream dis = new DataInputStream( new FileInputStream( file ) );
+		crcSums = new ArrayList<>();
+		for ( int i = 0; i < file.length() / 4; i++ ) {
+			int s = dis.readInt();
+			if ( i > 0 )
+				crcSums.add( s );	// skip the first crcSum because it's the sum over the crcFile
+		}
+		dis.close();
 	}
 }
