@@ -123,8 +123,8 @@ class Test implements IncomingEvent
 		file.close();
 
 		int diff = 0;
-		for ( int i = 0; ( i + 5 ) < length; i += 5 ) {
-			uploader.sendRange( i, i + 5 );
+		for ( int i = 0; ( i + 254 ) < length; i += 254 ) {
+			uploader.sendRange( i, i + 254 );
 			uploader.sendFile( "test.txt" );
 			diff = (int) ( length - i );
 		}

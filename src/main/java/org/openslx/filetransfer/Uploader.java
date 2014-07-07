@@ -44,14 +44,15 @@ public class Uploader
 	public Uploader( String ip, int port, SSLContext context )
 	{
 		try {
-   		sslSocketFactory = context.getSocketFactory();
-   
-   		satelliteSocket = (SSLSocket)sslSocketFactory.createSocket( ip, port );
-   
-   		dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
-   		dataToServer.writeByte( 'U' );
-   		dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
-		} catch (Exception e) {
+			sslSocketFactory = context.getSocketFactory();
+
+			satelliteSocket = (SSLSocket)sslSocketFactory.createSocket( ip, port );
+			satelliteSocket.setSoTimeout( 2000 ); // set socket timeout.
+
+			dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
+			dataToServer.writeByte( 'U' );
+			dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
+		} catch ( Exception e ) {
 			e.printStackTrace();
 		}
 	}
@@ -66,10 +67,10 @@ public class Uploader
 	public Uploader( SSLSocket socket )
 	{
 		try {
-   		satelliteSocket = socket;
-   		dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
-   		dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
-		} catch (IOException e) {
+			satelliteSocket = socket;
+			dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
+			dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
+		} catch ( IOException e ) {
 			e.printStackTrace();
 		}
 	}
@@ -84,12 +85,12 @@ public class Uploader
 	public Boolean sendToken( String token )
 	{
 		try {
-   		TOKEN = token;
-   		String sendToken = "TOKEN=" + TOKEN;
-   		byte[] data = sendToken.getBytes( StandardCharsets.UTF_8 );
-   		dataToServer.writeByte( data.length );
-   		dataToServer.write( data );
-		} catch (IOException e) {
+			TOKEN = token;
+			String sendToken = "TOKEN=" + TOKEN;
+			byte[] data = sendToken.getBytes( StandardCharsets.UTF_8 );
+			dataToServer.writeByte( data.length );
+			dataToServer.write( data );
+		} catch ( IOException e ) {
 			e.printStackTrace();
 			return false;
 		}
@@ -117,13 +118,13 @@ public class Uploader
 	public Boolean sendRange( int a, int b )
 	{
 		try {
-   		RANGE = a + ":" + b;
-   		String sendRange = "RANGE=" + RANGE;
-   		byte[] data = sendRange.getBytes( StandardCharsets.UTF_8 );
-   		dataToServer.writeByte( data.length );
-   		dataToServer.write( data );
-   		dataToServer.writeByte( 0 );
-		} catch (IOException e) {
+			RANGE = a + ":" + b;
+			String sendRange = "RANGE=" + RANGE;
+			byte[] data = sendRange.getBytes( StandardCharsets.UTF_8 );
+			dataToServer.writeByte( data.length );
+			dataToServer.write( data );
+			dataToServer.writeByte( 0 );
+		} catch ( IOException e ) {
 			e.printStackTrace();
 			return false;
 		}
@@ -268,7 +269,7 @@ public class Uploader
 			}
 			file.seek( getStartOfRange() );
 
-			byte[] data = new byte[ 255 ];
+			byte[] data = new byte[ 255 ]; // TODO: problematische Größe.
 			int hasRead = 0;
 			int length = getDiffOfRange();
 			System.out.println( "diff of Range: " + length );
@@ -301,11 +302,11 @@ public class Uploader
 	public Boolean sendErrorCode( String errString )
 	{
 		try {
-   		String sendError = "ERROR=" + errString;
-   		byte[] data = sendError.getBytes( StandardCharsets.UTF_8 );
-   		dataToServer.writeByte( data.length );
-   		dataToServer.write( data );
-		} catch (IOException e) {
+			String sendError = "ERROR=" + errString;
+			byte[] data = sendError.getBytes( StandardCharsets.UTF_8 );
+			dataToServer.writeByte( data.length );
+			dataToServer.write( data );
+		} catch ( IOException e ) {
 			e.printStackTrace();
 			return false;
 		}
@@ -321,7 +322,7 @@ public class Uploader
 	{
 		try {
 			this.satelliteSocket.close();
-		} catch (IOException e) {
+		} catch ( IOException e ) {
 			e.printStackTrace();
 		}
 	}

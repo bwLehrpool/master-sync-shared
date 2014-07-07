@@ -22,9 +22,9 @@ public class Listener extends Thread
 	private int port;
 	final private int U = 85; // hex - code 'U' = 85.
 	final private int D = 68; // hex - code 'D' = 68.
-	
+
 	private static Logger log = Logger.getLogger( Listener.class );
-	
+
 	static {
 		// This is a temporary workaround for this annoying log4j error msg.
 		// Initializing the logger before anything else is done.
@@ -52,40 +52,40 @@ public class Listener extends Thread
 	 * 
 	 */
 	private void listen()
-	{ 
+	{
 		try {
-   		SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
-   		SSLServerSocket welcomeSocket =
-   				(SSLServerSocket)sslServerSocketFactory.createServerSocket( this.port );
-   
-   		while ( !isInterrupted() ) {
-   			SSLSocket connectionSocket = (SSLSocket)welcomeSocket.accept();
-   			connectionSocket.setSoTimeout( 2000 ); // 2 second timeout enough? Maybe even use a small thread pool for handling accepted connections
-   			// TODO: Handle SocketTimeoutException for all reads and writes in Downloader and Uploader
-   
-   			byte[] b = new byte[ 1 ];
-   			int length = connectionSocket.getInputStream().read( b );
-   
-   			System.out.println( length );
-   
-   			if ( b[0] == U ) {
-   				log.info( "recognized U --> starting Downloader" ); // TODO: Use Logger (see masterserver code for example)
-   				// --> start Downloader(socket).
-   				Downloader d = new Downloader( connectionSocket );
-   				incomingEvent.incomingDownloader( d );
-   			}
-   			else if ( b[0] == D ) {
-   				log.info( "recognized D --> starting Uploader" );
-   				// --> start Uploader(socket).
-   				Uploader u = new Uploader( connectionSocket );
-   				incomingEvent.incomingUploader( u );
-   			}
-   			else {
-   				log.info( "Got invalid option ... close connection" );
-   				connectionSocket.close();
-   			}
-   		}
-		} catch (Exception e) {
+			SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
+			SSLServerSocket welcomeSocket =
+					(SSLServerSocket)sslServerSocketFactory.createServerSocket( this.port );
+
+			while ( !isInterrupted() ) {
+				SSLSocket connectionSocket = (SSLSocket)welcomeSocket.accept();
+				connectionSocket.setSoTimeout( 2000 ); // 2 second timeout enough? Maybe even use a small thread pool for handling accepted connections
+				// TODO: Handle SocketTimeoutException for all reads and writes in Downloader and Uploader
+
+				byte[] b = new byte[ 1 ];
+				int length = connectionSocket.getInputStream().read( b );
+
+				System.out.println( length );
+
+				if ( b[0] == U ) {
+					log.info( "recognized U --> starting Downloader" ); // TODO: Use Logger (see masterserver code for example)
+					// --> start Downloader(socket).
+					Downloader d = new Downloader( connectionSocket );
+					incomingEvent.incomingDownloader( d );
+				}
+				else if ( b[0] == D ) {
+					log.info( "recognized D --> starting Uploader" );
+					// --> start Uploader(socket).
+					Uploader u = new Uploader( connectionSocket );
+					incomingEvent.incomingUploader( u );
+				}
+				else {
+					log.info( "Got invalid option ... close connection" );
+					connectionSocket.close();
+				}
+			}
+		} catch ( Exception e ) {
 			e.printStackTrace();	// same as writing to System.err.println(e.toString).
 		}
 	}

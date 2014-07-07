@@ -6,10 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -34,25 +30,21 @@ public class Downloader
 	 * 
 	 * @param ip
 	 * @param port
-	 * @throws IOException
-	 * @throws KeyStoreException
-	 * @throws CertificateException
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyManagementException
 	 */
 	public Downloader( String ip, int port, SSLContext context )
 	{
 		try {
-   		// TODO: Remove old code, that's why we have git.. ;)
-   		// create socket.
-   		sslSocketFactory = context.getSocketFactory();
-   
-   		satelliteSocket = (SSLSocket)sslSocketFactory.createSocket( ip, port );
-   
-   		dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
-   		dataToServer.writeByte( 'D' );
-   		dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
-		} catch (Exception e) {
+			// TODO: Remove old code, that's why we have git.. ;)
+			// create socket.
+			sslSocketFactory = context.getSocketFactory();
+
+			satelliteSocket = (SSLSocket)sslSocketFactory.createSocket( ip, port );
+			satelliteSocket.setSoTimeout( 2000 ); // set socket timeout.
+
+			dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
+			dataToServer.writeByte( 'D' );
+			dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
+		} catch ( Exception e ) {
 			e.printStackTrace();
 		}
 	}
@@ -67,10 +59,10 @@ public class Downloader
 	public Downloader( SSLSocket socket )
 	{
 		try {
-   		satelliteSocket = socket;
-   		dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
-   		dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
-		} catch (IOException e) {
+			satelliteSocket = socket;
+			dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
+			dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
+		} catch ( IOException e ) {
 			e.printStackTrace();
 		}
 	}
@@ -90,6 +82,7 @@ public class Downloader
 	/**
 	 * Method for getting outputFilename.
 	 * 
+	 * @return outputFilename
 	 */
 	public String getOutputFilename()
 	{
@@ -105,12 +98,12 @@ public class Downloader
 	public Boolean sendToken( String token )
 	{
 		try {
-   		TOKEN = token;
-   		String sendToken = "TOKEN=" + TOKEN;
-   		byte[] data = sendToken.getBytes( StandardCharsets.UTF_8 );
-   		dataToServer.writeByte( data.length );
-   		dataToServer.write( data );
-		} catch (IOException e) {
+			TOKEN = token;
+			String sendToken = "TOKEN=" + TOKEN;
+			byte[] data = sendToken.getBytes( StandardCharsets.UTF_8 );
+			dataToServer.writeByte( data.length );
+			dataToServer.write( data );
+		} catch ( IOException e ) {
 			e.printStackTrace();
 			return false;
 		}
@@ -129,12 +122,12 @@ public class Downloader
 	public Boolean sendRange( int a, int b )
 	{
 		try {
-   		RANGE = a + ":" + b;
-   		String sendRange = "RANGE=" + RANGE;
-   		byte[] data = sendRange.getBytes( StandardCharsets.UTF_8 );
-   		dataToServer.writeByte( data.length );
-   		dataToServer.write( data );
-		} catch (IOException e) {
+			RANGE = a + ":" + b;
+			String sendRange = "RANGE=" + RANGE;
+			byte[] data = sendRange.getBytes( StandardCharsets.UTF_8 );
+			dataToServer.writeByte( data.length );
+			dataToServer.write( data );
+		} catch ( IOException e ) {
 			e.printStackTrace();
 			return false;
 		}
@@ -214,7 +207,7 @@ public class Downloader
 	{
 		try {
 			while ( true ) {
-				byte[] incoming = new byte[ 255 ];
+				byte[] incoming = new byte[ 255 ]; // TODO: problematische Größe.
 
 				// First get length.
 				dataFromServer.read( incoming, 0, 1 );
@@ -277,26 +270,26 @@ public class Downloader
 	public Boolean readBinary()
 	{
 		try {
-   		int length = getDiffOfRange();
-   		byte[] incoming = new byte[ 4000 ];
-   
-   		int hasRead = 0;
-   		while ( hasRead < length ) {
-   			int ret = dataFromServer.read( incoming, hasRead, length - hasRead );
-   			if ( ret == -1 ) {
-   				System.out.println( "Error occured in Downloader.readBinary(),"
-   						+ " while reading binary." );
-   				return false;
-   			}
-   			hasRead += ret;
-   		}
-   
-   		RandomAccessFile file;
+			int length = getDiffOfRange();
+			byte[] incoming = new byte[ 4000 ]; // TODO: größe Problematisch, abchecken.
+
+			int hasRead = 0;
+			while ( hasRead < length ) {
+				int ret = dataFromServer.read( incoming, hasRead, length - hasRead );
+				if ( ret == -1 ) {
+					System.out.println( "Error occured in Downloader.readBinary(),"
+							+ " while reading binary." );
+					return false;
+				}
+				hasRead += ret;
+			}
+
+			RandomAccessFile file;
 			file = new RandomAccessFile( new File( outputFilename ), "rw" );
 			file.seek( getStartOfRange() );
 			file.write( incoming, 0, length );
 			file.close();
-		} catch (Exception e) {
+		} catch ( Exception e ) {
 			e.printStackTrace();
 			return false;
 		}
@@ -312,11 +305,11 @@ public class Downloader
 	public Boolean sendErrorCode( String errString )
 	{
 		try {
-   		String sendError = "ERROR=" + errString;
-   		byte[] data = sendError.getBytes( StandardCharsets.UTF_8 );
-   		dataToServer.writeByte( data.length );
-   		dataToServer.write( data );
-		} catch (IOException e) {
+			String sendError = "ERROR=" + errString;
+			byte[] data = sendError.getBytes( StandardCharsets.UTF_8 );
+			dataToServer.writeByte( data.length );
+			dataToServer.write( data );
+		} catch ( IOException e ) {
 			e.printStackTrace();
 			return false;
 		}
@@ -332,7 +325,7 @@ public class Downloader
 	{
 		try {
 			this.satelliteSocket.close();
-		} catch (IOException e) {
+		} catch ( IOException e ) {
 			e.printStackTrace();
 		}
 	}
