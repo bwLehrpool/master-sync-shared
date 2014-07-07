@@ -14,7 +14,7 @@
  * If master receives token "D" --> start Uploader(socket)
  */
 
-//TODO Björn Hagemeister. SSLConfiguration!
+// TODO Björn Hagemeister. SSLConfiguration!
 
 package org.openslx.filetransfer;
 
@@ -31,59 +31,60 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-public class ClassTest {
-	public static void main(String[] args) throws Exception {
+public class ClassTest
+{
+	public static void main( String[] args ) throws Exception
+	{
 		String pathToKeyStore =
 				"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
-	    char[] passphrase = "test123".toCharArray();
-	    KeyStore keystore = KeyStore.getInstance("JKS");
-	    keystore.load(new FileInputStream(pathToKeyStore), passphrase);
-	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-	    kmf.init(keystore, passphrase);
-	    SSLContext context = SSLContext.getInstance("SSLv3");
-	    KeyManager[] keyManagers = kmf.getKeyManagers();
+		char[] passphrase = "test123".toCharArray();
+		KeyStore keystore = KeyStore.getInstance( "JKS" );
+		keystore.load( new FileInputStream( pathToKeyStore ), passphrase );
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
+		kmf.init( keystore, passphrase );
+		SSLContext context = SSLContext.getInstance( "SSLv3" );
+		KeyManager[] keyManagers = kmf.getKeyManagers();
 
-	    context.init(keyManagers, null, null);
+		context.init( keyManagers, null, null );
 
-		Listener listener = new Listener(new Test(), context, 6789);
+		Listener listener = new Listener( new Test(), context, 6789 );
 		listener.start();
-		
-		Thread.sleep(5000);
-		
+
+		Thread.sleep( 5000 );
+
 		String pathToTrustStore =
 				"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
 
-	    passphrase = "test123".toCharArray();
-	    keystore = KeyStore.getInstance("JKS");
-	    keystore.load(new FileInputStream(pathToTrustStore), passphrase);
+		passphrase = "test123".toCharArray();
+		keystore = KeyStore.getInstance( "JKS" );
+		keystore.load( new FileInputStream( pathToTrustStore ), passphrase );
 
-	    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-	    tmf.init(keystore);
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
+		tmf.init( keystore );
 
-	    context = SSLContext.getInstance("SSLv3");
-	    TrustManager[] trustManagers = tmf.getTrustManagers();
+		context = SSLContext.getInstance( "SSLv3" );
+		TrustManager[] trustManagers = tmf.getTrustManagers();
 
-	    context.init(null, trustManagers, null);
+		context.init( null, trustManagers, null );
 
-		
-		Downloader d = new Downloader("localhost", 6789, context);
-		d.setOutputFilename("output.txt");
-		d.sendToken("xyz");
-		while (d.readMetaData())
+		Downloader d = new Downloader( "localhost", 6789, context );
+		d.setOutputFilename( "output.txt" );
+		d.sendToken( "xyz" );
+		while ( d.readMetaData() )
 			d.readBinary();
-		
+
 		/*
 		String pathToKeyStore =
 				"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
-	    char[] passphrase = "test123".toCharArray();
-	    KeyStore keystore = KeyStore.getInstance("JKS");
-	    keystore.load(new FileInputStream(pathToKeyStore), passphrase);
-	    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-	    kmf.init(keystore, passphrase);
-	    SSLContext context = SSLContext.getInstance("SSLv3");
-	    KeyManager[] keyManagers = kmf.getKeyManagers();
+		 char[] passphrase = "test123".toCharArray();
+		 KeyStore keystore = KeyStore.getInstance("JKS");
+		 keystore.load(new FileInputStream(pathToKeyStore), passphrase);
+		 KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+		 kmf.init(keystore, passphrase);
+		 SSLContext context = SSLContext.getInstance("SSLv3");
+		 KeyManager[] keyManagers = kmf.getKeyManagers();
 
-	    context.init(keyManagers, null, null);
+		 context.init(keyManagers, null, null);
 
 		Uploader u = new Uploader("localhost", 6789, context);
 		u.sendToken("xyz");
@@ -106,33 +107,36 @@ public class ClassTest {
 }
 
 // Implementing IncomingEvent for testing case.
-class Test implements IncomingEvent {
-	public void incomingUploader(Uploader uploader) throws IOException {
+class Test implements IncomingEvent
+{
+	public void incomingUploader( Uploader uploader ) throws IOException
+	{
 		RandomAccessFile file;
 		try {
-			file = new RandomAccessFile(new File("test.txt"), "r");
-		} catch (FileNotFoundException e) {
+			file = new RandomAccessFile( new File( "test.txt" ), "r" );
+		} catch ( FileNotFoundException e ) {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		long length = file.length();
 		file.close();
-		
+
 		int diff = 0;
-		for (int i = 0; (i + 5) < length; i += 5) {
-			uploader.sendRange(i, i + 5);
-			uploader.sendFile("test.txt");
-			diff = (int) (length - i);
+		for ( int i = 0; ( i + 5 ) < length; i += 5 ) {
+			uploader.sendRange( i, i + 5 );
+			uploader.sendFile( "test.txt" );
+			diff = (int) ( length - i );
 		}
-		
-		uploader.sendRange((int)(length - diff), (int)length);
-		uploader.sendFile("test.txt");
+
+		uploader.sendRange( (int) ( length - diff ), (int)length );
+		uploader.sendFile( "test.txt" );
 	}
-	
-	public void incomingDownloader(Downloader downloader) throws IOException {
-		downloader.setOutputFilename("output.txt");
-		while (downloader.readMetaData())
+
+	public void incomingDownloader( Downloader downloader ) throws IOException
+	{
+		downloader.setOutputFilename( "output.txt" );
+		while ( downloader.readMetaData() )
 			downloader.readBinary();
 	}
 }
