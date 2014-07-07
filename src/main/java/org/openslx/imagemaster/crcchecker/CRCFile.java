@@ -20,7 +20,7 @@ import java.util.zip.CRC32;
 public class CRCFile
 {
 	private File file;
-	private List<Integer> crcSums = null;
+	public final List<Integer> crcSums = null;
 
 	/**
 	 * Loads a crcFile from file
