@@ -5,6 +5,10 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // TODO: (all files) apply formatting using strg+shift+f *after* importing scheme from ./extras/
 
 public class Listener extends Thread
@@ -16,6 +20,17 @@ public class Listener extends Thread
 			*/
 	private SSLContext context;
 	private int port;
+	final private int U = 85; // hex - code 'U' = 85.
+	final private int D = 68; // hex - code 'D' = 68.
+	
+	private static Logger log = Logger.getLogger( Listener.class );
+	
+	static {
+		// This is a temporary workaround for this annoying log4j error msg.
+		// Initializing the logger before anything else is done.
+		BasicConfigurator.configure();
+		LoggerFactory.getLogger( "ROOT" );
+	}
 
 	/***********************************************************************/
 	/**
@@ -35,7 +50,6 @@ public class Listener extends Thread
 	 * Method listen, should run from Master Server. Listen for incoming
 	 * connection, and start Downloader or Uploader.
 	 * 
-	 * @throws Exception
 	 */
 	private void listen()
 	{ 
@@ -54,21 +68,20 @@ public class Listener extends Thread
    
    			System.out.println( length );
    
-   			// Ascii - Code: 'U' = 85 ; 'D' = 68. TODO: byte constant as class member
-   			if ( b[0] == 85 ) {
-   				System.out.println( "U erkannt --> Downloader starten" ); // TODO: Use Logger (see masterserver code for example)
+   			if ( b[0] == U ) {
+   				log.info( "recognized U --> starting Downloader" ); // TODO: Use Logger (see masterserver code for example)
    				// --> start Downloader(socket).
    				Downloader d = new Downloader( connectionSocket );
    				incomingEvent.incomingDownloader( d );
    			}
-   			else if ( b[0] == 68 ) {
-   				System.out.println( "D erkannt --> Uploader starten" );
+   			else if ( b[0] == D ) {
+   				log.info( "recognized D --> starting Uploader" );
    				// --> start Uploader(socket).
    				Uploader u = new Uploader( connectionSocket );
    				incomingEvent.incomingUploader( u );
    			}
    			else {
-   				System.out.println( "Müll empfangen" );
+   				log.info( "Got invalid option ... close connection" );
    				connectionSocket.close();
    			}
    		}
