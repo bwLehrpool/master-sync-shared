@@ -1,8 +1,11 @@
 package org.openslx.imagemaster.crcchecker;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +21,34 @@ public class CRCFile
 	private File file;
 	private List<Integer> crcSums = null;
 	
-	CRCFile(String filename) {
+	/**
+	 * Loads a crcFile from file
+	 * @param filename
+	 */
+	CRCFile(String filename)
+	{
 		this.file = new File( filename );
+	}
+	
+	/**
+	 * Creates a new crc file with the given sums.
+	 * The first crc sum in the list needs to be the sum over the other sums.
+	 * @param listOfCrcSums The list of the crc sums that are going into the crc file
+	 * @param filename Where to save the created crc file
+	 * @throws IOException If it's not possible to write the file
+	 */
+	CRCFile(List<Integer> listOfCrcSums, String filename) throws IOException
+	{
+		this.file = new File( filename );
+		FileOutputStream fos = new FileOutputStream( file );
+		DataOutputStream dos = new DataOutputStream( fos );
+		
+		for ( Integer sum : listOfCrcSums ) {
+			dos.writeInt( Integer.reverseBytes( sum.intValue() ) );		// save byte-reversed integers to match right order in crc file
+		}
+		
+		dos.close();
+		this.crcSums = listOfCrcSums;
 	}
 	
 	/**

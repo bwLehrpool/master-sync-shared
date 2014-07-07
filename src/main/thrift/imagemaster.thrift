@@ -87,11 +87,13 @@ struct FtpCredentials {
 
 struct UploadInfos {
 	1: string token,
-	2: list<i32> missingBlocks
+	2: i32 port,
+	3: list<i32> missingBlocks
 }
 
 struct DownloadInfos {
-	1: string token
+	1: string token,
+	2: i32 port
 }
 
 struct ServerSessionData {
