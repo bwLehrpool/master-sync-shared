@@ -15,7 +15,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-public class Downloader {
+public class Downloader
+{
 	// Some instance variables.
 	private SSLSocketFactory sslSocketFactory;
 	private SSLSocket satelliteSocket;
@@ -25,268 +26,314 @@ public class Downloader {
 	private String RANGE = null;
 	private String outputFilename = null;
 	private String ERROR = null;
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Constructor for satellite downloader.
 	 * Tries to connect to specific ip and port and sending type of action.
+	 * 
 	 * @param ip
 	 * @param port
-	 * @throws IOException 
-	 * @throws KeyStoreException 
-	 * @throws CertificateException 
-	 * @throws NoSuchAlgorithmException 
-	 * @throws KeyManagementException 
+	 * @throws IOException
+	 * @throws KeyStoreException
+	 * @throws CertificateException
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyManagementException
 	 */
-	public Downloader(String ip, int port, SSLContext context) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException, KeyManagementException {
-		// TODO: Remove old code, that's why we have git.. ;)
-		/*
-	    char[] passphrase = "test123".toCharArray();
-	    KeyStore keystore = KeyStore.getInstance("JKS");
-	    keystore.load(new FileInputStream(pathToTrustStore), passphrase);
-
-	    TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-	    tmf.init(keystore);
-
-	    SSLContext context = SSLContext.getInstance("SSLv3");
-	    TrustManager[] trustManagers = tmf.getTrustManagers();
-
-	    context.init(null, trustManagers, null);
-		*/
-		
-	    // create socket.
-		sslSocketFactory = context.getSocketFactory();
-		
-		satelliteSocket = (SSLSocket) sslSocketFactory.createSocket(ip, port);
-		
-		dataToServer = new DataOutputStream(satelliteSocket.getOutputStream());
-		dataToServer.writeByte('D');
-		dataFromServer = new DataInputStream(satelliteSocket.getInputStream());
+	public Downloader( String ip, int port, SSLContext context )
+	{
+		try {
+   		// TODO: Remove old code, that's why we have git.. ;)
+   		// create socket.
+   		sslSocketFactory = context.getSocketFactory();
+   
+   		satelliteSocket = (SSLSocket)sslSocketFactory.createSocket( ip, port );
+   
+   		dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
+   		dataToServer.writeByte( 'D' );
+   		dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	/***********************************************************************//**
+	/***********************************************************************/
+	/**
 	 * Constructor for master downloader.
 	 * Given parameter is the socket over which the transfer is going.
+	 * 
 	 * @param socket
-	 * @throws IOException 
 	 */
-	public Downloader(SSLSocket socket) throws IOException {
-		satelliteSocket = socket;
-		dataToServer = new DataOutputStream(satelliteSocket.getOutputStream());
-		dataFromServer = new DataInputStream(satelliteSocket.getInputStream());
+	public Downloader( SSLSocket socket )
+	{
+		try {
+   		satelliteSocket = socket;
+   		dataToServer = new DataOutputStream( satelliteSocket.getOutputStream() );
+   		dataFromServer = new DataInputStream( satelliteSocket.getInputStream() );
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	/***********************************************************************//**
+	/***********************************************************************/
+	/**
 	 * Method for setting outputFilename.
+	 * 
 	 * @param filename
 	 */
-	public void setOutputFilename(String filename)
+	public void setOutputFilename( String filename )
 	{
 		outputFilename = filename;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Method for getting outputFilename.
-	 * @return Return outputFilename or null.
+	 * 
 	 */
 	public String getOutputFilename()
 	{
-		if (outputFilename != null)
-			return outputFilename;
-		return null;
+		return outputFilename;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Method for sending token for identification from satellite to master.
+	 * 
 	 * @param t
-	 * @throws IOException 
 	 */
-	public void sendToken(String token) throws IOException {
-		TOKEN = token;
-		String sendToken = "TOKEN=" + TOKEN;
-		byte[] data = sendToken.getBytes(StandardCharsets.UTF_8);
-		dataToServer.writeByte(data.length);
-		dataToServer.write(data);
+	public Boolean sendToken( String token )
+	{
+		try {
+   		TOKEN = token;
+   		String sendToken = "TOKEN=" + TOKEN;
+   		byte[] data = sendToken.getBytes( StandardCharsets.UTF_8 );
+   		dataToServer.writeByte( data.length );
+   		dataToServer.write( data );
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Method to send range of the file, which should be uploaded.
 	 * Helpful for knowing how much was already uploaded if
 	 * connection aborts.
+	 * 
 	 * @param a
 	 * @param b
-	 * @throws IOException 
 	 */
-	public void sendRange(int a, int b) throws IOException {
-		RANGE = a + ":" + b;
-		String sendRange = "RANGE=" + RANGE;
-		byte[] data = sendRange.getBytes(StandardCharsets.UTF_8);
-		dataToServer.writeByte(data.length);
-		dataToServer.write(data);
+	public Boolean sendRange( int a, int b )
+	{
+		try {
+   		RANGE = a + ":" + b;
+   		String sendRange = "RANGE=" + RANGE;
+   		byte[] data = sendRange.getBytes( StandardCharsets.UTF_8 );
+   		dataToServer.writeByte( data.length );
+   		dataToServer.write( data );
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Method for reading incoming token for identification.
-	 * @throws IOException
+	 * 
 	 */
-	public String getToken() {
+	public String getToken()
+	{
 		return TOKEN;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Method for reading range of file, which is downloaded.
 	 * Helpful for knowing how much is already downloaded if connection aborts.
 	 */
-	public String getRange() {
+	public String getRange()
+	{
 		return RANGE;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Getter for beginning of RANGE.
+	 * 
 	 * @return
 	 */
-	public int getStartOfRange() {
-		if (RANGE != null) {
-			String[] splitted = RANGE.split(":");
-			return Integer.parseInt(splitted[0]);
+	public int getStartOfRange()
+	{
+		if ( RANGE != null ) {
+			String[] splitted = RANGE.split( ":" );
+			return Integer.parseInt( splitted[0] );
 		}
 		return -1;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Getter for end of RANGE.
+	 * 
 	 * @return
 	 */
-	public int getEndOfRange() {
-		if (RANGE != null) {
-			String[] splitted = RANGE.split(":");
-			return Integer.parseInt(splitted[1]);
+	public int getEndOfRange()
+	{
+		if ( RANGE != null ) {
+			String[] splitted = RANGE.split( ":" );
+			return Integer.parseInt( splitted[1] );
 		}
 		return -1;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Method for returning difference of current Range.
+	 * 
 	 * @return
 	 */
-	public int getDiffOfRange() {
-		int diff = Math.abs(getEndOfRange() - getStartOfRange()); 
+	public int getDiffOfRange()
+	{
+		int diff = Math.abs( getEndOfRange() - getStartOfRange() );
 		return diff;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Method for reading MetaData, like TOKEN and FileRange.
 	 * Split incoming bytes after first '=' and store value to specific
 	 * variable.
-	 * @throws IOException 
+	 * 
 	 */
-	public Boolean readMetaData() throws IOException {
+	public Boolean readMetaData()
+	{
 		try {
-			while (true) {
-				byte[] incoming = new byte[255];
-				
+			while ( true ) {
+				byte[] incoming = new byte[ 255 ];
+
 				// First get length.
-				dataFromServer.read(incoming, 0, 1);
+				dataFromServer.read( incoming, 0, 1 );
 				int length = incoming[0];
-				System.out.println("length: " + length);
-				
-				if (length == 0)
+				System.out.println( "length: " + length );
+
+				if ( length == 0 )
 					break;
-				
+
 				/**
-				 *  Read the next available bytes and split by '=' for
-				 *  getting TOKEN or RANGE.
+				 * Read the next available bytes and split by '=' for
+				 * getting TOKEN or RANGE.
 				 */
 				int hasRead = 0;
-				while (hasRead < length) {
-					int ret = dataFromServer.read(incoming, hasRead, length - hasRead);
-					if (ret == -1) {
-						System.out.println("Error occured while reading Metadata.");
+				while ( hasRead < length ) {
+					int ret = dataFromServer.read( incoming, hasRead, length - hasRead );
+					if ( ret == -1 ) {
+						System.out.println( "Error occured while reading Metadata." );
 						return false;
 					}
 					hasRead += ret;
 				}
-				
-				String data = new String(incoming, 0, length, "UTF-8");
+
+				String data = new String( incoming, 0, length, "UTF-8" );
 				// System.out.println(data);
-				
-				String[] splitted = data.split("=");
+
+				String[] splitted = data.split( "=" );
 				// System.out.println("splitted[0]: " + splitted[0]);
 				// System.out.println("splitted[1]: " + splitted[1]);
-				if (splitted[0] != null && splitted[0].equals("TOKEN")) {
-					if (splitted[1] != null)
+				if ( splitted[0] != null && splitted[0].equals( "TOKEN" ) ) {
+					if ( splitted[1] != null )
 						TOKEN = splitted[1];
-					System.out.println("TOKEN: " + TOKEN);
+					System.out.println( "TOKEN: " + TOKEN );
 				}
-				else if (splitted[0].equals("RANGE")) {
-					if (splitted[1] != null)
+				else if ( splitted[0].equals( "RANGE" ) ) {
+					if ( splitted[1] != null )
 						RANGE = splitted[1];
-					System.out.println("RANGE: '" + RANGE + "'");
+					System.out.println( "RANGE: '" + RANGE + "'" );
 				}
-				else if (splitted[0].equals("ERROR")) {
-					if (splitted[1] != null)
+				else if ( splitted[0].equals( "ERROR" ) ) {
+					if ( splitted[1] != null )
 						ERROR = splitted[1];
-					System.err.println("ERROR: " + ERROR);
+					System.err.println( "ERROR: " + ERROR );
 					this.close();
 					return false;
 				}
 			}
-		} catch (Exception e) {
+		} catch ( Exception e ) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
-	
-	/***********************************************************************//**
-	 * Method for reading Binary. Reading the current Range of incoming binary.
-	 * @throws IOException 
-	 */
-	public Boolean readBinary() throws IOException {
-		int length = getDiffOfRange();
-		byte[] incoming = new byte[4000];
-		
-		int hasRead = 0;
-		while (hasRead < length) {
-			int ret = dataFromServer.read(incoming, hasRead, length - hasRead);
-			if (ret == -1) {
-				System.out.println("Error occured in Downloader.readBinary(),"
-						+ " while reading binary.");
-				return false;
-			}
-			hasRead += ret;
-		}
-		
-		RandomAccessFile file;
-		try {
-			file = new RandomAccessFile(new File(outputFilename), "rw");
-			file.seek(getStartOfRange());
-			file.write(incoming, 0, length);
-			file.close();
 
+	/***********************************************************************/
+	/**
+	 * Method for reading Binary. Reading the current Range of incoming binary.
+	 * 
+	 */
+	public Boolean readBinary()
+	{
+		try {
+   		int length = getDiffOfRange();
+   		byte[] incoming = new byte[ 4000 ];
+   
+   		int hasRead = 0;
+   		while ( hasRead < length ) {
+   			int ret = dataFromServer.read( incoming, hasRead, length - hasRead );
+   			if ( ret == -1 ) {
+   				System.out.println( "Error occured in Downloader.readBinary(),"
+   						+ " while reading binary." );
+   				return false;
+   			}
+   			hasRead += ret;
+   		}
+   
+   		RandomAccessFile file;
+			file = new RandomAccessFile( new File( outputFilename ), "rw" );
+			file.seek( getStartOfRange() );
+			file.write( incoming, 0, length );
+			file.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Method for sending error Code to server. For example in case of wrong
 	 * token, send code for wrong token.
-	 * @throws IOException 
+	 * 
 	 */
-	public void sendErrorCode(String errString) throws IOException {
-		String sendError = "ERROR=" + errString;
-		byte[] data = sendError.getBytes(StandardCharsets.UTF_8);
-		dataToServer.writeByte(data.length);
-		dataToServer.write(data);
+	public Boolean sendErrorCode( String errString )
+	{
+		try {
+   		String sendError = "ERROR=" + errString;
+   		byte[] data = sendError.getBytes( StandardCharsets.UTF_8 );
+   		dataToServer.writeByte( data.length );
+   		dataToServer.write( data );
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
-	
-	/***********************************************************************//**
+
+	/***********************************************************************/
+	/**
 	 * Method for closing connection, if download has finished.
-	 * @throws IOException 
+	 * 
 	 */
-	public void close() throws IOException {
-		this.satelliteSocket.close();
+	public void close()
+	{
+		try {
+			this.satelliteSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
