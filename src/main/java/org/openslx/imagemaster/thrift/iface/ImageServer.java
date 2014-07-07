@@ -49,7 +49,7 @@ public class ImageServer {
 
     public ServerSessionData serverAuthenticate(String organization, ByteBuffer challengeResponse) throws ServerAuthenticationException, org.apache.thrift.TException;
 
-    public UploadInfos submitImage(String serverSessionId, ImageData imageDescription) throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException;
+    public UploadInfos submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums) throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException;
 
     public DownloadInfos getImage(String uuid, String serverSessionId, List<Integer> requestedBlocks) throws AuthorizationException, ImageDataException, org.apache.thrift.TException;
 
@@ -67,7 +67,7 @@ public class ImageServer {
 
     public void serverAuthenticate(String organization, ByteBuffer challengeResponse, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void submitImage(String serverSessionId, ImageData imageDescription, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getImage(String uuid, String serverSessionId, List<Integer> requestedBlocks, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -221,17 +221,18 @@ public class ImageServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "serverAuthenticate failed: unknown result");
     }
 
-    public UploadInfos submitImage(String serverSessionId, ImageData imageDescription) throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException
+    public UploadInfos submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums) throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException
     {
-      send_submitImage(serverSessionId, imageDescription);
+      send_submitImage(serverSessionId, imageDescription, crcSums);
       return recv_submitImage();
     }
 
-    public void send_submitImage(String serverSessionId, ImageData imageDescription) throws org.apache.thrift.TException
+    public void send_submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums) throws org.apache.thrift.TException
     {
       submitImage_args args = new submitImage_args();
       args.setServerSessionId(serverSessionId);
       args.setImageDescription(imageDescription);
+      args.setCrcSums(crcSums);
       sendBase("submitImage", args);
     }
 
@@ -466,9 +467,9 @@ public class ImageServer {
       }
     }
 
-    public void submitImage(String serverSessionId, ImageData imageDescription, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      submitImage_call method_call = new submitImage_call(serverSessionId, imageDescription, resultHandler, this, ___protocolFactory, ___transport);
+      submitImage_call method_call = new submitImage_call(serverSessionId, imageDescription, crcSums, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -476,10 +477,12 @@ public class ImageServer {
     public static class submitImage_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String serverSessionId;
       private ImageData imageDescription;
-      public submitImage_call(String serverSessionId, ImageData imageDescription, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private List<Integer> crcSums;
+      public submitImage_call(String serverSessionId, ImageData imageDescription, List<Integer> crcSums, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.serverSessionId = serverSessionId;
         this.imageDescription = imageDescription;
+        this.crcSums = crcSums;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -487,6 +490,7 @@ public class ImageServer {
         submitImage_args args = new submitImage_args();
         args.setServerSessionId(serverSessionId);
         args.setImageDescription(imageDescription);
+        args.setCrcSums(crcSums);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -695,7 +699,7 @@ public class ImageServer {
       public submitImage_result getResult(I iface, submitImage_args args) throws org.apache.thrift.TException {
         submitImage_result result = new submitImage_result();
         try {
-          result.success = iface.submitImage(args.serverSessionId, args.imageDescription);
+          result.success = iface.submitImage(args.serverSessionId, args.imageDescription, args.crcSums);
         } catch (AuthorizationException failure) {
           result.failure = failure;
         } catch (ImageDataException failure2) {
@@ -1099,7 +1103,7 @@ public class ImageServer {
       }
 
       public void start(I iface, submitImage_args args, org.apache.thrift.async.AsyncMethodCallback<UploadInfos> resultHandler) throws TException {
-        iface.submitImage(args.serverSessionId, args.imageDescription,resultHandler);
+        iface.submitImage(args.serverSessionId, args.imageDescription, args.crcSums,resultHandler);
       }
     }
 
@@ -5332,6 +5336,7 @@ public class ImageServer {
 
     private static final org.apache.thrift.protocol.TField SERVER_SESSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("serverSessionId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField IMAGE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("imageDescription", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField CRC_SUMS_FIELD_DESC = new org.apache.thrift.protocol.TField("crcSums", org.apache.thrift.protocol.TType.LIST, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5341,11 +5346,13 @@ public class ImageServer {
 
     public String serverSessionId; // required
     public ImageData imageDescription; // required
+    public List<Integer> crcSums; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SERVER_SESSION_ID((short)1, "serverSessionId"),
-      IMAGE_DESCRIPTION((short)2, "imageDescription");
+      IMAGE_DESCRIPTION((short)2, "imageDescription"),
+      CRC_SUMS((short)3, "crcSums");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5364,6 +5371,8 @@ public class ImageServer {
             return SERVER_SESSION_ID;
           case 2: // IMAGE_DESCRIPTION
             return IMAGE_DESCRIPTION;
+          case 3: // CRC_SUMS
+            return CRC_SUMS;
           default:
             return null;
         }
@@ -5411,6 +5420,9 @@ public class ImageServer {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.IMAGE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("imageDescription", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ImageData.class)));
+      tmpMap.put(_Fields.CRC_SUMS, new org.apache.thrift.meta_data.FieldMetaData("crcSums", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(submitImage_args.class, metaDataMap);
     }
@@ -5420,11 +5432,13 @@ public class ImageServer {
 
     public submitImage_args(
       String serverSessionId,
-      ImageData imageDescription)
+      ImageData imageDescription,
+      List<Integer> crcSums)
     {
       this();
       this.serverSessionId = serverSessionId;
       this.imageDescription = imageDescription;
+      this.crcSums = crcSums;
     }
 
     /**
@@ -5437,6 +5451,10 @@ public class ImageServer {
       if (other.isSetImageDescription()) {
         this.imageDescription = new ImageData(other.imageDescription);
       }
+      if (other.isSetCrcSums()) {
+        List<Integer> __this__crcSums = new ArrayList<Integer>(other.crcSums);
+        this.crcSums = __this__crcSums;
+      }
     }
 
     public submitImage_args deepCopy() {
@@ -5447,6 +5465,7 @@ public class ImageServer {
     public void clear() {
       this.serverSessionId = null;
       this.imageDescription = null;
+      this.crcSums = null;
     }
 
     public String getServerSessionId() {
@@ -5497,6 +5516,45 @@ public class ImageServer {
       }
     }
 
+    public int getCrcSumsSize() {
+      return (this.crcSums == null) ? 0 : this.crcSums.size();
+    }
+
+    public java.util.Iterator<Integer> getCrcSumsIterator() {
+      return (this.crcSums == null) ? null : this.crcSums.iterator();
+    }
+
+    public void addToCrcSums(int elem) {
+      if (this.crcSums == null) {
+        this.crcSums = new ArrayList<Integer>();
+      }
+      this.crcSums.add(elem);
+    }
+
+    public List<Integer> getCrcSums() {
+      return this.crcSums;
+    }
+
+    public submitImage_args setCrcSums(List<Integer> crcSums) {
+      this.crcSums = crcSums;
+      return this;
+    }
+
+    public void unsetCrcSums() {
+      this.crcSums = null;
+    }
+
+    /** Returns true if field crcSums is set (has been assigned a value) and false otherwise */
+    public boolean isSetCrcSums() {
+      return this.crcSums != null;
+    }
+
+    public void setCrcSumsIsSet(boolean value) {
+      if (!value) {
+        this.crcSums = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SERVER_SESSION_ID:
@@ -5515,6 +5573,14 @@ public class ImageServer {
         }
         break;
 
+      case CRC_SUMS:
+        if (value == null) {
+          unsetCrcSums();
+        } else {
+          setCrcSums((List<Integer>)value);
+        }
+        break;
+
       }
     }
 
@@ -5525,6 +5591,9 @@ public class ImageServer {
 
       case IMAGE_DESCRIPTION:
         return getImageDescription();
+
+      case CRC_SUMS:
+        return getCrcSums();
 
       }
       throw new IllegalStateException();
@@ -5541,6 +5610,8 @@ public class ImageServer {
         return isSetServerSessionId();
       case IMAGE_DESCRIPTION:
         return isSetImageDescription();
+      case CRC_SUMS:
+        return isSetCrcSums();
       }
       throw new IllegalStateException();
     }
@@ -5576,6 +5647,15 @@ public class ImageServer {
           return false;
       }
 
+      boolean this_present_crcSums = true && this.isSetCrcSums();
+      boolean that_present_crcSums = true && that.isSetCrcSums();
+      if (this_present_crcSums || that_present_crcSums) {
+        if (!(this_present_crcSums && that_present_crcSums))
+          return false;
+        if (!this.crcSums.equals(that.crcSums))
+          return false;
+      }
+
       return true;
     }
 
@@ -5592,6 +5672,11 @@ public class ImageServer {
       list.add(present_imageDescription);
       if (present_imageDescription)
         list.add(imageDescription);
+
+      boolean present_crcSums = true && (isSetCrcSums());
+      list.add(present_crcSums);
+      if (present_crcSums)
+        list.add(crcSums);
 
       return list.hashCode();
     }
@@ -5620,6 +5705,16 @@ public class ImageServer {
       }
       if (isSetImageDescription()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageDescription, other.imageDescription);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetCrcSums()).compareTo(other.isSetCrcSums());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCrcSums()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.crcSums, other.crcSums);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -5657,6 +5752,14 @@ public class ImageServer {
         sb.append("null");
       } else {
         sb.append(this.imageDescription);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("crcSums:");
+      if (this.crcSums == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.crcSums);
       }
       first = false;
       sb.append(")");
@@ -5722,6 +5825,24 @@ public class ImageServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // CRC_SUMS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
+                  struct.crcSums = new ArrayList<Integer>(_list8.size);
+                  int _elem9;
+                  for (int _i10 = 0; _i10 < _list8.size; ++_i10)
+                  {
+                    _elem9 = iprot.readI32();
+                    struct.crcSums.add(_elem9);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setCrcSumsIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -5745,6 +5866,18 @@ public class ImageServer {
         if (struct.imageDescription != null) {
           oprot.writeFieldBegin(IMAGE_DESCRIPTION_FIELD_DESC);
           struct.imageDescription.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.crcSums != null) {
+          oprot.writeFieldBegin(CRC_SUMS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.crcSums.size()));
+            for (int _iter11 : struct.crcSums)
+            {
+              oprot.writeI32(_iter11);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -5771,19 +5904,31 @@ public class ImageServer {
         if (struct.isSetImageDescription()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetCrcSums()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetServerSessionId()) {
           oprot.writeString(struct.serverSessionId);
         }
         if (struct.isSetImageDescription()) {
           struct.imageDescription.write(oprot);
         }
+        if (struct.isSetCrcSums()) {
+          {
+            oprot.writeI32(struct.crcSums.size());
+            for (int _iter12 : struct.crcSums)
+            {
+              oprot.writeI32(_iter12);
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, submitImage_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.serverSessionId = iprot.readString();
           struct.setServerSessionIdIsSet(true);
@@ -5792,6 +5937,19 @@ public class ImageServer {
           struct.imageDescription = new ImageData();
           struct.imageDescription.read(iprot);
           struct.setImageDescriptionIsSet(true);
+        }
+        if (incoming.get(2)) {
+          {
+            org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+            struct.crcSums = new ArrayList<Integer>(_list13.size);
+            int _elem14;
+            for (int _i15 = 0; _i15 < _list13.size; ++_i15)
+            {
+              _elem14 = iprot.readI32();
+              struct.crcSums.add(_elem14);
+            }
+          }
+          struct.setCrcSumsIsSet(true);
         }
       }
     }
@@ -6978,13 +7136,13 @@ public class ImageServer {
             case 3: // REQUESTED_BLOCKS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
-                  struct.requestedBlocks = new ArrayList<Integer>(_list8.size);
-                  int _elem9;
-                  for (int _i10 = 0; _i10 < _list8.size; ++_i10)
+                  org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
+                  struct.requestedBlocks = new ArrayList<Integer>(_list16.size);
+                  int _elem17;
+                  for (int _i18 = 0; _i18 < _list16.size; ++_i18)
                   {
-                    _elem9 = iprot.readI32();
-                    struct.requestedBlocks.add(_elem9);
+                    _elem17 = iprot.readI32();
+                    struct.requestedBlocks.add(_elem17);
                   }
                   iprot.readListEnd();
                 }
@@ -7022,9 +7180,9 @@ public class ImageServer {
           oprot.writeFieldBegin(REQUESTED_BLOCKS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.requestedBlocks.size()));
-            for (int _iter11 : struct.requestedBlocks)
+            for (int _iter19 : struct.requestedBlocks)
             {
-              oprot.writeI32(_iter11);
+              oprot.writeI32(_iter19);
             }
             oprot.writeListEnd();
           }
@@ -7067,9 +7225,9 @@ public class ImageServer {
         if (struct.isSetRequestedBlocks()) {
           {
             oprot.writeI32(struct.requestedBlocks.size());
-            for (int _iter12 : struct.requestedBlocks)
+            for (int _iter20 : struct.requestedBlocks)
             {
-              oprot.writeI32(_iter12);
+              oprot.writeI32(_iter20);
             }
           }
         }
@@ -7089,13 +7247,13 @@ public class ImageServer {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-            struct.requestedBlocks = new ArrayList<Integer>(_list13.size);
-            int _elem14;
-            for (int _i15 = 0; _i15 < _list13.size; ++_i15)
+            org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+            struct.requestedBlocks = new ArrayList<Integer>(_list21.size);
+            int _elem22;
+            for (int _i23 = 0; _i23 < _list21.size; ++_i23)
             {
-              _elem14 = iprot.readI32();
-              struct.requestedBlocks.add(_elem14);
+              _elem22 = iprot.readI32();
+              struct.requestedBlocks.add(_elem22);
             }
           }
           struct.setRequestedBlocksIsSet(true);
