@@ -20,7 +20,7 @@ import java.util.zip.CRC32;
 public class CRCFile
 {
 	private File file;
-	public final List<Integer> crcSums = null;
+	private List<Integer> crcSums = null;
 
 	/**
 	 * Loads a crcFile from file
@@ -109,5 +109,9 @@ public class CRCFile
 			return 0;
 
 		return crcSums.get( blockNumber );
+	}
+	
+	public List<Integer> getCrcSums() {
+		return this.crcSums;
 	}
 }
