@@ -378,7 +378,10 @@ public class Uploader
 	public void close()
 	{
 		try {
-			this.satelliteSocket.close();
+			if (satelliteSocket != null) {
+				this.satelliteSocket.close();
+				satelliteSocket = null;
+			}
 			if (dataFromServer != null) dataFromServer.close();
 			if (dataToServer != null) dataToServer.close();
 		} catch ( IOException e ) {

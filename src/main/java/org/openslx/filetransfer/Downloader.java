@@ -290,6 +290,7 @@ public class Downloader
 			this.close();
 		} catch ( Exception e ) {
 			e.printStackTrace();
+			this.close();
 			return false;
 		}
 		return true;
@@ -330,6 +331,7 @@ public class Downloader
 			e.printStackTrace();
 			log.info( "Reading RANGE " + getStartOfRange() + ":" + getEndOfRange()
 					+ " of file failed..." );
+			this.close();
 			return false;
 		} finally {
 			if (file != null) {
@@ -372,7 +374,10 @@ public class Downloader
 	public void close()
 	{
 		try {
-			this.satelliteSocket.close();
+			if (satelliteSocket != null) {
+				this.satelliteSocket.close();
+				satelliteSocket = null;
+			}
 			if (dataFromServer != null) dataFromServer.close();
 			if (dataToServer != null) dataToServer.close();
 		} catch ( IOException e ) {
