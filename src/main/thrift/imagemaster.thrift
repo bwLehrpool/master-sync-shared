@@ -125,6 +125,8 @@ service ImageServer {
 	
 	string startServerAuthentication(1:string organization) throws (1: ServerAuthenticationException failure),
 	
+	bool isServerAuthenticated(1:string serverSessionId),
+	
 	ServerSessionData serverAuthenticate(1:string organization, 2:binary challengeResponse) throws (1:ServerAuthenticationException failure),
 	
 	UploadInfos submitImage(1:string serverSessionId, 2:ImageData imageDescription, 3:list<i32> crcSums) throws (1:AuthorizationException failure, 2: ImageDataException failure2, 3: UploadException failure3),
@@ -132,4 +134,3 @@ service ImageServer {
 	DownloadInfos getImage(1:UUID uuid, 2:string serverSessionId, 3:list<i32> requestedBlocks) throws (1:AuthorizationException failure, 2: ImageDataException failure2),
 
 }
-
