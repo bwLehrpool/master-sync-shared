@@ -108,8 +108,20 @@ public class Downloader
 			byte[] data = sendToken.getBytes( StandardCharsets.UTF_8 );
 			dataToServer.writeByte( data.length );
 			dataToServer.write( data );
+		} catch ( SocketTimeoutException ste ) {
+			ste.printStackTrace();
+			log.info( "Socket timeout occured ... close connection." );
+			this.close();
 		} catch ( IOException e ) {
 			e.printStackTrace();
+			readMetaData();
+			if (ERROR != null) {
+				if (ERROR == "timeout") {
+					log.info( "Socket timeout occured ... close connection." );
+					this.close();
+				}
+			}
+			log.info( "Sending TOKEN in Downloader failed..." );
 			return false;
 		}
 		return true;
@@ -132,8 +144,20 @@ public class Downloader
 			byte[] data = sendRange.getBytes( StandardCharsets.UTF_8 );
 			dataToServer.writeByte( data.length );
 			dataToServer.write( data );
+		} catch ( SocketTimeoutException ste ) {
+			ste.printStackTrace();
+			log.info( "Socket timeout occured ... close connection." );
+			this.close();
 		} catch ( IOException e ) {
 			e.printStackTrace();
+			readMetaData();
+			if (ERROR != null) {
+				if (ERROR == "timeout") {
+					log.info( "Socket timeout occured ... close connection." );
+					this.close();
+				}
+			}
+			log.info( "Sending RANGE in Uploader failed..." );
 			return false;
 		}
 		return true;
@@ -256,7 +280,6 @@ public class Downloader
 					if ( splitted[1] != null )
 						ERROR = splitted[1];
 					System.err.println( "ERROR: " + ERROR );
-					this.close();
 					return false;
 				}
 			}
@@ -290,7 +313,7 @@ public class Downloader
 			while ( hasRead < length ) {
 				int ret = dataFromServer.read( incoming, 0, Math.min( length - hasRead, incoming.length ) );
 				if ( ret == -1 ) {
-					System.out.println( "Error occured in Downloader.readBinary(),"
+					log.info( "Error occured in Downloader.readBinary(),"
 							+ " while reading binary." );
 					return false;
 				}
@@ -301,10 +324,12 @@ public class Downloader
 		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
 			sendErrorCode( "timeout" );
-			log.info( "Socket timeout occured in Downloader." );
+			log.info( "Socket timeout occured ... close connection." );
 			this.close();
 		} catch ( Exception e ) {
 			e.printStackTrace();
+			log.info( "Reading RANGE " + getStartOfRange() + ":" + getEndOfRange()
+					+ " of file failed..." );
 			return false;
 		} finally {
 			if (file != null) {
