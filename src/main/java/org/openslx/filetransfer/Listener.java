@@ -5,11 +5,7 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
-import org.slf4j.LoggerFactory;
-
-// TODO: (all files) apply formatting using strg+shift+f *after* importing scheme from ./extras/
 
 public class Listener extends Thread
 {
@@ -54,7 +50,6 @@ public class Listener extends Thread
 			while ( !isInterrupted() ) {
 				SSLSocket connectionSocket = (SSLSocket)welcomeSocket.accept();
 				connectionSocket.setSoTimeout( 2000 ); // 2 second timeout enough? Maybe even use a small thread pool for handling accepted connections
-				// TODO: Handle SocketTimeoutException for all reads and writes in Downloader and Uploader
 
 				byte[] b = new byte[ 1 ];
 				int length = connectionSocket.getInputStream().read( b );
@@ -62,7 +57,7 @@ public class Listener extends Thread
 				System.out.println( "Length (Listener): " + length );
 
 				if ( b[0] == U ) {
-					log.info( "recognized U --> starting Downloader" ); // TODO: Use Logger (see masterserver code for example)
+					log.info( "recognized U --> starting Downloader" );
 					// --> start Downloader(socket).
 					Downloader d = new Downloader( connectionSocket );
 					incomingEvent.incomingDownloader( d );

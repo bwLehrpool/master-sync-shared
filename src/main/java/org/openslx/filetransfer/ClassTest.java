@@ -14,8 +14,6 @@
  * If master receives token "D" --> start Uploader(socket)
  */
 
-// TODO Björn Hagemeister. SSLConfiguration!
-
 package org.openslx.filetransfer;
 
 import java.io.File;

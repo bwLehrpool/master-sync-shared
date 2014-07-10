@@ -25,7 +25,7 @@ public class Downloader
 	private String RANGE = null;
 	private String outputFilename = null;
 	private String ERROR = null;
-	
+
 	private static Logger log = Logger.getLogger( Downloader.class );
 
 	/***********************************************************************/
@@ -39,7 +39,6 @@ public class Downloader
 	public Downloader( String ip, int port, SSLContext context )
 	{
 		try {
-			// TODO: Remove old code, that's why we have git.. ;)
 			// create socket.
 			sslSocketFactory = context.getSocketFactory();
 
@@ -115,8 +114,8 @@ public class Downloader
 		} catch ( IOException e ) {
 			e.printStackTrace();
 			readMetaData();
-			if (ERROR != null) {
-				if (ERROR == "timeout") {
+			if ( ERROR != null ) {
+				if ( ERROR == "timeout" ) {
 					log.info( "Socket timeout occured ... close connection." );
 					this.close();
 				}
@@ -151,8 +150,8 @@ public class Downloader
 		} catch ( IOException e ) {
 			e.printStackTrace();
 			readMetaData();
-			if (ERROR != null) {
-				if (ERROR == "timeout") {
+			if ( ERROR != null ) {
+				if ( ERROR == "timeout" ) {
 					log.info( "Socket timeout occured ... close connection." );
 					this.close();
 				}
@@ -283,9 +282,9 @@ public class Downloader
 					return false;
 				}
 			}
-		} catch (SocketTimeoutException ste) {
+		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
-			sendErrorCode("timeout");
+			sendErrorCode( "timeout" );
 			log.info( "Socket Timeout occured in Downloader." );
 			this.close();
 		} catch ( Exception e ) {
@@ -306,8 +305,7 @@ public class Downloader
 		RandomAccessFile file = null;
 		try {
 			int length = getDiffOfRange();
-			byte[] incoming = new byte[ 4000 ]; // TODO: größe Problematisch, abchecken.
-
+			byte[] incoming = new byte[ 4000 ]; 
 			int hasRead = 0;
 			file = new RandomAccessFile( new File( outputFilename ), "rw" );
 			file.seek( getStartOfRange() );
@@ -334,7 +332,7 @@ public class Downloader
 			this.close();
 			return false;
 		} finally {
-			if (file != null) {
+			if ( file != null ) {
 				try {
 					file.close();
 				} catch ( IOException e ) {
@@ -374,12 +372,14 @@ public class Downloader
 	public void close()
 	{
 		try {
-			if (satelliteSocket != null) {
+			if ( satelliteSocket != null ) {
 				this.satelliteSocket.close();
 				satelliteSocket = null;
 			}
-			if (dataFromServer != null) dataFromServer.close();
-			if (dataToServer != null) dataToServer.close();
+			if ( dataFromServer != null )
+				dataFromServer.close();
+			if ( dataToServer != null )
+				dataToServer.close();
 		} catch ( IOException e ) {
 			e.printStackTrace();
 		}

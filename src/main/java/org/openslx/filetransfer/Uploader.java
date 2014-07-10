@@ -95,7 +95,7 @@ public class Uploader
 			byte[] data = sendToken.getBytes( StandardCharsets.UTF_8 );
 			dataToServer.writeByte( data.length );
 			dataToServer.write( data );
-		} catch ( SocketTimeoutException ste) {
+		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
 			log.info( "Socket timeout occured ... close connection." );
 			this.close();
@@ -103,8 +103,8 @@ public class Uploader
 		} catch ( IOException e ) {
 			e.printStackTrace();
 			readMetaData();
-			if (ERROR != null) {
-				if (ERROR == "timeout") {
+			if ( ERROR != null ) {
+				if ( ERROR == "timeout" ) {
 					log.info( "Socket timeout occured ... close connection." );
 					this.close();
 				}
@@ -149,8 +149,8 @@ public class Uploader
 		} catch ( IOException e ) {
 			e.printStackTrace();
 			readMetaData();
-			if (ERROR != null) {
-				if (ERROR == "timeout") {
+			if ( ERROR != null ) {
+				if ( ERROR == "timeout" ) {
 					log.info( "Socket timeout occured ... close connection." );
 					this.close();
 				}
@@ -274,9 +274,9 @@ public class Uploader
 					return false;
 				}
 			}
-		} catch (SocketTimeoutException ste) {
+		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
-			sendErrorCode("timeout");
+			sendErrorCode( "timeout" );
 			log.info( "Socket timeout occured ... close connection" );
 			this.close();
 		} catch ( Exception e ) {
@@ -296,15 +296,14 @@ public class Uploader
 	{
 		RandomAccessFile file = null;
 		try {
-			 file = new RandomAccessFile( new File( filename ), "r" );
+			file = new RandomAccessFile( new File( filename ), "r" );
 
 			if ( getStartOfRange() == -1 ) {
-				file.close();
 				return false;
 			}
 			file.seek( getStartOfRange() );
 
-			byte[] data = new byte[ 255 ]; // TODO: problematische Größe.
+			byte[] data = new byte[ 255 ];
 			int hasRead = 0;
 			int length = getDiffOfRange();
 			System.out.println( "diff of Range: " + length );
@@ -318,8 +317,7 @@ public class Uploader
 				hasRead += ret;
 				dataToServer.write( data, 0, ret );
 			}
-			file.close();
-		} catch ( SocketTimeoutException ste) {
+		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
 			sendErrorCode( "timeout" );
 			log.info( "Socket timeout occured ... close connection." );
@@ -328,8 +326,8 @@ public class Uploader
 		} catch ( IOException ioe ) {
 			ioe.printStackTrace();
 			readMetaData();
-			if (ERROR != null) {
-				if (ERROR == "timeout") {
+			if ( ERROR != null ) {
+				if ( ERROR == "timeout" ) {
 					log.info( "Socket timeout occured ... close connection." );
 					this.close();
 				}
@@ -378,12 +376,14 @@ public class Uploader
 	public void close()
 	{
 		try {
-			if (satelliteSocket != null) {
+			if ( satelliteSocket != null ) {
 				this.satelliteSocket.close();
 				satelliteSocket = null;
 			}
-			if (dataFromServer != null) dataFromServer.close();
-			if (dataToServer != null) dataToServer.close();
+			if ( dataFromServer != null )
+				dataFromServer.close();
+			if ( dataToServer != null )
+				dataToServer.close();
 		} catch ( IOException e ) {
 			e.printStackTrace();
 		}
