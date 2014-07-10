@@ -5,11 +5,14 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+
+import org.apache.log4j.Logger;
 
 public class Downloader
 {
@@ -22,6 +25,8 @@ public class Downloader
 	private String RANGE = null;
 	private String outputFilename = null;
 	private String ERROR = null;
+	
+	private static Logger log = Logger.getLogger( Downloader.class );
 
 	/***********************************************************************/
 	/**
@@ -212,7 +217,7 @@ public class Downloader
 				// First get length.
 				dataFromServer.read( incoming, 0, 1 );
 				int length = incoming[0];
-				System.out.println( "length: " + length );
+				System.out.println( "length (downloader): " + length );
 
 				if ( length == 0 )
 					break;
@@ -255,6 +260,11 @@ public class Downloader
 					return false;
 				}
 			}
+		} catch (SocketTimeoutException ste) {
+			ste.printStackTrace();
+			sendErrorCode("timeout");
+			log.info( "Socket Timeout occured in Downloader." );
+			this.close();
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			return false;
@@ -269,29 +279,41 @@ public class Downloader
 	 */
 	public Boolean readBinary()
 	{
+		RandomAccessFile file = null;
 		try {
 			int length = getDiffOfRange();
 			byte[] incoming = new byte[ 4000 ]; // TODO: größe Problematisch, abchecken.
 
 			int hasRead = 0;
+			file = new RandomAccessFile( new File( outputFilename ), "rw" );
+			file.seek( getStartOfRange() );
 			while ( hasRead < length ) {
-				int ret = dataFromServer.read( incoming, hasRead, length - hasRead );
+				int ret = dataFromServer.read( incoming, 0, Math.min( length - hasRead, incoming.length ) );
 				if ( ret == -1 ) {
 					System.out.println( "Error occured in Downloader.readBinary(),"
 							+ " while reading binary." );
 					return false;
 				}
 				hasRead += ret;
-			}
+				file.write( incoming, 0, ret );
 
-			RandomAccessFile file;
-			file = new RandomAccessFile( new File( outputFilename ), "rw" );
-			file.seek( getStartOfRange() );
-			file.write( incoming, 0, length );
-			file.close();
+			}
+		} catch ( SocketTimeoutException ste ) {
+			ste.printStackTrace();
+			sendErrorCode( "timeout" );
+			log.info( "Socket timeout occured in Downloader." );
+			this.close();
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			return false;
+		} finally {
+			if (file != null) {
+				try {
+					file.close();
+				} catch ( IOException e ) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return true;
 	}
@@ -311,6 +333,7 @@ public class Downloader
 			dataToServer.write( data );
 		} catch ( IOException e ) {
 			e.printStackTrace();
+			this.close();
 			return false;
 		}
 		return true;
@@ -325,6 +348,8 @@ public class Downloader
 	{
 		try {
 			this.satelliteSocket.close();
+			if (dataFromServer != null) dataFromServer.close();
+			if (dataToServer != null) dataToServer.close();
 		} catch ( IOException e ) {
 			e.printStackTrace();
 		}

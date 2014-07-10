@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -16,6 +17,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+import org.apache.log4j.Logger;
+
 public class Uploader
 {
 	// Some member variables.
@@ -26,6 +29,8 @@ public class Uploader
 	private String TOKEN = null;
 	private String RANGE = null;
 	private String ERROR = null;
+
+	private static Logger log = Logger.getLogger( Uploader.class );
 
 	/***********************************************************************/
 	/**
@@ -92,6 +97,7 @@ public class Uploader
 			dataToServer.write( data );
 		} catch ( IOException e ) {
 			e.printStackTrace();
+			
 			return false;
 		}
 		return true;
@@ -202,7 +208,7 @@ public class Uploader
 
 				// First get length.
 				dataFromServer.read( incoming, 0, 1 );
-				int length = incoming[0];
+				int length = incoming[0] & 0xFF;
 				// System.out.println("length: " + length);
 
 				if ( length == 0 ) // Stop if 0 was read.
@@ -245,7 +251,12 @@ public class Uploader
 					return false;
 				}
 			}
-		} catch ( IOException e ) {
+		} catch (SocketTimeoutException ste) {
+			ste.printStackTrace();
+			sendErrorCode("timeout");
+			log.info( "Socket Timeout occured in Downloader." );
+			this.close();
+		} catch ( Exception e ) {
 			e.printStackTrace();
 			return false;
 		}
@@ -274,7 +285,7 @@ public class Uploader
 			int length = getDiffOfRange();
 			System.out.println( "diff of Range: " + length );
 			while ( hasRead < length ) {
-				int ret = file.read( data, hasRead, length - hasRead );
+				int ret = file.read( data, 0, Math.min( length - hasRead, data.length ) );
 				if ( ret == -1 ) {
 					System.out.println( "Error occured in Uploader.sendFile(),"
 							+ " while reading from File to send." );
@@ -282,10 +293,10 @@ public class Uploader
 					return false;
 				}
 				hasRead += ret;
+				dataToServer.write( data, 0, ret );
 			}
 			file.close();
 
-			dataToServer.write( data, 0, length );
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			return false;
@@ -308,6 +319,7 @@ public class Uploader
 			dataToServer.write( data );
 		} catch ( IOException e ) {
 			e.printStackTrace();
+			this.close();
 			return false;
 		}
 		return true;
@@ -315,13 +327,15 @@ public class Uploader
 
 	/***********************************************************************/
 	/**
-	 * Method for closing connection, if download has finished.
+	 * Method for closing connection, if upload has finished.
 	 * 
 	 */
 	public void close()
 	{
 		try {
 			this.satelliteSocket.close();
+			if (dataFromServer != null) dataFromServer.close();
+			if (dataToServer != null) dataToServer.close();
 		} catch ( IOException e ) {
 			e.printStackTrace();
 		}

@@ -31,8 +31,18 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.LoggerFactory;
+
 public class ClassTest
 {
+	static {
+		// This is a temporary workaround for this annoying log4j error msg.
+		// Initializing the logger before anything else is done.
+		BasicConfigurator.configure();
+		LoggerFactory.getLogger( "ROOT" );
+	}
+
 	public static void main( String[] args ) throws Exception
 	{
 		String pathToKeyStore =

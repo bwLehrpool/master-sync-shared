@@ -25,13 +25,6 @@ public class Listener extends Thread
 
 	private static Logger log = Logger.getLogger( Listener.class );
 
-	static {
-		// This is a temporary workaround for this annoying log4j error msg.
-		// Initializing the logger before anything else is done.
-		BasicConfigurator.configure();
-		LoggerFactory.getLogger( "ROOT" );
-	}
-
 	/***********************************************************************/
 	/**
 	 * Constructor for class Listener, which gets an instance of IncomingEvent.
@@ -66,7 +59,7 @@ public class Listener extends Thread
 				byte[] b = new byte[ 1 ];
 				int length = connectionSocket.getInputStream().read( b );
 
-				System.out.println( length );
+				System.out.println( "Length (Listener): " + length );
 
 				if ( b[0] == U ) {
 					log.info( "recognized U --> starting Downloader" ); // TODO: Use Logger (see masterserver code for example)
