@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.zip.CRC32;
 
 /**
- * Represents a crcfile
- * 
- * @author nils
- * 
+ * Represents a crc file
  */
 public class CRCFile
 {
@@ -46,11 +43,28 @@ public class CRCFile
 		DataOutputStream dos = new DataOutputStream( fos );
 
 		for ( Integer sum : listOfCrcSums ) {
-			dos.writeInt( Integer.reverseBytes( sum.intValue() ) );		// save byte-reversed integers to match right order in crc file
+			dos.writeInt( sum.intValue() );		// save byte-reversed integers to match right order in crc file	TODO: is that right?
 		}
 
 		dos.close();
 		return new CRCFile( filename );
+	}
+
+	/**
+	 * Checks if given sums are valid.
+	 * @param listOfCrcSums
+	 * @return
+	 */
+	public static boolean sumsAreValid( List<Integer> listOfCrcSums )
+	{
+		byte[] bytes = new byte[ ( listOfCrcSums.size() - 1 ) * Integer.SIZE / 8 ];
+		int masterSum = listOfCrcSums.remove( 0 );
+		for ( int i = 0; i < bytes.length; i++ ) {
+			bytes[i] = listOfCrcSums.remove( 0 ).byteValue();
+		}
+		CRC32 crcCalc = new CRC32();
+		crcCalc.update( bytes );
+		return ( masterSum == Integer.reverseBytes( (int)crcCalc.getValue() ) );
 	}
 
 	/**
@@ -90,7 +104,8 @@ public class CRCFile
 	 */
 	public int getCRCSum( int blockNumber ) throws IOException
 	{
-		if (crcSums == null) loadSums();
+		if ( crcSums == null )
+			loadSums();
 
 		if ( blockNumber < 0 )
 			return 0;
@@ -99,17 +114,20 @@ public class CRCFile
 
 		return crcSums.get( blockNumber );
 	}
-	
+
 	/**
 	 * Returns the loaded crcSums.
+	 * 
 	 * @return The loaded crcSums
 	 * @throws IOException If the crcSums could not be loaded from file
 	 */
-	public List<Integer> getCrcSums() throws IOException {
-		if (crcSums == null) loadSums();
+	public List<Integer> getCrcSums() throws IOException
+	{
+		if ( crcSums == null )
+			loadSums();
 		return this.crcSums;
 	}
-	
+
 	private void loadSums() throws IOException
 	{
 		// the crcSums were not read yet

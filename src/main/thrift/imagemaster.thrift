@@ -26,6 +26,7 @@ enum AuthenticationError {
 enum ServerAuthenticationError {
 	GENERIC_ERROR,
 	INVALID_ORGANIZATION,
+	INVALID_KEY,
 	BANNED_NETWORK
 }
 
@@ -62,7 +63,7 @@ exception ImageDataException {
 }
 
 exception UploadException {
-	1: UploadError numberm
+	1: UploadError number,
 	2: string message
 }
 

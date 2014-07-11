@@ -1,75 +1,79 @@
 package org.openslx.imagemaster.crcchecker;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.zip.CRC32;
-
-import org.apache.log4j.Logger;
 
 public class CRCChecker
 {
-
-	private static Logger log = Logger.getLogger( CRCChecker.class );
 	private static final int blockSize = 16 * 1024 * 1024;
 
+	private ImageFile imageFile;
+	private CRCFile crcFile;
+
+	private byte[] block = new byte[ blockSize ];	// array that is used to read the blocks
+
 	/**
-	 * Checks the CRC sum of given blocks of a given imageFile against a given crcFile.
-	 * The caller needs to make sure that block that are going to be checked are complete!
+	 * Initialize a crc checker with an image file and a crc file.
 	 * 
-	 * @param imageFile The imageFile to check
-	 * @param crcFile The crcFile to check against
-	 * @param blocks The blocks to check
-	 * @return List of blocks where the crc matches, or null if the crc file is corrupted
-	 * @throws IOException When crc file could not be read
+	 * @param imageFile The image file to check
+	 * @param crcFile The crc file to check against
 	 */
-	public static List<Integer> checkCRC( String imageFile, String crcFile, List<Integer> blocks ) throws IOException
+	public CRCChecker( String imageFilename, String crcFilename )
 	{
-		List<Integer> result = new LinkedList<>();
+		this.imageFile = new ImageFile( imageFilename, blockSize );
+	}
 
-		ImageFile image = new ImageFile( imageFile, blockSize );
-		CRCFile crc = new CRCFile( crcFile );
+	public void done()
+	{
+		imageFile.close();
+	}
 
-		log.debug( "Checking image file: '" + imageFile + "' with crc file: '" + crcFile + "'" );
+	public boolean hasValidCrcFile()
+	{
 		try {
-			if ( !crc.isValid() )
-				return null;
-			// TODO: also return null if the crc file contains the wrong number of checksums (only makes sense if the upload is complete)
+			return crcFile.isValid();
+		} catch ( IOException e ) {
+			return false;
+		}
+	}
+
+	/**
+	 * Checks a chosen block against the crc file.
+	 * 
+	 * @param block The block to check
+	 * @return Whether the block was valid or not
+	 * @throws IOException When image or crc file could not be read.
+	 */
+	public boolean checkBlock( int blockNumber ) throws IOException
+	{
+		if ( !this.hasValidCrcFile() )
+			return false;
+
+		int length;
+		try {
+			length = imageFile.getBlock( blockNumber, block );
+		} catch ( IOException e ) {
+			throw new IOException( "Could not read image file", e );
+		}
+
+		if ( length <= 0 )
+			return false;
+
+		CRC32 crcCalc = new CRC32();
+		if ( length == blockSize ) {
+			crcCalc.update( block );
+		} else {
+			crcCalc.update( block, 0, length );
+		}
+
+		int crcSum = Integer.reverseBytes( (int)crcCalc.getValue() );
+		int crcSumFromFile;
+		try {
+			crcSumFromFile = crcFile.getCRCSum( blockNumber );
 		} catch ( IOException e ) {
 			throw new IOException( "Could not read CRC file", e );
 		}
 
-		// check all blocks
-		byte[] block = new byte[blockSize];
-		for ( Integer blockN : blocks ) {
-			try {
-				image.getBlock( blockN, block );
-			} catch ( IOException e ) {
-				throw new IOException( "Could not read image file", e );
-			}
-
-			if ( block == null )
-				continue; // some error occured (for example: someone tried to check a block that is not in the file)
-
-			// check this block with CRC32
-			// add this block to result, if check was ok with CRC file
-
-			CRC32 crcCalc = new CRC32();
-			crcCalc.update( block );
-			int crcSum = Integer.reverseBytes( (int)crcCalc.getValue() );
-			int crcSumFromFile;
-			try {
-				crcSumFromFile = crc.getCRCSum( blockN );
-			} catch ( IOException e ) {
-				throw new IOException( "Could not read CRC file", e );
-			}
-
-			if ( crcSum == crcSumFromFile )
-				result.add( blockN );
-			else
-				log.debug( blockN + " was invalid" );
-		}
-
-		return result;
+		return ( crcSum == crcSumFromFile );
 	}
 }
