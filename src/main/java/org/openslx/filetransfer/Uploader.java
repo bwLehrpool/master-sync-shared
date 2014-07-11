@@ -233,7 +233,6 @@ public class Uploader
 				// First get length.
 				dataFromServer.read( incoming, 0, 1 );
 				int length = incoming[0] & 0xFF;
-				// System.out.println("length: " + length);
 
 				if ( length == 0 ) // Stop if 0 was read.
 					break;
@@ -246,17 +245,14 @@ public class Uploader
 				while ( hasRead < length ) {
 					int ret = dataFromServer.read( incoming, hasRead, length - hasRead );
 					if ( ret == -1 ) {
-						System.out.println( "Error in reading Metadata occured!" );
+						log.info( "Error in reading Metadata occured!" );
 						return false;
 					}
 					hasRead += ret;
 				}
 				String data = new String( incoming, "UTF-8" );
-				// System.out.println(data);
 
 				String[] splitted = data.split( "=" );
-				// System.out.println("splitted[0]: " + splitted[0]);
-				// System.out.println("splitted[1]: " + splitted[1]);
 				if ( splitted[0] != null && splitted[0].equals( "TOKEN" ) ) {
 					if ( splitted[1] != null )
 						TOKEN = splitted[1];
@@ -303,14 +299,14 @@ public class Uploader
 			}
 			file.seek( getStartOfRange() );
 
-			byte[] data = new byte[ 255 ];
+			byte[] data = new byte[ 4000 ];
 			int hasRead = 0;
 			int length = getDiffOfRange();
-			System.out.println( "diff of Range: " + length );
+//			System.out.println( "diff of Range: " + length );
 			while ( hasRead < length ) {
 				int ret = file.read( data, 0, Math.min( length - hasRead, data.length ) );
 				if ( ret == -1 ) {
-					System.out.println( "Error occured in Uploader.sendFile(),"
+					log.info( "Error occured in Uploader.sendFile(),"
 							+ " while reading from File to send." );
 					return false;
 				}

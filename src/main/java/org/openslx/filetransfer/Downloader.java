@@ -238,9 +238,15 @@ public class Downloader
 				byte[] incoming = new byte[ 255 ]; // TODO: problematische Größe.
 
 				// First get length.
-				dataFromServer.read( incoming, 0, 1 );
-				int length = incoming[0];
-				System.out.println( "length (downloader): " + length );
+				int retLengthByte;
+				retLengthByte = dataFromServer.read( incoming, 0, 1 );
+				if (retLengthByte != 1) {
+					this.close();
+					return false;
+				}
+				
+				int length = incoming[0] & 0xFF;
+				log.info( "length (downloader): " + length );
 
 				if ( length == 0 )
 					break;
@@ -253,7 +259,7 @@ public class Downloader
 				while ( hasRead < length ) {
 					int ret = dataFromServer.read( incoming, hasRead, length - hasRead );
 					if ( ret == -1 ) {
-						System.out.println( "Error occured while reading Metadata." );
+						log.info( "Error occured while reading Metadata." );
 						return false;
 					}
 					hasRead += ret;
@@ -287,6 +293,7 @@ public class Downloader
 			sendErrorCode( "timeout" );
 			log.info( "Socket Timeout occured in Downloader." );
 			this.close();
+			return false;
 		} catch ( Exception e ) {
 			e.printStackTrace();
 			this.close();
@@ -311,6 +318,7 @@ public class Downloader
 			file.seek( getStartOfRange() );
 			while ( hasRead < length ) {
 				int ret = dataFromServer.read( incoming, 0, Math.min( length - hasRead, incoming.length ) );
+				// log.info("hasRead: " + hasRead + " length: " + length + " ret: " + ret); 
 				if ( ret == -1 ) {
 					log.info( "Error occured in Downloader.readBinary(),"
 							+ " while reading binary." );

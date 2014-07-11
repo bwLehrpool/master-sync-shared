@@ -54,7 +54,7 @@ public class Listener extends Thread
 				byte[] b = new byte[ 1 ];
 				int length = connectionSocket.getInputStream().read( b );
 
-				System.out.println( "Length (Listener): " + length );
+				log.info( "Length (Listener): " + length );
 
 				if ( b[0] == U ) {
 					log.info( "recognized U --> starting Downloader" );
