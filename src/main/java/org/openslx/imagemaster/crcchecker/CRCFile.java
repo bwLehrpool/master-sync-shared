@@ -39,9 +39,9 @@ public class CRCFile
 	 * @param filename Where to save the created crc file
 	 * @throws IOException If it's not possible to write the file
 	 */
-	public CRCFile( List<Integer> listOfCrcSums, String filename ) throws IOException
+	public static CRCFile writeCrcFile( List<Integer> listOfCrcSums, String filename ) throws IOException
 	{
-		this.file = new File( filename );
+		File file = new File( filename );
 		FileOutputStream fos = new FileOutputStream( file );
 		DataOutputStream dos = new DataOutputStream( fos );
 
@@ -50,7 +50,7 @@ public class CRCFile
 		}
 
 		dos.close();
-		this.crcSums = listOfCrcSums;
+		return new CRCFile( filename );
 	}
 
 	/**
