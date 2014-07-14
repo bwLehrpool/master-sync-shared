@@ -18,9 +18,10 @@ public class CRCChecker
 	 * @param imageFile The image file to check
 	 * @param crcFile The crc file to check against
 	 */
-	public CRCChecker( String imageFilename, String crcFilename )
+	public CRCChecker( ImageFile imageFile, CRCFile crcFile)
 	{
-		this.imageFile = new ImageFile( imageFilename, blockSize );
+		this.imageFile = imageFile;
+		this.crcFile = crcFile;
 	}
 
 	public void done()

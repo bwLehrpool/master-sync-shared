@@ -15,7 +15,7 @@ import java.util.zip.CRC32;
  */
 public class CRCFile
 {
-	private File file;
+	private File file = null;
 	private List<Integer> crcSums = null;
 
 	/**
@@ -26,6 +26,16 @@ public class CRCFile
 	public CRCFile( String filename )
 	{
 		this.file = new File( filename );
+	}
+
+	/**
+	 * Creates a crc file which is not on the drive.
+	 * 
+	 * @param crcSums
+	 */
+	public CRCFile( List<Integer> crcSums )
+	{
+		this.crcSums = crcSums;
 	}
 
 	/**
@@ -52,6 +62,7 @@ public class CRCFile
 
 	/**
 	 * Checks if given sums are valid.
+	 * 
 	 * @param listOfCrcSums
 	 * @return
 	 */
@@ -76,23 +87,13 @@ public class CRCFile
 	 */
 	public boolean isValid() throws IOException
 	{
-		FileInputStream fis = new FileInputStream( file );
-		DataInputStream dis = new DataInputStream( fis );
-
-		int crcSum = dis.readInt();
-
-		CRC32 crcCalc = new CRC32();
-
-		byte[] bytes = new byte[ (int)file.length() - Integer.SIZE / 8 ];	// byte array with length of the file minus the first crc sum (=4byte)
-		fis.read( bytes );
-		crcCalc.update( bytes );
-
-		dis.close();
-
-		if ( crcSum == Integer.reverseBytes( (int)crcCalc.getValue() ) )
-			return true;
-		else
-			return false;
+		if ( file == null ) {
+			return sumsAreValid( this.crcSums );
+		} else {
+			if ( crcSums == null )
+				loadSums();
+			return sumsAreValid( this.crcSums );
+		}
 	}
 
 	/**
@@ -109,10 +110,10 @@ public class CRCFile
 
 		if ( blockNumber < 0 )
 			return 0;
-		if ( blockNumber > crcSums.size() - 1 )
+		if ( blockNumber > crcSums.size() - 2 )
 			return 0;
 
-		return crcSums.get( blockNumber );
+		return crcSums.get( blockNumber + 1 );
 	}
 
 	/**
@@ -130,13 +131,13 @@ public class CRCFile
 
 	private void loadSums() throws IOException
 	{
+		if ( crcSums != null )
+			return;
 		// the crcSums were not read yet
 		DataInputStream dis = new DataInputStream( new FileInputStream( file ) );
 		crcSums = new ArrayList<>();
 		for ( int i = 0; i < file.length() / 4; i++ ) {
-			int s = dis.readInt();
-			if ( i > 0 )
-				crcSums.add( s );	// skip the first crcSum because it's the sum over the crcFile
+			crcSums.add( dis.readInt() );
 		}
 		dis.close();
 	}
