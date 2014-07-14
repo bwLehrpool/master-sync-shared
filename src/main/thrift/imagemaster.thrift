@@ -108,7 +108,7 @@ struct ImageData {
 	4: Date imageCreateTime,
 	5: Date imageUpdateTime,
 	6: string imageOwner,
-	7: string conentOperatingSystem,
+	7: string contentOperatingSystem,
 	8: bool statusIsValid,
 	9: bool statusIsDeleted,
 	10: string imageShortDescription,
