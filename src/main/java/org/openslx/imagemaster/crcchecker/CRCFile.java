@@ -6,15 +6,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
+
+import org.apache.log4j.Logger;
 
 /**
  * Represents a crc file
  */
 public class CRCFile
 {
+	private static Logger log = Logger.getLogger( CRCFile.class );
 	private File file = null;
 	private List<Integer> crcSums = null;
 
@@ -68,13 +72,24 @@ public class CRCFile
 	 */
 	public static boolean sumsAreValid( List<Integer> listOfCrcSums )
 	{
-		byte[] bytes = new byte[ ( listOfCrcSums.size() - 1 ) * Integer.SIZE / 8 ];
+		if ( listOfCrcSums == null || listOfCrcSums.isEmpty() )
+			return false;
+
+		byte[] bytes = new byte[ ( listOfCrcSums.size() - 2 ) * Integer.SIZE / 8 ];
+		log.debug( listOfCrcSums.size() + ",  " + bytes.length );
 		int masterSum = listOfCrcSums.remove( 0 );
-		for ( int i = 0; i < bytes.length; i++ ) {
-			bytes[i] = listOfCrcSums.remove( 0 ).byteValue();
+		byte[] bytesOfInt;
+		for ( int i = 0; i < ( listOfCrcSums.size() - 1 ); i++ ) {
+			bytesOfInt = ByteBuffer.allocate( 4 ).putInt( listOfCrcSums.get( 0 ) ).array(); // get the bytes of this integer
+			bytes[4 * i] = bytesOfInt[0];
+			bytes[4 * i + 1] = bytesOfInt[1];
+			bytes[4 * i + 2] = bytesOfInt[2];
+			bytes[4 * i + 3] = bytesOfInt[3];
 		}
 		CRC32 crcCalc = new CRC32();
 		crcCalc.update( bytes );
+		log.debug( masterSum );
+		log.debug( Integer.reverseBytes( (int)crcCalc.getValue() ) );
 		return ( masterSum == Integer.reverseBytes( (int)crcCalc.getValue() ) );
 	}
 
@@ -140,5 +155,12 @@ public class CRCFile
 			crcSums.add( dis.readInt() );
 		}
 		dis.close();
+	}
+	
+	public int getMasterSum() throws IOException
+	{
+		if ( crcSums == null )
+			loadSums();
+		return this.crcSums.get( 0 );
 	}
 }
