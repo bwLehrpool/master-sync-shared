@@ -41,6 +41,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
   private static final org.apache.thrift.protocol.TField TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("token", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("port", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField MISSING_BLOCKS_FIELD_DESC = new org.apache.thrift.protocol.TField("missingBlocks", org.apache.thrift.protocol.TType.LIST, (short)3);
+  private static final org.apache.thrift.protocol.TField ALL_BLOCKS_VALID_FIELD_DESC = new org.apache.thrift.protocol.TField("allBlocksValid", org.apache.thrift.protocol.TType.BOOL, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -51,12 +52,14 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
   public String token; // required
   public int port; // required
   public List<Integer> missingBlocks; // required
+  public boolean allBlocksValid; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     TOKEN((short)1, "token"),
     PORT((short)2, "port"),
-    MISSING_BLOCKS((short)3, "missingBlocks");
+    MISSING_BLOCKS((short)3, "missingBlocks"),
+    ALL_BLOCKS_VALID((short)4, "allBlocksValid");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -77,6 +80,8 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
           return PORT;
         case 3: // MISSING_BLOCKS
           return MISSING_BLOCKS;
+        case 4: // ALL_BLOCKS_VALID
+          return ALL_BLOCKS_VALID;
         default:
           return null;
       }
@@ -118,6 +123,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
 
   // isset id assignments
   private static final int __PORT_ISSET_ID = 0;
+  private static final int __ALLBLOCKSVALID_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -129,6 +135,8 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     tmpMap.put(_Fields.MISSING_BLOCKS, new org.apache.thrift.meta_data.FieldMetaData("missingBlocks", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32))));
+    tmpMap.put(_Fields.ALL_BLOCKS_VALID, new org.apache.thrift.meta_data.FieldMetaData("allBlocksValid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UploadInfos.class, metaDataMap);
   }
@@ -139,13 +147,16 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
   public UploadInfos(
     String token,
     int port,
-    List<Integer> missingBlocks)
+    List<Integer> missingBlocks,
+    boolean allBlocksValid)
   {
     this();
     this.token = token;
     this.port = port;
     setPortIsSet(true);
     this.missingBlocks = missingBlocks;
+    this.allBlocksValid = allBlocksValid;
+    setAllBlocksValidIsSet(true);
   }
 
   /**
@@ -161,6 +172,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
       List<Integer> __this__missingBlocks = new ArrayList<Integer>(other.missingBlocks);
       this.missingBlocks = __this__missingBlocks;
     }
+    this.allBlocksValid = other.allBlocksValid;
   }
 
   public UploadInfos deepCopy() {
@@ -173,6 +185,8 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     setPortIsSet(false);
     this.port = 0;
     this.missingBlocks = null;
+    setAllBlocksValidIsSet(false);
+    this.allBlocksValid = false;
   }
 
   public String getToken() {
@@ -261,6 +275,29 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     }
   }
 
+  public boolean isAllBlocksValid() {
+    return this.allBlocksValid;
+  }
+
+  public UploadInfos setAllBlocksValid(boolean allBlocksValid) {
+    this.allBlocksValid = allBlocksValid;
+    setAllBlocksValidIsSet(true);
+    return this;
+  }
+
+  public void unsetAllBlocksValid() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ALLBLOCKSVALID_ISSET_ID);
+  }
+
+  /** Returns true if field allBlocksValid is set (has been assigned a value) and false otherwise */
+  public boolean isSetAllBlocksValid() {
+    return EncodingUtils.testBit(__isset_bitfield, __ALLBLOCKSVALID_ISSET_ID);
+  }
+
+  public void setAllBlocksValidIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ALLBLOCKSVALID_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TOKEN:
@@ -287,6 +324,14 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
       }
       break;
 
+    case ALL_BLOCKS_VALID:
+      if (value == null) {
+        unsetAllBlocksValid();
+      } else {
+        setAllBlocksValid((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -300,6 +345,9 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
 
     case MISSING_BLOCKS:
       return getMissingBlocks();
+
+    case ALL_BLOCKS_VALID:
+      return Boolean.valueOf(isAllBlocksValid());
 
     }
     throw new IllegalStateException();
@@ -318,6 +366,8 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
       return isSetPort();
     case MISSING_BLOCKS:
       return isSetMissingBlocks();
+    case ALL_BLOCKS_VALID:
+      return isSetAllBlocksValid();
     }
     throw new IllegalStateException();
   }
@@ -362,6 +412,15 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
         return false;
     }
 
+    boolean this_present_allBlocksValid = true;
+    boolean that_present_allBlocksValid = true;
+    if (this_present_allBlocksValid || that_present_allBlocksValid) {
+      if (!(this_present_allBlocksValid && that_present_allBlocksValid))
+        return false;
+      if (this.allBlocksValid != that.allBlocksValid)
+        return false;
+    }
+
     return true;
   }
 
@@ -383,6 +442,11 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     list.add(present_missingBlocks);
     if (present_missingBlocks)
       list.add(missingBlocks);
+
+    boolean present_allBlocksValid = true;
+    list.add(present_allBlocksValid);
+    if (present_allBlocksValid)
+      list.add(allBlocksValid);
 
     return list.hashCode();
   }
@@ -425,6 +489,16 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetAllBlocksValid()).compareTo(other.isSetAllBlocksValid());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAllBlocksValid()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.allBlocksValid, other.allBlocksValid);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -463,6 +537,10 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     } else {
       sb.append(this.missingBlocks);
     }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("allBlocksValid:");
+    sb.append(this.allBlocksValid);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -543,6 +621,14 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // ALL_BLOCKS_VALID
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.allBlocksValid = iprot.readBool();
+              struct.setAllBlocksValidIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -578,6 +664,9 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
         }
         oprot.writeFieldEnd();
       }
+      oprot.writeFieldBegin(ALL_BLOCKS_VALID_FIELD_DESC);
+      oprot.writeBool(struct.allBlocksValid);
+      oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -605,7 +694,10 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
       if (struct.isSetMissingBlocks()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetAllBlocksValid()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetToken()) {
         oprot.writeString(struct.token);
       }
@@ -621,12 +713,15 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
           }
         }
       }
+      if (struct.isSetAllBlocksValid()) {
+        oprot.writeBool(struct.allBlocksValid);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, UploadInfos struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.token = iprot.readString();
         struct.setTokenIsSet(true);
@@ -647,6 +742,10 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
           }
         }
         struct.setMissingBlocksIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.allBlocksValid = iprot.readBool();
+        struct.setAllBlocksValidIsSet(true);
       }
     }
   }
