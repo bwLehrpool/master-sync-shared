@@ -256,17 +256,17 @@ public class Uploader
 				if ( splitted[0] != null && splitted[0].equals( "TOKEN" ) ) {
 					if ( splitted[1] != null )
 						TOKEN = splitted[1];
-					System.out.println( "TOKEN: " + TOKEN );
+					log.info( "TOKEN: " + TOKEN );
 				}
 				else if ( splitted[0].equals( "RANGE" ) ) {
 					if ( splitted[1] != null )
 						RANGE = splitted[1];
-					System.out.println( "RANGE: " + RANGE );
+					log.info( "RANGE: " + RANGE );
 				}
 				else if ( splitted[0].equals( "ERROR" ) ) {
 					if ( splitted[1] != null )
 						ERROR = splitted[1];
-					System.err.println( "ERROR: " + ERROR );
+					log.info( "ERROR: " + ERROR );
 					return false;
 				}
 			}
