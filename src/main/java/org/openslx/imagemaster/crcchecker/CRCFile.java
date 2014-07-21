@@ -11,14 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
 
-import org.apache.log4j.Logger;
-
 /**
  * Represents a crc file
  */
 public class CRCFile
 {
-	private static Logger log = Logger.getLogger( CRCFile.class );
 	private File file = null;
 	private List<Integer> crcSums = null;
 
@@ -57,7 +54,7 @@ public class CRCFile
 		DataOutputStream dos = new DataOutputStream( fos );
 
 		for ( Integer sum : listOfCrcSums ) {
-			dos.writeInt( sum.intValue() );		// save byte-reversed integers to match right order in crc file	TODO: is that right?
+			dos.writeInt( sum.intValue() );
 		}
 
 		dos.close();
@@ -74,13 +71,12 @@ public class CRCFile
 	{
 		if ( listOfCrcSums == null || listOfCrcSums.isEmpty() )
 			return false;
-
-		byte[] bytes = new byte[ ( listOfCrcSums.size() - 2 ) * Integer.SIZE / 8 ];
-		log.debug( listOfCrcSums.size() + ",  " + bytes.length );
 		int masterSum = listOfCrcSums.remove( 0 );
 		byte[] bytesOfInt;
-		for ( int i = 0; i < ( listOfCrcSums.size() - 1 ); i++ ) {
-			bytesOfInt = ByteBuffer.allocate( 4 ).putInt( listOfCrcSums.get( 0 ) ).array(); // get the bytes of this integer
+		int size = listOfCrcSums.size();
+		byte[] bytes = new byte[ size * Integer.SIZE / 8 ];
+		for ( int i = 0; i < size; i++ ) {
+			bytesOfInt = ByteBuffer.allocate( 4 ).putInt( listOfCrcSums.remove( 0 ) ).array(); // get the bytes of this integer
 			bytes[4 * i] = bytesOfInt[0];
 			bytes[4 * i + 1] = bytesOfInt[1];
 			bytes[4 * i + 2] = bytesOfInt[2];
@@ -88,8 +84,6 @@ public class CRCFile
 		}
 		CRC32 crcCalc = new CRC32();
 		crcCalc.update( bytes );
-		log.debug( masterSum );
-		log.debug( Integer.reverseBytes( (int)crcCalc.getValue() ) );
 		return ( masterSum == Integer.reverseBytes( (int)crcCalc.getValue() ) );
 	}
 

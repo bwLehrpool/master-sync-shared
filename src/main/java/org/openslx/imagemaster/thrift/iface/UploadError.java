@@ -12,7 +12,8 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 public enum UploadError implements org.apache.thrift.TEnum {
-  INVALID_CRC(0);
+  INVALID_CRC(0),
+  BROKEN_BLOCK(1);
 
   private final int value;
 
@@ -35,6 +36,8 @@ public enum UploadError implements org.apache.thrift.TEnum {
     switch (value) {
       case 0:
         return INVALID_CRC;
+      case 1:
+        return BROKEN_BLOCK;
       default:
         return null;
     }

@@ -36,7 +36,8 @@ enum ImageDataError {
 }
 
 enum UploadError {
-	INVALID_CRC
+	INVALID_CRC,
+	BROKEN_BLOCK
 }
 
 exception AuthorizationException {
