@@ -18,6 +18,7 @@ public class CRCFile
 {
 	private File file = null;
 	private List<Integer> crcSums = null;
+	private Boolean valid = null;
 
 	/**
 	 * Loads a crcFile from file
@@ -93,13 +94,16 @@ public class CRCFile
 	 */
 	public boolean isValid() throws IOException
 	{
-		if ( file == null ) {
-			return sumsAreValid( this.crcSums );
-		} else {
-			if ( crcSums == null )
-				loadSums();
-			return sumsAreValid( this.crcSums );
+		if ( valid == null ) {
+			if ( file == null ) {
+				valid = sumsAreValid( this.crcSums );
+			} else {
+				if ( crcSums == null )
+					loadSums();
+				valid = sumsAreValid( this.crcSums );
+			}
 		}
+		return valid;
 	}
 
 	/**
