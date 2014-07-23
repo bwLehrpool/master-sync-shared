@@ -71,19 +71,16 @@ public class CRCFile
 	{
 		if ( listOfCrcSums == null || listOfCrcSums.isEmpty() )
 			return false;
-		int masterSum = listOfCrcSums.remove( 0 );
-		byte[] bytesOfInt;
+
+		int masterSum = listOfCrcSums.get( 0 );		// don't use the first sum for the calculation because it is the sum over the other sums
 		int size = listOfCrcSums.size();
-		byte[] bytes = new byte[ size * Integer.SIZE / 8 ];
-		for ( int i = 0; i < size; i++ ) {
-			bytesOfInt = ByteBuffer.allocate( 4 ).putInt( listOfCrcSums.remove( 0 ) ).array(); // get the bytes of this integer
-			bytes[4 * i] = bytesOfInt[0];
-			bytes[4 * i + 1] = bytesOfInt[1];
-			bytes[4 * i + 2] = bytesOfInt[2];
-			bytes[4 * i + 3] = bytesOfInt[3];
-		}
+
 		CRC32 crcCalc = new CRC32();
-		crcCalc.update( bytes );
+
+		for ( int i = 1; i < size; i++ ) {
+			crcCalc.update( ByteBuffer.allocate( 4 ).putInt( listOfCrcSums.get( i ) ).array() ); // update the crc calculator with the next 4 bytes of the integer
+		}
+
 		return ( masterSum == Integer.reverseBytes( (int)crcCalc.getValue() ) );
 	}
 
@@ -150,7 +147,7 @@ public class CRCFile
 		}
 		dis.close();
 	}
-	
+
 	public int getMasterSum() throws IOException
 	{
 		if ( crcSums == null )
