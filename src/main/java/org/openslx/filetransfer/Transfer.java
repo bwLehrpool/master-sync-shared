@@ -19,7 +19,7 @@ public abstract class Transfer
 	protected final DataOutputStream dataToServer;
 	protected final DataInputStream dataFromServer;
 	protected String TOKEN = null;
-	protected int[] RANGE = null;
+	protected long[] RANGE = null;
 	protected String ERROR = null;
 
 	protected final Logger log;
@@ -46,7 +46,7 @@ public abstract class Transfer
 		sslSocketFactory = null;
 	}
 
-	protected boolean sendRange( int startOffset, int endOffset )
+	protected boolean sendRange( long startOffset, long endOffset )
 	{
 		if ( RANGE != null ) {
 			log.warn( "Range already set!" );
@@ -126,10 +126,10 @@ public abstract class Transfer
 			return false;
 		}
 		String parts[] = range.split( ":", 2 );
-		int ret[] = new int[ 2 ];
+		long ret[] = new long[ 2 ];
 		try {
-			ret[0] = Integer.parseInt( parts[0] );
-			ret[1] = Integer.parseInt( parts[1] );
+			ret[0] = Long.parseLong( parts[0] );
+			ret[1] = Long.parseLong( parts[1] );
 		} catch ( Throwable t ) {
 			log.warn( "Not parsable range: '" + range + "'" );
 			return false;
@@ -148,7 +148,7 @@ public abstract class Transfer
 	 * 
 	 * @return
 	 */
-	public int getStartOfRange()
+	public long getStartOfRange()
 	{
 		if ( RANGE != null ) {
 			return RANGE[0];
@@ -162,7 +162,7 @@ public abstract class Transfer
 	 * 
 	 * @return
 	 */
-	public int getEndOfRange()
+	public long getEndOfRange()
 	{
 		if ( RANGE != null ) {
 			return RANGE[1];
@@ -178,8 +178,7 @@ public abstract class Transfer
 	 */
 	public int getDiffOfRange()
 	{
-		int diff = Math.abs( getEndOfRange() - getStartOfRange() );
-		return diff;
+		return (int) Math.abs( getEndOfRange() - getStartOfRange() );
 	}
 
 	/***********************************************************************/

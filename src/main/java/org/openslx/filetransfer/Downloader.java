@@ -74,7 +74,7 @@ public class Downloader extends Transfer
 	 * @param endOffset end offset where to end the transfer (exclusive)
 	 * @return success or failure
 	 */
-	public boolean requestRange( int startOffset, int endOffset )
+	public boolean requestRange( long startOffset, long endOffset )
 	{
 		return super.sendRange( startOffset, endOffset );
 	}

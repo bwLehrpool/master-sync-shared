@@ -51,7 +51,7 @@ public class Uploader extends Transfer
 	 * @param endOffset end offset in file (exclusive)
 	 * @return
 	 */
-	public boolean prepareSendRange( int startOffset, int endOffset )
+	public boolean prepareSendRange( long startOffset, long endOffset )
 	{
 		return super.sendRange( startOffset, endOffset );
 	}
