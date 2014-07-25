@@ -3,6 +3,8 @@ package org.openslx.imagemaster.crcchecker;
 import java.io.IOException;
 import java.util.zip.CRC32;
 
+import org.apache.log4j.Logger;
+
 public class CRCChecker
 {
 	private static final int blockSize = 16 * 1024 * 1024;
@@ -74,7 +76,7 @@ public class CRCChecker
 		} catch ( IOException e ) {
 			throw new IOException( "Could not read CRC file", e );
 		}
-
+		
 		return ( crcSum == crcSumFromFile );
 	}
 }

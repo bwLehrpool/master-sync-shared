@@ -6,35 +6,36 @@ public class ClassTest
 {
 	public static void main( String[] args ) throws IOException
 	{
-		String filename = "/home/nils/win98-dp-demo-de.vmdk.r1";
-		final int bs = 16 * 1024 * 1024;
+		if ( args.length != 2 ) {
+			System.out.println( "Usage: filename crcfilename" );
+			return;
+		}
+		String filename = args[0];
+		String filenameCrc = args[1];
+		final int blockSize = 16 * 1024 * 1024;
 
-		CRCFile f = new CRCFile( filename.concat( ".crc" ) );
-		System.out.println( f.getMasterSum() );
+		CRCFile f = new CRCFile( filenameCrc );
+		System.out.println( "Master sum: '" + f.getMasterSum() + "'" );
 		System.out.println( f.getCrcSums() );
-		System.out.println( f.isValid() );
+		System.out.println( "CRC file is '" + ( ( f.isValid() ) ? "valid" : "invalid" ) + "'" );
 
-		System.out.println( CRCFile.sumsAreValid( f.getCrcSums() ) );
+		ImageFile imageFile = new ImageFile( filename, blockSize );
+		CRCChecker crcFile = new CRCChecker( imageFile, f );
 
-		ImageFile i = new ImageFile( filename, bs );
+		int blocks = getNumberOfBlocks( imageFile.length(), blockSize );
+		for ( int i = 0; i < blocks; i++ ) {
+			System.out.println( "Block\t" + i + "\tis  '" + ( ( crcFile.checkBlock( i ) ) ? "valid" : "invalid" ) + "'" );
+		}
 
-		CRCChecker c = new CRCChecker( i, f );
-		System.out.println( c.checkBlock( 0 ) );
-		System.out.println( c.checkBlock( 1 ) );
-		System.out.println( c.checkBlock( 2 ) );
-		System.out.println( c.checkBlock( 3 ) );
-		System.out.println( c.checkBlock( 4 ) );
-		System.out.println( c.checkBlock( 5 ) );
-		System.out.println( c.checkBlock( 6 ) );
-		System.out.println( c.checkBlock( 7 ) );
-		System.out.println( c.checkBlock( 8 ) );
-		System.out.println( c.checkBlock( 9 ) );
-		System.out.println( c.checkBlock( 10 ) );
-		System.out.println( c.checkBlock( 11 ) );
-		System.out.println( c.checkBlock( 12 ) );
-		System.out.println( c.checkBlock( 13 ) );
-		System.out.println( c.checkBlock( 14 ) );
-		System.out.println( c.checkBlock( 15 ) );
-		c.done();
+		crcFile.done();
 	}
+
+	public static int getNumberOfBlocks( long fileSize, int blockSize )
+	{
+		int blocks = (int) ( fileSize / blockSize );
+		if ( fileSize % blockSize != 0 )
+			blocks++;
+		return blocks;
+	}
+
 }

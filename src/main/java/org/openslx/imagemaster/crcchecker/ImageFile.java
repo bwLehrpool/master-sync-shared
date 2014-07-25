@@ -44,7 +44,7 @@ public class ImageFile
 		}
 
 		file.seek( (long)block * blockSize );
-		
+
 		return file.read( array );
 	}
 
@@ -60,8 +60,11 @@ public class ImageFile
 	public void close()
 	{
 		try {
+			if ( file == null )
+				return;
 			file.close();
 			file = null;
-		} catch ( IOException e ) {/* Can't do anything about it.*/}
+		} catch ( IOException e ) {/* Can't do anything about it.*/
+		}
 	}
 }

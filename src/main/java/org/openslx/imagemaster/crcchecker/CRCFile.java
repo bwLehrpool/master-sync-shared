@@ -117,6 +117,8 @@ public class CRCFile
 	{
 		if ( crcSums == null )
 			loadSums();
+		if (crcSums.size() == 0)
+			return 0;
 
 		if ( blockNumber < 0 )
 			return 0;
@@ -136,6 +138,8 @@ public class CRCFile
 	{
 		if ( crcSums == null )
 			loadSums();
+		if (crcSums.size() == 0)
+			return new ArrayList<>();
 		return this.crcSums;
 	}
 
@@ -156,6 +160,8 @@ public class CRCFile
 	{
 		if ( crcSums == null )
 			loadSums();
+		if (crcSums.size() == 0)
+			return 0;
 		return this.crcSums.get( 0 );
 	}
 }
