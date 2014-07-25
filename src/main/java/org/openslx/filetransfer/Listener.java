@@ -1,5 +1,7 @@
 package org.openslx.filetransfer;
 
+import java.io.IOException;
+
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -42,10 +44,10 @@ public class Listener extends Thread
 	 */
 	private void listen()
 	{
+		SSLServerSocket welcomeSocket = null;
 		try {
 			SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
-			SSLServerSocket welcomeSocket =
-					(SSLServerSocket)sslServerSocketFactory.createServerSocket( this.port );
+			welcomeSocket = (SSLServerSocket)sslServerSocketFactory.createServerSocket( this.port );
 
 			while ( !isInterrupted() ) {
 				SSLSocket connectionSocket = (SSLSocket)welcomeSocket.accept();
@@ -54,27 +56,33 @@ public class Listener extends Thread
 				byte[] b = new byte[ 1 ];
 				int length = connectionSocket.getInputStream().read( b );
 
-				log.info( "Length (Listener): " + length );
+				log.debug( "Length (Listener): " + length );
 
 				if ( b[0] == U ) {
-					log.info( "recognized U --> starting Downloader" );
+					log.debug( "recognized U --> starting Downloader" );
 					// --> start Downloader(socket).
 					Downloader d = new Downloader( connectionSocket );
 					incomingEvent.incomingDownloader( d );
 				}
 				else if ( b[0] == D ) {
-					log.info( "recognized D --> starting Uploader" );
+					log.debug( "recognized D --> starting Uploader" );
 					// --> start Uploader(socket).
 					Uploader u = new Uploader( connectionSocket );
 					incomingEvent.incomingUploader( u );
 				}
 				else {
-					log.info( "Got invalid option ... close connection" );
+					log.debug( "Got invalid option ... close connection" );
 					connectionSocket.close();
 				}
 			}
 		} catch ( Exception e ) {
 			e.printStackTrace();	// same as writing to System.err.println(e.toString).
+		} finally {
+			try {
+				welcomeSocket.close();
+			} catch (IOException e) {
+				// Nothing we can do
+			}
 		}
 	}
 
