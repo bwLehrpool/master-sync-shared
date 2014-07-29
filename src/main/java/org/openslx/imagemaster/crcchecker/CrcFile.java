@@ -14,7 +14,7 @@ import java.util.zip.CRC32;
 /**
  * Represents a crc file
  */
-public class CRCFile
+public class CrcFile
 {
 	private File file = null;
 	private List<Integer> crcSums = null;
@@ -25,7 +25,7 @@ public class CRCFile
 	 * 
 	 * @param filename
 	 */
-	public CRCFile( String filename )
+	public CrcFile( String filename )
 	{
 		this.file = new File( filename );
 	}
@@ -35,7 +35,7 @@ public class CRCFile
 	 * 
 	 * @param crcSums
 	 */
-	public CRCFile( List<Integer> crcSums )
+	public CrcFile( List<Integer> crcSums )
 	{
 		this.crcSums = crcSums;
 	}
@@ -43,14 +43,19 @@ public class CRCFile
 	/**
 	 * Creates a new crc file with the given sums.
 	 * The first crc sum in the list needs to be the sum over the other sums.
+	 * Deletes existing files with the same name.
 	 * 
 	 * @param listOfCrcSums The list of the crc sums that are going into the crc file
 	 * @param filename Where to save the created crc file
 	 * @throws IOException If it's not possible to write the file
 	 */
-	public static CRCFile writeCrcFile( List<Integer> listOfCrcSums, String filename ) throws IOException
+	public static CrcFile writeCrcFile( List<Integer> listOfCrcSums, String filename ) throws IOException
 	{
 		File file = new File( filename );
+		
+		if ( file.exists() )
+			file.delete();
+		
 		FileOutputStream fos = new FileOutputStream( file );
 		DataOutputStream dos = new DataOutputStream( fos );
 
@@ -59,7 +64,7 @@ public class CRCFile
 		}
 
 		dos.close();
-		return new CRCFile( filename );
+		return new CrcFile( filename );
 	}
 
 	/**
@@ -117,7 +122,7 @@ public class CRCFile
 	{
 		if ( crcSums == null )
 			loadSums();
-		if (crcSums.size() == 0)
+		if ( crcSums.size() == 0 )
 			return 0;
 
 		if ( blockNumber < 0 )
@@ -138,7 +143,7 @@ public class CRCFile
 	{
 		if ( crcSums == null )
 			loadSums();
-		if (crcSums.size() == 0)
+		if ( crcSums.size() == 0 )
 			return new ArrayList<>();
 		return this.crcSums;
 	}
@@ -160,7 +165,7 @@ public class CRCFile
 	{
 		if ( crcSums == null )
 			loadSums();
-		if (crcSums.size() == 0)
+		if ( crcSums.size() == 0 )
 			return 0;
 		return this.crcSums.get( 0 );
 	}

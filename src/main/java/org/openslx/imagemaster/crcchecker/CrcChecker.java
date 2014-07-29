@@ -3,12 +3,12 @@ package org.openslx.imagemaster.crcchecker;
 import java.io.IOException;
 import java.util.zip.CRC32;
 
-public class CRCChecker
+public class CrcChecker
 {
 	private static final int blockSize = 16 * 1024 * 1024;
 
 	private ImageFile imageFile;
-	private CRCFile crcFile;
+	private CrcFile crcFile;
 
 	private byte[] block = new byte[ blockSize ];	// array that is used to read the blocks
 
@@ -18,7 +18,7 @@ public class CRCChecker
 	 * @param imageFile The image file to check
 	 * @param crcFile The crc file to check against
 	 */
-	public CRCChecker( ImageFile imageFile, CRCFile crcFile )
+	public CrcChecker( ImageFile imageFile, CrcFile crcFile )
 	{
 		this.imageFile = imageFile;
 		this.crcFile = crcFile;
@@ -54,7 +54,7 @@ public class CRCChecker
 		try {
 			length = imageFile.getBlock( blockNumber, block );
 		} catch ( IOException e ) {
-			throw new IOException( "Could not read image file", e );
+			throw new IOException( "image", e );
 		}
 
 		if ( length <= 0 )
@@ -72,7 +72,7 @@ public class CRCChecker
 		try {
 			crcSumFromFile = crcFile.getCRCSum( blockNumber );
 		} catch ( IOException e ) {
-			throw new IOException( "Could not read CRC file", e );
+			throw new IOException( "crc", e );
 		}
 
 		return ( crcSum == crcSumFromFile );

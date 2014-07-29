@@ -14,13 +14,13 @@ public class ClassTest
 		String filenameCrc = args[1];
 		final int blockSize = 16 * 1024 * 1024;
 
-		CRCFile f = new CRCFile( filenameCrc );
+		CrcFile f = new CrcFile( filenameCrc );
 		System.out.println( "Master sum: '" + f.getMasterSum() + "'" );
 		System.out.println( f.getCrcSums() );
 		System.out.println( "CRC file is '" + ( ( f.isValid() ) ? "valid" : "invalid" ) + "'" );
 
 		ImageFile imageFile = new ImageFile( filename, blockSize );
-		CRCChecker crcFile = new CRCChecker( imageFile, f );
+		CrcChecker crcFile = new CrcChecker( imageFile, f );
 
 		int blocks = getNumberOfBlocks( imageFile.length(), blockSize );
 		for ( int i = 0; i < blocks; i++ ) {
