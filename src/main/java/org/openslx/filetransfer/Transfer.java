@@ -178,7 +178,7 @@ public abstract class Transfer
 	 */
 	public int getDiffOfRange()
 	{
-		return (int) Math.abs( getEndOfRange() - getStartOfRange() );
+		return (int)Math.abs( getEndOfRange() - getStartOfRange() );
 	}
 
 	/***********************************************************************/
@@ -303,9 +303,8 @@ public abstract class Transfer
 	public void close()
 	{
 		try {
-			if ( satelliteSocket != null ) {
+			if ( satelliteSocket != null )
 				this.satelliteSocket.close();
-			}
 			if ( dataFromServer != null )
 				dataFromServer.close();
 			if ( dataToServer != null )
