@@ -200,12 +200,12 @@ public abstract class Transfer
 				log.debug("dataFromServer.available() : " + dataFromServer.available());
 				retLengthByte = dataFromServer.read( incoming, 0, 1 );
 				// If .read() didn't return 1, it was not able to read first byte.
-//				if ( retLengthByte != 1 ) {
-//					log.warn( "Error occured while reading Metadata." );
-//					log.debug( " retLenthByte was not 1! retLengthByte = " + retLengthByte);
-//					this.close();
-//					return false;
-//				}
+				if ( retLengthByte != 1 ) {
+					log.warn( "Error occured while reading Metadata." );
+					log.debug( " retLenthByte was not 1! retLengthByte = " + retLengthByte);
+					this.close();
+					return false;
+				}
 
 				int length = incoming[0] & 0xFF;
 				log.debug( "length (downloader): " + length );
