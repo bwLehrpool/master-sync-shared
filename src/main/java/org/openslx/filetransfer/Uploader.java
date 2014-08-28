@@ -178,11 +178,11 @@ public class Uploader
 	 * 
 	 * @return
 	 */
-	public int getStartOfRange()
+	public long getStartOfRange()
 	{
 		if ( RANGE != null ) {
 			String[] splitted = RANGE.split( ":" );
-			return Integer.parseInt( splitted[0] );
+			return Long.parseLong( splitted[0] );
 		}
 		return -1;
 	}
@@ -193,11 +193,11 @@ public class Uploader
 	 * 
 	 * @return
 	 */
-	public int getEndOfRange()
+	public long getEndOfRange()
 	{
 		if ( RANGE != null ) {
 			String[] splitted = RANGE.split( ":" );
-			return Integer.parseInt( splitted[1] );
+			return Long.parseLong( splitted[1] );
 		}
 		return -1;
 	}
@@ -213,7 +213,7 @@ public class Uploader
 		if ( getStartOfRange() == -1 || getEndOfRange() == -1 ) {
 			return -1;
 		}
-		int diff = Math.abs( getEndOfRange() - getStartOfRange() );
+		int diff = Math.abs( (int) ( getEndOfRange() - getStartOfRange() ) );
 		return diff;
 	}
 
@@ -302,7 +302,7 @@ public class Uploader
 			byte[] data = new byte[ 4000 ];
 			int hasRead = 0;
 			int length = getDiffOfRange();
-//			System.out.println( "diff of Range: " + length );
+			//			System.out.println( "diff of Range: " + length );
 			while ( hasRead < length ) {
 				int ret = file.read( data, 0, Math.min( length - hasRead, data.length ) );
 				if ( ret == -1 ) {

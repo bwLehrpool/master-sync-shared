@@ -135,7 +135,7 @@ public class Downloader
 	 * @param a
 	 * @param b
 	 */
-	public Boolean sendRange( int a, int b )
+	public Boolean sendRange( long a, long b )
 	{
 		try {
 			RANGE = a + ":" + b;
@@ -188,11 +188,11 @@ public class Downloader
 	 * 
 	 * @return
 	 */
-	public int getStartOfRange()
+	public long getStartOfRange()
 	{
 		if ( RANGE != null ) {
 			String[] splitted = RANGE.split( ":" );
-			return Integer.parseInt( splitted[0] );
+			return Long.parseLong( splitted[0] );
 		}
 		return -1;
 	}
@@ -220,7 +220,7 @@ public class Downloader
 	 */
 	public int getDiffOfRange()
 	{
-		int diff = Math.abs( getEndOfRange() - getStartOfRange() );
+		int diff = Math.abs( (int) ( getEndOfRange() - getStartOfRange() ) );
 		return diff;
 	}
 
@@ -240,11 +240,11 @@ public class Downloader
 				// First get length.
 				int retLengthByte;
 				retLengthByte = dataFromServer.read( incoming, 0, 1 );
-				if (retLengthByte != 1) {
+				if ( retLengthByte != 1 ) {
 					this.close();
 					return false;
 				}
-				
+
 				int length = incoming[0] & 0xFF;
 				log.info( "length (downloader): " + length );
 
@@ -312,7 +312,7 @@ public class Downloader
 		RandomAccessFile file = null;
 		try {
 			int length = getDiffOfRange();
-			byte[] incoming = new byte[ 4000 ]; 
+			byte[] incoming = new byte[ 4000 ];
 			int hasRead = 0;
 			file = new RandomAccessFile( new File( outputFilename ), "rw" );
 			file.seek( getStartOfRange() );
