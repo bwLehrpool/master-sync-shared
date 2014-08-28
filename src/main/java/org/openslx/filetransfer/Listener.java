@@ -12,10 +12,6 @@ import org.apache.log4j.Logger;
 public class Listener extends Thread
 {
 	private IncomingEvent incomingEvent;
-	/*
-	private static String pathToKeyStore =
-			"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
-			*/
 	private SSLContext context;
 	private int port;
 	final private int U = 85; // hex - code 'U' = 85.
@@ -80,7 +76,7 @@ public class Listener extends Thread
 		} finally {
 			try {
 				welcomeSocket.close();
-			} catch (IOException e) {
+			} catch ( IOException e ) {
 				// Nothing we can do
 			}
 		}
