@@ -197,6 +197,7 @@ public abstract class Transfer
 
 				// First get length.
 				int retLengthByte;
+				log.debug("dataFromServer.available() : " + dataFromServer.available());
 				retLengthByte = dataFromServer.read( incoming, 0, 1 );
 				// If .read() didn't return 1, it was not able to read first byte.
 				if ( retLengthByte != 1 ) {
