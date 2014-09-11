@@ -79,7 +79,7 @@ public class ClassTest
 		d.setOutputFilename( "output.txt" );
 		d.sendToken( "xyz" );
 		while ( d.readMetaData() )
-			d.readBinary();
+			d.receiveBinary();
 
 		/*
 		String pathToKeyStore =
@@ -145,6 +145,6 @@ class Test implements IncomingEvent
 	{
 		downloader.setOutputFilename( "output.txt" );
 		while ( downloader.readMetaData() )
-			downloader.readBinary();
+			downloader.receiveBinary();
 	}
 }
