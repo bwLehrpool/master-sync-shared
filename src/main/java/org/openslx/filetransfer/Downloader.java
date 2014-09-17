@@ -107,14 +107,12 @@ public class Downloader extends Transfer
 		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
 			sendErrorCode( "timeout" );
-			log.info( "Socket timeout occured ... close connection." );
-			this.close();
+			this.close( "Socket timeout occured ... close connection." );
 			return false;
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			log.info( "Reading RANGE " + getStartOfRange() + ":" + getEndOfRange()
-					+ " of file failed..." );
-			this.close();
+			this.close( "Reading RANGE " + getStartOfRange() + ":" + getEndOfRange()
+					+ " of file from socket failed..." );
 			return false;
 		} finally {
 			if ( file != null ) {

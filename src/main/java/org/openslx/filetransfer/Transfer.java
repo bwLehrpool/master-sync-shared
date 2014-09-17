@@ -54,17 +54,17 @@ public abstract class Transfer
 		}
 		try {
 			sendKeyValuePair( "RANGE", startOffset + ":" + endOffset );
+			RANGE[0] = startOffset;
+			RANGE[1] = endOffset;
 		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
-			log.info( "Socket timeout occured ... close connection." );
-			this.close();
+			this.close( "Socket timeout occured ... close connection." );
 		} catch ( IOException e ) {
 			e.printStackTrace();
 			readMetaData();
 			if ( ERROR != null ) {
-				if ( ERROR == "timeout" ) {
-					log.info( "Socket timeout occured ... close connection." );
-					this.close();
+				if ( ERROR.equals( "timeout" ) ) {
+					this.close( "Remote Socket timeout occured ... close connection." );
 				}
 			}
 			log.info( "Sending RANGE in Uploader failed..." );
@@ -90,15 +90,13 @@ public abstract class Transfer
 			sendKeyValuePair( "TOKEN", TOKEN );
 		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
-			log.info( "Socket timeout occured ... close connection." );
-			this.close();
+			this.close( "Socket timeout occured ... close connection." );
 		} catch ( IOException e ) {
 			e.printStackTrace();
 			readMetaData();
 			if ( ERROR != null ) {
-				if ( ERROR == "timeout" ) {
-					log.info( "Socket timeout occured ... close connection." );
-					this.close();
+				if ( ERROR.equals( "timeout" ) ) {
+					this.close( "Remote Socket timeout occured ... close connection." );
 				}
 			}
 			log.info( "Sending TOKEN in Downloader failed..." );
@@ -197,13 +195,11 @@ public abstract class Transfer
 
 				// First get length.
 				int retLengthByte;
-				log.debug("dataFromServer.available() : " + dataFromServer.available());
 				retLengthByte = dataFromServer.read( incoming, 0, 1 );
 				// If .read() didn't return 1, it was not able to read first byte.
 				if ( retLengthByte != 1 ) {
-					log.warn( "Error occured while reading Metadata." );
 					log.debug( " retLenthByte was not 1! retLengthByte = " + retLengthByte);
-					this.close();
+					this.close( "Error occured while reading Metadata." );
 					return false;
 				}
 
@@ -221,8 +217,7 @@ public abstract class Transfer
 				while ( hasRead < length ) {
 					int ret = dataFromServer.read( incoming, hasRead, length - hasRead );
 					if ( ret == -1 ) {
-						log.warn( "Error occured while reading Metadata." );
-						this.close();
+						this.close( "Error occured while reading Metadata." );
 						return false;
 					}
 					hasRead += ret;
@@ -237,8 +232,7 @@ public abstract class Transfer
 				}
 				if ( splitted[0].equals( "TOKEN" ) ) {
 					if ( TOKEN != null ) {
-						log.warn( "Received a token when a token is already set!" );
-						this.close();
+						this.close( "Received a token when a token is already set!" );
 						return false;
 					}
 					TOKEN = splitted[1];
@@ -246,7 +240,7 @@ public abstract class Transfer
 				}
 				else if ( splitted[0].equals( "RANGE" ) ) {
 					if ( !parseRange( splitted[1] ) ) {
-						this.close();
+						this.close( "Could not parse RANGE token" );
 						return false;
 					}
 					log.debug( "RANGE: '" + splitted[1] + "'" );
@@ -259,12 +253,11 @@ public abstract class Transfer
 		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
 			sendErrorCode( "timeout" );
-			log.info( "Socket Timeout occured in Downloader." );
-			this.close();
+			this.close( "Socket Timeout occured in readMetaData." );
 			return false;
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			this.close();
+			this.close( e.toString() );
 			return false;
 		}
 		return true;
@@ -289,7 +282,7 @@ public abstract class Transfer
 			sendKeyValuePair( "ERROR", errString );
 		} catch ( IOException e ) {
 			e.printStackTrace();
-			this.close();
+			this.close( e.toString() );
 			return false;
 		}
 		return true;
@@ -300,8 +293,10 @@ public abstract class Transfer
 	 * Method for closing connection, if download has finished.
 	 * 
 	 */
-	public void close()
+	public void close( String error )
 	{
+		if ( error != null )
+			log.info( error );
 		try {
 			if ( satelliteSocket != null )
 				this.satelliteSocket.close();

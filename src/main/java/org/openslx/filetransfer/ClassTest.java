@@ -34,6 +34,10 @@ import org.slf4j.LoggerFactory;
 
 public class ClassTest
 {
+
+	private static String inFile;
+	private static String outFile;
+
 	static {
 		// This is a temporary workaround for this annoying log4j error msg.
 		// Initializing the logger before anything else is done.
@@ -43,9 +47,14 @@ public class ClassTest
 
 	public static void main( String[] args ) throws Exception
 	{
-		String pathToKeyStore =
-				"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
-		char[] passphrase = "test123".toCharArray();
+		if (args.length != 4) {
+			System.out.println("Need 4 argument: <keystore> <passphrase> <infile> <outfile>");
+			System.exit(1);
+		}
+		String pathToKeyStore = args[0];
+		final char[] passphrase = args[1].toCharArray();
+		inFile = args[2];
+		outFile = args[3];
 		KeyStore keystore = KeyStore.getInstance( "JKS" );
 		keystore.load( new FileInputStream( pathToKeyStore ), passphrase );
 		KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
@@ -58,14 +67,7 @@ public class ClassTest
 		Listener listener = new Listener( new Test(), context, 6789 );
 		listener.start();
 
-		Thread.sleep( 5000 );
-
-		String pathToTrustStore =
-				"/home/bjoern/javadev/DataTransfer/mySrvKeyStore.jks";
-
-		passphrase = "test123".toCharArray();
-		keystore = KeyStore.getInstance( "JKS" );
-		keystore.load( new FileInputStream( pathToTrustStore ), passphrase );
+		Thread.sleep( 2000 );
 
 		TrustManagerFactory tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
 		tmf.init( keystore );
@@ -76,7 +78,7 @@ public class ClassTest
 		context.init( null, trustManagers, null );
 
 		Downloader d = new Downloader( "localhost", 6789, context );
-		d.setOutputFilename( "output.txt" );
+		d.setOutputFilename( outFile );
 		d.sendToken( "xyz" );
 		while ( d.readMetaData() )
 			d.receiveBinary();
@@ -112,16 +114,15 @@ public class ClassTest
 		u.sendFile("test.txt");
 		*/
 	}
-}
 
 // Implementing IncomingEvent for testing case.
-class Test implements IncomingEvent
+static class Test implements IncomingEvent
 {
 	public void incomingUploader( Uploader uploader ) throws IOException
 	{
 		RandomAccessFile file;
 		try {
-			file = new RandomAccessFile( new File( "test.txt" ), "r" );
+			file = new RandomAccessFile( new File( inFile ), "r" );
 		} catch ( FileNotFoundException e ) {
 			e.printStackTrace();
 			return;
@@ -132,19 +133,23 @@ class Test implements IncomingEvent
 
 		int diff = 0;
 		for ( int i = 0; ( i + 254 ) < length; i += 254 ) {
-			uploader.sendRange( i, i + 254 );
-			uploader.sendFile( "test.txt" );
+			if ( !uploader.sendRange( i, i + 254 ) || !uploader.sendFile( inFile ) ) {
+				System.out.println("FAIL");
+				return;
+			}
 			diff = (int) ( length - i );
 		}
 
 		uploader.sendRange( (int) ( length - diff ), (int)length );
-		uploader.sendFile( "test.txt" );
+		uploader.sendFile( inFile );
 	}
 
 	public void incomingDownloader( Downloader downloader ) throws IOException
 	{
-		downloader.setOutputFilename( "output.txt" );
+		downloader.setOutputFilename( outFile );
 		while ( downloader.readMetaData() )
 			downloader.receiveBinary();
 	}
+}
+
 }

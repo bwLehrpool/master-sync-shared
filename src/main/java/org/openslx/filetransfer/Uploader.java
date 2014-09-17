@@ -64,14 +64,14 @@ public class Uploader extends Transfer
 	 */
 	public boolean sendFile( String filename )
 	{
+		if ( getStartOfRange() == -1 ) {
+			this.close( "sendFile called when no range is set" );
+			return false;
+		}
+
 		RandomAccessFile file = null;
 		try {
 			file = new RandomAccessFile( new File( filename ), "r" );
-
-			if ( getStartOfRange() == -1 ) {
-				this.close();
-				return false;
-			}
 			file.seek( getStartOfRange() );
 
 			byte[] data = new byte[ 64000 ];
@@ -81,9 +81,8 @@ public class Uploader extends Transfer
 			while ( hasRead < length ) {
 				int ret = file.read( data, 0, Math.min( length - hasRead, data.length ) );
 				if ( ret == -1 ) {
-					log.warn( "Error occured in Uploader.sendFile(),"
+					this.close( "Error occured in Uploader.sendFile(),"
 							+ " while reading from File to send." );
-					this.close();
 					return false;
 				}
 				hasRead += ret;
@@ -92,25 +91,23 @@ public class Uploader extends Transfer
 		} catch ( SocketTimeoutException ste ) {
 			ste.printStackTrace();
 			sendErrorCode( "timeout" );
-			log.warn( "Socket timeout occured ... close connection." );
-			this.close();
+			this.close( "Socket timeout occured ... close connection." );
 			return false;
 		} catch ( IOException ioe ) {
 			ioe.printStackTrace();
 			readMetaData();
 			if ( ERROR != null ) {
-				if ( ERROR == "timeout" ) {
-					log.warn( "Socket timeout occured ... close connection." );
-					this.close();
+				if ( ERROR.equals( "timeout" ) ) {
+					this.close( "Remote Socket timeout occured ... close connection." );
+					return false;
 				}
 			}
-			log.warn( "Sending RANGE " + getStartOfRange() + ":" + getEndOfRange() + " of File "
+			this.close( "Sending RANGE " + getStartOfRange() + ":" + getEndOfRange() + " of File "
 					+ filename + " failed..." );
-			this.close();
 			return false;
 		} catch ( Exception e ) {
 			e.printStackTrace();
-			this.close();
+			this.close( e.toString() );
 			return false;
 		} finally {
 			if ( file != null ) {
