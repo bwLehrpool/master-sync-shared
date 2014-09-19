@@ -16,11 +16,10 @@
 
 package org.openslx.filetransfer;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 
 import javax.net.ssl.KeyManager;
@@ -34,6 +33,8 @@ import org.slf4j.LoggerFactory;
 
 public class ClassTest
 {
+	
+	private static final int CHUNK_SIZE = 11111111;
 
 	private static String inFile;
 	private static String outFile;
@@ -47,9 +48,9 @@ public class ClassTest
 
 	public static void main( String[] args ) throws Exception
 	{
-		if (args.length != 4) {
-			System.out.println("Need 4 argument: <keystore> <passphrase> <infile> <outfile>");
-			System.exit(1);
+		if ( args.length != 4 ) {
+			System.out.println( "Need 4 argument: <keystore> <passphrase> <infile> <outfile>" );
+			System.exit( 1 );
 		}
 		String pathToKeyStore = args[0];
 		final char[] passphrase = args[1].toCharArray();
@@ -77,11 +78,33 @@ public class ClassTest
 
 		context.init( null, trustManagers, null );
 
-		Downloader d = new Downloader( "localhost", 6789, context );
-		d.setOutputFilename( outFile );
-		d.sendToken( "xyz" );
-		while ( d.readMetaData() )
-			d.receiveBinary();
+		Downloader d = new Downloader( "localhost", 6789, context, "xyz" );
+		boolean res = d.download( outFile, new WantRangeCallback() {
+			long pos = 0;
+			long size = -1;
+
+			@Override
+			public FileRange get()
+			{
+				if ( size == -1 ) {
+					try {
+						size = Files.size( Paths.get( inFile ) );
+					} catch ( IOException e ) {
+						return null;
+					}
+				}
+				if ( pos >= size )
+					return null;
+				long end = Math.min( pos + CHUNK_SIZE, size );
+				FileRange range = new FileRange( pos, end );
+				pos += CHUNK_SIZE;
+				return range;
+			}
+		} );
+		if ( res )
+			System.out.println( "Active Download OK" );
+		else
+			System.out.println( "Active Download FAILED" );
 
 		/*
 		String pathToKeyStore =
@@ -115,41 +138,29 @@ public class ClassTest
 		*/
 	}
 
-// Implementing IncomingEvent for testing case.
-static class Test implements IncomingEvent
-{
-	public void incomingUploader( Uploader uploader ) throws IOException
+	// Implementing IncomingEvent for testing case.
+	static class Test implements IncomingEvent
 	{
-		RandomAccessFile file;
-		try {
-			file = new RandomAccessFile( new File( inFile ), "r" );
-		} catch ( FileNotFoundException e ) {
-			e.printStackTrace();
-			return;
-		}
-
-		long length = file.length();
-		file.close();
-
-		int diff = 0;
-		for ( int i = 0; ( i + 254 ) < length; i += 254 ) {
-			if ( !uploader.sendRange( i, i + 254 ) || !uploader.sendFile( inFile ) ) {
-				System.out.println("FAIL");
+		public void incomingUploader( Uploader uploader ) throws IOException
+		{
+			if ( uploader.getToken() == null ) {
+				System.out.println( "Incoming uploader: could not get token!" );
 				return;
 			}
-			diff = (int) ( length - i );
+			if ( !uploader.upload( inFile ) )
+				System.out.println( "Incoming uploader failed!" );
+			else
+				System.out.println( "Incomgin uploader OK" );
 		}
 
-		uploader.sendRange( (int) ( length - diff ), (int)length );
-		uploader.sendFile( inFile );
+		public void incomingDownloader( Downloader downloader ) throws IOException
+		{
+			if ( downloader.getToken() == null ) {
+				System.out.println( "Incoming downloader: could not get token!" );
+				return;
+			}
+			// TODO: if (!downloader.download( destinationFile, callback ))
+		}
 	}
-
-	public void incomingDownloader( Downloader downloader ) throws IOException
-	{
-		downloader.setOutputFilename( outFile );
-		while ( downloader.readMetaData() )
-			downloader.receiveBinary();
-	}
-}
 
 }

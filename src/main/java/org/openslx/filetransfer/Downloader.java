@@ -1,9 +1,10 @@
 package org.openslx.filetransfer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.SocketTimeoutException;
+import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -12,8 +13,6 @@ import org.apache.log4j.Logger;
 
 public class Downloader extends Transfer
 {
-	// Some instance variables.
-	private String outputFilename = null;
 
 	private static final Logger log = Logger.getLogger( Downloader.class );
 
@@ -25,10 +24,12 @@ public class Downloader extends Transfer
 	 * @param port Port to connect to
 	 * @throws IOException
 	 */
-	public Downloader( String host, int port, SSLContext context ) throws IOException
+	public Downloader( String host, int port, SSLContext context, String token ) throws IOException
 	{
 		super( host, port, context, log );
-		dataToServer.writeByte( 'D' );
+		outStream.writeByte( 'D' );
+		if ( !sendToken( token ) || !sendEndOfMeta() )
+			throw new IOException( "Sending token failed" );
 	}
 
 	/***********************************************************************/
@@ -36,94 +37,92 @@ public class Downloader extends Transfer
 	 * Constructor used by Listener to create an incoming download connection.
 	 * 
 	 * @param socket established connection to peer which requested an upload.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	protected Downloader( SSLSocket socket ) throws IOException
 	{
 		super( socket, log );
 	}
 
-	/***********************************************************************/
-	/**
-	 * Method for setting outputFilename.
-	 * 
-	 * @param filename
-	 */
-	public void setOutputFilename( String filename )
+	public boolean download( String destinationFile, WantRangeCallback callback )
 	{
-		outputFilename = filename;
-	}
-
-	/***********************************************************************/
-	/**
-	 * Method for getting outputFilename.
-	 * 
-	 * @return outputFilename
-	 */
-	public String getOutputFilename()
-	{
-		return outputFilename;
-	}
-
-	/***********************************************************************/
-	/**
-	 * Method to request a byte range within the file to download. This
-	 * method is called by the party that initiated the connection.
-	 * 
-	 * @param startOffset offset in file where to start the transfer (inclusive)
-	 * @param endOffset end offset where to end the transfer (exclusive)
-	 * @return success or failure
-	 */
-	public boolean requestRange( long startOffset, long endOffset )
-	{
-		return super.sendRange( startOffset, endOffset );
-	}
-
-	/***********************************************************************/
-	/**
-	 * Method for reading Binary. Reading the current Range of incoming binary.
-	 * 
-	 */
-	public boolean receiveBinary()
-	{
+		if ( shouldGetToken() ) {
+			log.error( "You didn't call getToken yet!" );
+			return false;
+		}
+		FileRange requestedRange;
 		RandomAccessFile file = null;
 		try {
-			int chunkLength = getDiffOfRange();
-			byte[] incoming = new byte[ 64000 ];
-			int hasRead = 0;
-			file = new RandomAccessFile( new File( outputFilename ), "rw" );
-			file.seek( getStartOfRange() );
-			while ( hasRead < chunkLength ) {
-				int ret = dataFromServer.read( incoming, 0, Math.min( chunkLength - hasRead, incoming.length ) );
-				// log.info("hasRead: " + hasRead + " length: " + length + " ret: " + ret); 
-				if ( ret == -1 ) {
-					log.info( "Error occured while receiving payload." );
+			try {
+				file = new RandomAccessFile( new File( destinationFile ), "rw" );
+			} catch ( FileNotFoundException e2 ) {
+				log.error( "Cannot open " + destinationFile + " for writing." );
+				return false;
+			}
+			while ( ( requestedRange = callback.get() ) != null ) {
+				if ( requestedRange.startOffset < 0 || requestedRange.startOffset >= requestedRange.endOffset ) {
+					log.error( "Callback supplied bad range (" + requestedRange.startOffset + " to " + requestedRange.endOffset + ")" );
 					return false;
 				}
-				hasRead += ret;
-				file.write( incoming, 0, ret );
-
+				// Send range request
+				if ( !sendRange( requestedRange.startOffset, requestedRange.endOffset ) || !sendEndOfMeta() ) {
+					log.error( "Could not send next range request, download failed." );
+					return false;
+				}
+				// See if remote peer acknowledges range request
+				MetaData meta = readMetaData();
+				if ( meta == null ) {
+					log.error( "Did not receive meta data from uploading remote peer after requesting range, aborting." );
+					return false;
+				}
+				FileRange remoteRange = meta.getRange();
+				if ( remoteRange == null || !remoteRange.equals( requestedRange ) ) {
+					log.error( "Confirmed range by remote peer does not match requested range, aborting download." );
+					return false;
+				}
+				// Receive requested range
+				int chunkLength = requestedRange.getLength();
+				byte[] incoming = new byte[ 500000 ]; // 500kb
+				int hasRead = 0;
+				try {
+					file.seek( requestedRange.startOffset );
+				} catch ( IOException e1 ) {
+					log.error( "Could not seek to " + requestedRange.startOffset + " in " + destinationFile + ". Disk full?" );
+					return false;
+				}
+				while ( hasRead < chunkLength ) {
+					int ret;
+					try {
+						ret = dataFromServer.read( incoming, 0, Math.min( chunkLength - hasRead, incoming.length ) );
+					} catch ( IOException e ) {
+						log.error( "Could not read payload from socket" );
+						sendErrorCode( "payload read error" );
+						return false;
+					}
+					if ( ret == -1 ) {
+						log.info( "Remote peer unexpectedly closed the connection." );
+						return false;
+					}
+					hasRead += ret;
+					try {
+						file.write( incoming, 0, ret );
+					} catch ( IOException e ) {
+						log.error( "Could not write to " + destinationFile + ". Disk full?" );
+						return false;
+					}
+				}
 			}
-		} catch ( SocketTimeoutException ste ) {
-			ste.printStackTrace();
-			sendErrorCode( "timeout" );
-			this.close( "Socket timeout occured ... close connection." );
-			return false;
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			this.close( "Reading RANGE " + getStartOfRange() + ":" + getEndOfRange()
-					+ " of file from socket failed..." );
-			return false;
+			sendDone();
+			sendEndOfMeta();
 		} finally {
-			if ( file != null ) {
+			if ( file != null )
 				try {
 					file.close();
 				} catch ( IOException e ) {
-					e.printStackTrace();
 				}
-			}
-			RANGE = null; // Reset range for next iteration
+			this.close( null );
 		}
 		return true;
 	}
+
 }

@@ -1,9 +1,9 @@
 package org.openslx.filetransfer;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.SocketTimeoutException;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -24,10 +24,12 @@ public class Uploader extends Transfer
 	 * @param context ssl context for establishing a secure connection
 	 * @throws IOException
 	 */
-	public Uploader( String host, int port, SSLContext context ) throws IOException
+	public Uploader( String host, int port, SSLContext context, String token ) throws IOException
 	{
 		super( host, port, context, log );
-		dataToServer.writeByte( 'U' );
+		outStream.writeByte( 'U' );
+		if ( !sendToken( token ) || !sendEndOfMeta() )
+			throw new IOException( "Sending token failed" );
 	}
 
 	/***********************************************************************/
@@ -44,71 +46,95 @@ public class Uploader extends Transfer
 
 	/***********************************************************************/
 	/**
-	 * Used by the peer that initiated the connection to tell the remote
-	 * peer which part of the file is being uploaded
-	 * 
-	 * @param startOffset start offset in bytes in the file (inclusive)
-	 * @param endOffset end offset in file (exclusive)
-	 * @return
-	 */
-	public boolean prepareSendRange( long startOffset, long endOffset )
-	{
-		return super.sendRange( startOffset, endOffset );
-	}
-
-	/***********************************************************************/
-	/**
 	 * Method for sending File with filename.
 	 * 
 	 * @param filename
 	 */
-	public boolean sendFile( String filename )
+	public boolean upload( String filename )
 	{
-		if ( getStartOfRange() == -1 ) {
-			this.close( "sendFile called when no range is set" );
+		if ( shouldGetToken() ) {
+			log.error( "You didn't call getToken yet!" );
 			return false;
 		}
-
 		RandomAccessFile file = null;
 		try {
-			file = new RandomAccessFile( new File( filename ), "r" );
-			file.seek( getStartOfRange() );
-
-			byte[] data = new byte[ 64000 ];
-			int hasRead = 0;
-			int length = getDiffOfRange();
-			//			System.out.println( "diff of Range: " + length );
-			while ( hasRead < length ) {
-				int ret = file.read( data, 0, Math.min( length - hasRead, data.length ) );
-				if ( ret == -1 ) {
-					this.close( "Error occured in Uploader.sendFile(),"
-							+ " while reading from File to send." );
+			try {
+				file = new RandomAccessFile( new File( filename ), "r" );
+			} catch ( FileNotFoundException e ) {
+				log.error( "Could not open " + filename + " for reading." );
+				return false;
+			}
+			for ( ;; ) { // Loop as long as remote peer is requesting chunks from this file
+				// Read meta data of remote peer - either new range, or it's telling us it's done
+				MetaData meta = readMetaData();
+				if ( meta == null ) {
+					log.error( "Did not get meta data from remote peer." );
 					return false;
 				}
-				hasRead += ret;
-				dataToServer.write( data, 0, ret );
-			}
-		} catch ( SocketTimeoutException ste ) {
-			ste.printStackTrace();
-			sendErrorCode( "timeout" );
-			this.close( "Socket timeout occured ... close connection." );
-			return false;
-		} catch ( IOException ioe ) {
-			ioe.printStackTrace();
-			readMetaData();
-			if ( ERROR != null ) {
-				if ( ERROR.equals( "timeout" ) ) {
-					this.close( "Remote Socket timeout occured ... close connection." );
+				if ( meta.isDone() ) // Download complete?
+					break;
+				// Not complete, so there must be another range request
+				FileRange requestedRange = meta.getRange();
+				if ( requestedRange == null ) {
+					log.error( "Remote peer did not include RANGE in meta data." );
+					sendErrorCode( "no (valid) range in request" );
 					return false;
 				}
+				// Range inside file?
+				try {
+					if ( requestedRange.endOffset > file.length() ) {
+						log.error( "Requested range is larger than file size, aborting." );
+						sendErrorCode( "range out of file bounds" );
+						return false;
+					}
+				} catch ( IOException e ) {
+					log.error( "Could not get current length of file " + filename );
+					return false;
+				}
+				// Seek to requested chunk
+				try {
+					file.seek( requestedRange.startOffset );
+				} catch ( IOException e ) {
+					log.error( "Could not seek to start of requested range in " + filename + " (" + requestedRange.startOffset + ")" );
+					return false;
+				}
+				// Send confirmation of range we're about to send
+				try {
+					long ptr = file.getFilePointer();
+					if ( !sendRange( ptr, ptr + requestedRange.getLength() ) || !sendEndOfMeta() ) {
+						log.error( "Could not send range confirmation" );
+						return false;
+					}
+				} catch ( IOException e ) {
+					log.error( "Could not determine current position in file " + filename );
+					return false;
+				}
+				// Finally send requested chunk
+				byte[] data = new byte[ 500000 ]; // 500kb
+				int hasRead = 0;
+				int length = requestedRange.getLength();
+				while ( hasRead < length ) {
+					int ret;
+					try {
+						ret = file.read( data, 0, Math.min( length - hasRead, data.length ) );
+					} catch ( IOException e ) {
+						log.error( "Error reading from file " + filename );
+						return false;
+					}
+					if ( ret == -1 ) {
+						this.close( "Error occured in Uploader.sendFile(),"
+								+ " while reading from File to send." );
+						return false;
+					}
+					hasRead += ret;
+					try {
+						outStream.write( data, 0, ret );
+					} catch ( IOException e ) {
+						log.error( "Sending payload failed" );
+						return false;
+					}
+				}
 			}
-			this.close( "Sending RANGE " + getStartOfRange() + ":" + getEndOfRange() + " of File "
-					+ filename + " failed..." );
-			return false;
-		} catch ( Exception e ) {
-			e.printStackTrace();
-			this.close( e.toString() );
-			return false;
 		} finally {
 			if ( file != null ) {
 				try {
