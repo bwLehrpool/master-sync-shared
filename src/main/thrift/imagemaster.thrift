@@ -134,6 +134,6 @@ service ImageServer {
 	
 	UploadInfos submitImage(1:string serverSessionId, 2:ImageData imageDescription, 3:list<i32> crcSums) throws (1:AuthorizationException failure, 2: ImageDataException failure2, 3: UploadException failure3),
 	
-	DownloadInfos getImage(1:UUID uuid, 2:string serverSessionId, 3:list<i32> requestedBlocks) throws (1:AuthorizationException failure, 2: ImageDataException failure2),
+	DownloadInfos getImage(1:UUID uuid, 2:string serverSessionId) throws (1:AuthorizationException failure, 2: ImageDataException failure2),
 
 }
