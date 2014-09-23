@@ -8,7 +8,7 @@ namespace php testing
 typedef string ID
 typedef string Token
 typedef string UUID
-typedef i64 Date
+typedef i64 UnixTimestamp
 
 enum AuthorizationError {
 	GENERIC_ERROR,
@@ -37,7 +37,9 @@ enum ImageDataError {
 
 enum UploadError {
 	INVALID_CRC,
-	BROKEN_BLOCK
+	BROKEN_BLOCK,
+	GENERIC_ERROR,
+	INVALID_METADATA
 }
 
 exception AuthorizationException {
@@ -81,15 +83,9 @@ struct SessionData {
 	3: string serverAddress
 }
 
-struct FtpCredentials {
-	1: string username,
-	2: string password,
-	3: string filename
-}
-
 struct UploadInfos {
 	1: string token,
-	2: i32 port,
+	2: i32 port
 }
 
 struct DownloadInfos {
@@ -105,8 +101,8 @@ struct ImageData {
 	1: UUID uuid,
 	2: i32 imageVersion,
 	3: string imageName,
-	4: Date imageCreateTime,
-	5: Date imageUpdateTime,
+	4: UnixTimestamp imageCreateTime,
+	5: UnixTimestamp imageUpdateTime,
 	6: string imageOwner,
 	7: string contentOperatingSystem,
 	8: bool statusIsValid,
