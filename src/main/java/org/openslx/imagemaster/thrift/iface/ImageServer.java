@@ -6068,13 +6068,13 @@ public class ImageServer {
             case 3: // CRC_SUMS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
-                  struct.crcSums = new ArrayList<Integer>(_list8.size);
-                  for (int _i9 = 0; _i9 < _list8.size; ++_i9)
+                  org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                  struct.crcSums = new ArrayList<Integer>(_list0.size);
+                  for (int _i1 = 0; _i1 < _list0.size; ++_i1)
                   {
-                    int _elem10; // required
-                    _elem10 = iprot.readI32();
-                    struct.crcSums.add(_elem10);
+                    int _elem2; // required
+                    _elem2 = iprot.readI32();
+                    struct.crcSums.add(_elem2);
                   }
                   iprot.readListEnd();
                 }
@@ -6112,9 +6112,9 @@ public class ImageServer {
           oprot.writeFieldBegin(CRC_SUMS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.crcSums.size()));
-            for (int _iter11 : struct.crcSums)
+            for (int _iter3 : struct.crcSums)
             {
-              oprot.writeI32(_iter11);
+              oprot.writeI32(_iter3);
             }
             oprot.writeListEnd();
           }
@@ -6157,9 +6157,9 @@ public class ImageServer {
         if (struct.isSetCrcSums()) {
           {
             oprot.writeI32(struct.crcSums.size());
-            for (int _iter12 : struct.crcSums)
+            for (int _iter4 : struct.crcSums)
             {
-              oprot.writeI32(_iter12);
+              oprot.writeI32(_iter4);
             }
           }
         }
@@ -6180,13 +6180,13 @@ public class ImageServer {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-            struct.crcSums = new ArrayList<Integer>(_list13.size);
-            for (int _i14 = 0; _i14 < _list13.size; ++_i14)
+            org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+            struct.crcSums = new ArrayList<Integer>(_list5.size);
+            for (int _i6 = 0; _i6 < _list5.size; ++_i6)
             {
-              int _elem15; // required
-              _elem15 = iprot.readI32();
-              struct.crcSums.add(_elem15);
+              int _elem7; // required
+              _elem7 = iprot.readI32();
+              struct.crcSums.add(_elem7);
             }
           }
           struct.setCrcSumsIsSet(true);
