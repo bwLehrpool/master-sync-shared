@@ -31,11 +31,7 @@ public class CrcChecker
 
 	public boolean hasValidCrcFile()
 	{
-		try {
-			return crcFile.isValid();
-		} catch ( IOException e ) {
-			return false;
-		}
+		return crcFile.isValid();
 	}
 
 	/**
@@ -69,11 +65,7 @@ public class CrcChecker
 
 		int crcSum = Integer.reverseBytes( (int)crcCalc.getValue() );
 		int crcSumFromFile;
-		try {
-			crcSumFromFile = crcFile.getCRCSum( blockNumber );
-		} catch ( IOException e ) {
-			throw new IOException( "crc", e );
-		}
+		crcSumFromFile = crcFile.getCRCSum( blockNumber );
 
 		return ( crcSum == crcSumFromFile );
 	}

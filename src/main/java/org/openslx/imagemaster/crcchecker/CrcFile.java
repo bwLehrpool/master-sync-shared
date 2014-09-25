@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.CRC32;
@@ -136,6 +137,14 @@ public class CrcFile
 		if ( crcSums == null || blockNumber < 0 || blockNumber >= crcSums.length )
 			return 0;
 		return crcSums[blockNumber];
+	}
+
+	public List<Integer> getCrcSums()
+	{
+		List<Integer> ret = new ArrayList<Integer>( crcSums.length );
+		for ( int i = 0; i < crcSums.length; i++ )
+			ret.add( crcSums[i] );
+		return ret;
 	}
 
 	public int getMasterSum()

@@ -16,7 +16,6 @@ public class ClassTest
 
 		CrcFile f = new CrcFile( filenameCrc );
 		System.out.println( "Master sum: '" + f.getMasterSum() + "'" );
-		System.out.println( f.getCrcSums() );
 		System.out.println( "CRC file is '" + ( ( f.isValid() ) ? "valid" : "invalid" ) + "'" );
 
 		ImageFile imageFile = new ImageFile( filename, blockSize );
