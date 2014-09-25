@@ -32,16 +32,16 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadInfos._Fields>, java.io.Serializable, Cloneable, Comparable<UploadInfos> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("UploadInfos");
+public class UploadData implements org.apache.thrift.TBase<UploadData, UploadData._Fields>, java.io.Serializable, Cloneable, Comparable<UploadData> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("UploadData");
 
   private static final org.apache.thrift.protocol.TField TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("token", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("port", org.apache.thrift.protocol.TType.I32, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new UploadInfosStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new UploadInfosTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new UploadDataStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new UploadDataTupleSchemeFactory());
   }
 
   public String token; // required
@@ -119,13 +119,13 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     tmpMap.put(_Fields.PORT, new org.apache.thrift.meta_data.FieldMetaData("port", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UploadInfos.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UploadData.class, metaDataMap);
   }
 
-  public UploadInfos() {
+  public UploadData() {
   }
 
-  public UploadInfos(
+  public UploadData(
     String token,
     int port)
   {
@@ -138,7 +138,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public UploadInfos(UploadInfos other) {
+  public UploadData(UploadData other) {
     __isset_bitfield = other.__isset_bitfield;
     if (other.isSetToken()) {
       this.token = other.token;
@@ -146,8 +146,8 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     this.port = other.port;
   }
 
-  public UploadInfos deepCopy() {
-    return new UploadInfos(this);
+  public UploadData deepCopy() {
+    return new UploadData(this);
   }
 
   @Override
@@ -161,7 +161,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     return this.token;
   }
 
-  public UploadInfos setToken(String token) {
+  public UploadData setToken(String token) {
     this.token = token;
     return this;
   }
@@ -185,7 +185,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     return this.port;
   }
 
-  public UploadInfos setPort(int port) {
+  public UploadData setPort(int port) {
     this.port = port;
     setPortIsSet(true);
     return this;
@@ -256,12 +256,12 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof UploadInfos)
-      return this.equals((UploadInfos)that);
+    if (that instanceof UploadData)
+      return this.equals((UploadData)that);
     return false;
   }
 
-  public boolean equals(UploadInfos that) {
+  public boolean equals(UploadData that) {
     if (that == null)
       return false;
 
@@ -292,7 +292,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
   }
 
   @Override
-  public int compareTo(UploadInfos other) {
+  public int compareTo(UploadData other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -336,7 +336,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("UploadInfos(");
+    StringBuilder sb = new StringBuilder("UploadData(");
     boolean first = true;
 
     sb.append("token:");
@@ -377,15 +377,15 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     }
   }
 
-  private static class UploadInfosStandardSchemeFactory implements SchemeFactory {
-    public UploadInfosStandardScheme getScheme() {
-      return new UploadInfosStandardScheme();
+  private static class UploadDataStandardSchemeFactory implements SchemeFactory {
+    public UploadDataStandardScheme getScheme() {
+      return new UploadDataStandardScheme();
     }
   }
 
-  private static class UploadInfosStandardScheme extends StandardScheme<UploadInfos> {
+  private static class UploadDataStandardScheme extends StandardScheme<UploadData> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, UploadInfos struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, UploadData struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -422,7 +422,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, UploadInfos struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, UploadData struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -440,16 +440,16 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
 
   }
 
-  private static class UploadInfosTupleSchemeFactory implements SchemeFactory {
-    public UploadInfosTupleScheme getScheme() {
-      return new UploadInfosTupleScheme();
+  private static class UploadDataTupleSchemeFactory implements SchemeFactory {
+    public UploadDataTupleScheme getScheme() {
+      return new UploadDataTupleScheme();
     }
   }
 
-  private static class UploadInfosTupleScheme extends TupleScheme<UploadInfos> {
+  private static class UploadDataTupleScheme extends TupleScheme<UploadData> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, UploadInfos struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, UploadData struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
       if (struct.isSetToken()) {
@@ -468,7 +468,7 @@ public class UploadInfos implements org.apache.thrift.TBase<UploadInfos, UploadI
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, UploadInfos struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, UploadData struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {

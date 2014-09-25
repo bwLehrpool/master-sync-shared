@@ -6,8 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.zip.CRC32;
 
@@ -16,18 +15,38 @@ import java.util.zip.CRC32;
  */
 public class CrcFile
 {
-	private File file = null;
-	private List<Integer> crcSums = null;
+	private final int masterCrc;
+	private final int[] crcSums;
 	private Boolean valid = null;
 
 	/**
 	 * Loads a crcFile from file
 	 * 
 	 * @param filename
+	 * @throws IOException
 	 */
-	public CrcFile( String filename )
+	public CrcFile( String filename ) throws IOException
 	{
-		this.file = new File( filename );
+		File file = new File( filename );
+		DataInputStream dis = null;
+		try {
+			dis = new DataInputStream( new FileInputStream( file ) );
+			int numSums = (int) ( file.length() / 4 ) - 1;
+			if ( numSums < 0 )
+				throw new IOException( "Invalid crc file: " + filename );
+			masterCrc = dis.readInt();
+			int[] sums = new int[ numSums ];
+			for ( int i = 0; i < numSums; i++ ) {
+				sums[i] = dis.readInt();
+			}
+			crcSums = sums;
+		} finally {
+			if ( dis != null )
+				try {
+					dis.close();
+				} catch ( Throwable t ) {
+				}
+		}
 	}
 
 	/**
@@ -35,9 +54,18 @@ public class CrcFile
 	 * 
 	 * @param crcSums
 	 */
-	public CrcFile( List<Integer> crcSums )
+	public CrcFile( int[] crcSumsWithLeadingMasterCrc )
 	{
-		this.crcSums = crcSums;
+		this.masterCrc = crcSumsWithLeadingMasterCrc[0];
+		this.crcSums = Arrays.copyOfRange( crcSumsWithLeadingMasterCrc, 1, crcSumsWithLeadingMasterCrc.length );
+	}
+
+	public CrcFile( List<Integer> crcSumsWithLeadingMasterCrc )
+	{
+		this.masterCrc = crcSumsWithLeadingMasterCrc.get( 0 );
+		this.crcSums = new int[ crcSumsWithLeadingMasterCrc.size() - 1 ];
+		for ( int i = 0; i < crcSums.length; i++ )
+			crcSums[i] = crcSumsWithLeadingMasterCrc.get( i + 1 );
 	}
 
 	/**
@@ -49,45 +77,25 @@ public class CrcFile
 	 * @param filename Where to save the created crc file
 	 * @throws IOException If it's not possible to write the file
 	 */
-	public static CrcFile writeCrcFile( List<Integer> listOfCrcSums, String filename ) throws IOException
+	public void writeCrcFile( String filename ) throws IOException
 	{
 		File file = new File( filename );
-		
+
 		if ( file.exists() )
 			file.delete();
-		
+
 		FileOutputStream fos = new FileOutputStream( file );
-		DataOutputStream dos = new DataOutputStream( fos );
-
-		for ( Integer sum : listOfCrcSums ) {
-			dos.writeInt( sum.intValue() );
+		DataOutputStream dos = null;
+		try {
+			dos = new DataOutputStream( fos );
+			dos.writeInt( Integer.reverseBytes( masterCrc ) );
+			for ( int sum : crcSums ) {
+				dos.writeInt( Integer.reverseBytes( sum ) );
+			}
+		} finally {
+			if ( dos != null )
+				dos.close();
 		}
-
-		dos.close();
-		return new CrcFile( filename );
-	}
-
-	/**
-	 * Checks if given sums are valid.
-	 * 
-	 * @param listOfCrcSums
-	 * @return
-	 */
-	public static boolean sumsAreValid( List<Integer> listOfCrcSums )
-	{
-		if ( listOfCrcSums == null || listOfCrcSums.isEmpty() )
-			return false;
-
-		int masterSum = listOfCrcSums.get( 0 );		// don't use the first sum for the calculation because it is the sum over the other sums
-		int size = listOfCrcSums.size();
-
-		CRC32 crcCalc = new CRC32();
-
-		for ( int i = 1; i < size; i++ ) {
-			crcCalc.update( ByteBuffer.allocate( 4 ).putInt( listOfCrcSums.get( i ) ).array() ); // update the crc calculator with the next 4 bytes of the integer
-		}
-
-		return ( masterSum == Integer.reverseBytes( (int)crcCalc.getValue() ) );
 	}
 
 	/**
@@ -95,18 +103,23 @@ public class CrcFile
 	 * (If the crc over the file is equal to the first crc sum.)
 	 * 
 	 * @return Whether the crc file is valid
-	 * @throws IOException If the file could not be read or could not be found
 	 */
-	public boolean isValid() throws IOException
+	public boolean isValid()
 	{
 		if ( valid == null ) {
-			if ( file == null ) {
-				valid = sumsAreValid( this.crcSums );
-			} else {
-				if ( crcSums == null )
-					loadSums();
-				valid = sumsAreValid( this.crcSums );
+			if ( crcSums == null || crcSums.length < 1 )
+				return false;
+
+			int masterSum = crcSums[0];
+
+			CRC32 crcCalc = new CRC32();
+			byte[] buffer = new byte[ 4 ];
+
+			for ( int i = 1; i < crcSums.length; i++ ) {
+				crcCalc.update( intToByteArrayLittleEndian( crcSums[i], buffer ) ); // update the crc calculator with the next 4 bytes of the integer
 			}
+
+			valid = ( masterSum == Integer.reverseBytes( (int)crcCalc.getValue() ) );
 		}
 		return valid;
 	}
@@ -118,55 +131,25 @@ public class CrcFile
 	 * @return The crcSum or 0 if the block number is invalid
 	 * @throws IOException If the crcSums could not be loaded from file
 	 */
-	public int getCRCSum( int blockNumber ) throws IOException
+	public int getCRCSum( int blockNumber )
 	{
-		if ( crcSums == null )
-			loadSums();
-		if ( crcSums.size() == 0 )
+		if ( crcSums == null || blockNumber < 0 || blockNumber >= crcSums.length )
 			return 0;
-
-		if ( blockNumber < 0 )
-			return 0;
-		if ( blockNumber > crcSums.size() - 2 )
-			return 0;
-
-		return crcSums.get( blockNumber + 1 );
+		return crcSums[blockNumber];
 	}
 
-	/**
-	 * Returns the loaded crcSums.
-	 * 
-	 * @return The loaded crcSums
-	 * @throws IOException If the crcSums could not be loaded from file
-	 */
-	public List<Integer> getCrcSums() throws IOException
+	public int getMasterSum()
 	{
-		if ( crcSums == null )
-			loadSums();
-		if ( crcSums.size() == 0 )
-			return new ArrayList<>();
-		return this.crcSums;
+		return masterCrc;
 	}
 
-	private void loadSums() throws IOException
+	private static final byte[] intToByteArrayLittleEndian( int value, byte[] buffer )
 	{
-		if ( crcSums != null )
-			return;
-		// the crcSums were not read yet
-		DataInputStream dis = new DataInputStream( new FileInputStream( file ) );
-		crcSums = new ArrayList<>();
-		for ( int i = 0; i < file.length() / 4; i++ ) {
-			crcSums.add( dis.readInt() );
-		}
-		dis.close();
+		buffer[3] = (byte) ( value >>> 24 );
+		buffer[2] = (byte) ( value >>> 16 );
+		buffer[1] = (byte) ( value >>> 8 );
+		buffer[0] = (byte)value;
+		return buffer;
 	}
 
-	public int getMasterSum() throws IOException
-	{
-		if ( crcSums == null )
-			loadSums();
-		if ( crcSums.size() == 0 )
-			return 0;
-		return this.crcSums.get( 0 );
-	}
 }

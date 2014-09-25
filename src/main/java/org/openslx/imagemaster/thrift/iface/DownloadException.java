@@ -32,25 +32,33 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, DownloadInfos._Fields>, java.io.Serializable, Cloneable, Comparable<DownloadInfos> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("DownloadInfos");
+public class DownloadException extends TException implements org.apache.thrift.TBase<DownloadException, DownloadException._Fields>, java.io.Serializable, Cloneable, Comparable<DownloadException> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("DownloadException");
 
-  private static final org.apache.thrift.protocol.TField TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("token", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("port", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("number", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new DownloadInfosStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new DownloadInfosTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new DownloadExceptionStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new DownloadExceptionTupleSchemeFactory());
   }
 
-  public String token; // required
-  public int port; // required
+  /**
+   * 
+   * @see UploadError
+   */
+  public UploadError number; // required
+  public String message; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    TOKEN((short)1, "token"),
-    PORT((short)2, "port");
+    /**
+     * 
+     * @see UploadError
+     */
+    NUMBER((short)1, "number"),
+    MESSAGE((short)2, "message");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -65,10 +73,10 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // TOKEN
-          return TOKEN;
-        case 2: // PORT
-          return PORT;
+        case 1: // NUMBER
+          return NUMBER;
+        case 2: // MESSAGE
+          return MESSAGE;
         default:
           return null;
       }
@@ -109,116 +117,122 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
   }
 
   // isset id assignments
-  private static final int __PORT_ISSET_ID = 0;
-  private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.TOKEN, new org.apache.thrift.meta_data.FieldMetaData("token", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.NUMBER, new org.apache.thrift.meta_data.FieldMetaData("number", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, UploadError.class)));
+    tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.PORT, new org.apache.thrift.meta_data.FieldMetaData("port", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DownloadInfos.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DownloadException.class, metaDataMap);
   }
 
-  public DownloadInfos() {
+  public DownloadException() {
   }
 
-  public DownloadInfos(
-    String token,
-    int port)
+  public DownloadException(
+    UploadError number,
+    String message)
   {
     this();
-    this.token = token;
-    this.port = port;
-    setPortIsSet(true);
+    this.number = number;
+    this.message = message;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public DownloadInfos(DownloadInfos other) {
-    __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetToken()) {
-      this.token = other.token;
+  public DownloadException(DownloadException other) {
+    if (other.isSetNumber()) {
+      this.number = other.number;
     }
-    this.port = other.port;
+    if (other.isSetMessage()) {
+      this.message = other.message;
+    }
   }
 
-  public DownloadInfos deepCopy() {
-    return new DownloadInfos(this);
+  public DownloadException deepCopy() {
+    return new DownloadException(this);
   }
 
   @Override
   public void clear() {
-    this.token = null;
-    setPortIsSet(false);
-    this.port = 0;
+    this.number = null;
+    this.message = null;
   }
 
-  public String getToken() {
-    return this.token;
+  /**
+   * 
+   * @see UploadError
+   */
+  public UploadError getNumber() {
+    return this.number;
   }
 
-  public DownloadInfos setToken(String token) {
-    this.token = token;
+  /**
+   * 
+   * @see UploadError
+   */
+  public DownloadException setNumber(UploadError number) {
+    this.number = number;
     return this;
   }
 
-  public void unsetToken() {
-    this.token = null;
+  public void unsetNumber() {
+    this.number = null;
   }
 
-  /** Returns true if field token is set (has been assigned a value) and false otherwise */
-  public boolean isSetToken() {
-    return this.token != null;
+  /** Returns true if field number is set (has been assigned a value) and false otherwise */
+  public boolean isSetNumber() {
+    return this.number != null;
   }
 
-  public void setTokenIsSet(boolean value) {
+  public void setNumberIsSet(boolean value) {
     if (!value) {
-      this.token = null;
+      this.number = null;
     }
   }
 
-  public int getPort() {
-    return this.port;
+  public String getMessage() {
+    return this.message;
   }
 
-  public DownloadInfos setPort(int port) {
-    this.port = port;
-    setPortIsSet(true);
+  public DownloadException setMessage(String message) {
+    this.message = message;
     return this;
   }
 
-  public void unsetPort() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PORT_ISSET_ID);
+  public void unsetMessage() {
+    this.message = null;
   }
 
-  /** Returns true if field port is set (has been assigned a value) and false otherwise */
-  public boolean isSetPort() {
-    return EncodingUtils.testBit(__isset_bitfield, __PORT_ISSET_ID);
+  /** Returns true if field message is set (has been assigned a value) and false otherwise */
+  public boolean isSetMessage() {
+    return this.message != null;
   }
 
-  public void setPortIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PORT_ISSET_ID, value);
+  public void setMessageIsSet(boolean value) {
+    if (!value) {
+      this.message = null;
+    }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case TOKEN:
+    case NUMBER:
       if (value == null) {
-        unsetToken();
+        unsetNumber();
       } else {
-        setToken((String)value);
+        setNumber((UploadError)value);
       }
       break;
 
-    case PORT:
+    case MESSAGE:
       if (value == null) {
-        unsetPort();
+        unsetMessage();
       } else {
-        setPort((Integer)value);
+        setMessage((String)value);
       }
       break;
 
@@ -227,11 +241,11 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case TOKEN:
-      return getToken();
+    case NUMBER:
+      return getNumber();
 
-    case PORT:
-      return Integer.valueOf(getPort());
+    case MESSAGE:
+      return getMessage();
 
     }
     throw new IllegalStateException();
@@ -244,10 +258,10 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
     }
 
     switch (field) {
-    case TOKEN:
-      return isSetToken();
-    case PORT:
-      return isSetPort();
+    case NUMBER:
+      return isSetNumber();
+    case MESSAGE:
+      return isSetMessage();
     }
     throw new IllegalStateException();
   }
@@ -256,30 +270,30 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof DownloadInfos)
-      return this.equals((DownloadInfos)that);
+    if (that instanceof DownloadException)
+      return this.equals((DownloadException)that);
     return false;
   }
 
-  public boolean equals(DownloadInfos that) {
+  public boolean equals(DownloadException that) {
     if (that == null)
       return false;
 
-    boolean this_present_token = true && this.isSetToken();
-    boolean that_present_token = true && that.isSetToken();
-    if (this_present_token || that_present_token) {
-      if (!(this_present_token && that_present_token))
+    boolean this_present_number = true && this.isSetNumber();
+    boolean that_present_number = true && that.isSetNumber();
+    if (this_present_number || that_present_number) {
+      if (!(this_present_number && that_present_number))
         return false;
-      if (!this.token.equals(that.token))
+      if (!this.number.equals(that.number))
         return false;
     }
 
-    boolean this_present_port = true;
-    boolean that_present_port = true;
-    if (this_present_port || that_present_port) {
-      if (!(this_present_port && that_present_port))
+    boolean this_present_message = true && this.isSetMessage();
+    boolean that_present_message = true && that.isSetMessage();
+    if (this_present_message || that_present_message) {
+      if (!(this_present_message && that_present_message))
         return false;
-      if (this.port != that.port)
+      if (!this.message.equals(that.message))
         return false;
     }
 
@@ -292,29 +306,29 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
   }
 
   @Override
-  public int compareTo(DownloadInfos other) {
+  public int compareTo(DownloadException other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetToken()).compareTo(other.isSetToken());
+    lastComparison = Boolean.valueOf(isSetNumber()).compareTo(other.isSetNumber());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetToken()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.token, other.token);
+    if (isSetNumber()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.number, other.number);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetPort()).compareTo(other.isSetPort());
+    lastComparison = Boolean.valueOf(isSetMessage()).compareTo(other.isSetMessage());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetPort()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.port, other.port);
+    if (isSetMessage()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.message, other.message);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -336,19 +350,23 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("DownloadInfos(");
+    StringBuilder sb = new StringBuilder("DownloadException(");
     boolean first = true;
 
-    sb.append("token:");
-    if (this.token == null) {
+    sb.append("number:");
+    if (this.number == null) {
       sb.append("null");
     } else {
-      sb.append(this.token);
+      sb.append(this.number);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("port:");
-    sb.append(this.port);
+    sb.append("message:");
+    if (this.message == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.message);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -369,23 +387,21 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
     }
   }
 
-  private static class DownloadInfosStandardSchemeFactory implements SchemeFactory {
-    public DownloadInfosStandardScheme getScheme() {
-      return new DownloadInfosStandardScheme();
+  private static class DownloadExceptionStandardSchemeFactory implements SchemeFactory {
+    public DownloadExceptionStandardScheme getScheme() {
+      return new DownloadExceptionStandardScheme();
     }
   }
 
-  private static class DownloadInfosStandardScheme extends StandardScheme<DownloadInfos> {
+  private static class DownloadExceptionStandardScheme extends StandardScheme<DownloadException> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, DownloadInfos struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, DownloadException struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -395,18 +411,18 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
           break;
         }
         switch (schemeField.id) {
-          case 1: // TOKEN
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.token = iprot.readString();
-              struct.setTokenIsSet(true);
+          case 1: // NUMBER
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.number = UploadError.findByValue(iprot.readI32());
+              struct.setNumberIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // PORT
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.port = iprot.readI32();
-              struct.setPortIsSet(true);
+          case 2: // MESSAGE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.message = iprot.readString();
+              struct.setMessageIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -422,62 +438,64 @@ public class DownloadInfos implements org.apache.thrift.TBase<DownloadInfos, Dow
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, DownloadInfos struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, DownloadException struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.token != null) {
-        oprot.writeFieldBegin(TOKEN_FIELD_DESC);
-        oprot.writeString(struct.token);
+      if (struct.number != null) {
+        oprot.writeFieldBegin(NUMBER_FIELD_DESC);
+        oprot.writeI32(struct.number.getValue());
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(PORT_FIELD_DESC);
-      oprot.writeI32(struct.port);
-      oprot.writeFieldEnd();
+      if (struct.message != null) {
+        oprot.writeFieldBegin(MESSAGE_FIELD_DESC);
+        oprot.writeString(struct.message);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
 
   }
 
-  private static class DownloadInfosTupleSchemeFactory implements SchemeFactory {
-    public DownloadInfosTupleScheme getScheme() {
-      return new DownloadInfosTupleScheme();
+  private static class DownloadExceptionTupleSchemeFactory implements SchemeFactory {
+    public DownloadExceptionTupleScheme getScheme() {
+      return new DownloadExceptionTupleScheme();
     }
   }
 
-  private static class DownloadInfosTupleScheme extends TupleScheme<DownloadInfos> {
+  private static class DownloadExceptionTupleScheme extends TupleScheme<DownloadException> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, DownloadInfos struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, DownloadException struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetToken()) {
+      if (struct.isSetNumber()) {
         optionals.set(0);
       }
-      if (struct.isSetPort()) {
+      if (struct.isSetMessage()) {
         optionals.set(1);
       }
       oprot.writeBitSet(optionals, 2);
-      if (struct.isSetToken()) {
-        oprot.writeString(struct.token);
+      if (struct.isSetNumber()) {
+        oprot.writeI32(struct.number.getValue());
       }
-      if (struct.isSetPort()) {
-        oprot.writeI32(struct.port);
+      if (struct.isSetMessage()) {
+        oprot.writeString(struct.message);
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, DownloadInfos struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, DownloadException struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
-        struct.token = iprot.readString();
-        struct.setTokenIsSet(true);
+        struct.number = UploadError.findByValue(iprot.readI32());
+        struct.setNumberIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.port = iprot.readI32();
-        struct.setPortIsSet(true);
+        struct.message = iprot.readString();
+        struct.setMessageIsSet(true);
       }
     }
   }

@@ -39,7 +39,8 @@ enum UploadError {
 	INVALID_CRC,
 	BROKEN_BLOCK,
 	GENERIC_ERROR,
-	INVALID_METADATA
+	INVALID_METADATA,
+	ALREADY_COMPLETE
 }
 
 exception AuthorizationException {
@@ -70,6 +71,11 @@ exception UploadException {
 	2: string message
 }
 
+exception DownloadException {
+	1: UploadError number,
+	2: string message
+}
+
 struct UserInfo {
 	1: string userId,
 	2: string firstName,
@@ -83,14 +89,15 @@ struct SessionData {
 	3: string serverAddress
 }
 
-struct UploadInfos {
+struct UploadData {
 	1: string token,
 	2: i32 port
 }
 
-struct DownloadInfos {
+struct DownloadData {
 	1: string token,
-	2: i32 port
+	2: i32 port,
+	3: list<i32> crcSums
 }
 
 struct ServerSessionData {
@@ -126,8 +133,8 @@ service ImageServer {
 	
 	ServerSessionData serverAuthenticate(1:string organization, 2:binary challengeResponse) throws (1:ServerAuthenticationException failure),
 	
-	UploadInfos submitImage(1:string serverSessionId, 2:ImageData imageDescription, 3:list<i32> crcSums) throws (1:AuthorizationException failure, 2: ImageDataException failure2, 3: UploadException failure3),
+	UploadData submitImage(1:string serverSessionId, 2:ImageData imageDescription, 3:list<i32> crcSums) throws (1:AuthorizationException failure, 2: ImageDataException failure2, 3: UploadException failure3),
 	
-	DownloadInfos getImage(1:UUID uuid, 2:string serverSessionId) throws (1:AuthorizationException failure, 2: ImageDataException failure2),
+	DownloadData getImage(2:string serverSessionId, 1:UUID uuid) throws (1:AuthorizationException failure, 2: ImageDataException failure2),
 
 }

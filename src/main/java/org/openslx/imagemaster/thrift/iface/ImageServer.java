@@ -48,9 +48,9 @@ public class ImageServer {
 
     public ServerSessionData serverAuthenticate(String organization, ByteBuffer challengeResponse) throws ServerAuthenticationException, org.apache.thrift.TException;
 
-    public UploadInfos submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums) throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException;
+    public UploadData submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums) throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException;
 
-    public DownloadInfos getImage(String uuid, String serverSessionId) throws AuthorizationException, ImageDataException, org.apache.thrift.TException;
+    public DownloadData getImage(String serverSessionId, String uuid) throws AuthorizationException, ImageDataException, org.apache.thrift.TException;
 
   }
 
@@ -70,7 +70,7 @@ public class ImageServer {
 
     public void submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getImage(String uuid, String serverSessionId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getImage(String serverSessionId, String uuid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -245,7 +245,7 @@ public class ImageServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "serverAuthenticate failed: unknown result");
     }
 
-    public UploadInfos submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums) throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException
+    public UploadData submitImage(String serverSessionId, ImageData imageDescription, List<Integer> crcSums) throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException
     {
       send_submitImage(serverSessionId, imageDescription, crcSums);
       return recv_submitImage();
@@ -260,7 +260,7 @@ public class ImageServer {
       sendBase("submitImage", args);
     }
 
-    public UploadInfos recv_submitImage() throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException
+    public UploadData recv_submitImage() throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException
     {
       submitImage_result result = new submitImage_result();
       receiveBase(result, "submitImage");
@@ -279,21 +279,21 @@ public class ImageServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "submitImage failed: unknown result");
     }
 
-    public DownloadInfos getImage(String uuid, String serverSessionId) throws AuthorizationException, ImageDataException, org.apache.thrift.TException
+    public DownloadData getImage(String serverSessionId, String uuid) throws AuthorizationException, ImageDataException, org.apache.thrift.TException
     {
-      send_getImage(uuid, serverSessionId);
+      send_getImage(serverSessionId, uuid);
       return recv_getImage();
     }
 
-    public void send_getImage(String uuid, String serverSessionId) throws org.apache.thrift.TException
+    public void send_getImage(String serverSessionId, String uuid) throws org.apache.thrift.TException
     {
       getImage_args args = new getImage_args();
-      args.setUuid(uuid);
       args.setServerSessionId(serverSessionId);
+      args.setUuid(uuid);
       sendBase("getImage", args);
     }
 
-    public DownloadInfos recv_getImage() throws AuthorizationException, ImageDataException, org.apache.thrift.TException
+    public DownloadData recv_getImage() throws AuthorizationException, ImageDataException, org.apache.thrift.TException
     {
       getImage_result result = new getImage_result();
       receiveBase(result, "getImage");
@@ -550,7 +550,7 @@ public class ImageServer {
         prot.writeMessageEnd();
       }
 
-      public UploadInfos getResult() throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException {
+      public UploadData getResult() throws AuthorizationException, ImageDataException, UploadException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -560,32 +560,32 @@ public class ImageServer {
       }
     }
 
-    public void getImage(String uuid, String serverSessionId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getImage(String serverSessionId, String uuid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getImage_call method_call = new getImage_call(uuid, serverSessionId, resultHandler, this, ___protocolFactory, ___transport);
+      getImage_call method_call = new getImage_call(serverSessionId, uuid, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getImage_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String uuid;
       private String serverSessionId;
-      public getImage_call(String uuid, String serverSessionId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String uuid;
+      public getImage_call(String serverSessionId, String uuid, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.uuid = uuid;
         this.serverSessionId = serverSessionId;
+        this.uuid = uuid;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getImage", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getImage_args args = new getImage_args();
-        args.setUuid(uuid);
         args.setServerSessionId(serverSessionId);
+        args.setUuid(uuid);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public DownloadInfos getResult() throws AuthorizationException, ImageDataException, org.apache.thrift.TException {
+      public DownloadData getResult() throws AuthorizationException, ImageDataException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -801,7 +801,7 @@ public class ImageServer {
       public getImage_result getResult(I iface, getImage_args args) throws org.apache.thrift.TException {
         getImage_result result = new getImage_result();
         try {
-          result.success = iface.getImage(args.uuid, args.serverSessionId);
+          result.success = iface.getImage(args.serverSessionId, args.uuid);
         } catch (AuthorizationException failure) {
           result.failure = failure;
         } catch (ImageDataException failure2) {
@@ -1167,7 +1167,7 @@ public class ImageServer {
       }
     }
 
-    public static class submitImage<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, submitImage_args, UploadInfos> {
+    public static class submitImage<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, submitImage_args, UploadData> {
       public submitImage() {
         super("submitImage");
       }
@@ -1176,10 +1176,10 @@ public class ImageServer {
         return new submitImage_args();
       }
 
-      public AsyncMethodCallback<UploadInfos> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<UploadData> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<UploadInfos>() { 
-          public void onComplete(UploadInfos o) {
+        return new AsyncMethodCallback<UploadData>() { 
+          public void onComplete(UploadData o) {
             submitImage_result result = new submitImage_result();
             result.success = o;
             try {
@@ -1229,12 +1229,12 @@ public class ImageServer {
         return false;
       }
 
-      public void start(I iface, submitImage_args args, org.apache.thrift.async.AsyncMethodCallback<UploadInfos> resultHandler) throws TException {
+      public void start(I iface, submitImage_args args, org.apache.thrift.async.AsyncMethodCallback<UploadData> resultHandler) throws TException {
         iface.submitImage(args.serverSessionId, args.imageDescription, args.crcSums,resultHandler);
       }
     }
 
-    public static class getImage<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getImage_args, DownloadInfos> {
+    public static class getImage<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getImage_args, DownloadData> {
       public getImage() {
         super("getImage");
       }
@@ -1243,10 +1243,10 @@ public class ImageServer {
         return new getImage_args();
       }
 
-      public AsyncMethodCallback<DownloadInfos> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<DownloadData> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<DownloadInfos>() { 
-          public void onComplete(DownloadInfos o) {
+        return new AsyncMethodCallback<DownloadData>() { 
+          public void onComplete(DownloadData o) {
             getImage_result result = new getImage_result();
             result.success = o;
             try {
@@ -1291,8 +1291,8 @@ public class ImageServer {
         return false;
       }
 
-      public void start(I iface, getImage_args args, org.apache.thrift.async.AsyncMethodCallback<DownloadInfos> resultHandler) throws TException {
-        iface.getImage(args.uuid, args.serverSessionId,resultHandler);
+      public void start(I iface, getImage_args args, org.apache.thrift.async.AsyncMethodCallback<DownloadData> resultHandler) throws TException {
+        iface.getImage(args.serverSessionId, args.uuid,resultHandler);
       }
     }
 
@@ -6552,13 +6552,13 @@ public class ImageServer {
             case 3: // CRC_SUMS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                  struct.crcSums = new ArrayList<Integer>(_list0.size);
-                  for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                  org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
+                  struct.crcSums = new ArrayList<Integer>(_list8.size);
+                  for (int _i9 = 0; _i9 < _list8.size; ++_i9)
                   {
-                    int _elem2;
-                    _elem2 = iprot.readI32();
-                    struct.crcSums.add(_elem2);
+                    int _elem10;
+                    _elem10 = iprot.readI32();
+                    struct.crcSums.add(_elem10);
                   }
                   iprot.readListEnd();
                 }
@@ -6596,9 +6596,9 @@ public class ImageServer {
           oprot.writeFieldBegin(CRC_SUMS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.crcSums.size()));
-            for (int _iter3 : struct.crcSums)
+            for (int _iter11 : struct.crcSums)
             {
-              oprot.writeI32(_iter3);
+              oprot.writeI32(_iter11);
             }
             oprot.writeListEnd();
           }
@@ -6641,9 +6641,9 @@ public class ImageServer {
         if (struct.isSetCrcSums()) {
           {
             oprot.writeI32(struct.crcSums.size());
-            for (int _iter4 : struct.crcSums)
+            for (int _iter12 : struct.crcSums)
             {
-              oprot.writeI32(_iter4);
+              oprot.writeI32(_iter12);
             }
           }
         }
@@ -6664,13 +6664,13 @@ public class ImageServer {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-            struct.crcSums = new ArrayList<Integer>(_list5.size);
-            for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+            org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+            struct.crcSums = new ArrayList<Integer>(_list13.size);
+            for (int _i14 = 0; _i14 < _list13.size; ++_i14)
             {
-              int _elem7;
-              _elem7 = iprot.readI32();
-              struct.crcSums.add(_elem7);
+              int _elem15;
+              _elem15 = iprot.readI32();
+              struct.crcSums.add(_elem15);
             }
           }
           struct.setCrcSumsIsSet(true);
@@ -6694,7 +6694,7 @@ public class ImageServer {
       schemes.put(TupleScheme.class, new submitImage_resultTupleSchemeFactory());
     }
 
-    public UploadInfos success; // required
+    public UploadData success; // required
     public AuthorizationException failure; // required
     public ImageDataException failure2; // required
     public UploadException failure3; // required
@@ -6771,7 +6771,7 @@ public class ImageServer {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, UploadInfos.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, UploadData.class)));
       tmpMap.put(_Fields.FAILURE, new org.apache.thrift.meta_data.FieldMetaData("failure", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.FAILURE2, new org.apache.thrift.meta_data.FieldMetaData("failure2", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -6786,7 +6786,7 @@ public class ImageServer {
     }
 
     public submitImage_result(
-      UploadInfos success,
+      UploadData success,
       AuthorizationException failure,
       ImageDataException failure2,
       UploadException failure3)
@@ -6803,7 +6803,7 @@ public class ImageServer {
      */
     public submitImage_result(submitImage_result other) {
       if (other.isSetSuccess()) {
-        this.success = new UploadInfos(other.success);
+        this.success = new UploadData(other.success);
       }
       if (other.isSetFailure()) {
         this.failure = new AuthorizationException(other.failure);
@@ -6828,11 +6828,11 @@ public class ImageServer {
       this.failure3 = null;
     }
 
-    public UploadInfos getSuccess() {
+    public UploadData getSuccess() {
       return this.success;
     }
 
-    public submitImage_result setSuccess(UploadInfos success) {
+    public submitImage_result setSuccess(UploadData success) {
       this.success = success;
       return this;
     }
@@ -6930,7 +6930,7 @@ public class ImageServer {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((UploadInfos)value);
+          setSuccess((UploadData)value);
         }
         break;
 
@@ -7202,7 +7202,7 @@ public class ImageServer {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new UploadInfos();
+                struct.success = new UploadData();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -7321,7 +7321,7 @@ public class ImageServer {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
-          struct.success = new UploadInfos();
+          struct.success = new UploadData();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -7348,8 +7348,8 @@ public class ImageServer {
   public static class getImage_args implements org.apache.thrift.TBase<getImage_args, getImage_args._Fields>, java.io.Serializable, Cloneable, Comparable<getImage_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getImage_args");
 
-    private static final org.apache.thrift.protocol.TField UUID_FIELD_DESC = new org.apache.thrift.protocol.TField("uuid", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField SERVER_SESSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("serverSessionId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField UUID_FIELD_DESC = new org.apache.thrift.protocol.TField("uuid", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -7357,13 +7357,13 @@ public class ImageServer {
       schemes.put(TupleScheme.class, new getImage_argsTupleSchemeFactory());
     }
 
-    public String uuid; // required
     public String serverSessionId; // required
+    public String uuid; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      UUID((short)1, "uuid"),
-      SERVER_SESSION_ID((short)2, "serverSessionId");
+      SERVER_SESSION_ID((short)2, "serverSessionId"),
+      UUID((short)1, "uuid");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -7378,10 +7378,10 @@ public class ImageServer {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // UUID
-            return UUID;
           case 2: // SERVER_SESSION_ID
             return SERVER_SESSION_ID;
+          case 1: // UUID
+            return UUID;
           default:
             return null;
         }
@@ -7425,10 +7425,10 @@ public class ImageServer {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.UUID, new org.apache.thrift.meta_data.FieldMetaData("uuid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "UUID")));
       tmpMap.put(_Fields.SERVER_SESSION_ID, new org.apache.thrift.meta_data.FieldMetaData("serverSessionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.UUID, new org.apache.thrift.meta_data.FieldMetaData("uuid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "UUID")));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getImage_args.class, metaDataMap);
     }
@@ -7437,23 +7437,23 @@ public class ImageServer {
     }
 
     public getImage_args(
-      String uuid,
-      String serverSessionId)
+      String serverSessionId,
+      String uuid)
     {
       this();
-      this.uuid = uuid;
       this.serverSessionId = serverSessionId;
+      this.uuid = uuid;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public getImage_args(getImage_args other) {
-      if (other.isSetUuid()) {
-        this.uuid = other.uuid;
-      }
       if (other.isSetServerSessionId()) {
         this.serverSessionId = other.serverSessionId;
+      }
+      if (other.isSetUuid()) {
+        this.uuid = other.uuid;
       }
     }
 
@@ -7463,32 +7463,8 @@ public class ImageServer {
 
     @Override
     public void clear() {
-      this.uuid = null;
       this.serverSessionId = null;
-    }
-
-    public String getUuid() {
-      return this.uuid;
-    }
-
-    public getImage_args setUuid(String uuid) {
-      this.uuid = uuid;
-      return this;
-    }
-
-    public void unsetUuid() {
       this.uuid = null;
-    }
-
-    /** Returns true if field uuid is set (has been assigned a value) and false otherwise */
-    public boolean isSetUuid() {
-      return this.uuid != null;
-    }
-
-    public void setUuidIsSet(boolean value) {
-      if (!value) {
-        this.uuid = null;
-      }
     }
 
     public String getServerSessionId() {
@@ -7515,16 +7491,32 @@ public class ImageServer {
       }
     }
 
+    public String getUuid() {
+      return this.uuid;
+    }
+
+    public getImage_args setUuid(String uuid) {
+      this.uuid = uuid;
+      return this;
+    }
+
+    public void unsetUuid() {
+      this.uuid = null;
+    }
+
+    /** Returns true if field uuid is set (has been assigned a value) and false otherwise */
+    public boolean isSetUuid() {
+      return this.uuid != null;
+    }
+
+    public void setUuidIsSet(boolean value) {
+      if (!value) {
+        this.uuid = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case UUID:
-        if (value == null) {
-          unsetUuid();
-        } else {
-          setUuid((String)value);
-        }
-        break;
-
       case SERVER_SESSION_ID:
         if (value == null) {
           unsetServerSessionId();
@@ -7533,16 +7525,24 @@ public class ImageServer {
         }
         break;
 
+      case UUID:
+        if (value == null) {
+          unsetUuid();
+        } else {
+          setUuid((String)value);
+        }
+        break;
+
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case UUID:
-        return getUuid();
-
       case SERVER_SESSION_ID:
         return getServerSessionId();
+
+      case UUID:
+        return getUuid();
 
       }
       throw new IllegalStateException();
@@ -7555,10 +7555,10 @@ public class ImageServer {
       }
 
       switch (field) {
-      case UUID:
-        return isSetUuid();
       case SERVER_SESSION_ID:
         return isSetServerSessionId();
+      case UUID:
+        return isSetUuid();
       }
       throw new IllegalStateException();
     }
@@ -7576,21 +7576,21 @@ public class ImageServer {
       if (that == null)
         return false;
 
-      boolean this_present_uuid = true && this.isSetUuid();
-      boolean that_present_uuid = true && that.isSetUuid();
-      if (this_present_uuid || that_present_uuid) {
-        if (!(this_present_uuid && that_present_uuid))
-          return false;
-        if (!this.uuid.equals(that.uuid))
-          return false;
-      }
-
       boolean this_present_serverSessionId = true && this.isSetServerSessionId();
       boolean that_present_serverSessionId = true && that.isSetServerSessionId();
       if (this_present_serverSessionId || that_present_serverSessionId) {
         if (!(this_present_serverSessionId && that_present_serverSessionId))
           return false;
         if (!this.serverSessionId.equals(that.serverSessionId))
+          return false;
+      }
+
+      boolean this_present_uuid = true && this.isSetUuid();
+      boolean that_present_uuid = true && that.isSetUuid();
+      if (this_present_uuid || that_present_uuid) {
+        if (!(this_present_uuid && that_present_uuid))
+          return false;
+        if (!this.uuid.equals(that.uuid))
           return false;
       }
 
@@ -7610,22 +7610,22 @@ public class ImageServer {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetUuid()).compareTo(other.isSetUuid());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetUuid()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.uuid, other.uuid);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       lastComparison = Boolean.valueOf(isSetServerSessionId()).compareTo(other.isSetServerSessionId());
       if (lastComparison != 0) {
         return lastComparison;
       }
       if (isSetServerSessionId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverSessionId, other.serverSessionId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetUuid()).compareTo(other.isSetUuid());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUuid()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.uuid, other.uuid);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -7650,19 +7650,19 @@ public class ImageServer {
       StringBuilder sb = new StringBuilder("getImage_args(");
       boolean first = true;
 
-      sb.append("uuid:");
-      if (this.uuid == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.uuid);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("serverSessionId:");
       if (this.serverSessionId == null) {
         sb.append("null");
       } else {
         sb.append(this.serverSessionId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("uuid:");
+      if (this.uuid == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.uuid);
       }
       first = false;
       sb.append(")");
@@ -7708,18 +7708,18 @@ public class ImageServer {
             break;
           }
           switch (schemeField.id) {
-            case 1: // UUID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.uuid = iprot.readString();
-                struct.setUuidIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
             case 2: // SERVER_SESSION_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.serverSessionId = iprot.readString();
                 struct.setServerSessionIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // UUID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.uuid = iprot.readString();
+                struct.setUuidIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -7767,18 +7767,18 @@ public class ImageServer {
       public void write(org.apache.thrift.protocol.TProtocol prot, getImage_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetUuid()) {
+        if (struct.isSetServerSessionId()) {
           optionals.set(0);
         }
-        if (struct.isSetServerSessionId()) {
+        if (struct.isSetUuid()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
-        if (struct.isSetUuid()) {
-          oprot.writeString(struct.uuid);
-        }
         if (struct.isSetServerSessionId()) {
           oprot.writeString(struct.serverSessionId);
+        }
+        if (struct.isSetUuid()) {
+          oprot.writeString(struct.uuid);
         }
       }
 
@@ -7787,12 +7787,12 @@ public class ImageServer {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.uuid = iprot.readString();
-          struct.setUuidIsSet(true);
-        }
-        if (incoming.get(1)) {
           struct.serverSessionId = iprot.readString();
           struct.setServerSessionIdIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.uuid = iprot.readString();
+          struct.setUuidIsSet(true);
         }
       }
     }
@@ -7812,7 +7812,7 @@ public class ImageServer {
       schemes.put(TupleScheme.class, new getImage_resultTupleSchemeFactory());
     }
 
-    public DownloadInfos success; // required
+    public DownloadData success; // required
     public AuthorizationException failure; // required
     public ImageDataException failure2; // required
 
@@ -7885,7 +7885,7 @@ public class ImageServer {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DownloadInfos.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DownloadData.class)));
       tmpMap.put(_Fields.FAILURE, new org.apache.thrift.meta_data.FieldMetaData("failure", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.FAILURE2, new org.apache.thrift.meta_data.FieldMetaData("failure2", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -7898,7 +7898,7 @@ public class ImageServer {
     }
 
     public getImage_result(
-      DownloadInfos success,
+      DownloadData success,
       AuthorizationException failure,
       ImageDataException failure2)
     {
@@ -7913,7 +7913,7 @@ public class ImageServer {
      */
     public getImage_result(getImage_result other) {
       if (other.isSetSuccess()) {
-        this.success = new DownloadInfos(other.success);
+        this.success = new DownloadData(other.success);
       }
       if (other.isSetFailure()) {
         this.failure = new AuthorizationException(other.failure);
@@ -7934,11 +7934,11 @@ public class ImageServer {
       this.failure2 = null;
     }
 
-    public DownloadInfos getSuccess() {
+    public DownloadData getSuccess() {
       return this.success;
     }
 
-    public getImage_result setSuccess(DownloadInfos success) {
+    public getImage_result setSuccess(DownloadData success) {
       this.success = success;
       return this;
     }
@@ -8012,7 +8012,7 @@ public class ImageServer {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((DownloadInfos)value);
+          setSuccess((DownloadData)value);
         }
         break;
 
@@ -8244,7 +8244,7 @@ public class ImageServer {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new DownloadInfos();
+                struct.success = new DownloadData();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -8343,7 +8343,7 @@ public class ImageServer {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
-          struct.success = new DownloadInfos();
+          struct.success = new DownloadData();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }

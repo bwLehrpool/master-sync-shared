@@ -15,7 +15,8 @@ public enum UploadError implements org.apache.thrift.TEnum {
   INVALID_CRC(0),
   BROKEN_BLOCK(1),
   GENERIC_ERROR(2),
-  INVALID_METADATA(3);
+  INVALID_METADATA(3),
+  ALREADY_COMPLETE(4);
 
   private final int value;
 
@@ -44,6 +45,8 @@ public enum UploadError implements org.apache.thrift.TEnum {
         return GENERIC_ERROR;
       case 3:
         return INVALID_METADATA;
+      case 4:
+        return ALREADY_COMPLETE;
       default:
         return null;
     }
