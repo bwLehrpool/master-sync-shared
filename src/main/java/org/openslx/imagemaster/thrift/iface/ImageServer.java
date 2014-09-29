@@ -42,7 +42,7 @@ public class ImageServer {
 
     public UserInfo getUserFromToken(String token) throws InvalidTokenException, org.apache.thrift.TException;
 
-    public String startServerAuthentication(String organization) throws ServerAuthenticationException, org.apache.thrift.TException;
+    public ByteBuffer startServerAuthentication(String organization) throws ServerAuthenticationException, org.apache.thrift.TException;
 
     public boolean isServerAuthenticated(String serverSessionId) throws org.apache.thrift.TException;
 
@@ -169,7 +169,7 @@ public class ImageServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getUserFromToken failed: unknown result");
     }
 
-    public String startServerAuthentication(String organization) throws ServerAuthenticationException, org.apache.thrift.TException
+    public ByteBuffer startServerAuthentication(String organization) throws ServerAuthenticationException, org.apache.thrift.TException
     {
       send_startServerAuthentication(organization);
       return recv_startServerAuthentication();
@@ -182,7 +182,7 @@ public class ImageServer {
       sendBase("startServerAuthentication", args);
     }
 
-    public String recv_startServerAuthentication() throws ServerAuthenticationException, org.apache.thrift.TException
+    public ByteBuffer recv_startServerAuthentication() throws ServerAuthenticationException, org.apache.thrift.TException
     {
       startServerAuthentication_result result = new startServerAuthentication_result();
       receiveBase(result, "startServerAuthentication");
@@ -445,7 +445,7 @@ public class ImageServer {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws ServerAuthenticationException, org.apache.thrift.TException {
+      public ByteBuffer getResult() throws ServerAuthenticationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1001,7 +1001,7 @@ public class ImageServer {
       }
     }
 
-    public static class startServerAuthentication<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, startServerAuthentication_args, String> {
+    public static class startServerAuthentication<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, startServerAuthentication_args, ByteBuffer> {
       public startServerAuthentication() {
         super("startServerAuthentication");
       }
@@ -1010,10 +1010,10 @@ public class ImageServer {
         return new startServerAuthentication_args();
       }
 
-      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<ByteBuffer> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<String>() { 
-          public void onComplete(String o) {
+        return new AsyncMethodCallback<ByteBuffer>() { 
+          public void onComplete(ByteBuffer o) {
             startServerAuthentication_result result = new startServerAuthentication_result();
             result.success = o;
             try {
@@ -1053,7 +1053,7 @@ public class ImageServer {
         return false;
       }
 
-      public void start(I iface, startServerAuthentication_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+      public void start(I iface, startServerAuthentication_args args, org.apache.thrift.async.AsyncMethodCallback<ByteBuffer> resultHandler) throws TException {
         iface.startServerAuthentication(args.organization,resultHandler);
       }
     }
@@ -3994,7 +3994,7 @@ public class ImageServer {
       schemes.put(TupleScheme.class, new startServerAuthentication_resultTupleSchemeFactory());
     }
 
-    public String success; // required
+    public ByteBuffer success; // required
     public ServerAuthenticationException failure; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -4063,7 +4063,7 @@ public class ImageServer {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , true)));
       tmpMap.put(_Fields.FAILURE, new org.apache.thrift.meta_data.FieldMetaData("failure", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -4074,7 +4074,7 @@ public class ImageServer {
     }
 
     public startServerAuthentication_result(
-      String success,
+      ByteBuffer success,
       ServerAuthenticationException failure)
     {
       this();
@@ -4087,7 +4087,8 @@ public class ImageServer {
      */
     public startServerAuthentication_result(startServerAuthentication_result other) {
       if (other.isSetSuccess()) {
-        this.success = other.success;
+        this.success = org.apache.thrift.TBaseHelper.copyBinary(other.success);
+;
       }
       if (other.isSetFailure()) {
         this.failure = new ServerAuthenticationException(other.failure);
@@ -4104,11 +4105,21 @@ public class ImageServer {
       this.failure = null;
     }
 
-    public String getSuccess() {
-      return this.success;
+    public byte[] getSuccess() {
+      setSuccess(org.apache.thrift.TBaseHelper.rightSize(success));
+      return success == null ? null : success.array();
     }
 
-    public startServerAuthentication_result setSuccess(String success) {
+    public ByteBuffer bufferForSuccess() {
+      return success;
+    }
+
+    public startServerAuthentication_result setSuccess(byte[] success) {
+      setSuccess(success == null ? (ByteBuffer)null : ByteBuffer.wrap(success));
+      return this;
+    }
+
+    public startServerAuthentication_result setSuccess(ByteBuffer success) {
       this.success = success;
       return this;
     }
@@ -4158,7 +4169,7 @@ public class ImageServer {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((String)value);
+          setSuccess((ByteBuffer)value);
         }
         break;
 
@@ -4291,7 +4302,7 @@ public class ImageServer {
       if (this.success == null) {
         sb.append("null");
       } else {
-        sb.append(this.success);
+        org.apache.thrift.TBaseHelper.toString(this.success, sb);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -4347,7 +4358,7 @@ public class ImageServer {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.success = iprot.readString();
+                struct.success = iprot.readBinary();
                 struct.setSuccessIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -4379,7 +4390,7 @@ public class ImageServer {
         oprot.writeStructBegin(STRUCT_DESC);
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          oprot.writeString(struct.success);
+          oprot.writeBinary(struct.success);
           oprot.writeFieldEnd();
         }
         if (struct.failure != null) {
@@ -4413,7 +4424,7 @@ public class ImageServer {
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
-          oprot.writeString(struct.success);
+          oprot.writeBinary(struct.success);
         }
         if (struct.isSetFailure()) {
           struct.failure.write(oprot);
@@ -4425,7 +4436,7 @@ public class ImageServer {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = iprot.readString();
+          struct.success = iprot.readBinary();
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {

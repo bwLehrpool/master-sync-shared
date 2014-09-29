@@ -15,7 +15,8 @@ public enum ServerAuthenticationError implements org.apache.thrift.TEnum {
   GENERIC_ERROR(0),
   INVALID_ORGANIZATION(1),
   INVALID_KEY(2),
-  BANNED_NETWORK(3);
+  CHALLENGE_FAILED(3),
+  BANNED_NETWORK(4);
 
   private final int value;
 
@@ -43,6 +44,8 @@ public enum ServerAuthenticationError implements org.apache.thrift.TEnum {
       case 2:
         return INVALID_KEY;
       case 3:
+        return CHALLENGE_FAILED;
+      case 4:
         return BANNED_NETWORK;
       default:
         return null;

@@ -27,6 +27,7 @@ enum ServerAuthenticationError {
 	GENERIC_ERROR,
 	INVALID_ORGANIZATION,
 	INVALID_KEY,
+	CHALLENGE_FAILED,
 	BANNED_NETWORK
 }
 
@@ -127,7 +128,7 @@ service ImageServer {
 
 	UserInfo getUserFromToken(1:Token token) throws (1:InvalidTokenException failure),
 	
-	string startServerAuthentication(1:string organization) throws (1: ServerAuthenticationException failure),
+	binary startServerAuthentication(1:string organization) throws (1: ServerAuthenticationException failure),
 	
 	bool isServerAuthenticated(1:string serverSessionId),
 	
