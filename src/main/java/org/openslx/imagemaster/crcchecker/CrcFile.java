@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,14 +12,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.CRC32;
 
+import org.apache.log4j.Logger;
 /**
  * Represents a crc file
  */
 public class CrcFile
 {
-	private final int masterCrc;
-	private final int[] crcSums;
+	private int masterCrc = 0;
+	private int[] crcSums = null;
 	private Boolean valid = null;
+	
+	private static Logger log = Logger.getLogger( CrcFile.class );
+
 
 	/**
 	 * Loads a crcFile from file
@@ -42,11 +47,12 @@ public class CrcFile
 			}
 			crcSums = sums;
 		} finally {
-			if ( dis != null )
+			if ( dis != null ) {
 				try {
 					dis.close();
-				} catch ( Throwable t ) {
+				} catch ( IOException e ) {
 				}
+			}
 		}
 	}
 
@@ -78,24 +84,36 @@ public class CrcFile
 	 * @param filename Where to save the created crc file
 	 * @throws IOException If it's not possible to write the file
 	 */
-	public void writeCrcFile( String filename ) throws IOException
+	public void writeCrcFile( String filename ) 
 	{
 		File file = new File( filename );
 
 		if ( file.exists() )
 			file.delete();
 
-		FileOutputStream fos = new FileOutputStream( file );
+		FileOutputStream fos = null;
 		DataOutputStream dos = null;
+		try {
+			fos = new FileOutputStream( file );
+		} catch (FileNotFoundException e) {
+			log.error("File " + filename + " not found.", e);
+			return;
+		}
 		try {
 			dos = new DataOutputStream( fos );
 			dos.writeInt( Integer.reverseBytes( masterCrc ) );
 			for ( int sum : crcSums ) {
 				dos.writeInt( Integer.reverseBytes( sum ) );
 			}
+		} catch (IOException e) {
+			log.error("IOException", e);
+			return;
 		} finally {
 			if ( dos != null )
-				dos.close();
+				try {
+					dos.close();
+				} catch ( IOException e ) {
+				}
 		}
 	}
 
