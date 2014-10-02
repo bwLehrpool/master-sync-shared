@@ -13,17 +13,18 @@ import java.util.List;
 import java.util.zip.CRC32;
 
 import org.apache.log4j.Logger;
+
 /**
  * Represents a crc file
  */
 public class CrcFile
 {
-	private int masterCrc = 0;
-	private int[] crcSums = null;
+	private final int masterCrc;
+	private final int[] crcSums;
 	private Boolean valid = null;
-	
-	private static Logger log = Logger.getLogger( CrcFile.class );
+	private final File file;
 
+	private static Logger log = Logger.getLogger( CrcFile.class );
 
 	/**
 	 * Loads a crcFile from file
@@ -33,7 +34,7 @@ public class CrcFile
 	 */
 	public CrcFile( String filename ) throws IOException
 	{
-		File file = new File( filename );
+		file = new File( filename );
 		DataInputStream dis = null;
 		try {
 			dis = new DataInputStream( new FileInputStream( file ) );
@@ -63,12 +64,14 @@ public class CrcFile
 	 */
 	public CrcFile( int[] crcSumsWithLeadingMasterCrc )
 	{
+		this.file = null;
 		this.masterCrc = crcSumsWithLeadingMasterCrc[0];
 		this.crcSums = Arrays.copyOfRange( crcSumsWithLeadingMasterCrc, 1, crcSumsWithLeadingMasterCrc.length );
 	}
 
 	public CrcFile( List<Integer> crcSumsWithLeadingMasterCrc )
 	{
+		this.file = null;
 		this.masterCrc = crcSumsWithLeadingMasterCrc.get( 0 );
 		this.crcSums = new int[ crcSumsWithLeadingMasterCrc.size() - 1 ];
 		for ( int i = 0; i < crcSums.length; i++ )
@@ -84,7 +87,7 @@ public class CrcFile
 	 * @param filename Where to save the created crc file
 	 * @throws IOException If it's not possible to write the file
 	 */
-	public void writeCrcFile( String filename ) 
+	public void writeCrcFile( String filename )
 	{
 		File file = new File( filename );
 
@@ -95,8 +98,8 @@ public class CrcFile
 		DataOutputStream dos = null;
 		try {
 			fos = new FileOutputStream( file );
-		} catch (FileNotFoundException e) {
-			log.error("File " + filename + " not found.", e);
+		} catch ( FileNotFoundException e ) {
+			log.error( "File " + filename + " not found.", e );
 			return;
 		}
 		try {
@@ -105,8 +108,8 @@ public class CrcFile
 			for ( int sum : crcSums ) {
 				dos.writeInt( Integer.reverseBytes( sum ) );
 			}
-		} catch (IOException e) {
-			log.error("IOException", e);
+		} catch ( IOException e ) {
+			log.error( "IOException", e );
 			return;
 		} finally {
 			if ( dos != null )
@@ -141,6 +144,15 @@ public class CrcFile
 			valid = ( masterSum == Integer.reverseBytes( (int)crcCalc.getValue() ) );
 		}
 		return valid;
+	}
+
+	/**
+	 * Delete the file that is backing this list of crc sums, if any.
+	 */
+	public void delete()
+	{
+		if ( file != null )
+			file.delete();
 	}
 
 	/**
