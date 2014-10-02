@@ -32,33 +32,25 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ServerAuthenticationException extends TException implements org.apache.thrift.TBase<ServerAuthenticationException, ServerAuthenticationException._Fields>, java.io.Serializable, Cloneable, Comparable<ServerAuthenticationException> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ServerAuthenticationException");
+public class OrganizationData implements org.apache.thrift.TBase<OrganizationData, OrganizationData._Fields>, java.io.Serializable, Cloneable, Comparable<OrganizationData> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("OrganizationData");
 
-  private static final org.apache.thrift.protocol.TField NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("number", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField ORGANIZATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("organizationId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField DISPLAY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("displayName", org.apache.thrift.protocol.TType.STRING, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new ServerAuthenticationExceptionStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new ServerAuthenticationExceptionTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new OrganizationDataStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new OrganizationDataTupleSchemeFactory());
   }
 
-  /**
-   * 
-   * @see ServerAuthenticationError
-   */
-  public ServerAuthenticationError number; // required
-  public String message; // required
+  public String organizationId; // required
+  public String displayName; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    /**
-     * 
-     * @see ServerAuthenticationError
-     */
-    NUMBER((short)1, "number"),
-    MESSAGE((short)2, "message");
+    ORGANIZATION_ID((short)1, "organizationId"),
+    DISPLAY_NAME((short)2, "displayName");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -73,10 +65,10 @@ public class ServerAuthenticationException extends TException implements org.apa
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // NUMBER
-          return NUMBER;
-        case 2: // MESSAGE
-          return MESSAGE;
+        case 1: // ORGANIZATION_ID
+          return ORGANIZATION_ID;
+        case 2: // DISPLAY_NAME
+          return DISPLAY_NAME;
         default:
           return null;
       }
@@ -120,119 +112,111 @@ public class ServerAuthenticationException extends TException implements org.apa
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.NUMBER, new org.apache.thrift.meta_data.FieldMetaData("number", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ServerAuthenticationError.class)));
-    tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.ORGANIZATION_ID, new org.apache.thrift.meta_data.FieldMetaData("organizationId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DISPLAY_NAME, new org.apache.thrift.meta_data.FieldMetaData("displayName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ServerAuthenticationException.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(OrganizationData.class, metaDataMap);
   }
 
-  public ServerAuthenticationException() {
+  public OrganizationData() {
   }
 
-  public ServerAuthenticationException(
-    ServerAuthenticationError number,
-    String message)
+  public OrganizationData(
+    String organizationId,
+    String displayName)
   {
     this();
-    this.number = number;
-    this.message = message;
+    this.organizationId = organizationId;
+    this.displayName = displayName;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public ServerAuthenticationException(ServerAuthenticationException other) {
-    if (other.isSetNumber()) {
-      this.number = other.number;
+  public OrganizationData(OrganizationData other) {
+    if (other.isSetOrganizationId()) {
+      this.organizationId = other.organizationId;
     }
-    if (other.isSetMessage()) {
-      this.message = other.message;
+    if (other.isSetDisplayName()) {
+      this.displayName = other.displayName;
     }
   }
 
-  public ServerAuthenticationException deepCopy() {
-    return new ServerAuthenticationException(this);
+  public OrganizationData deepCopy() {
+    return new OrganizationData(this);
   }
 
   @Override
   public void clear() {
-    this.number = null;
-    this.message = null;
+    this.organizationId = null;
+    this.displayName = null;
   }
 
-  /**
-   * 
-   * @see ServerAuthenticationError
-   */
-  public ServerAuthenticationError getNumber() {
-    return this.number;
+  public String getOrganizationId() {
+    return this.organizationId;
   }
 
-  /**
-   * 
-   * @see ServerAuthenticationError
-   */
-  public ServerAuthenticationException setNumber(ServerAuthenticationError number) {
-    this.number = number;
+  public OrganizationData setOrganizationId(String organizationId) {
+    this.organizationId = organizationId;
     return this;
   }
 
-  public void unsetNumber() {
-    this.number = null;
+  public void unsetOrganizationId() {
+    this.organizationId = null;
   }
 
-  /** Returns true if field number is set (has been assigned a value) and false otherwise */
-  public boolean isSetNumber() {
-    return this.number != null;
+  /** Returns true if field organizationId is set (has been assigned a value) and false otherwise */
+  public boolean isSetOrganizationId() {
+    return this.organizationId != null;
   }
 
-  public void setNumberIsSet(boolean value) {
+  public void setOrganizationIdIsSet(boolean value) {
     if (!value) {
-      this.number = null;
+      this.organizationId = null;
     }
   }
 
-  public String getMessage() {
-    return this.message;
+  public String getDisplayName() {
+    return this.displayName;
   }
 
-  public ServerAuthenticationException setMessage(String message) {
-    this.message = message;
+  public OrganizationData setDisplayName(String displayName) {
+    this.displayName = displayName;
     return this;
   }
 
-  public void unsetMessage() {
-    this.message = null;
+  public void unsetDisplayName() {
+    this.displayName = null;
   }
 
-  /** Returns true if field message is set (has been assigned a value) and false otherwise */
-  public boolean isSetMessage() {
-    return this.message != null;
+  /** Returns true if field displayName is set (has been assigned a value) and false otherwise */
+  public boolean isSetDisplayName() {
+    return this.displayName != null;
   }
 
-  public void setMessageIsSet(boolean value) {
+  public void setDisplayNameIsSet(boolean value) {
     if (!value) {
-      this.message = null;
+      this.displayName = null;
     }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case NUMBER:
+    case ORGANIZATION_ID:
       if (value == null) {
-        unsetNumber();
+        unsetOrganizationId();
       } else {
-        setNumber((ServerAuthenticationError)value);
+        setOrganizationId((String)value);
       }
       break;
 
-    case MESSAGE:
+    case DISPLAY_NAME:
       if (value == null) {
-        unsetMessage();
+        unsetDisplayName();
       } else {
-        setMessage((String)value);
+        setDisplayName((String)value);
       }
       break;
 
@@ -241,11 +225,11 @@ public class ServerAuthenticationException extends TException implements org.apa
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case NUMBER:
-      return getNumber();
+    case ORGANIZATION_ID:
+      return getOrganizationId();
 
-    case MESSAGE:
-      return getMessage();
+    case DISPLAY_NAME:
+      return getDisplayName();
 
     }
     throw new IllegalStateException();
@@ -258,10 +242,10 @@ public class ServerAuthenticationException extends TException implements org.apa
     }
 
     switch (field) {
-    case NUMBER:
-      return isSetNumber();
-    case MESSAGE:
-      return isSetMessage();
+    case ORGANIZATION_ID:
+      return isSetOrganizationId();
+    case DISPLAY_NAME:
+      return isSetDisplayName();
     }
     throw new IllegalStateException();
   }
@@ -270,30 +254,30 @@ public class ServerAuthenticationException extends TException implements org.apa
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof ServerAuthenticationException)
-      return this.equals((ServerAuthenticationException)that);
+    if (that instanceof OrganizationData)
+      return this.equals((OrganizationData)that);
     return false;
   }
 
-  public boolean equals(ServerAuthenticationException that) {
+  public boolean equals(OrganizationData that) {
     if (that == null)
       return false;
 
-    boolean this_present_number = true && this.isSetNumber();
-    boolean that_present_number = true && that.isSetNumber();
-    if (this_present_number || that_present_number) {
-      if (!(this_present_number && that_present_number))
+    boolean this_present_organizationId = true && this.isSetOrganizationId();
+    boolean that_present_organizationId = true && that.isSetOrganizationId();
+    if (this_present_organizationId || that_present_organizationId) {
+      if (!(this_present_organizationId && that_present_organizationId))
         return false;
-      if (!this.number.equals(that.number))
+      if (!this.organizationId.equals(that.organizationId))
         return false;
     }
 
-    boolean this_present_message = true && this.isSetMessage();
-    boolean that_present_message = true && that.isSetMessage();
-    if (this_present_message || that_present_message) {
-      if (!(this_present_message && that_present_message))
+    boolean this_present_displayName = true && this.isSetDisplayName();
+    boolean that_present_displayName = true && that.isSetDisplayName();
+    if (this_present_displayName || that_present_displayName) {
+      if (!(this_present_displayName && that_present_displayName))
         return false;
-      if (!this.message.equals(that.message))
+      if (!this.displayName.equals(that.displayName))
         return false;
     }
 
@@ -306,29 +290,29 @@ public class ServerAuthenticationException extends TException implements org.apa
   }
 
   @Override
-  public int compareTo(ServerAuthenticationException other) {
+  public int compareTo(OrganizationData other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetNumber()).compareTo(other.isSetNumber());
+    lastComparison = Boolean.valueOf(isSetOrganizationId()).compareTo(other.isSetOrganizationId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetNumber()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.number, other.number);
+    if (isSetOrganizationId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.organizationId, other.organizationId);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetMessage()).compareTo(other.isSetMessage());
+    lastComparison = Boolean.valueOf(isSetDisplayName()).compareTo(other.isSetDisplayName());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetMessage()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.message, other.message);
+    if (isSetDisplayName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.displayName, other.displayName);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -350,22 +334,22 @@ public class ServerAuthenticationException extends TException implements org.apa
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("ServerAuthenticationException(");
+    StringBuilder sb = new StringBuilder("OrganizationData(");
     boolean first = true;
 
-    sb.append("number:");
-    if (this.number == null) {
+    sb.append("organizationId:");
+    if (this.organizationId == null) {
       sb.append("null");
     } else {
-      sb.append(this.number);
+      sb.append(this.organizationId);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("message:");
-    if (this.message == null) {
+    sb.append("displayName:");
+    if (this.displayName == null) {
       sb.append("null");
     } else {
-      sb.append(this.message);
+      sb.append(this.displayName);
     }
     first = false;
     sb.append(")");
@@ -393,15 +377,15 @@ public class ServerAuthenticationException extends TException implements org.apa
     }
   }
 
-  private static class ServerAuthenticationExceptionStandardSchemeFactory implements SchemeFactory {
-    public ServerAuthenticationExceptionStandardScheme getScheme() {
-      return new ServerAuthenticationExceptionStandardScheme();
+  private static class OrganizationDataStandardSchemeFactory implements SchemeFactory {
+    public OrganizationDataStandardScheme getScheme() {
+      return new OrganizationDataStandardScheme();
     }
   }
 
-  private static class ServerAuthenticationExceptionStandardScheme extends StandardScheme<ServerAuthenticationException> {
+  private static class OrganizationDataStandardScheme extends StandardScheme<OrganizationData> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, ServerAuthenticationException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, OrganizationData struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -411,18 +395,18 @@ public class ServerAuthenticationException extends TException implements org.apa
           break;
         }
         switch (schemeField.id) {
-          case 1: // NUMBER
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.number = ServerAuthenticationError.findByValue(iprot.readI32());
-              struct.setNumberIsSet(true);
+          case 1: // ORGANIZATION_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.organizationId = iprot.readString();
+              struct.setOrganizationIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // MESSAGE
+          case 2: // DISPLAY_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.message = iprot.readString();
-              struct.setMessageIsSet(true);
+              struct.displayName = iprot.readString();
+              struct.setDisplayNameIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -438,18 +422,18 @@ public class ServerAuthenticationException extends TException implements org.apa
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, ServerAuthenticationException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, OrganizationData struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.number != null) {
-        oprot.writeFieldBegin(NUMBER_FIELD_DESC);
-        oprot.writeI32(struct.number.getValue());
+      if (struct.organizationId != null) {
+        oprot.writeFieldBegin(ORGANIZATION_ID_FIELD_DESC);
+        oprot.writeString(struct.organizationId);
         oprot.writeFieldEnd();
       }
-      if (struct.message != null) {
-        oprot.writeFieldBegin(MESSAGE_FIELD_DESC);
-        oprot.writeString(struct.message);
+      if (struct.displayName != null) {
+        oprot.writeFieldBegin(DISPLAY_NAME_FIELD_DESC);
+        oprot.writeString(struct.displayName);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -458,44 +442,44 @@ public class ServerAuthenticationException extends TException implements org.apa
 
   }
 
-  private static class ServerAuthenticationExceptionTupleSchemeFactory implements SchemeFactory {
-    public ServerAuthenticationExceptionTupleScheme getScheme() {
-      return new ServerAuthenticationExceptionTupleScheme();
+  private static class OrganizationDataTupleSchemeFactory implements SchemeFactory {
+    public OrganizationDataTupleScheme getScheme() {
+      return new OrganizationDataTupleScheme();
     }
   }
 
-  private static class ServerAuthenticationExceptionTupleScheme extends TupleScheme<ServerAuthenticationException> {
+  private static class OrganizationDataTupleScheme extends TupleScheme<OrganizationData> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, ServerAuthenticationException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, OrganizationData struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetNumber()) {
+      if (struct.isSetOrganizationId()) {
         optionals.set(0);
       }
-      if (struct.isSetMessage()) {
+      if (struct.isSetDisplayName()) {
         optionals.set(1);
       }
       oprot.writeBitSet(optionals, 2);
-      if (struct.isSetNumber()) {
-        oprot.writeI32(struct.number.getValue());
+      if (struct.isSetOrganizationId()) {
+        oprot.writeString(struct.organizationId);
       }
-      if (struct.isSetMessage()) {
-        oprot.writeString(struct.message);
+      if (struct.isSetDisplayName()) {
+        oprot.writeString(struct.displayName);
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, ServerAuthenticationException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, OrganizationData struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
-        struct.number = ServerAuthenticationError.findByValue(iprot.readI32());
-        struct.setNumberIsSet(true);
+        struct.organizationId = iprot.readString();
+        struct.setOrganizationIdIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.message = iprot.readString();
-        struct.setMessageIsSet(true);
+        struct.displayName = iprot.readString();
+        struct.setDisplayNameIsSet(true);
       }
     }
   }

@@ -15,7 +15,10 @@ public enum AuthenticationError implements org.apache.thrift.TEnum {
   GENERIC_ERROR(0),
   INVALID_CREDENTIALS(1),
   ACCOUNT_SUSPENDED(2),
-  BANNED_NETWORK(3);
+  INVALID_ORGANIZATION(3),
+  INVALID_KEY(4),
+  CHALLENGE_FAILED(5),
+  BANNED_NETWORK(6);
 
   private final int value;
 
@@ -43,6 +46,12 @@ public enum AuthenticationError implements org.apache.thrift.TEnum {
       case 2:
         return ACCOUNT_SUSPENDED;
       case 3:
+        return INVALID_ORGANIZATION;
+      case 4:
+        return INVALID_KEY;
+      case 5:
+        return CHALLENGE_FAILED;
+      case 6:
         return BANNED_NETWORK;
       default:
         return null;

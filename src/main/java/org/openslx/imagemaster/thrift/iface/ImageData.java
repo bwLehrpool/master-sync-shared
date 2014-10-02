@@ -36,16 +36,15 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ImageData");
 
   private static final org.apache.thrift.protocol.TField UUID_FIELD_DESC = new org.apache.thrift.protocol.TField("uuid", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField IMAGE_VERSION_FIELD_DESC = new org.apache.thrift.protocol.TField("imageVersion", org.apache.thrift.protocol.TType.I32, (short)2);
-  private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField IMAGE_CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageCreateTime", org.apache.thrift.protocol.TType.I64, (short)4);
-  private static final org.apache.thrift.protocol.TField IMAGE_UPDATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageUpdateTime", org.apache.thrift.protocol.TType.I64, (short)5);
-  private static final org.apache.thrift.protocol.TField IMAGE_OWNER_FIELD_DESC = new org.apache.thrift.protocol.TField("imageOwner", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField CONTENT_OPERATING_SYSTEM_FIELD_DESC = new org.apache.thrift.protocol.TField("contentOperatingSystem", org.apache.thrift.protocol.TType.STRING, (short)7);
-  private static final org.apache.thrift.protocol.TField STATUS_IS_VALID_FIELD_DESC = new org.apache.thrift.protocol.TField("statusIsValid", org.apache.thrift.protocol.TType.BOOL, (short)8);
-  private static final org.apache.thrift.protocol.TField STATUS_IS_DELETED_FIELD_DESC = new org.apache.thrift.protocol.TField("statusIsDeleted", org.apache.thrift.protocol.TType.BOOL, (short)9);
-  private static final org.apache.thrift.protocol.TField IMAGE_SHORT_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("imageShortDescription", org.apache.thrift.protocol.TType.STRING, (short)10);
-  private static final org.apache.thrift.protocol.TField IMAGE_LONG_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("imageLongDescription", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField REVISION_FIELD_DESC = new org.apache.thrift.protocol.TField("revision", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField TITLE_FIELD_DESC = new org.apache.thrift.protocol.TField("title", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createTime", org.apache.thrift.protocol.TType.I64, (short)4);
+  private static final org.apache.thrift.protocol.TField UPDATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("updateTime", org.apache.thrift.protocol.TType.I64, (short)5);
+  private static final org.apache.thrift.protocol.TField OWNER_LOGIN_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerLogin", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField OPERATING_SYSTEM_FIELD_DESC = new org.apache.thrift.protocol.TField("operatingSystem", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField IS_VALID_FIELD_DESC = new org.apache.thrift.protocol.TField("isValid", org.apache.thrift.protocol.TType.BOOL, (short)8);
+  private static final org.apache.thrift.protocol.TField IS_DELETED_FIELD_DESC = new org.apache.thrift.protocol.TField("isDeleted", org.apache.thrift.protocol.TType.BOOL, (short)9);
+  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)11);
   private static final org.apache.thrift.protocol.TField FILE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSize", org.apache.thrift.protocol.TType.I64, (short)12);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -55,31 +54,29 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
   }
 
   public String uuid; // required
-  public int imageVersion; // required
-  public String imageName; // required
-  public long imageCreateTime; // required
-  public long imageUpdateTime; // required
-  public String imageOwner; // required
-  public String contentOperatingSystem; // required
-  public boolean statusIsValid; // required
-  public boolean statusIsDeleted; // required
-  public String imageShortDescription; // required
-  public String imageLongDescription; // required
+  public int revision; // required
+  public String title; // required
+  public long createTime; // required
+  public long updateTime; // required
+  public String ownerLogin; // required
+  public String operatingSystem; // required
+  public boolean isValid; // required
+  public boolean isDeleted; // required
+  public String description; // required
   public long fileSize; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     UUID((short)1, "uuid"),
-    IMAGE_VERSION((short)2, "imageVersion"),
-    IMAGE_NAME((short)3, "imageName"),
-    IMAGE_CREATE_TIME((short)4, "imageCreateTime"),
-    IMAGE_UPDATE_TIME((short)5, "imageUpdateTime"),
-    IMAGE_OWNER((short)6, "imageOwner"),
-    CONTENT_OPERATING_SYSTEM((short)7, "contentOperatingSystem"),
-    STATUS_IS_VALID((short)8, "statusIsValid"),
-    STATUS_IS_DELETED((short)9, "statusIsDeleted"),
-    IMAGE_SHORT_DESCRIPTION((short)10, "imageShortDescription"),
-    IMAGE_LONG_DESCRIPTION((short)11, "imageLongDescription"),
+    REVISION((short)2, "revision"),
+    TITLE((short)3, "title"),
+    CREATE_TIME((short)4, "createTime"),
+    UPDATE_TIME((short)5, "updateTime"),
+    OWNER_LOGIN((short)6, "ownerLogin"),
+    OPERATING_SYSTEM((short)7, "operatingSystem"),
+    IS_VALID((short)8, "isValid"),
+    IS_DELETED((short)9, "isDeleted"),
+    DESCRIPTION((short)11, "description"),
     FILE_SIZE((short)12, "fileSize");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -97,26 +94,24 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
       switch(fieldId) {
         case 1: // UUID
           return UUID;
-        case 2: // IMAGE_VERSION
-          return IMAGE_VERSION;
-        case 3: // IMAGE_NAME
-          return IMAGE_NAME;
-        case 4: // IMAGE_CREATE_TIME
-          return IMAGE_CREATE_TIME;
-        case 5: // IMAGE_UPDATE_TIME
-          return IMAGE_UPDATE_TIME;
-        case 6: // IMAGE_OWNER
-          return IMAGE_OWNER;
-        case 7: // CONTENT_OPERATING_SYSTEM
-          return CONTENT_OPERATING_SYSTEM;
-        case 8: // STATUS_IS_VALID
-          return STATUS_IS_VALID;
-        case 9: // STATUS_IS_DELETED
-          return STATUS_IS_DELETED;
-        case 10: // IMAGE_SHORT_DESCRIPTION
-          return IMAGE_SHORT_DESCRIPTION;
-        case 11: // IMAGE_LONG_DESCRIPTION
-          return IMAGE_LONG_DESCRIPTION;
+        case 2: // REVISION
+          return REVISION;
+        case 3: // TITLE
+          return TITLE;
+        case 4: // CREATE_TIME
+          return CREATE_TIME;
+        case 5: // UPDATE_TIME
+          return UPDATE_TIME;
+        case 6: // OWNER_LOGIN
+          return OWNER_LOGIN;
+        case 7: // OPERATING_SYSTEM
+          return OPERATING_SYSTEM;
+        case 8: // IS_VALID
+          return IS_VALID;
+        case 9: // IS_DELETED
+          return IS_DELETED;
+        case 11: // DESCRIPTION
+          return DESCRIPTION;
         case 12: // FILE_SIZE
           return FILE_SIZE;
         default:
@@ -159,11 +154,11 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
   }
 
   // isset id assignments
-  private static final int __IMAGEVERSION_ISSET_ID = 0;
-  private static final int __IMAGECREATETIME_ISSET_ID = 1;
-  private static final int __IMAGEUPDATETIME_ISSET_ID = 2;
-  private static final int __STATUSISVALID_ISSET_ID = 3;
-  private static final int __STATUSISDELETED_ISSET_ID = 4;
+  private static final int __REVISION_ISSET_ID = 0;
+  private static final int __CREATETIME_ISSET_ID = 1;
+  private static final int __UPDATETIME_ISSET_ID = 2;
+  private static final int __ISVALID_ISSET_ID = 3;
+  private static final int __ISDELETED_ISSET_ID = 4;
   private static final int __FILESIZE_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
@@ -171,25 +166,23 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.UUID, new org.apache.thrift.meta_data.FieldMetaData("uuid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
-    tmpMap.put(_Fields.IMAGE_VERSION, new org.apache.thrift.meta_data.FieldMetaData("imageVersion", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.REVISION, new org.apache.thrift.meta_data.FieldMetaData("revision", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.IMAGE_NAME, new org.apache.thrift.meta_data.FieldMetaData("imageName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.TITLE, new org.apache.thrift.meta_data.FieldMetaData("title", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.IMAGE_CREATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("imageCreateTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.CREATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("createTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
-    tmpMap.put(_Fields.IMAGE_UPDATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("imageUpdateTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.UPDATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("updateTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
-    tmpMap.put(_Fields.IMAGE_OWNER, new org.apache.thrift.meta_data.FieldMetaData("imageOwner", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.OWNER_LOGIN, new org.apache.thrift.meta_data.FieldMetaData("ownerLogin", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.CONTENT_OPERATING_SYSTEM, new org.apache.thrift.meta_data.FieldMetaData("contentOperatingSystem", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.OPERATING_SYSTEM, new org.apache.thrift.meta_data.FieldMetaData("operatingSystem", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.STATUS_IS_VALID, new org.apache.thrift.meta_data.FieldMetaData("statusIsValid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.IS_VALID, new org.apache.thrift.meta_data.FieldMetaData("isValid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.STATUS_IS_DELETED, new org.apache.thrift.meta_data.FieldMetaData("statusIsDeleted", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.IS_DELETED, new org.apache.thrift.meta_data.FieldMetaData("isDeleted", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.IMAGE_SHORT_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("imageShortDescription", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.IMAGE_LONG_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("imageLongDescription", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.FILE_SIZE, new org.apache.thrift.meta_data.FieldMetaData("fileSize", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
@@ -202,35 +195,33 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
 
   public ImageData(
     String uuid,
-    int imageVersion,
-    String imageName,
-    long imageCreateTime,
-    long imageUpdateTime,
-    String imageOwner,
-    String contentOperatingSystem,
-    boolean statusIsValid,
-    boolean statusIsDeleted,
-    String imageShortDescription,
-    String imageLongDescription,
+    int revision,
+    String title,
+    long createTime,
+    long updateTime,
+    String ownerLogin,
+    String operatingSystem,
+    boolean isValid,
+    boolean isDeleted,
+    String description,
     long fileSize)
   {
     this();
     this.uuid = uuid;
-    this.imageVersion = imageVersion;
-    setImageVersionIsSet(true);
-    this.imageName = imageName;
-    this.imageCreateTime = imageCreateTime;
-    setImageCreateTimeIsSet(true);
-    this.imageUpdateTime = imageUpdateTime;
-    setImageUpdateTimeIsSet(true);
-    this.imageOwner = imageOwner;
-    this.contentOperatingSystem = contentOperatingSystem;
-    this.statusIsValid = statusIsValid;
-    setStatusIsValidIsSet(true);
-    this.statusIsDeleted = statusIsDeleted;
-    setStatusIsDeletedIsSet(true);
-    this.imageShortDescription = imageShortDescription;
-    this.imageLongDescription = imageLongDescription;
+    this.revision = revision;
+    setRevisionIsSet(true);
+    this.title = title;
+    this.createTime = createTime;
+    setCreateTimeIsSet(true);
+    this.updateTime = updateTime;
+    setUpdateTimeIsSet(true);
+    this.ownerLogin = ownerLogin;
+    this.operatingSystem = operatingSystem;
+    this.isValid = isValid;
+    setIsValidIsSet(true);
+    this.isDeleted = isDeleted;
+    setIsDeletedIsSet(true);
+    this.description = description;
     this.fileSize = fileSize;
     setFileSizeIsSet(true);
   }
@@ -243,25 +234,22 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
     if (other.isSetUuid()) {
       this.uuid = other.uuid;
     }
-    this.imageVersion = other.imageVersion;
-    if (other.isSetImageName()) {
-      this.imageName = other.imageName;
+    this.revision = other.revision;
+    if (other.isSetTitle()) {
+      this.title = other.title;
     }
-    this.imageCreateTime = other.imageCreateTime;
-    this.imageUpdateTime = other.imageUpdateTime;
-    if (other.isSetImageOwner()) {
-      this.imageOwner = other.imageOwner;
+    this.createTime = other.createTime;
+    this.updateTime = other.updateTime;
+    if (other.isSetOwnerLogin()) {
+      this.ownerLogin = other.ownerLogin;
     }
-    if (other.isSetContentOperatingSystem()) {
-      this.contentOperatingSystem = other.contentOperatingSystem;
+    if (other.isSetOperatingSystem()) {
+      this.operatingSystem = other.operatingSystem;
     }
-    this.statusIsValid = other.statusIsValid;
-    this.statusIsDeleted = other.statusIsDeleted;
-    if (other.isSetImageShortDescription()) {
-      this.imageShortDescription = other.imageShortDescription;
-    }
-    if (other.isSetImageLongDescription()) {
-      this.imageLongDescription = other.imageLongDescription;
+    this.isValid = other.isValid;
+    this.isDeleted = other.isDeleted;
+    if (other.isSetDescription()) {
+      this.description = other.description;
     }
     this.fileSize = other.fileSize;
   }
@@ -273,21 +261,20 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
   @Override
   public void clear() {
     this.uuid = null;
-    setImageVersionIsSet(false);
-    this.imageVersion = 0;
-    this.imageName = null;
-    setImageCreateTimeIsSet(false);
-    this.imageCreateTime = 0;
-    setImageUpdateTimeIsSet(false);
-    this.imageUpdateTime = 0;
-    this.imageOwner = null;
-    this.contentOperatingSystem = null;
-    setStatusIsValidIsSet(false);
-    this.statusIsValid = false;
-    setStatusIsDeletedIsSet(false);
-    this.statusIsDeleted = false;
-    this.imageShortDescription = null;
-    this.imageLongDescription = null;
+    setRevisionIsSet(false);
+    this.revision = 0;
+    this.title = null;
+    setCreateTimeIsSet(false);
+    this.createTime = 0;
+    setUpdateTimeIsSet(false);
+    this.updateTime = 0;
+    this.ownerLogin = null;
+    this.operatingSystem = null;
+    setIsValidIsSet(false);
+    this.isValid = false;
+    setIsDeletedIsSet(false);
+    this.isDeleted = false;
+    this.description = null;
     setFileSizeIsSet(false);
     this.fileSize = 0;
   }
@@ -316,238 +303,214 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
     }
   }
 
-  public int getImageVersion() {
-    return this.imageVersion;
+  public int getRevision() {
+    return this.revision;
   }
 
-  public ImageData setImageVersion(int imageVersion) {
-    this.imageVersion = imageVersion;
-    setImageVersionIsSet(true);
+  public ImageData setRevision(int revision) {
+    this.revision = revision;
+    setRevisionIsSet(true);
     return this;
   }
 
-  public void unsetImageVersion() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __IMAGEVERSION_ISSET_ID);
+  public void unsetRevision() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __REVISION_ISSET_ID);
   }
 
-  /** Returns true if field imageVersion is set (has been assigned a value) and false otherwise */
-  public boolean isSetImageVersion() {
-    return EncodingUtils.testBit(__isset_bitfield, __IMAGEVERSION_ISSET_ID);
+  /** Returns true if field revision is set (has been assigned a value) and false otherwise */
+  public boolean isSetRevision() {
+    return EncodingUtils.testBit(__isset_bitfield, __REVISION_ISSET_ID);
   }
 
-  public void setImageVersionIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __IMAGEVERSION_ISSET_ID, value);
+  public void setRevisionIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __REVISION_ISSET_ID, value);
   }
 
-  public String getImageName() {
-    return this.imageName;
+  public String getTitle() {
+    return this.title;
   }
 
-  public ImageData setImageName(String imageName) {
-    this.imageName = imageName;
+  public ImageData setTitle(String title) {
+    this.title = title;
     return this;
   }
 
-  public void unsetImageName() {
-    this.imageName = null;
+  public void unsetTitle() {
+    this.title = null;
   }
 
-  /** Returns true if field imageName is set (has been assigned a value) and false otherwise */
-  public boolean isSetImageName() {
-    return this.imageName != null;
+  /** Returns true if field title is set (has been assigned a value) and false otherwise */
+  public boolean isSetTitle() {
+    return this.title != null;
   }
 
-  public void setImageNameIsSet(boolean value) {
+  public void setTitleIsSet(boolean value) {
     if (!value) {
-      this.imageName = null;
+      this.title = null;
     }
   }
 
-  public long getImageCreateTime() {
-    return this.imageCreateTime;
+  public long getCreateTime() {
+    return this.createTime;
   }
 
-  public ImageData setImageCreateTime(long imageCreateTime) {
-    this.imageCreateTime = imageCreateTime;
-    setImageCreateTimeIsSet(true);
+  public ImageData setCreateTime(long createTime) {
+    this.createTime = createTime;
+    setCreateTimeIsSet(true);
     return this;
   }
 
-  public void unsetImageCreateTime() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __IMAGECREATETIME_ISSET_ID);
+  public void unsetCreateTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CREATETIME_ISSET_ID);
   }
 
-  /** Returns true if field imageCreateTime is set (has been assigned a value) and false otherwise */
-  public boolean isSetImageCreateTime() {
-    return EncodingUtils.testBit(__isset_bitfield, __IMAGECREATETIME_ISSET_ID);
+  /** Returns true if field createTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetCreateTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __CREATETIME_ISSET_ID);
   }
 
-  public void setImageCreateTimeIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __IMAGECREATETIME_ISSET_ID, value);
+  public void setCreateTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CREATETIME_ISSET_ID, value);
   }
 
-  public long getImageUpdateTime() {
-    return this.imageUpdateTime;
+  public long getUpdateTime() {
+    return this.updateTime;
   }
 
-  public ImageData setImageUpdateTime(long imageUpdateTime) {
-    this.imageUpdateTime = imageUpdateTime;
-    setImageUpdateTimeIsSet(true);
+  public ImageData setUpdateTime(long updateTime) {
+    this.updateTime = updateTime;
+    setUpdateTimeIsSet(true);
     return this;
   }
 
-  public void unsetImageUpdateTime() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __IMAGEUPDATETIME_ISSET_ID);
+  public void unsetUpdateTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __UPDATETIME_ISSET_ID);
   }
 
-  /** Returns true if field imageUpdateTime is set (has been assigned a value) and false otherwise */
-  public boolean isSetImageUpdateTime() {
-    return EncodingUtils.testBit(__isset_bitfield, __IMAGEUPDATETIME_ISSET_ID);
+  /** Returns true if field updateTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetUpdateTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __UPDATETIME_ISSET_ID);
   }
 
-  public void setImageUpdateTimeIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __IMAGEUPDATETIME_ISSET_ID, value);
+  public void setUpdateTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __UPDATETIME_ISSET_ID, value);
   }
 
-  public String getImageOwner() {
-    return this.imageOwner;
+  public String getOwnerLogin() {
+    return this.ownerLogin;
   }
 
-  public ImageData setImageOwner(String imageOwner) {
-    this.imageOwner = imageOwner;
+  public ImageData setOwnerLogin(String ownerLogin) {
+    this.ownerLogin = ownerLogin;
     return this;
   }
 
-  public void unsetImageOwner() {
-    this.imageOwner = null;
+  public void unsetOwnerLogin() {
+    this.ownerLogin = null;
   }
 
-  /** Returns true if field imageOwner is set (has been assigned a value) and false otherwise */
-  public boolean isSetImageOwner() {
-    return this.imageOwner != null;
+  /** Returns true if field ownerLogin is set (has been assigned a value) and false otherwise */
+  public boolean isSetOwnerLogin() {
+    return this.ownerLogin != null;
   }
 
-  public void setImageOwnerIsSet(boolean value) {
+  public void setOwnerLoginIsSet(boolean value) {
     if (!value) {
-      this.imageOwner = null;
+      this.ownerLogin = null;
     }
   }
 
-  public String getContentOperatingSystem() {
-    return this.contentOperatingSystem;
+  public String getOperatingSystem() {
+    return this.operatingSystem;
   }
 
-  public ImageData setContentOperatingSystem(String contentOperatingSystem) {
-    this.contentOperatingSystem = contentOperatingSystem;
+  public ImageData setOperatingSystem(String operatingSystem) {
+    this.operatingSystem = operatingSystem;
     return this;
   }
 
-  public void unsetContentOperatingSystem() {
-    this.contentOperatingSystem = null;
+  public void unsetOperatingSystem() {
+    this.operatingSystem = null;
   }
 
-  /** Returns true if field contentOperatingSystem is set (has been assigned a value) and false otherwise */
-  public boolean isSetContentOperatingSystem() {
-    return this.contentOperatingSystem != null;
+  /** Returns true if field operatingSystem is set (has been assigned a value) and false otherwise */
+  public boolean isSetOperatingSystem() {
+    return this.operatingSystem != null;
   }
 
-  public void setContentOperatingSystemIsSet(boolean value) {
+  public void setOperatingSystemIsSet(boolean value) {
     if (!value) {
-      this.contentOperatingSystem = null;
+      this.operatingSystem = null;
     }
   }
 
-  public boolean isStatusIsValid() {
-    return this.statusIsValid;
+  public boolean isIsValid() {
+    return this.isValid;
   }
 
-  public ImageData setStatusIsValid(boolean statusIsValid) {
-    this.statusIsValid = statusIsValid;
-    setStatusIsValidIsSet(true);
+  public ImageData setIsValid(boolean isValid) {
+    this.isValid = isValid;
+    setIsValidIsSet(true);
     return this;
   }
 
-  public void unsetStatusIsValid() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __STATUSISVALID_ISSET_ID);
+  public void unsetIsValid() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISVALID_ISSET_ID);
   }
 
-  /** Returns true if field statusIsValid is set (has been assigned a value) and false otherwise */
-  public boolean isSetStatusIsValid() {
-    return EncodingUtils.testBit(__isset_bitfield, __STATUSISVALID_ISSET_ID);
+  /** Returns true if field isValid is set (has been assigned a value) and false otherwise */
+  public boolean isSetIsValid() {
+    return EncodingUtils.testBit(__isset_bitfield, __ISVALID_ISSET_ID);
   }
 
-  public void setStatusIsValidIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __STATUSISVALID_ISSET_ID, value);
+  public void setIsValidIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISVALID_ISSET_ID, value);
   }
 
-  public boolean isStatusIsDeleted() {
-    return this.statusIsDeleted;
+  public boolean isIsDeleted() {
+    return this.isDeleted;
   }
 
-  public ImageData setStatusIsDeleted(boolean statusIsDeleted) {
-    this.statusIsDeleted = statusIsDeleted;
-    setStatusIsDeletedIsSet(true);
+  public ImageData setIsDeleted(boolean isDeleted) {
+    this.isDeleted = isDeleted;
+    setIsDeletedIsSet(true);
     return this;
   }
 
-  public void unsetStatusIsDeleted() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __STATUSISDELETED_ISSET_ID);
+  public void unsetIsDeleted() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISDELETED_ISSET_ID);
   }
 
-  /** Returns true if field statusIsDeleted is set (has been assigned a value) and false otherwise */
-  public boolean isSetStatusIsDeleted() {
-    return EncodingUtils.testBit(__isset_bitfield, __STATUSISDELETED_ISSET_ID);
+  /** Returns true if field isDeleted is set (has been assigned a value) and false otherwise */
+  public boolean isSetIsDeleted() {
+    return EncodingUtils.testBit(__isset_bitfield, __ISDELETED_ISSET_ID);
   }
 
-  public void setStatusIsDeletedIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __STATUSISDELETED_ISSET_ID, value);
+  public void setIsDeletedIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISDELETED_ISSET_ID, value);
   }
 
-  public String getImageShortDescription() {
-    return this.imageShortDescription;
+  public String getDescription() {
+    return this.description;
   }
 
-  public ImageData setImageShortDescription(String imageShortDescription) {
-    this.imageShortDescription = imageShortDescription;
+  public ImageData setDescription(String description) {
+    this.description = description;
     return this;
   }
 
-  public void unsetImageShortDescription() {
-    this.imageShortDescription = null;
+  public void unsetDescription() {
+    this.description = null;
   }
 
-  /** Returns true if field imageShortDescription is set (has been assigned a value) and false otherwise */
-  public boolean isSetImageShortDescription() {
-    return this.imageShortDescription != null;
+  /** Returns true if field description is set (has been assigned a value) and false otherwise */
+  public boolean isSetDescription() {
+    return this.description != null;
   }
 
-  public void setImageShortDescriptionIsSet(boolean value) {
+  public void setDescriptionIsSet(boolean value) {
     if (!value) {
-      this.imageShortDescription = null;
-    }
-  }
-
-  public String getImageLongDescription() {
-    return this.imageLongDescription;
-  }
-
-  public ImageData setImageLongDescription(String imageLongDescription) {
-    this.imageLongDescription = imageLongDescription;
-    return this;
-  }
-
-  public void unsetImageLongDescription() {
-    this.imageLongDescription = null;
-  }
-
-  /** Returns true if field imageLongDescription is set (has been assigned a value) and false otherwise */
-  public boolean isSetImageLongDescription() {
-    return this.imageLongDescription != null;
-  }
-
-  public void setImageLongDescriptionIsSet(boolean value) {
-    if (!value) {
-      this.imageLongDescription = null;
+      this.description = null;
     }
   }
 
@@ -584,83 +547,75 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
       }
       break;
 
-    case IMAGE_VERSION:
+    case REVISION:
       if (value == null) {
-        unsetImageVersion();
+        unsetRevision();
       } else {
-        setImageVersion((Integer)value);
+        setRevision((Integer)value);
       }
       break;
 
-    case IMAGE_NAME:
+    case TITLE:
       if (value == null) {
-        unsetImageName();
+        unsetTitle();
       } else {
-        setImageName((String)value);
+        setTitle((String)value);
       }
       break;
 
-    case IMAGE_CREATE_TIME:
+    case CREATE_TIME:
       if (value == null) {
-        unsetImageCreateTime();
+        unsetCreateTime();
       } else {
-        setImageCreateTime((Long)value);
+        setCreateTime((Long)value);
       }
       break;
 
-    case IMAGE_UPDATE_TIME:
+    case UPDATE_TIME:
       if (value == null) {
-        unsetImageUpdateTime();
+        unsetUpdateTime();
       } else {
-        setImageUpdateTime((Long)value);
+        setUpdateTime((Long)value);
       }
       break;
 
-    case IMAGE_OWNER:
+    case OWNER_LOGIN:
       if (value == null) {
-        unsetImageOwner();
+        unsetOwnerLogin();
       } else {
-        setImageOwner((String)value);
+        setOwnerLogin((String)value);
       }
       break;
 
-    case CONTENT_OPERATING_SYSTEM:
+    case OPERATING_SYSTEM:
       if (value == null) {
-        unsetContentOperatingSystem();
+        unsetOperatingSystem();
       } else {
-        setContentOperatingSystem((String)value);
+        setOperatingSystem((String)value);
       }
       break;
 
-    case STATUS_IS_VALID:
+    case IS_VALID:
       if (value == null) {
-        unsetStatusIsValid();
+        unsetIsValid();
       } else {
-        setStatusIsValid((Boolean)value);
+        setIsValid((Boolean)value);
       }
       break;
 
-    case STATUS_IS_DELETED:
+    case IS_DELETED:
       if (value == null) {
-        unsetStatusIsDeleted();
+        unsetIsDeleted();
       } else {
-        setStatusIsDeleted((Boolean)value);
+        setIsDeleted((Boolean)value);
       }
       break;
 
-    case IMAGE_SHORT_DESCRIPTION:
+    case DESCRIPTION:
       if (value == null) {
-        unsetImageShortDescription();
+        unsetDescription();
       } else {
-        setImageShortDescription((String)value);
-      }
-      break;
-
-    case IMAGE_LONG_DESCRIPTION:
-      if (value == null) {
-        unsetImageLongDescription();
-      } else {
-        setImageLongDescription((String)value);
+        setDescription((String)value);
       }
       break;
 
@@ -680,35 +635,32 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
     case UUID:
       return getUuid();
 
-    case IMAGE_VERSION:
-      return Integer.valueOf(getImageVersion());
+    case REVISION:
+      return Integer.valueOf(getRevision());
 
-    case IMAGE_NAME:
-      return getImageName();
+    case TITLE:
+      return getTitle();
 
-    case IMAGE_CREATE_TIME:
-      return Long.valueOf(getImageCreateTime());
+    case CREATE_TIME:
+      return Long.valueOf(getCreateTime());
 
-    case IMAGE_UPDATE_TIME:
-      return Long.valueOf(getImageUpdateTime());
+    case UPDATE_TIME:
+      return Long.valueOf(getUpdateTime());
 
-    case IMAGE_OWNER:
-      return getImageOwner();
+    case OWNER_LOGIN:
+      return getOwnerLogin();
 
-    case CONTENT_OPERATING_SYSTEM:
-      return getContentOperatingSystem();
+    case OPERATING_SYSTEM:
+      return getOperatingSystem();
 
-    case STATUS_IS_VALID:
-      return Boolean.valueOf(isStatusIsValid());
+    case IS_VALID:
+      return Boolean.valueOf(isIsValid());
 
-    case STATUS_IS_DELETED:
-      return Boolean.valueOf(isStatusIsDeleted());
+    case IS_DELETED:
+      return Boolean.valueOf(isIsDeleted());
 
-    case IMAGE_SHORT_DESCRIPTION:
-      return getImageShortDescription();
-
-    case IMAGE_LONG_DESCRIPTION:
-      return getImageLongDescription();
+    case DESCRIPTION:
+      return getDescription();
 
     case FILE_SIZE:
       return Long.valueOf(getFileSize());
@@ -726,26 +678,24 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
     switch (field) {
     case UUID:
       return isSetUuid();
-    case IMAGE_VERSION:
-      return isSetImageVersion();
-    case IMAGE_NAME:
-      return isSetImageName();
-    case IMAGE_CREATE_TIME:
-      return isSetImageCreateTime();
-    case IMAGE_UPDATE_TIME:
-      return isSetImageUpdateTime();
-    case IMAGE_OWNER:
-      return isSetImageOwner();
-    case CONTENT_OPERATING_SYSTEM:
-      return isSetContentOperatingSystem();
-    case STATUS_IS_VALID:
-      return isSetStatusIsValid();
-    case STATUS_IS_DELETED:
-      return isSetStatusIsDeleted();
-    case IMAGE_SHORT_DESCRIPTION:
-      return isSetImageShortDescription();
-    case IMAGE_LONG_DESCRIPTION:
-      return isSetImageLongDescription();
+    case REVISION:
+      return isSetRevision();
+    case TITLE:
+      return isSetTitle();
+    case CREATE_TIME:
+      return isSetCreateTime();
+    case UPDATE_TIME:
+      return isSetUpdateTime();
+    case OWNER_LOGIN:
+      return isSetOwnerLogin();
+    case OPERATING_SYSTEM:
+      return isSetOperatingSystem();
+    case IS_VALID:
+      return isSetIsValid();
+    case IS_DELETED:
+      return isSetIsDeleted();
+    case DESCRIPTION:
+      return isSetDescription();
     case FILE_SIZE:
       return isSetFileSize();
     }
@@ -774,93 +724,84 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
         return false;
     }
 
-    boolean this_present_imageVersion = true;
-    boolean that_present_imageVersion = true;
-    if (this_present_imageVersion || that_present_imageVersion) {
-      if (!(this_present_imageVersion && that_present_imageVersion))
+    boolean this_present_revision = true;
+    boolean that_present_revision = true;
+    if (this_present_revision || that_present_revision) {
+      if (!(this_present_revision && that_present_revision))
         return false;
-      if (this.imageVersion != that.imageVersion)
-        return false;
-    }
-
-    boolean this_present_imageName = true && this.isSetImageName();
-    boolean that_present_imageName = true && that.isSetImageName();
-    if (this_present_imageName || that_present_imageName) {
-      if (!(this_present_imageName && that_present_imageName))
-        return false;
-      if (!this.imageName.equals(that.imageName))
+      if (this.revision != that.revision)
         return false;
     }
 
-    boolean this_present_imageCreateTime = true;
-    boolean that_present_imageCreateTime = true;
-    if (this_present_imageCreateTime || that_present_imageCreateTime) {
-      if (!(this_present_imageCreateTime && that_present_imageCreateTime))
+    boolean this_present_title = true && this.isSetTitle();
+    boolean that_present_title = true && that.isSetTitle();
+    if (this_present_title || that_present_title) {
+      if (!(this_present_title && that_present_title))
         return false;
-      if (this.imageCreateTime != that.imageCreateTime)
-        return false;
-    }
-
-    boolean this_present_imageUpdateTime = true;
-    boolean that_present_imageUpdateTime = true;
-    if (this_present_imageUpdateTime || that_present_imageUpdateTime) {
-      if (!(this_present_imageUpdateTime && that_present_imageUpdateTime))
-        return false;
-      if (this.imageUpdateTime != that.imageUpdateTime)
+      if (!this.title.equals(that.title))
         return false;
     }
 
-    boolean this_present_imageOwner = true && this.isSetImageOwner();
-    boolean that_present_imageOwner = true && that.isSetImageOwner();
-    if (this_present_imageOwner || that_present_imageOwner) {
-      if (!(this_present_imageOwner && that_present_imageOwner))
+    boolean this_present_createTime = true;
+    boolean that_present_createTime = true;
+    if (this_present_createTime || that_present_createTime) {
+      if (!(this_present_createTime && that_present_createTime))
         return false;
-      if (!this.imageOwner.equals(that.imageOwner))
-        return false;
-    }
-
-    boolean this_present_contentOperatingSystem = true && this.isSetContentOperatingSystem();
-    boolean that_present_contentOperatingSystem = true && that.isSetContentOperatingSystem();
-    if (this_present_contentOperatingSystem || that_present_contentOperatingSystem) {
-      if (!(this_present_contentOperatingSystem && that_present_contentOperatingSystem))
-        return false;
-      if (!this.contentOperatingSystem.equals(that.contentOperatingSystem))
+      if (this.createTime != that.createTime)
         return false;
     }
 
-    boolean this_present_statusIsValid = true;
-    boolean that_present_statusIsValid = true;
-    if (this_present_statusIsValid || that_present_statusIsValid) {
-      if (!(this_present_statusIsValid && that_present_statusIsValid))
+    boolean this_present_updateTime = true;
+    boolean that_present_updateTime = true;
+    if (this_present_updateTime || that_present_updateTime) {
+      if (!(this_present_updateTime && that_present_updateTime))
         return false;
-      if (this.statusIsValid != that.statusIsValid)
-        return false;
-    }
-
-    boolean this_present_statusIsDeleted = true;
-    boolean that_present_statusIsDeleted = true;
-    if (this_present_statusIsDeleted || that_present_statusIsDeleted) {
-      if (!(this_present_statusIsDeleted && that_present_statusIsDeleted))
-        return false;
-      if (this.statusIsDeleted != that.statusIsDeleted)
+      if (this.updateTime != that.updateTime)
         return false;
     }
 
-    boolean this_present_imageShortDescription = true && this.isSetImageShortDescription();
-    boolean that_present_imageShortDescription = true && that.isSetImageShortDescription();
-    if (this_present_imageShortDescription || that_present_imageShortDescription) {
-      if (!(this_present_imageShortDescription && that_present_imageShortDescription))
+    boolean this_present_ownerLogin = true && this.isSetOwnerLogin();
+    boolean that_present_ownerLogin = true && that.isSetOwnerLogin();
+    if (this_present_ownerLogin || that_present_ownerLogin) {
+      if (!(this_present_ownerLogin && that_present_ownerLogin))
         return false;
-      if (!this.imageShortDescription.equals(that.imageShortDescription))
+      if (!this.ownerLogin.equals(that.ownerLogin))
         return false;
     }
 
-    boolean this_present_imageLongDescription = true && this.isSetImageLongDescription();
-    boolean that_present_imageLongDescription = true && that.isSetImageLongDescription();
-    if (this_present_imageLongDescription || that_present_imageLongDescription) {
-      if (!(this_present_imageLongDescription && that_present_imageLongDescription))
+    boolean this_present_operatingSystem = true && this.isSetOperatingSystem();
+    boolean that_present_operatingSystem = true && that.isSetOperatingSystem();
+    if (this_present_operatingSystem || that_present_operatingSystem) {
+      if (!(this_present_operatingSystem && that_present_operatingSystem))
         return false;
-      if (!this.imageLongDescription.equals(that.imageLongDescription))
+      if (!this.operatingSystem.equals(that.operatingSystem))
+        return false;
+    }
+
+    boolean this_present_isValid = true;
+    boolean that_present_isValid = true;
+    if (this_present_isValid || that_present_isValid) {
+      if (!(this_present_isValid && that_present_isValid))
+        return false;
+      if (this.isValid != that.isValid)
+        return false;
+    }
+
+    boolean this_present_isDeleted = true;
+    boolean that_present_isDeleted = true;
+    if (this_present_isDeleted || that_present_isDeleted) {
+      if (!(this_present_isDeleted && that_present_isDeleted))
+        return false;
+      if (this.isDeleted != that.isDeleted)
+        return false;
+    }
+
+    boolean this_present_description = true && this.isSetDescription();
+    boolean that_present_description = true && that.isSetDescription();
+    if (this_present_description || that_present_description) {
+      if (!(this_present_description && that_present_description))
+        return false;
+      if (!this.description.equals(that.description))
         return false;
     }
 
@@ -899,102 +840,92 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetImageVersion()).compareTo(other.isSetImageVersion());
+    lastComparison = Boolean.valueOf(isSetRevision()).compareTo(other.isSetRevision());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetImageVersion()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageVersion, other.imageVersion);
+    if (isSetRevision()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.revision, other.revision);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetImageName()).compareTo(other.isSetImageName());
+    lastComparison = Boolean.valueOf(isSetTitle()).compareTo(other.isSetTitle());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetImageName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageName, other.imageName);
+    if (isSetTitle()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.title, other.title);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetImageCreateTime()).compareTo(other.isSetImageCreateTime());
+    lastComparison = Boolean.valueOf(isSetCreateTime()).compareTo(other.isSetCreateTime());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetImageCreateTime()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageCreateTime, other.imageCreateTime);
+    if (isSetCreateTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.createTime, other.createTime);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetImageUpdateTime()).compareTo(other.isSetImageUpdateTime());
+    lastComparison = Boolean.valueOf(isSetUpdateTime()).compareTo(other.isSetUpdateTime());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetImageUpdateTime()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageUpdateTime, other.imageUpdateTime);
+    if (isSetUpdateTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updateTime, other.updateTime);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetImageOwner()).compareTo(other.isSetImageOwner());
+    lastComparison = Boolean.valueOf(isSetOwnerLogin()).compareTo(other.isSetOwnerLogin());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetImageOwner()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageOwner, other.imageOwner);
+    if (isSetOwnerLogin()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ownerLogin, other.ownerLogin);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetContentOperatingSystem()).compareTo(other.isSetContentOperatingSystem());
+    lastComparison = Boolean.valueOf(isSetOperatingSystem()).compareTo(other.isSetOperatingSystem());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetContentOperatingSystem()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.contentOperatingSystem, other.contentOperatingSystem);
+    if (isSetOperatingSystem()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.operatingSystem, other.operatingSystem);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetStatusIsValid()).compareTo(other.isSetStatusIsValid());
+    lastComparison = Boolean.valueOf(isSetIsValid()).compareTo(other.isSetIsValid());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetStatusIsValid()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.statusIsValid, other.statusIsValid);
+    if (isSetIsValid()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isValid, other.isValid);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetStatusIsDeleted()).compareTo(other.isSetStatusIsDeleted());
+    lastComparison = Boolean.valueOf(isSetIsDeleted()).compareTo(other.isSetIsDeleted());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetStatusIsDeleted()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.statusIsDeleted, other.statusIsDeleted);
+    if (isSetIsDeleted()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isDeleted, other.isDeleted);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetImageShortDescription()).compareTo(other.isSetImageShortDescription());
+    lastComparison = Boolean.valueOf(isSetDescription()).compareTo(other.isSetDescription());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetImageShortDescription()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageShortDescription, other.imageShortDescription);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetImageLongDescription()).compareTo(other.isSetImageLongDescription());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetImageLongDescription()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageLongDescription, other.imageLongDescription);
+    if (isSetDescription()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.description, other.description);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1037,63 +968,55 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("imageVersion:");
-    sb.append(this.imageVersion);
+    sb.append("revision:");
+    sb.append(this.revision);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("imageName:");
-    if (this.imageName == null) {
+    sb.append("title:");
+    if (this.title == null) {
       sb.append("null");
     } else {
-      sb.append(this.imageName);
+      sb.append(this.title);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("imageCreateTime:");
-    sb.append(this.imageCreateTime);
+    sb.append("createTime:");
+    sb.append(this.createTime);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("imageUpdateTime:");
-    sb.append(this.imageUpdateTime);
+    sb.append("updateTime:");
+    sb.append(this.updateTime);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("imageOwner:");
-    if (this.imageOwner == null) {
+    sb.append("ownerLogin:");
+    if (this.ownerLogin == null) {
       sb.append("null");
     } else {
-      sb.append(this.imageOwner);
+      sb.append(this.ownerLogin);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("contentOperatingSystem:");
-    if (this.contentOperatingSystem == null) {
+    sb.append("operatingSystem:");
+    if (this.operatingSystem == null) {
       sb.append("null");
     } else {
-      sb.append(this.contentOperatingSystem);
+      sb.append(this.operatingSystem);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("statusIsValid:");
-    sb.append(this.statusIsValid);
+    sb.append("isValid:");
+    sb.append(this.isValid);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("statusIsDeleted:");
-    sb.append(this.statusIsDeleted);
+    sb.append("isDeleted:");
+    sb.append(this.isDeleted);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("imageShortDescription:");
-    if (this.imageShortDescription == null) {
+    sb.append("description:");
+    if (this.description == null) {
       sb.append("null");
     } else {
-      sb.append(this.imageShortDescription);
-    }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("imageLongDescription:");
-    if (this.imageLongDescription == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.imageLongDescription);
+      sb.append(this.description);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -1153,82 +1076,74 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // IMAGE_VERSION
+          case 2: // REVISION
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.imageVersion = iprot.readI32();
-              struct.setImageVersionIsSet(true);
+              struct.revision = iprot.readI32();
+              struct.setRevisionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // IMAGE_NAME
+          case 3: // TITLE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.imageName = iprot.readString();
-              struct.setImageNameIsSet(true);
+              struct.title = iprot.readString();
+              struct.setTitleIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // IMAGE_CREATE_TIME
+          case 4: // CREATE_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-              struct.imageCreateTime = iprot.readI64();
-              struct.setImageCreateTimeIsSet(true);
+              struct.createTime = iprot.readI64();
+              struct.setCreateTimeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // IMAGE_UPDATE_TIME
+          case 5: // UPDATE_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-              struct.imageUpdateTime = iprot.readI64();
-              struct.setImageUpdateTimeIsSet(true);
+              struct.updateTime = iprot.readI64();
+              struct.setUpdateTimeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // IMAGE_OWNER
+          case 6: // OWNER_LOGIN
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.imageOwner = iprot.readString();
-              struct.setImageOwnerIsSet(true);
+              struct.ownerLogin = iprot.readString();
+              struct.setOwnerLoginIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // CONTENT_OPERATING_SYSTEM
+          case 7: // OPERATING_SYSTEM
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.contentOperatingSystem = iprot.readString();
-              struct.setContentOperatingSystemIsSet(true);
+              struct.operatingSystem = iprot.readString();
+              struct.setOperatingSystemIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // STATUS_IS_VALID
+          case 8: // IS_VALID
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.statusIsValid = iprot.readBool();
-              struct.setStatusIsValidIsSet(true);
+              struct.isValid = iprot.readBool();
+              struct.setIsValidIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // STATUS_IS_DELETED
+          case 9: // IS_DELETED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.statusIsDeleted = iprot.readBool();
-              struct.setStatusIsDeletedIsSet(true);
+              struct.isDeleted = iprot.readBool();
+              struct.setIsDeletedIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // IMAGE_SHORT_DESCRIPTION
+          case 11: // DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.imageShortDescription = iprot.readString();
-              struct.setImageShortDescriptionIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 11: // IMAGE_LONG_DESCRIPTION
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.imageLongDescription = iprot.readString();
-              struct.setImageLongDescriptionIsSet(true);
+              struct.description = iprot.readString();
+              struct.setDescriptionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1261,44 +1176,39 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
         oprot.writeString(struct.uuid);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(IMAGE_VERSION_FIELD_DESC);
-      oprot.writeI32(struct.imageVersion);
+      oprot.writeFieldBegin(REVISION_FIELD_DESC);
+      oprot.writeI32(struct.revision);
       oprot.writeFieldEnd();
-      if (struct.imageName != null) {
-        oprot.writeFieldBegin(IMAGE_NAME_FIELD_DESC);
-        oprot.writeString(struct.imageName);
+      if (struct.title != null) {
+        oprot.writeFieldBegin(TITLE_FIELD_DESC);
+        oprot.writeString(struct.title);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(IMAGE_CREATE_TIME_FIELD_DESC);
-      oprot.writeI64(struct.imageCreateTime);
+      oprot.writeFieldBegin(CREATE_TIME_FIELD_DESC);
+      oprot.writeI64(struct.createTime);
       oprot.writeFieldEnd();
-      oprot.writeFieldBegin(IMAGE_UPDATE_TIME_FIELD_DESC);
-      oprot.writeI64(struct.imageUpdateTime);
+      oprot.writeFieldBegin(UPDATE_TIME_FIELD_DESC);
+      oprot.writeI64(struct.updateTime);
       oprot.writeFieldEnd();
-      if (struct.imageOwner != null) {
-        oprot.writeFieldBegin(IMAGE_OWNER_FIELD_DESC);
-        oprot.writeString(struct.imageOwner);
+      if (struct.ownerLogin != null) {
+        oprot.writeFieldBegin(OWNER_LOGIN_FIELD_DESC);
+        oprot.writeString(struct.ownerLogin);
         oprot.writeFieldEnd();
       }
-      if (struct.contentOperatingSystem != null) {
-        oprot.writeFieldBegin(CONTENT_OPERATING_SYSTEM_FIELD_DESC);
-        oprot.writeString(struct.contentOperatingSystem);
+      if (struct.operatingSystem != null) {
+        oprot.writeFieldBegin(OPERATING_SYSTEM_FIELD_DESC);
+        oprot.writeString(struct.operatingSystem);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(STATUS_IS_VALID_FIELD_DESC);
-      oprot.writeBool(struct.statusIsValid);
+      oprot.writeFieldBegin(IS_VALID_FIELD_DESC);
+      oprot.writeBool(struct.isValid);
       oprot.writeFieldEnd();
-      oprot.writeFieldBegin(STATUS_IS_DELETED_FIELD_DESC);
-      oprot.writeBool(struct.statusIsDeleted);
+      oprot.writeFieldBegin(IS_DELETED_FIELD_DESC);
+      oprot.writeBool(struct.isDeleted);
       oprot.writeFieldEnd();
-      if (struct.imageShortDescription != null) {
-        oprot.writeFieldBegin(IMAGE_SHORT_DESCRIPTION_FIELD_DESC);
-        oprot.writeString(struct.imageShortDescription);
-        oprot.writeFieldEnd();
-      }
-      if (struct.imageLongDescription != null) {
-        oprot.writeFieldBegin(IMAGE_LONG_DESCRIPTION_FIELD_DESC);
-        oprot.writeString(struct.imageLongDescription);
+      if (struct.description != null) {
+        oprot.writeFieldBegin(DESCRIPTION_FIELD_DESC);
+        oprot.writeString(struct.description);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(FILE_SIZE_FIELD_DESC);
@@ -1325,72 +1235,66 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
       if (struct.isSetUuid()) {
         optionals.set(0);
       }
-      if (struct.isSetImageVersion()) {
+      if (struct.isSetRevision()) {
         optionals.set(1);
       }
-      if (struct.isSetImageName()) {
+      if (struct.isSetTitle()) {
         optionals.set(2);
       }
-      if (struct.isSetImageCreateTime()) {
+      if (struct.isSetCreateTime()) {
         optionals.set(3);
       }
-      if (struct.isSetImageUpdateTime()) {
+      if (struct.isSetUpdateTime()) {
         optionals.set(4);
       }
-      if (struct.isSetImageOwner()) {
+      if (struct.isSetOwnerLogin()) {
         optionals.set(5);
       }
-      if (struct.isSetContentOperatingSystem()) {
+      if (struct.isSetOperatingSystem()) {
         optionals.set(6);
       }
-      if (struct.isSetStatusIsValid()) {
+      if (struct.isSetIsValid()) {
         optionals.set(7);
       }
-      if (struct.isSetStatusIsDeleted()) {
+      if (struct.isSetIsDeleted()) {
         optionals.set(8);
       }
-      if (struct.isSetImageShortDescription()) {
+      if (struct.isSetDescription()) {
         optionals.set(9);
       }
-      if (struct.isSetImageLongDescription()) {
+      if (struct.isSetFileSize()) {
         optionals.set(10);
       }
-      if (struct.isSetFileSize()) {
-        optionals.set(11);
-      }
-      oprot.writeBitSet(optionals, 12);
+      oprot.writeBitSet(optionals, 11);
       if (struct.isSetUuid()) {
         oprot.writeString(struct.uuid);
       }
-      if (struct.isSetImageVersion()) {
-        oprot.writeI32(struct.imageVersion);
+      if (struct.isSetRevision()) {
+        oprot.writeI32(struct.revision);
       }
-      if (struct.isSetImageName()) {
-        oprot.writeString(struct.imageName);
+      if (struct.isSetTitle()) {
+        oprot.writeString(struct.title);
       }
-      if (struct.isSetImageCreateTime()) {
-        oprot.writeI64(struct.imageCreateTime);
+      if (struct.isSetCreateTime()) {
+        oprot.writeI64(struct.createTime);
       }
-      if (struct.isSetImageUpdateTime()) {
-        oprot.writeI64(struct.imageUpdateTime);
+      if (struct.isSetUpdateTime()) {
+        oprot.writeI64(struct.updateTime);
       }
-      if (struct.isSetImageOwner()) {
-        oprot.writeString(struct.imageOwner);
+      if (struct.isSetOwnerLogin()) {
+        oprot.writeString(struct.ownerLogin);
       }
-      if (struct.isSetContentOperatingSystem()) {
-        oprot.writeString(struct.contentOperatingSystem);
+      if (struct.isSetOperatingSystem()) {
+        oprot.writeString(struct.operatingSystem);
       }
-      if (struct.isSetStatusIsValid()) {
-        oprot.writeBool(struct.statusIsValid);
+      if (struct.isSetIsValid()) {
+        oprot.writeBool(struct.isValid);
       }
-      if (struct.isSetStatusIsDeleted()) {
-        oprot.writeBool(struct.statusIsDeleted);
+      if (struct.isSetIsDeleted()) {
+        oprot.writeBool(struct.isDeleted);
       }
-      if (struct.isSetImageShortDescription()) {
-        oprot.writeString(struct.imageShortDescription);
-      }
-      if (struct.isSetImageLongDescription()) {
-        oprot.writeString(struct.imageLongDescription);
+      if (struct.isSetDescription()) {
+        oprot.writeString(struct.description);
       }
       if (struct.isSetFileSize()) {
         oprot.writeI64(struct.fileSize);
@@ -1400,52 +1304,48 @@ public class ImageData implements org.apache.thrift.TBase<ImageData, ImageData._
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ImageData struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(12);
+      BitSet incoming = iprot.readBitSet(11);
       if (incoming.get(0)) {
         struct.uuid = iprot.readString();
         struct.setUuidIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.imageVersion = iprot.readI32();
-        struct.setImageVersionIsSet(true);
+        struct.revision = iprot.readI32();
+        struct.setRevisionIsSet(true);
       }
       if (incoming.get(2)) {
-        struct.imageName = iprot.readString();
-        struct.setImageNameIsSet(true);
+        struct.title = iprot.readString();
+        struct.setTitleIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.imageCreateTime = iprot.readI64();
-        struct.setImageCreateTimeIsSet(true);
+        struct.createTime = iprot.readI64();
+        struct.setCreateTimeIsSet(true);
       }
       if (incoming.get(4)) {
-        struct.imageUpdateTime = iprot.readI64();
-        struct.setImageUpdateTimeIsSet(true);
+        struct.updateTime = iprot.readI64();
+        struct.setUpdateTimeIsSet(true);
       }
       if (incoming.get(5)) {
-        struct.imageOwner = iprot.readString();
-        struct.setImageOwnerIsSet(true);
+        struct.ownerLogin = iprot.readString();
+        struct.setOwnerLoginIsSet(true);
       }
       if (incoming.get(6)) {
-        struct.contentOperatingSystem = iprot.readString();
-        struct.setContentOperatingSystemIsSet(true);
+        struct.operatingSystem = iprot.readString();
+        struct.setOperatingSystemIsSet(true);
       }
       if (incoming.get(7)) {
-        struct.statusIsValid = iprot.readBool();
-        struct.setStatusIsValidIsSet(true);
+        struct.isValid = iprot.readBool();
+        struct.setIsValidIsSet(true);
       }
       if (incoming.get(8)) {
-        struct.statusIsDeleted = iprot.readBool();
-        struct.setStatusIsDeletedIsSet(true);
+        struct.isDeleted = iprot.readBool();
+        struct.setIsDeletedIsSet(true);
       }
       if (incoming.get(9)) {
-        struct.imageShortDescription = iprot.readString();
-        struct.setImageShortDescriptionIsSet(true);
+        struct.description = iprot.readString();
+        struct.setDescriptionIsSet(true);
       }
       if (incoming.get(10)) {
-        struct.imageLongDescription = iprot.readString();
-        struct.setImageLongDescriptionIsSet(true);
-      }
-      if (incoming.get(11)) {
         struct.fileSize = iprot.readI64();
         struct.setFileSizeIsSet(true);
       }

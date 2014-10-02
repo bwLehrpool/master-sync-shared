@@ -39,6 +39,7 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
   private static final org.apache.thrift.protocol.TField FIRST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("firstName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField LAST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastName", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField E_MAIL_FIELD_DESC = new org.apache.thrift.protocol.TField("eMail", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField ORGANIZATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("organizationId", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,13 +51,15 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
   public String firstName; // required
   public String lastName; // required
   public String eMail; // required
+  public String organizationId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     USER_ID((short)1, "userId"),
     FIRST_NAME((short)2, "firstName"),
     LAST_NAME((short)3, "lastName"),
-    E_MAIL((short)4, "eMail");
+    E_MAIL((short)4, "eMail"),
+    ORGANIZATION_ID((short)5, "organizationId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -79,6 +82,8 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
           return LAST_NAME;
         case 4: // E_MAIL
           return E_MAIL;
+        case 5: // ORGANIZATION_ID
+          return ORGANIZATION_ID;
         default:
           return null;
       }
@@ -130,6 +135,8 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.E_MAIL, new org.apache.thrift.meta_data.FieldMetaData("eMail", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.ORGANIZATION_ID, new org.apache.thrift.meta_data.FieldMetaData("organizationId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserInfo.class, metaDataMap);
   }
@@ -141,13 +148,15 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
     String userId,
     String firstName,
     String lastName,
-    String eMail)
+    String eMail,
+    String organizationId)
   {
     this();
     this.userId = userId;
     this.firstName = firstName;
     this.lastName = lastName;
     this.eMail = eMail;
+    this.organizationId = organizationId;
   }
 
   /**
@@ -166,6 +175,9 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
     if (other.isSetEMail()) {
       this.eMail = other.eMail;
     }
+    if (other.isSetOrganizationId()) {
+      this.organizationId = other.organizationId;
+    }
   }
 
   public UserInfo deepCopy() {
@@ -178,6 +190,7 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
     this.firstName = null;
     this.lastName = null;
     this.eMail = null;
+    this.organizationId = null;
   }
 
   public String getUserId() {
@@ -276,6 +289,30 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
     }
   }
 
+  public String getOrganizationId() {
+    return this.organizationId;
+  }
+
+  public UserInfo setOrganizationId(String organizationId) {
+    this.organizationId = organizationId;
+    return this;
+  }
+
+  public void unsetOrganizationId() {
+    this.organizationId = null;
+  }
+
+  /** Returns true if field organizationId is set (has been assigned a value) and false otherwise */
+  public boolean isSetOrganizationId() {
+    return this.organizationId != null;
+  }
+
+  public void setOrganizationIdIsSet(boolean value) {
+    if (!value) {
+      this.organizationId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case USER_ID:
@@ -310,6 +347,14 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       }
       break;
 
+    case ORGANIZATION_ID:
+      if (value == null) {
+        unsetOrganizationId();
+      } else {
+        setOrganizationId((String)value);
+      }
+      break;
+
     }
   }
 
@@ -326,6 +371,9 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
 
     case E_MAIL:
       return getEMail();
+
+    case ORGANIZATION_ID:
+      return getOrganizationId();
 
     }
     throw new IllegalStateException();
@@ -346,6 +394,8 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       return isSetLastName();
     case E_MAIL:
       return isSetEMail();
+    case ORGANIZATION_ID:
+      return isSetOrganizationId();
     }
     throw new IllegalStateException();
   }
@@ -396,6 +446,15 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       if (!(this_present_eMail && that_present_eMail))
         return false;
       if (!this.eMail.equals(that.eMail))
+        return false;
+    }
+
+    boolean this_present_organizationId = true && this.isSetOrganizationId();
+    boolean that_present_organizationId = true && that.isSetOrganizationId();
+    if (this_present_organizationId || that_present_organizationId) {
+      if (!(this_present_organizationId && that_present_organizationId))
+        return false;
+      if (!this.organizationId.equals(that.organizationId))
         return false;
     }
 
@@ -455,6 +514,16 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetOrganizationId()).compareTo(other.isSetOrganizationId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetOrganizationId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.organizationId, other.organizationId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -504,6 +573,14 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       sb.append("null");
     } else {
       sb.append(this.eMail);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("organizationId:");
+    if (this.organizationId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.organizationId);
     }
     first = false;
     sb.append(")");
@@ -581,6 +658,14 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 5: // ORGANIZATION_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.organizationId = iprot.readString();
+              struct.setOrganizationIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -616,6 +701,11 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
         oprot.writeString(struct.eMail);
         oprot.writeFieldEnd();
       }
+      if (struct.organizationId != null) {
+        oprot.writeFieldBegin(ORGANIZATION_ID_FIELD_DESC);
+        oprot.writeString(struct.organizationId);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -646,7 +736,10 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       if (struct.isSetEMail()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetOrganizationId()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetUserId()) {
         oprot.writeString(struct.userId);
       }
@@ -659,12 +752,15 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       if (struct.isSetEMail()) {
         oprot.writeString(struct.eMail);
       }
+      if (struct.isSetOrganizationId()) {
+        oprot.writeString(struct.organizationId);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, UserInfo struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.userId = iprot.readString();
         struct.setUserIdIsSet(true);
@@ -680,6 +776,10 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       if (incoming.get(3)) {
         struct.eMail = iprot.readString();
         struct.setEMailIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.organizationId = iprot.readString();
+        struct.setOrganizationIdIsSet(true);
       }
     }
   }
