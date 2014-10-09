@@ -108,7 +108,7 @@ struct ImageData {
 	4: UnixTimestamp createTime,
 	5: UnixTimestamp updateTime,
 	6: string ownerLogin,
-	7: string operatingSystem,
+	7: i32 operatingSystem,
 	8: bool isValid,
 	9: bool isDeleted,
 	// 10: deleted, do not reuse!
