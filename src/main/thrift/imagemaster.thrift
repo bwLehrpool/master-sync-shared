@@ -78,6 +78,7 @@ struct UserInfo {
 struct OrganizationData {
 	1: string organizationId,
 	2: string displayName,
+	3: string ecpUrl,
 }
 
 struct SessionData {
@@ -147,5 +148,7 @@ service ImageServer {
 	DownloadData getImage(2:ID serverSessionId, 1:UUID uuid) throws (1:AuthorizationException failure, 2: ImageDataException failure2),
 	
 	bool publishUser(1:ID serverSessionId, 2:UserInfo user) throws (1:AuthorizationException failure),
+
+	bool registerSatellite(1:string organizationId, 2:string address, 3:string modulus, 4:string exponent),
 
 }
