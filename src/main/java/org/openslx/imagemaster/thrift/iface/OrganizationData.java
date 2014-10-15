@@ -38,6 +38,7 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
   private static final org.apache.thrift.protocol.TField ORGANIZATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("organizationId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField DISPLAY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("displayName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField ECP_URL_FIELD_DESC = new org.apache.thrift.protocol.TField("ecpUrl", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField SUFFIX_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("suffixList", org.apache.thrift.protocol.TType.LIST, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -48,12 +49,14 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
   public String organizationId; // required
   public String displayName; // required
   public String ecpUrl; // required
+  public List<String> suffixList; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ORGANIZATION_ID((short)1, "organizationId"),
     DISPLAY_NAME((short)2, "displayName"),
-    ECP_URL((short)3, "ecpUrl");
+    ECP_URL((short)3, "ecpUrl"),
+    SUFFIX_LIST((short)4, "suffixList");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -74,6 +77,8 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
           return DISPLAY_NAME;
         case 3: // ECP_URL
           return ECP_URL;
+        case 4: // SUFFIX_LIST
+          return SUFFIX_LIST;
         default:
           return null;
       }
@@ -123,6 +128,9 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.ECP_URL, new org.apache.thrift.meta_data.FieldMetaData("ecpUrl", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SUFFIX_LIST, new org.apache.thrift.meta_data.FieldMetaData("suffixList", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(OrganizationData.class, metaDataMap);
   }
@@ -133,12 +141,14 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
   public OrganizationData(
     String organizationId,
     String displayName,
-    String ecpUrl)
+    String ecpUrl,
+    List<String> suffixList)
   {
     this();
     this.organizationId = organizationId;
     this.displayName = displayName;
     this.ecpUrl = ecpUrl;
+    this.suffixList = suffixList;
   }
 
   /**
@@ -154,6 +164,10 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
     if (other.isSetEcpUrl()) {
       this.ecpUrl = other.ecpUrl;
     }
+    if (other.isSetSuffixList()) {
+      List<String> __this__suffixList = new ArrayList<String>(other.suffixList);
+      this.suffixList = __this__suffixList;
+    }
   }
 
   public OrganizationData deepCopy() {
@@ -165,6 +179,7 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
     this.organizationId = null;
     this.displayName = null;
     this.ecpUrl = null;
+    this.suffixList = null;
   }
 
   public String getOrganizationId() {
@@ -239,6 +254,45 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
     }
   }
 
+  public int getSuffixListSize() {
+    return (this.suffixList == null) ? 0 : this.suffixList.size();
+  }
+
+  public java.util.Iterator<String> getSuffixListIterator() {
+    return (this.suffixList == null) ? null : this.suffixList.iterator();
+  }
+
+  public void addToSuffixList(String elem) {
+    if (this.suffixList == null) {
+      this.suffixList = new ArrayList<String>();
+    }
+    this.suffixList.add(elem);
+  }
+
+  public List<String> getSuffixList() {
+    return this.suffixList;
+  }
+
+  public OrganizationData setSuffixList(List<String> suffixList) {
+    this.suffixList = suffixList;
+    return this;
+  }
+
+  public void unsetSuffixList() {
+    this.suffixList = null;
+  }
+
+  /** Returns true if field suffixList is set (has been assigned a value) and false otherwise */
+  public boolean isSetSuffixList() {
+    return this.suffixList != null;
+  }
+
+  public void setSuffixListIsSet(boolean value) {
+    if (!value) {
+      this.suffixList = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ORGANIZATION_ID:
@@ -265,6 +319,14 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
       }
       break;
 
+    case SUFFIX_LIST:
+      if (value == null) {
+        unsetSuffixList();
+      } else {
+        setSuffixList((List<String>)value);
+      }
+      break;
+
     }
   }
 
@@ -278,6 +340,9 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
 
     case ECP_URL:
       return getEcpUrl();
+
+    case SUFFIX_LIST:
+      return getSuffixList();
 
     }
     throw new IllegalStateException();
@@ -296,6 +361,8 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
       return isSetDisplayName();
     case ECP_URL:
       return isSetEcpUrl();
+    case SUFFIX_LIST:
+      return isSetSuffixList();
     }
     throw new IllegalStateException();
   }
@@ -337,6 +404,15 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
       if (!(this_present_ecpUrl && that_present_ecpUrl))
         return false;
       if (!this.ecpUrl.equals(that.ecpUrl))
+        return false;
+    }
+
+    boolean this_present_suffixList = true && this.isSetSuffixList();
+    boolean that_present_suffixList = true && that.isSetSuffixList();
+    if (this_present_suffixList || that_present_suffixList) {
+      if (!(this_present_suffixList && that_present_suffixList))
+        return false;
+      if (!this.suffixList.equals(that.suffixList))
         return false;
     }
 
@@ -386,6 +462,16 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetSuffixList()).compareTo(other.isSetSuffixList());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSuffixList()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.suffixList, other.suffixList);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -427,6 +513,14 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
       sb.append("null");
     } else {
       sb.append(this.ecpUrl);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("suffixList:");
+    if (this.suffixList == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.suffixList);
     }
     first = false;
     sb.append(")");
@@ -496,6 +590,24 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // SUFFIX_LIST
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.suffixList = new ArrayList<String>(_list0.size);
+                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                {
+                  String _elem2;
+                  _elem2 = iprot.readString();
+                  struct.suffixList.add(_elem2);
+                }
+                iprot.readListEnd();
+              }
+              struct.setSuffixListIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -526,6 +638,18 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
         oprot.writeString(struct.ecpUrl);
         oprot.writeFieldEnd();
       }
+      if (struct.suffixList != null) {
+        oprot.writeFieldBegin(SUFFIX_LIST_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.suffixList.size()));
+          for (String _iter3 : struct.suffixList)
+          {
+            oprot.writeString(_iter3);
+          }
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -553,7 +677,10 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
       if (struct.isSetEcpUrl()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetSuffixList()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetOrganizationId()) {
         oprot.writeString(struct.organizationId);
       }
@@ -563,12 +690,21 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
       if (struct.isSetEcpUrl()) {
         oprot.writeString(struct.ecpUrl);
       }
+      if (struct.isSetSuffixList()) {
+        {
+          oprot.writeI32(struct.suffixList.size());
+          for (String _iter4 : struct.suffixList)
+          {
+            oprot.writeString(_iter4);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, OrganizationData struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.organizationId = iprot.readString();
         struct.setOrganizationIdIsSet(true);
@@ -580,6 +716,19 @@ public class OrganizationData implements org.apache.thrift.TBase<OrganizationDat
       if (incoming.get(2)) {
         struct.ecpUrl = iprot.readString();
         struct.setEcpUrlIsSet(true);
+      }
+      if (incoming.get(3)) {
+        {
+          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.suffixList = new ArrayList<String>(_list5.size);
+          for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+          {
+            String _elem7;
+            _elem7 = iprot.readString();
+            struct.suffixList.add(_elem7);
+          }
+        }
+        struct.setSuffixListIsSet(true);
       }
     }
   }

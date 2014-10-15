@@ -508,13 +508,13 @@ public class DownloadData implements org.apache.thrift.TBase<DownloadData, Downl
           case 3: // CRC_SUMS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.crcSums = new ArrayList<Integer>(_list0.size);
-                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
+                struct.crcSums = new ArrayList<Integer>(_list8.size);
+                for (int _i9 = 0; _i9 < _list8.size; ++_i9)
                 {
-                  int _elem2;
-                  _elem2 = iprot.readI32();
-                  struct.crcSums.add(_elem2);
+                  int _elem10;
+                  _elem10 = iprot.readI32();
+                  struct.crcSums.add(_elem10);
                 }
                 iprot.readListEnd();
               }
@@ -550,9 +550,9 @@ public class DownloadData implements org.apache.thrift.TBase<DownloadData, Downl
         oprot.writeFieldBegin(CRC_SUMS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.crcSums.size()));
-          for (int _iter3 : struct.crcSums)
+          for (int _iter11 : struct.crcSums)
           {
-            oprot.writeI32(_iter3);
+            oprot.writeI32(_iter11);
           }
           oprot.writeListEnd();
         }
@@ -595,9 +595,9 @@ public class DownloadData implements org.apache.thrift.TBase<DownloadData, Downl
       if (struct.isSetCrcSums()) {
         {
           oprot.writeI32(struct.crcSums.size());
-          for (int _iter4 : struct.crcSums)
+          for (int _iter12 : struct.crcSums)
           {
-            oprot.writeI32(_iter4);
+            oprot.writeI32(_iter12);
           }
         }
       }
@@ -617,13 +617,13 @@ public class DownloadData implements org.apache.thrift.TBase<DownloadData, Downl
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-          struct.crcSums = new ArrayList<Integer>(_list5.size);
-          for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+          struct.crcSums = new ArrayList<Integer>(_list13.size);
+          for (int _i14 = 0; _i14 < _list13.size; ++_i14)
           {
-            int _elem7;
-            _elem7 = iprot.readI32();
-            struct.crcSums.add(_elem7);
+            int _elem15;
+            _elem15 = iprot.readI32();
+            struct.crcSums.add(_elem15);
           }
         }
         struct.setCrcSumsIsSet(true);

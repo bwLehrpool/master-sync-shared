@@ -79,6 +79,7 @@ struct OrganizationData {
 	1: string organizationId,
 	2: string displayName,
 	3: string ecpUrl,
+	4: list<string> suffixList,
 }
 
 struct SessionData {
@@ -150,5 +151,7 @@ service ImageServer {
 	bool publishUser(1:ID serverSessionId, 2:UserInfo user) throws (1:AuthorizationException failure),
 
 	bool registerSatellite(1:string organizationId, 2:string address, 3:string modulus, 4:string exponent),
+
+	bool updateSatelliteAddress(1:ID serverSessionId, 2:string address),
 
 }

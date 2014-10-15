@@ -62,6 +62,8 @@ public class ImageServer {
 
     public boolean registerSatellite(String organizationId, String address, String modulus, String exponent) throws org.apache.thrift.TException;
 
+    public boolean updateSatelliteAddress(String serverSessionId, String address) throws org.apache.thrift.TException;
+
   }
 
   public interface AsyncIface {
@@ -91,6 +93,8 @@ public class ImageServer {
     public void publishUser(String serverSessionId, UserInfo user, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void registerSatellite(String organizationId, String address, String modulus, String exponent, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void updateSatelliteAddress(String serverSessionId, String address, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -457,6 +461,30 @@ public class ImageServer {
         return result.success;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "registerSatellite failed: unknown result");
+    }
+
+    public boolean updateSatelliteAddress(String serverSessionId, String address) throws org.apache.thrift.TException
+    {
+      send_updateSatelliteAddress(serverSessionId, address);
+      return recv_updateSatelliteAddress();
+    }
+
+    public void send_updateSatelliteAddress(String serverSessionId, String address) throws org.apache.thrift.TException
+    {
+      updateSatelliteAddress_args args = new updateSatelliteAddress_args();
+      args.setServerSessionId(serverSessionId);
+      args.setAddress(address);
+      sendBase("updateSatelliteAddress", args);
+    }
+
+    public boolean recv_updateSatelliteAddress() throws org.apache.thrift.TException
+    {
+      updateSatelliteAddress_result result = new updateSatelliteAddress_result();
+      receiveBase(result, "updateSatelliteAddress");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateSatelliteAddress failed: unknown result");
     }
 
   }
@@ -923,6 +951,41 @@ public class ImageServer {
       }
     }
 
+    public void updateSatelliteAddress(String serverSessionId, String address, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      updateSatelliteAddress_call method_call = new updateSatelliteAddress_call(serverSessionId, address, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class updateSatelliteAddress_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String serverSessionId;
+      private String address;
+      public updateSatelliteAddress_call(String serverSessionId, String address, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.serverSessionId = serverSessionId;
+        this.address = address;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateSatelliteAddress", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        updateSatelliteAddress_args args = new updateSatelliteAddress_args();
+        args.setServerSessionId(serverSessionId);
+        args.setAddress(address);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_updateSatelliteAddress();
+      }
+    }
+
   }
 
   public static class Processor<I extends Iface> extends org.apache.thrift.TBaseProcessor<I> implements org.apache.thrift.TProcessor {
@@ -949,6 +1012,7 @@ public class ImageServer {
       processMap.put("getImage", new getImage());
       processMap.put("publishUser", new publishUser());
       processMap.put("registerSatellite", new registerSatellite());
+      processMap.put("updateSatelliteAddress", new updateSatelliteAddress());
       return processMap;
     }
 
@@ -1258,6 +1322,27 @@ public class ImageServer {
       }
     }
 
+    public static class updateSatelliteAddress<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateSatelliteAddress_args> {
+      public updateSatelliteAddress() {
+        super("updateSatelliteAddress");
+      }
+
+      public updateSatelliteAddress_args getEmptyArgsInstance() {
+        return new updateSatelliteAddress_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public updateSatelliteAddress_result getResult(I iface, updateSatelliteAddress_args args) throws org.apache.thrift.TException {
+        updateSatelliteAddress_result result = new updateSatelliteAddress_result();
+        result.success = iface.updateSatelliteAddress(args.serverSessionId, args.address);
+        result.setSuccessIsSet(true);
+        return result;
+      }
+    }
+
   }
 
   public static class AsyncProcessor<I extends AsyncIface> extends org.apache.thrift.TBaseAsyncProcessor<I> {
@@ -1284,6 +1369,7 @@ public class ImageServer {
       processMap.put("getImage", new getImage());
       processMap.put("publishUser", new publishUser());
       processMap.put("registerSatellite", new registerSatellite());
+      processMap.put("updateSatelliteAddress", new updateSatelliteAddress());
       return processMap;
     }
 
@@ -2020,6 +2106,58 @@ public class ImageServer {
 
       public void start(I iface, registerSatellite_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
         iface.registerSatellite(args.organizationId, args.address, args.modulus, args.exponent,resultHandler);
+      }
+    }
+
+    public static class updateSatelliteAddress<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateSatelliteAddress_args, Boolean> {
+      public updateSatelliteAddress() {
+        super("updateSatelliteAddress");
+      }
+
+      public updateSatelliteAddress_args getEmptyArgsInstance() {
+        return new updateSatelliteAddress_args();
+      }
+
+      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Boolean>() { 
+          public void onComplete(Boolean o) {
+            updateSatelliteAddress_result result = new updateSatelliteAddress_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            updateSatelliteAddress_result result = new updateSatelliteAddress_result();
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, updateSatelliteAddress_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.updateSatelliteAddress(args.serverSessionId, args.address,resultHandler);
       }
     }
 
@@ -4095,14 +4233,14 @@ public class ImageServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
-                  struct.success = new ArrayList<OrganizationData>(_list8.size);
-                  for (int _i9 = 0; _i9 < _list8.size; ++_i9)
+                  org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
+                  struct.success = new ArrayList<OrganizationData>(_list16.size);
+                  for (int _i17 = 0; _i17 < _list16.size; ++_i17)
                   {
-                    OrganizationData _elem10;
-                    _elem10 = new OrganizationData();
-                    _elem10.read(iprot);
-                    struct.success.add(_elem10);
+                    OrganizationData _elem18;
+                    _elem18 = new OrganizationData();
+                    _elem18.read(iprot);
+                    struct.success.add(_elem18);
                   }
                   iprot.readListEnd();
                 }
@@ -4130,9 +4268,9 @@ public class ImageServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (OrganizationData _iter11 : struct.success)
+            for (OrganizationData _iter19 : struct.success)
             {
-              _iter11.write(oprot);
+              _iter19.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -4163,9 +4301,9 @@ public class ImageServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (OrganizationData _iter12 : struct.success)
+            for (OrganizationData _iter20 : struct.success)
             {
-              _iter12.write(oprot);
+              _iter20.write(oprot);
             }
           }
         }
@@ -4177,14 +4315,14 @@ public class ImageServer {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<OrganizationData>(_list13.size);
-            for (int _i14 = 0; _i14 < _list13.size; ++_i14)
+            org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<OrganizationData>(_list21.size);
+            for (int _i22 = 0; _i22 < _list21.size; ++_i22)
             {
-              OrganizationData _elem15;
-              _elem15 = new OrganizationData();
-              _elem15.read(iprot);
-              struct.success.add(_elem15);
+              OrganizationData _elem23;
+              _elem23 = new OrganizationData();
+              _elem23.read(iprot);
+              struct.success.add(_elem23);
             }
           }
           struct.setSuccessIsSet(true);
@@ -5134,14 +5272,14 @@ public class ImageServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
-                  struct.success = new ArrayList<UserInfo>(_list16.size);
-                  for (int _i17 = 0; _i17 < _list16.size; ++_i17)
+                  org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
+                  struct.success = new ArrayList<UserInfo>(_list24.size);
+                  for (int _i25 = 0; _i25 < _list24.size; ++_i25)
                   {
-                    UserInfo _elem18;
-                    _elem18 = new UserInfo();
-                    _elem18.read(iprot);
-                    struct.success.add(_elem18);
+                    UserInfo _elem26;
+                    _elem26 = new UserInfo();
+                    _elem26.read(iprot);
+                    struct.success.add(_elem26);
                   }
                   iprot.readListEnd();
                 }
@@ -5178,9 +5316,9 @@ public class ImageServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (UserInfo _iter19 : struct.success)
+            for (UserInfo _iter27 : struct.success)
             {
-              _iter19.write(oprot);
+              _iter27.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -5219,9 +5357,9 @@ public class ImageServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (UserInfo _iter20 : struct.success)
+            for (UserInfo _iter28 : struct.success)
             {
-              _iter20.write(oprot);
+              _iter28.write(oprot);
             }
           }
         }
@@ -5236,14 +5374,14 @@ public class ImageServer {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<UserInfo>(_list21.size);
-            for (int _i22 = 0; _i22 < _list21.size; ++_i22)
+            org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<UserInfo>(_list29.size);
+            for (int _i30 = 0; _i30 < _list29.size; ++_i30)
             {
-              UserInfo _elem23;
-              _elem23 = new UserInfo();
-              _elem23.read(iprot);
-              struct.success.add(_elem23);
+              UserInfo _elem31;
+              _elem31 = new UserInfo();
+              _elem31.read(iprot);
+              struct.success.add(_elem31);
             }
           }
           struct.setSuccessIsSet(true);
@@ -6096,14 +6234,14 @@ public class ImageServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
-                  struct.success = new ArrayList<ImageData>(_list24.size);
-                  for (int _i25 = 0; _i25 < _list24.size; ++_i25)
+                  org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
+                  struct.success = new ArrayList<ImageData>(_list32.size);
+                  for (int _i33 = 0; _i33 < _list32.size; ++_i33)
                   {
-                    ImageData _elem26;
-                    _elem26 = new ImageData();
-                    _elem26.read(iprot);
-                    struct.success.add(_elem26);
+                    ImageData _elem34;
+                    _elem34 = new ImageData();
+                    _elem34.read(iprot);
+                    struct.success.add(_elem34);
                   }
                   iprot.readListEnd();
                 }
@@ -6140,9 +6278,9 @@ public class ImageServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (ImageData _iter27 : struct.success)
+            for (ImageData _iter35 : struct.success)
             {
-              _iter27.write(oprot);
+              _iter35.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -6181,9 +6319,9 @@ public class ImageServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (ImageData _iter28 : struct.success)
+            for (ImageData _iter36 : struct.success)
             {
-              _iter28.write(oprot);
+              _iter36.write(oprot);
             }
           }
         }
@@ -6198,14 +6336,14 @@ public class ImageServer {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<ImageData>(_list29.size);
-            for (int _i30 = 0; _i30 < _list29.size; ++_i30)
+            org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<ImageData>(_list37.size);
+            for (int _i38 = 0; _i38 < _list37.size; ++_i38)
             {
-              ImageData _elem31;
-              _elem31 = new ImageData();
-              _elem31.read(iprot);
-              struct.success.add(_elem31);
+              ImageData _elem39;
+              _elem39 = new ImageData();
+              _elem39.read(iprot);
+              struct.success.add(_elem39);
             }
           }
           struct.setSuccessIsSet(true);
@@ -9970,13 +10108,13 @@ public class ImageServer {
             case 3: // CRC_SUMS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
-                  struct.crcSums = new ArrayList<Integer>(_list32.size);
-                  for (int _i33 = 0; _i33 < _list32.size; ++_i33)
+                  org.apache.thrift.protocol.TList _list40 = iprot.readListBegin();
+                  struct.crcSums = new ArrayList<Integer>(_list40.size);
+                  for (int _i41 = 0; _i41 < _list40.size; ++_i41)
                   {
-                    int _elem34;
-                    _elem34 = iprot.readI32();
-                    struct.crcSums.add(_elem34);
+                    int _elem42;
+                    _elem42 = iprot.readI32();
+                    struct.crcSums.add(_elem42);
                   }
                   iprot.readListEnd();
                 }
@@ -10014,9 +10152,9 @@ public class ImageServer {
           oprot.writeFieldBegin(CRC_SUMS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.crcSums.size()));
-            for (int _iter35 : struct.crcSums)
+            for (int _iter43 : struct.crcSums)
             {
-              oprot.writeI32(_iter35);
+              oprot.writeI32(_iter43);
             }
             oprot.writeListEnd();
           }
@@ -10059,9 +10197,9 @@ public class ImageServer {
         if (struct.isSetCrcSums()) {
           {
             oprot.writeI32(struct.crcSums.size());
-            for (int _iter36 : struct.crcSums)
+            for (int _iter44 : struct.crcSums)
             {
-              oprot.writeI32(_iter36);
+              oprot.writeI32(_iter44);
             }
           }
         }
@@ -10082,13 +10220,13 @@ public class ImageServer {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-            struct.crcSums = new ArrayList<Integer>(_list37.size);
-            for (int _i38 = 0; _i38 < _list37.size; ++_i38)
+            org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
+            struct.crcSums = new ArrayList<Integer>(_list45.size);
+            for (int _i46 = 0; _i46 < _list45.size; ++_i46)
             {
-              int _elem39;
-              _elem39 = iprot.readI32();
-              struct.crcSums.add(_elem39);
+              int _elem47;
+              _elem47 = iprot.readI32();
+              struct.crcSums.add(_elem47);
             }
           }
           struct.setCrcSumsIsSet(true);
@@ -13692,6 +13830,814 @@ public class ImageServer {
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, registerSatellite_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class updateSatelliteAddress_args implements org.apache.thrift.TBase<updateSatelliteAddress_args, updateSatelliteAddress_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateSatelliteAddress_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateSatelliteAddress_args");
+
+    private static final org.apache.thrift.protocol.TField SERVER_SESSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("serverSessionId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("address", org.apache.thrift.protocol.TType.STRING, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateSatelliteAddress_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateSatelliteAddress_argsTupleSchemeFactory());
+    }
+
+    public String serverSessionId; // required
+    public String address; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SERVER_SESSION_ID((short)1, "serverSessionId"),
+      ADDRESS((short)2, "address");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // SERVER_SESSION_ID
+            return SERVER_SESSION_ID;
+          case 2: // ADDRESS
+            return ADDRESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SERVER_SESSION_ID, new org.apache.thrift.meta_data.FieldMetaData("serverSessionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "ID")));
+      tmpMap.put(_Fields.ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("address", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateSatelliteAddress_args.class, metaDataMap);
+    }
+
+    public updateSatelliteAddress_args() {
+    }
+
+    public updateSatelliteAddress_args(
+      String serverSessionId,
+      String address)
+    {
+      this();
+      this.serverSessionId = serverSessionId;
+      this.address = address;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateSatelliteAddress_args(updateSatelliteAddress_args other) {
+      if (other.isSetServerSessionId()) {
+        this.serverSessionId = other.serverSessionId;
+      }
+      if (other.isSetAddress()) {
+        this.address = other.address;
+      }
+    }
+
+    public updateSatelliteAddress_args deepCopy() {
+      return new updateSatelliteAddress_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.serverSessionId = null;
+      this.address = null;
+    }
+
+    public String getServerSessionId() {
+      return this.serverSessionId;
+    }
+
+    public updateSatelliteAddress_args setServerSessionId(String serverSessionId) {
+      this.serverSessionId = serverSessionId;
+      return this;
+    }
+
+    public void unsetServerSessionId() {
+      this.serverSessionId = null;
+    }
+
+    /** Returns true if field serverSessionId is set (has been assigned a value) and false otherwise */
+    public boolean isSetServerSessionId() {
+      return this.serverSessionId != null;
+    }
+
+    public void setServerSessionIdIsSet(boolean value) {
+      if (!value) {
+        this.serverSessionId = null;
+      }
+    }
+
+    public String getAddress() {
+      return this.address;
+    }
+
+    public updateSatelliteAddress_args setAddress(String address) {
+      this.address = address;
+      return this;
+    }
+
+    public void unsetAddress() {
+      this.address = null;
+    }
+
+    /** Returns true if field address is set (has been assigned a value) and false otherwise */
+    public boolean isSetAddress() {
+      return this.address != null;
+    }
+
+    public void setAddressIsSet(boolean value) {
+      if (!value) {
+        this.address = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SERVER_SESSION_ID:
+        if (value == null) {
+          unsetServerSessionId();
+        } else {
+          setServerSessionId((String)value);
+        }
+        break;
+
+      case ADDRESS:
+        if (value == null) {
+          unsetAddress();
+        } else {
+          setAddress((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SERVER_SESSION_ID:
+        return getServerSessionId();
+
+      case ADDRESS:
+        return getAddress();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SERVER_SESSION_ID:
+        return isSetServerSessionId();
+      case ADDRESS:
+        return isSetAddress();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateSatelliteAddress_args)
+        return this.equals((updateSatelliteAddress_args)that);
+      return false;
+    }
+
+    public boolean equals(updateSatelliteAddress_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_serverSessionId = true && this.isSetServerSessionId();
+      boolean that_present_serverSessionId = true && that.isSetServerSessionId();
+      if (this_present_serverSessionId || that_present_serverSessionId) {
+        if (!(this_present_serverSessionId && that_present_serverSessionId))
+          return false;
+        if (!this.serverSessionId.equals(that.serverSessionId))
+          return false;
+      }
+
+      boolean this_present_address = true && this.isSetAddress();
+      boolean that_present_address = true && that.isSetAddress();
+      if (this_present_address || that_present_address) {
+        if (!(this_present_address && that_present_address))
+          return false;
+        if (!this.address.equals(that.address))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(updateSatelliteAddress_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetServerSessionId()).compareTo(other.isSetServerSessionId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetServerSessionId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverSessionId, other.serverSessionId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAddress()).compareTo(other.isSetAddress());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAddress()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.address, other.address);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateSatelliteAddress_args(");
+      boolean first = true;
+
+      sb.append("serverSessionId:");
+      if (this.serverSessionId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.serverSessionId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("address:");
+      if (this.address == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.address);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateSatelliteAddress_argsStandardSchemeFactory implements SchemeFactory {
+      public updateSatelliteAddress_argsStandardScheme getScheme() {
+        return new updateSatelliteAddress_argsStandardScheme();
+      }
+    }
+
+    private static class updateSatelliteAddress_argsStandardScheme extends StandardScheme<updateSatelliteAddress_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateSatelliteAddress_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // SERVER_SESSION_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.serverSessionId = iprot.readString();
+                struct.setServerSessionIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ADDRESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.address = iprot.readString();
+                struct.setAddressIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateSatelliteAddress_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.serverSessionId != null) {
+          oprot.writeFieldBegin(SERVER_SESSION_ID_FIELD_DESC);
+          oprot.writeString(struct.serverSessionId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.address != null) {
+          oprot.writeFieldBegin(ADDRESS_FIELD_DESC);
+          oprot.writeString(struct.address);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateSatelliteAddress_argsTupleSchemeFactory implements SchemeFactory {
+      public updateSatelliteAddress_argsTupleScheme getScheme() {
+        return new updateSatelliteAddress_argsTupleScheme();
+      }
+    }
+
+    private static class updateSatelliteAddress_argsTupleScheme extends TupleScheme<updateSatelliteAddress_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateSatelliteAddress_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetServerSessionId()) {
+          optionals.set(0);
+        }
+        if (struct.isSetAddress()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetServerSessionId()) {
+          oprot.writeString(struct.serverSessionId);
+        }
+        if (struct.isSetAddress()) {
+          oprot.writeString(struct.address);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateSatelliteAddress_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.serverSessionId = iprot.readString();
+          struct.setServerSessionIdIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.address = iprot.readString();
+          struct.setAddressIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class updateSatelliteAddress_result implements org.apache.thrift.TBase<updateSatelliteAddress_result, updateSatelliteAddress_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateSatelliteAddress_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateSatelliteAddress_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateSatelliteAddress_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateSatelliteAddress_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateSatelliteAddress_result.class, metaDataMap);
+    }
+
+    public updateSatelliteAddress_result() {
+    }
+
+    public updateSatelliteAddress_result(
+      boolean success)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateSatelliteAddress_result(updateSatelliteAddress_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+    }
+
+    public updateSatelliteAddress_result deepCopy() {
+      return new updateSatelliteAddress_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public updateSatelliteAddress_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return Boolean.valueOf(isSuccess());
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateSatelliteAddress_result)
+        return this.equals((updateSatelliteAddress_result)that);
+      return false;
+    }
+
+    public boolean equals(updateSatelliteAddress_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(updateSatelliteAddress_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateSatelliteAddress_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateSatelliteAddress_resultStandardSchemeFactory implements SchemeFactory {
+      public updateSatelliteAddress_resultStandardScheme getScheme() {
+        return new updateSatelliteAddress_resultStandardScheme();
+      }
+    }
+
+    private static class updateSatelliteAddress_resultStandardScheme extends StandardScheme<updateSatelliteAddress_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateSatelliteAddress_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateSatelliteAddress_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateSatelliteAddress_resultTupleSchemeFactory implements SchemeFactory {
+      public updateSatelliteAddress_resultTupleScheme getScheme() {
+        return new updateSatelliteAddress_resultTupleScheme();
+      }
+    }
+
+    private static class updateSatelliteAddress_resultTupleScheme extends TupleScheme<updateSatelliteAddress_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateSatelliteAddress_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateSatelliteAddress_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
