@@ -41,19 +41,23 @@ public class StaticProxySelector extends ProxySelector
 
 		List<NetworkInterface> nWI = getNetworkInterfaces();
 
-		// iterate over network interfaces and check for InetAddresses.
-		for ( int i = 0; i < nWI.size(); ++i ) {
-			Enumeration e = nWI.get( i ).getInetAddresses();
-			// iterate over InetAddresses of current interface.
-			while ( e.hasMoreElements() ) {
-				InetAddress address = (InetAddress)e.nextElement();
-				// Add proxy to list, if host do not equals to address.
-				if ( ! ( host.equals( address ) ) &&
-						! ( host.startsWith( "127." ) ) &&
-						! ( host.equals( "localhost" ) ) ) {
-					proxyList.add( this.proxy );
+		if ( nWI != null ) {
+			// iterate over network interfaces and check for InetAddresses.
+			for ( int i = 0; i < nWI.size(); ++i ) {
+				Enumeration e = nWI.get( i ).getInetAddresses();
+				// iterate over InetAddresses of current interface.
+				while ( e.hasMoreElements() ) {
+					InetAddress address = (InetAddress)e.nextElement();
+					// Add proxy to list, if host do not equals to address.
+					if ( ! ( host.equals( address ) ) &&
+							! ( host.startsWith( "127." ) ) &&
+							! ( host.equals( "localhost" ) ) ) {
+						proxyList.add( this.proxy );
+					}
 				}
 			}
+		} else if ( ! ( host.startsWith( "127." ) ) && ! ( host.equals( "localhost" ) ) ) {
+			proxyList.add( this.proxy );
 		}
 		// log.info( "proxyList: " + proxyList.toString() );
 		return proxyList;
