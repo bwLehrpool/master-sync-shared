@@ -44,7 +44,7 @@ public class StaticProxySelector extends ProxySelector
 		if ( nWI != null ) {
 			// iterate over network interfaces and check for InetAddresses.
 			for ( int i = 0; i < nWI.size(); ++i ) {
-				Enumeration e = nWI.get( i ).getInetAddresses();
+				Enumeration<InetAddress> e = nWI.get( i ).getInetAddresses();
 				// iterate over InetAddresses of current interface.
 				while ( e.hasMoreElements() ) {
 					InetAddress address = (InetAddress)e.nextElement();
@@ -67,7 +67,7 @@ public class StaticProxySelector extends ProxySelector
 	private ArrayList<NetworkInterface> getNetworkInterfaces()
 	{
 		ArrayList<NetworkInterface> retList = new ArrayList<NetworkInterface>();
-		Enumeration e = null;
+		Enumeration<NetworkInterface> e = null;
 		try {
 			e = NetworkInterface.getNetworkInterfaces();
 		} catch ( SocketException e1 ) {
