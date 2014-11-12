@@ -1,0 +1,14 @@
+# proxy configuration:
+# 3 options for proxy configuration: AUTO = autmatically, YES, NO. If nothing is
+# set, the default automatically will be choosen.
+PROXY_CONF=AUTO
+# If PROXY_CONF = YES some more information for connection are necessary:
+# PROXY_ADDR = destination addres
+PROXY_ADDR=1.2.3.4
+
+# PROXY_PORT = port for proxy connection
+PROXY_PORT=1080
+
+# Username and password are optional, if empty, it is assumed that not necessary:
+PROXY_USERNAME=test
+PROXY_PASSWORD=password
