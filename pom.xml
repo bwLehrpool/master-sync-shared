@@ -107,5 +107,11 @@
 			<version>[1.5.8,1.7.5]</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.googlecode.vestige</groupId>
+  			<artifactId>proxy_vole</artifactId>
+  			<version>0.0.3-SNAPSHOT</version>
+		</dependency>
+		
 	</dependencies>
 </project>

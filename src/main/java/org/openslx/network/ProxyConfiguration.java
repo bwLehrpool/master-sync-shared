@@ -1,73 +1,62 @@
 package org.openslx.network;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
+import java.net.Authenticator;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.ProxySelector;
 
 import org.apache.log4j.Logger;
-import org.openslx.util.Util;
 
+import com.btr.proxy.search.wpad.WpadProxySearchStrategy;
+import com.btr.proxy.util.ProxyException;
+
+/**
+ * Class for configuring proxy settings system wide, if necessary.
+ * 
+ * @author bjoern
+ * 
+ */
 public class ProxyConfiguration
 {
-	private static Logger log = Logger.getLogger( ProxyConfiguration.class );
-	private static final Properties properties = new Properties();
-	
-	// Getting the proxy settings from config file stored in
-	// "/opt/openslx/proxy/conf".
-	public static String getProxyConf()
-	{
-		return properties.getProperty( "PROXY_CONF" );
-	}
-	
-	public static String getProxyAddress()
-	{
-		return properties.getProperty( "PROXY_ADDR" );
-	}
-	
-	public static String getProxyUsername()
-	{
-		return properties.getProperty( "PROXY_USERNAME" );
-	}
+	private static final Logger log = Logger.getLogger( ProxyConfiguration.class );
 
-	public static String getProxyPassword()
+	public static void configProxy()
 	{
-		return properties.getProperty( "PROXY_PASSWORD" );
-	}
-	
-	// Integers //
-	public static int getProxyPort()
-	{
-		return Util.tryToParseInt( properties.getProperty( "PROXY_PORT" ) );
-	}
+		// Configuring proxy settings. First read options from config file.
+		String proxyConfiguration = ProxyProperties.getProxyConf();
+		if ( ( proxyConfiguration.equals( "AUTO" ) ) || ( proxyConfiguration.equals( "" ) ) ) {
+			log.info( "Configuring proxy settings automatically..." );
+			// Configuring proxy settings automatically.
+			WpadProxySearchStrategy wPSS = new WpadProxySearchStrategy();
+			try {
+				ProxySelector pS = wPSS.getProxySelector();
+				ProxySelector.setDefault( pS );
+			} catch ( ProxyException e ) {
+				log.error( "Setting proxy configuration automatically failed.", e );
+			}
+		} else if ( proxyConfiguration.equals( "YES" ) ) {
+			// Take the proxy settings from config file.
+			// First check if one of the following necessary options might not be set.
+			if ( ProxyProperties.checkProxySettings() ) {
+				String proxyAddress = ProxyProperties.getProxyAddress();
+				int proxyPort = ProxyProperties.getProxyPort();
 
-	/**
-	 * Load properties
-	 */
-	static {
-		InputStreamReader stream = null;
-		try {
-			// Load all entries of the config file into properties
-			stream = new InputStreamReader(
-					new FileInputStream("/opt/openslx/proxy/config"), StandardCharsets.UTF_8);
-			properties.load(stream);
-			stream.close();
-		} catch (IOException e) {
-			log.error("Could not load proxy properties from '/opt/openslx/proxy/conf'. Exiting.");
-			System.exit( 2 );
-		} finally {
-			Util.streamClose( stream );
+				// Configure proxy.
+				Proxy proxy = new Proxy( Proxy.Type.SOCKS, new InetSocketAddress( proxyAddress, proxyPort ) );
+				StaticProxySelector sPS = new StaticProxySelector( proxy );
+				ProxySelector.setDefault( sPS );
+
+				if ( ! ( ProxyProperties.getProxyUsername().equals( "" ) ) && ! ( ProxyProperties.getProxyPassword().equals( "" ) ) ) {
+					log.info( "Configuring proxy settings manually WITH authentication..." );
+					// use Proxy with authentication.
+					String proxyUname = ProxyProperties.getProxyUsername();
+					String proxyPass = ProxyProperties.getProxyPassword();
+
+					// Set authentication.
+					StaticProxyAuthenticator sPA = new StaticProxyAuthenticator( proxyUname, proxyPass );
+					Authenticator.setDefault( sPA );
+				}
+			}
 		}
-	}
-	
-	/**
-	 * Check proxy settings for being not empty.
-	 * @return
-	 */
-	public static boolean checkProxySettings() {
-		return (
-				(getProxyAddress() != "") &&
-				(getProxyPort() != 0));
 	}
 }
