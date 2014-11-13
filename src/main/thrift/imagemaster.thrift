@@ -154,4 +154,9 @@ service ImageServer {
 
 	bool updateSatelliteAddress(1:ID serverSessionId, 2:string address),
 
+/*
+ * Local interfacing
+ */
+	ServerSessionData addSession(1:string localPassword, 2:UserInfo userInfo),
+
 }

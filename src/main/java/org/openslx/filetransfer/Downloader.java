@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -44,13 +43,8 @@ public class Downloader extends Transfer
 		super( socket, log );
 	}
 
-	public boolean download( String destinationFile, WantRangeCallback callback )
+	public boolean download( final String destinationFile, final WantRangeCallback callback )
 	{
-		if ( shouldGetToken() ) {
-			log.error( "You didn't call getToken yet!" );
-			return false;
-		}
-		FileRange requestedRange;
 		RandomAccessFile file = null;
 		try {
 			try {
@@ -59,7 +53,39 @@ public class Downloader extends Transfer
 				log.error( "Cannot open " + destinationFile + " for writing." );
 				return false;
 			}
-			while ( ( requestedRange = callback.get() ) != null ) {
+			final RandomAccessFile f = file;
+			DataReceivedCallback cb = new DataReceivedCallback() {
+				public boolean dataReceived( final long fileOffset, final int dataLength, final byte[] data )
+				{
+					try {
+						f.seek( fileOffset );
+						f.write( data, 0, dataLength );
+					} catch ( Exception e ) {
+						log.error( "Could not write to file " + destinationFile + " at offset " + fileOffset, e );
+						return false;
+					}
+					return true;
+				}
+			};
+			return download( cb, callback );
+		} finally {
+			if ( file != null )
+				try {
+					file.close();
+				} catch ( IOException e ) {
+				}
+		}
+	}
+
+	public boolean download( DataReceivedCallback dataCallback, WantRangeCallback rangeCallback )
+	{
+		if ( shouldGetToken() ) {
+			log.error( "You didn't call getToken yet!" );
+			return false;
+		}
+		FileRange requestedRange;
+		try {
+			while ( ( requestedRange = rangeCallback.get() ) != null ) {
 				if ( requestedRange.startOffset < 0 || requestedRange.startOffset >= requestedRange.endOffset ) {
 					log.error( "Callback supplied bad range (" + requestedRange.startOffset + " to " + requestedRange.endOffset + ")" );
 					return false;
@@ -84,12 +110,6 @@ public class Downloader extends Transfer
 				int chunkLength = requestedRange.getLength();
 				byte[] incoming = new byte[ 500000 ]; // 500kb
 				int hasRead = 0;
-				try {
-					file.seek( requestedRange.startOffset );
-				} catch ( IOException e1 ) {
-					log.error( "Could not seek to " + requestedRange.startOffset + " in " + destinationFile + ". Disk full?" );
-					return false;
-				}
 				while ( hasRead < chunkLength ) {
 					int ret;
 					try {
@@ -103,23 +123,16 @@ public class Downloader extends Transfer
 						log.info( "Remote peer unexpectedly closed the connection." );
 						return false;
 					}
-					hasRead += ret;
-					try {
-						file.write( incoming, 0, ret );
-					} catch ( IOException e ) {
-						log.error( "Could not write to " + destinationFile + ". Disk full?" );
+					if ( !dataCallback.dataReceived( requestedRange.startOffset + hasRead, ret, incoming ) ) {
+						this.close( "Aborting due to I/O error..." );
 						return false;
 					}
+					hasRead += ret;
 				}
 			}
 			sendDone();
 			sendEndOfMeta();
 		} finally {
-			if ( file != null )
-				try {
-					file.close();
-				} catch ( IOException e ) {
-				}
 			this.close( null );
 		}
 		return true;
