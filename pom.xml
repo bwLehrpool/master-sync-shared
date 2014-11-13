@@ -14,18 +14,31 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-  <distributionManagement>
-    <repository>
-      <id>mltk-repo</id>
-      <name>mltk-services repo</name>
-      <url>http://mltk-services.ruf.uni-freiburg.de:8081/nexus/content/repositories/releases/</url>
-    </repository>
-    <snapshotRepository>
-      <id>mltk-repo</id>
-      <name>mltk-services repo</name>
-      <url>http://mltk-services.ruf.uni-freiburg.de:8081/nexus/content/repositories/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</snapshots>
+			<id>mltk-repo</id>
+			<name>mltk repo</name>
+			<url>http://mltk-services.ruf.uni-freiburg.de:8081/nexus/content/repositories/snapshots/</url>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>mltk-repo</id>
+			<name>mltk-services repo</name>
+			<url>http://mltk-services.ruf.uni-freiburg.de:8081/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>mltk-repo</id>
+			<name>mltk-services repo</name>
+			<url>http://mltk-services.ruf.uni-freiburg.de:8081/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<build>
 		<plugins>
@@ -49,11 +62,6 @@
 					</execution>
 				</executions>
 				<configuration>
-<!-- 					<archive>
-						<manifest>
-							<mainClass>org.openslx.satellitedaemon.App</mainClass>
-						</manifest>
-					</archive> -->
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
@@ -108,10 +116,11 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.googlecode.vestige</groupId>
-  			<artifactId>proxy_vole</artifactId>
-  			<version>0.0.3-SNAPSHOT</version>
+			<groupId>org.openslx</groupId>
+			<artifactId>proxy_vole</artifactId>
+			<version>0.0.3-SNAPSHOT</version>
+			<scope>compile</scope>
 		</dependency>
-		
+
 	</dependencies>
 </project>
