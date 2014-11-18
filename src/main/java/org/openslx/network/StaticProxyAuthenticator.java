@@ -15,6 +15,8 @@ public class StaticProxyAuthenticator extends Authenticator
 
 	protected PasswordAuthentication getPasswordAuthentication()
 	{
+		if ( getRequestorType() != RequestorType.PROXY )
+			return super.getPasswordAuthentication();
 		return new PasswordAuthentication(
 				this.username, this.password.toCharArray() );
 	}
