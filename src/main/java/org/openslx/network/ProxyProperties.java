@@ -13,19 +13,19 @@ public class ProxyProperties
 {
 	private static Logger log = Logger.getLogger( ProxyProperties.class );
 	private static final Properties properties = new Properties();
-	
+
 	// Getting the proxy settings from config file stored in
 	// "/opt/openslx/proxy/conf".
 	public static String getProxyConf()
 	{
 		return properties.getProperty( "PROXY_CONF" );
 	}
-	
+
 	public static String getProxyAddress()
 	{
 		return properties.getProperty( "PROXY_ADDR" );
 	}
-	
+
 	public static String getProxyUsername()
 	{
 		return properties.getProperty( "PROXY_USERNAME" );
@@ -35,7 +35,7 @@ public class ProxyProperties
 	{
 		return properties.getProperty( "PROXY_PASSWORD" );
 	}
-	
+
 	// Integers //
 	public static int getProxyPort()
 	{
@@ -50,24 +50,34 @@ public class ProxyProperties
 		try {
 			// Load all entries of the config file into properties
 			stream = new InputStreamReader(
-					new FileInputStream("/opt/openslx/proxy/config"), StandardCharsets.UTF_8);
-			properties.load(stream);
+					new FileInputStream( "/opt/openslx/proxy/config" ), StandardCharsets.UTF_8 );
+			properties.load( stream );
 			stream.close();
-		} catch (IOException e) {
-			log.error("Could not load proxy properties from '/opt/openslx/proxy/conf'. Exiting.");
+		} catch ( IOException e ) {
+			log.error( "Could not load proxy properties from '/opt/openslx/proxy/conf'. Exiting." );
 			System.exit( 2 );
 		} finally {
 			Util.streamClose( stream );
 		}
 	}
-	
+
 	/**
 	 * Check proxy settings for being not empty.
-	 * @return
+	 * 
+	 * @return true if address and port are set
 	 */
-	public static boolean checkProxySettings() {
-		return (
-				(getProxyAddress() != "") &&
-				(getProxyPort() != 0));
+	public static boolean hasProxyAddress()
+	{
+		return !getProxyAddress().isEmpty() && getProxyPort() != 0;
+	}
+
+	/**
+	 * Check if a username or password is configured.
+	 * 
+	 * @return true if either username or password (or both) are set
+	 */
+	public static boolean hasProxyCredentials()
+	{
+		return !getProxyUsername().isEmpty() || !getProxyPassword().isEmpty();
 	}
 }

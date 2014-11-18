@@ -22,9 +22,14 @@ public class ProxyConfiguration
 
 	public static void configProxy()
 	{
+		// Reset proxy settings first
+		ProxySelector.setDefault( null );
+		Authenticator.setDefault( null );
+
 		// Configuring proxy settings. First read options from config file.
 		String proxyConfiguration = ProxyProperties.getProxyConf();
-		if ( ( proxyConfiguration.equals( "AUTO" ) ) || ( proxyConfiguration.equals( "" ) ) ) {
+
+		if ( proxyConfiguration.equals( "AUTO" ) || proxyConfiguration.isEmpty() ) {
 			log.info( "Configuring proxy settings automatically..." );
 			// Configuring proxy settings automatically.
 			WpadProxySearchStrategy wPSS = new WpadProxySearchStrategy();
@@ -34,10 +39,13 @@ public class ProxyConfiguration
 			} catch ( ProxyException e ) {
 				log.error( "Setting proxy configuration automatically failed.", e );
 			}
-		} else if ( proxyConfiguration.equals( "YES" ) ) {
+			return;
+		}
+
+		if ( proxyConfiguration.equals( "YES" ) ) {
 			// Take the proxy settings from config file.
 			// First check if one of the following necessary options might not be set.
-			if ( ProxyProperties.checkProxySettings() ) {
+			if ( ProxyProperties.hasProxyAddress() ) {
 				String proxyAddress = ProxyProperties.getProxyAddress();
 				int proxyPort = ProxyProperties.getProxyPort();
 
@@ -46,7 +54,7 @@ public class ProxyConfiguration
 				StaticProxySelector sPS = new StaticProxySelector( proxy );
 				ProxySelector.setDefault( sPS );
 
-				if ( ! ( ProxyProperties.getProxyUsername().equals( "" ) ) && ! ( ProxyProperties.getProxyPassword().equals( "" ) ) ) {
+				if ( !ProxyProperties.hasProxyCredentials() ) {
 					log.info( "Configuring proxy settings manually WITH authentication..." );
 					// use Proxy with authentication.
 					String proxyUname = ProxyProperties.getProxyUsername();
@@ -58,5 +66,7 @@ public class ProxyConfiguration
 				}
 			}
 		}
+
 	}
+
 }
