@@ -18,44 +18,50 @@ public class ProxyProperties
 	// "/opt/openslx/proxy/conf".
 	public static String getProxyConf()
 	{
-		return properties.getProperty( "PROXY_CONF" );
+		return properties.getProperty( "PROXY_CONF", "" );
 	}
 
 	public static String getProxyAddress()
 	{
-		return properties.getProperty( "PROXY_ADDR" );
+		return properties.getProperty( "PROXY_ADDR", "" );
 	}
 
 	public static String getProxyUsername()
 	{
-		return properties.getProperty( "PROXY_USERNAME" );
+		return properties.getProperty( "PROXY_USERNAME", "" );
 	}
 
 	public static String getProxyPassword()
 	{
-		return properties.getProperty( "PROXY_PASSWORD" );
+		return properties.getProperty( "PROXY_PASSWORD", "" );
 	}
 
 	// Integers //
 	public static int getProxyPort()
 	{
-		return Util.tryToParseInt( properties.getProperty( "PROXY_PORT" ) );
+		return Util.tryToParseInt( properties.getProperty( "PROXY_PORT", "0" ) );
+	}
+
+	static
+	{
+		load();
 	}
 
 	/**
 	 * Load properties
 	 */
-	static {
+	public static void load()
+	{
 		InputStreamReader stream = null;
 		try {
+			properties.clear();
 			// Load all entries of the config file into properties
 			stream = new InputStreamReader(
 					new FileInputStream( "/opt/openslx/proxy/config" ), StandardCharsets.UTF_8 );
 			properties.load( stream );
 			stream.close();
 		} catch ( IOException e ) {
-			log.error( "Could not load proxy properties from '/opt/openslx/proxy/conf'. Exiting." );
-			System.exit( 2 );
+			log.warn( "Could not load proxy properties from '/opt/openslx/proxy/conf'." );
 		} finally {
 			Util.streamClose( stream );
 		}

@@ -27,6 +27,7 @@ public class ProxyConfiguration
 		Authenticator.setDefault( null );
 
 		// Configuring proxy settings. First read options from config file.
+		ProxyProperties.load();
 		String proxyConfiguration = ProxyProperties.getProxyConf();
 
 		if ( proxyConfiguration.equals( "AUTO" ) || proxyConfiguration.isEmpty() ) {
