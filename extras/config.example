@@ -1,3 +1,5 @@
+# This file is expected to be called "/opt/openslx/proxy/config"
+#
 # proxy configuration:
 # 3 options for proxy configuration: AUTO = autmatically, YES, NO. If nothing is
 # set, the default automatically will be choosen.

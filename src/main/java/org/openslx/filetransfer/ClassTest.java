@@ -60,7 +60,7 @@ public class ClassTest
 		keystore.load( new FileInputStream( pathToKeyStore ), passphrase );
 		KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
 		kmf.init( keystore, passphrase );
-		SSLContext context = SSLContext.getInstance( "SSLv3" );
+		SSLContext context = SSLContext.getInstance( "TLSv1.2" );
 		KeyManager[] keyManagers = kmf.getKeyManagers();
 
 		context.init( keyManagers, null, null );
@@ -73,7 +73,7 @@ public class ClassTest
 		TrustManagerFactory tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
 		tmf.init( keystore );
 
-		context = SSLContext.getInstance( "SSLv3" );
+		context = SSLContext.getInstance( "TLSv1.2" );
 		TrustManager[] trustManagers = tmf.getTrustManagers();
 
 		context.init( null, trustManagers, null );
@@ -114,7 +114,7 @@ public class ClassTest
 		 keystore.load(new FileInputStream(pathToKeyStore), passphrase);
 		 KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		 kmf.init(keystore, passphrase);
-		 SSLContext context = SSLContext.getInstance("SSLv3");
+		 SSLContext context = SSLContext.getInstance("TLSv1.2");
 		 KeyManager[] keyManagers = kmf.getKeyManagers();
 
 		 context.init(keyManagers, null, null);
