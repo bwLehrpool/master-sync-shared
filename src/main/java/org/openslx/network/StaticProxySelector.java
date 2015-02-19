@@ -10,7 +10,9 @@ import java.net.SocketException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -19,6 +21,8 @@ public class StaticProxySelector extends ProxySelector
 	private static Logger log = Logger.getLogger( StaticProxySelector.class );
 
 	private final Proxy proxy;
+	private Set<String> localAddresses = null;
+	private long nextAddressGet = 0;
 
 	public StaticProxySelector( Proxy proxy )
 	{
@@ -35,36 +39,63 @@ public class StaticProxySelector extends ProxySelector
 	public List<Proxy> select( URI uri )
 	{
 		List<Proxy> proxyList = new ArrayList<Proxy>();
+
 		String host = uri.getHost();
+		if ( host == null ) // Host not set? Well, we can only guess then, so try to use the proxy
+			return proxyList;
 
-		log.info( "Connect to: " + host );
+		host = host.replaceFirst( "%\\d+$", "" );
+		if ( host.equals( "localhost" ) || host.startsWith( "127." )
+				|| host.startsWith( "::1" ) || host.startsWith( "0:0:0:0:0:0:0:1" ) ) // Localhost = no proxy
+			return proxyList;
 
-		List<NetworkInterface> nWI = getNetworkInterfaces();
-
-		if ( nWI != null ) {
-			// iterate over network interfaces and check for InetAddresses.
-			for ( int i = 0; i < nWI.size(); ++i ) {
-				Enumeration<InetAddress> e = nWI.get( i ).getInetAddresses();
-				// iterate over InetAddresses of current interface.
-				while ( e.hasMoreElements() ) {
-					InetAddress address = (InetAddress)e.nextElement();
-					// Add proxy to list, if host do not equals to address.
-					if ( ! ( host.equals( address ) ) &&
-							! ( host.startsWith( "127." ) ) &&
-							! ( host.equals( "localhost" ) ) ) {
-						proxyList.add( this.proxy );
-					}
-				}
-			}
-		} else if ( ! ( host.startsWith( "127." ) ) && ! ( host.equals( "localhost" ) ) ) {
+		final Set<String> addrs;
+		synchronized ( this ) {
+			addrs = getLocalAddresses();
+		}
+		if ( !addrs.contains( host ) ) {
 			proxyList.add( this.proxy );
 		}
-		// log.info( "proxyList: " + proxyList.toString() );
+
 		return proxyList;
 	}
 
-	// Getting ArrayList with all NetworkInterfaces.
-	private ArrayList<NetworkInterface> getNetworkInterfaces()
+	/**
+	 * Get all local (IP) addresses
+	 * 
+	 * @return
+	 */
+	private Set<String> getLocalAddresses()
+	{
+		long now = System.currentTimeMillis();
+		if ( now < nextAddressGet )
+			return localAddresses;
+		nextAddressGet = now + 60000;
+
+		List<NetworkInterface> interfaces = getNetworkInterfaces();
+		if ( interfaces == null )
+			return localAddresses; // Fallback on last known data
+		// iterate over network interfaces and get all addresses
+		Set<String> addrs = new HashSet<>();
+		for ( NetworkInterface iface : interfaces ) {
+			Enumeration<InetAddress> e = iface.getInetAddresses();
+			// iterate over InetAddresses of current interface
+			while ( e.hasMoreElements() ) {
+				addrs.add( e.nextElement().getHostAddress().replaceFirst( "%\\d+$", "" ) );
+			}
+		}
+		synchronized ( this ) {
+			localAddresses = addrs;
+		}
+		return localAddresses;
+	}
+
+	/**
+	 * Get a list of all local network interfaces
+	 * 
+	 * @return
+	 */
+	private List<NetworkInterface> getNetworkInterfaces()
 	{
 		ArrayList<NetworkInterface> retList = new ArrayList<NetworkInterface>();
 		Enumeration<NetworkInterface> e = null;
@@ -76,7 +107,7 @@ public class StaticProxySelector extends ProxySelector
 			return null;
 		}
 		while ( e.hasMoreElements() ) {
-			retList.add( (NetworkInterface)e.nextElement() );
+			retList.add( e.nextElement() );
 		}
 		return retList;
 	}

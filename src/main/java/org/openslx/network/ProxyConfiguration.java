@@ -8,7 +8,6 @@ import java.net.ProxySelector;
 import org.apache.log4j.Logger;
 
 import com.btr.proxy.search.wpad.WpadProxySearchStrategy;
-import com.btr.proxy.util.ProxyException;
 
 /**
  * Class for configuring proxy settings system wide, if necessary.
@@ -37,7 +36,7 @@ public class ProxyConfiguration
 			try {
 				ProxySelector pS = wPSS.getProxySelector();
 				ProxySelector.setDefault( pS );
-			} catch ( ProxyException e ) {
+			} catch ( Throwable e ) {
 				log.error( "Setting proxy configuration automatically failed.", e );
 			}
 			return;
