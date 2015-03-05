@@ -11,91 +11,101 @@ import org.apache.log4j.Logger;
 import org.apache.thrift.TException;
 import org.apache.thrift.transport.TTransportException;
 
-public class ThriftHandler<T extends Object> implements InvocationHandler {
+class ThriftHandler<T extends Object> implements InvocationHandler
+{
 
-	private final static Logger LOGGER = Logger.getLogger(ThriftHandler.class);
-	
-	public interface ClientCreationCallback<T> {
-		public T get();
+	private final static Logger LOGGER = Logger.getLogger( ThriftHandler.class );
+
+	public interface EventCallback<T>
+	{
+		public T getNewClient();
+
+		public void error( Throwable t, String message );
 	}
 
 	private final ThreadLocal<T> clients = new ThreadLocal<T>();
-	private final ClientCreationCallback<T> callback;
+	private final EventCallback<T> callback;
 
-	public ThriftHandler(final Class<T> clazz, ClientCreationCallback<T> cb) {
+	public ThriftHandler( final Class<T> clazz, EventCallback<T> cb )
+	{
 		callback = cb;
-		thriftMethods = Collections.unmodifiableSet(new HashSet<String>() {
+		thriftMethods = Collections.unmodifiableSet( new HashSet<String>() {
 			private static final long serialVersionUID = 8983506538154055231L;
 			{
 				Method[] methods = clazz.getMethods();
-				for (int i = 0; i < methods.length; i++) {
+				for ( int i = 0; i < methods.length; i++ ) {
 					boolean thrift = false;
 					Class<?>[] type = methods[i].getExceptionTypes();
-					for (int e = 0; e < type.length; e++) {
-						if (TException.class.isAssignableFrom(type[e]))
+					for ( int e = 0; e < type.length; e++ ) {
+						if ( TException.class.isAssignableFrom( type[e] ) )
 							thrift = true;
 
 					}
 					String name = methods[i].getName();
-					if (thrift && !name.startsWith("send_") && !name.startsWith("recv_")) {
-						add(name);
+					if ( thrift && !name.startsWith( "send_" ) && !name.startsWith( "recv_" ) ) {
+						add( name );
 					}
 				}
 			}
-		});
+		} );
 	}
 
 	private final Set<String> thriftMethods;
 
-	public Object invoke(Object tproxy, Method method, Object[] args) throws Throwable {
+	public Object invoke( Object tproxy, Method method, Object[] args ) throws Throwable
+	{
 
 		// first find the thrift methods
-		if (!thriftMethods.contains(method.getName())) {
+		if ( !thriftMethods.contains( method.getName() ) ) {
 			try {
-				return method.invoke(method, args);
-			} catch (InvocationTargetException e) {
+				return method.invoke( method, args );
+			} catch ( InvocationTargetException e ) {
 				// TODO Auto-generated catch block
 				Throwable cause = e.getCause();
-				if (cause == null) {
+				if ( cause == null ) {
 					throw new RuntimeException();
 				}
 				throw cause;
 			}
 		}
-		LOGGER.debug("Proxying '" + method.getName() + "'");
+		LOGGER.debug( "Proxying '" + method.getName() + "'" );
 
-		T client = getClient(false);
+		T client = getClient( false );
 		Throwable cause = null;
-		for (int i = 0; i < 3; i++) {
+		for ( int i = 0; i < 3; i++ ) {
 			try {
-				return method.invoke(client, args);
-			} catch (InvocationTargetException e) {
+				return method.invoke( client, args );
+			} catch ( InvocationTargetException e ) {
 				cause = e.getCause();
-				if (cause instanceof TTransportException) {
-					LOGGER.debug("Transport error - re-initialising ...");
+				if ( cause instanceof TTransportException ) {
+					LOGGER.debug( "Transport error - re-initialising ..." );
 					// new client
-					client = getClient(true);
+					client = getClient( true );
 				}
 			}
 		}
+		
+		// Uh oh
+		callback.error( cause, "Could not reconnect to thrift server - network or server down?" );
 
-		if (cause != null)
+		if ( cause != null )
 			throw cause;
 		return null;
 
 	}
 
-	private T getClient(boolean forceNew) {
+	private T getClient( boolean forceNew )
+	{
 		T client = clients.get();
-		if (client != null && !forceNew) {
+		if ( client != null && !forceNew ) {
 			return client;
 		}
-		client = callback.get();
-		if (client == null) {
+		client = callback.getNewClient();
+		if ( client == null ) {
 			// TODO own exception
 			throw new RuntimeException();
 		}
-		clients.set(client);
+		clients.set( client );
 		return client;
 	}
 }
