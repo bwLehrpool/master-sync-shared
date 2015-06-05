@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public interface IncomingEvent
 {
-	void incomingUploader( Uploader uploader ) throws IOException;
+	void incomingDownloadRequest( Uploader uploader ) throws IOException;
 
-	void incomingDownloader( Downloader downloader ) throws IOException;
+	void incomingUploadRequest( Downloader downloader ) throws IOException;
 }

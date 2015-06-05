@@ -1,23 +1,23 @@
 package org.openslx.filetransfer;
 
+import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.log4j.Logger;
 
 public abstract class Transfer
 {
-	protected final SSLSocket transferSocket;
+	protected final Socket transferSocket;
 	protected final DataOutputStream outStream;
 	protected final DataInputStream dataFromServer;
 	protected String ERROR = null;
@@ -30,7 +30,7 @@ public abstract class Transfer
 	 * 
 	 * @param host Remote Host
 	 * @param port Remote Port
-	 * @param context SSL Context for encryption
+	 * @param context SSL Context for encryption, null if plain
 	 * @param log Logger to use
 	 * @throws IOException
 	 */
@@ -38,10 +38,13 @@ public abstract class Transfer
 	{
 		this.log = log;
 		// create socket.
-		SSLSocketFactory sslSocketFactory = context.getSocketFactory();
-
-		transferSocket = (SSLSocket)sslSocketFactory.createSocket();
-		transferSocket.setSoTimeout( 5000 ); // set socket timeout.
+		if ( context == null ) {
+			transferSocket = new Socket();
+		} else {
+			SSLSocketFactory sslSocketFactory = context.getSocketFactory();
+			transferSocket = sslSocketFactory.createSocket();
+		}
+		transferSocket.setSoTimeout( 10000 ); // set socket timeout.
 		transferSocket.connect( new InetSocketAddress( host, port ) );
 
 		outStream = new DataOutputStream( transferSocket.getOutputStream() );
@@ -56,7 +59,7 @@ public abstract class Transfer
 	 * @param log Logger to use
 	 * @throws IOException
 	 */
-	protected Transfer( SSLSocket socket, Logger log ) throws IOException
+	protected Transfer( Socket socket, Logger log ) throws IOException
 	{
 		this.log = log;
 		transferSocket = socket;
@@ -122,7 +125,7 @@ public abstract class Transfer
 	protected boolean sendEndOfMeta()
 	{
 		try {
-			outStream.writeByte( 0 );
+			outStream.writeShort( 0 );
 		} catch ( SocketTimeoutException e ) {
 			log.error( "Error sending end of meta - socket timeout" );
 			return false;
@@ -146,39 +149,10 @@ public abstract class Transfer
 		Map<String, String> entries = new HashMap<>();
 		try {
 			while ( true ) {
-				byte[] incoming = new byte[ 255 ];
+				String data = dataFromServer.readUTF();
 
-				// First get length.
-				int retLengthByte;
-				retLengthByte = dataFromServer.read( incoming, 0, 1 );
-				// If .read() didn't return 1, it was not able to read first byte.
-				if ( retLengthByte != 1 ) {
-					log.debug( " retLenthByte was not 1! retLengthByte = " + retLengthByte );
-					this.close( "Error occured while reading Metadata." );
-					return null;
-				}
-
-				int length = incoming[0] & 0xFF;
-				log.debug( "length (downloader): " + length );
-
-				if ( length == 0 )
-					break;
-
-				/*
-				 * Read the next available bytes and split by '=' for
-				 * getting TOKEN or RANGE.
-				 */
-				int hasRead = 0;
-				while ( hasRead < length ) {
-					int ret = dataFromServer.read( incoming, hasRead, length - hasRead );
-					if ( ret == -1 ) {
-						this.close( "Error occured while reading Metadata." );
-						return null;
-					}
-					hasRead += ret;
-				}
-
-				String data = new String( incoming, 0, length, StandardCharsets.UTF_8 );
+				if ( data == null || data.length() == 0 )
+					break; // End of meta data
 
 				String[] splitted = data.split( "=", 2 );
 				if ( splitted.length != 2 ) {
@@ -208,12 +182,12 @@ public abstract class Transfer
 
 	private void sendKeyValuePair( String key, String value ) throws IOException
 	{
-		byte[] data = ( key + "=" + value ).getBytes( StandardCharsets.UTF_8 );
+		if ( outStream == null )
+			return;
 		try {
-			outStream.writeByte( data.length );
-			outStream.write( data );
-		} catch ( SocketTimeoutException e ) {
-			log.warn( "Socket timeout when sending KVP with key " + key );
+			outStream.writeUTF( key + "=" + value );
+		} catch ( Exception e ) {
+			this.close( e.getClass().getSimpleName() + " when sending KVP with key " + key );
 		}
 	}
 
@@ -222,20 +196,21 @@ public abstract class Transfer
 	 * Method for closing connection, if download has finished.
 	 * 
 	 */
+	public void close( String error, UploadStatusCallback callback, boolean sendToPeer )
+	{
+		if ( error != null ) {
+			if ( sendToPeer )
+				sendErrorCode( error );
+			if ( callback != null )
+				callback.uploadError( error );
+			log.info( error );
+		}
+		safeClose( dataFromServer, outStream, transferSocket );
+	}
+
 	public void close( String error )
 	{
-		if ( error != null )
-			log.info( error );
-		try {
-			if ( transferSocket != null )
-				this.transferSocket.close();
-			if ( dataFromServer != null )
-				dataFromServer.close();
-			if ( outStream != null )
-				outStream.close();
-		} catch ( IOException e ) {
-			e.printStackTrace();
-		}
+		close( error, null, false );
 	}
 
 	/**
@@ -292,6 +267,28 @@ public abstract class Transfer
 	protected boolean shouldGetToken()
 	{
 		return shouldGetToken;
+	}
+
+	/**
+	 * Close given stream, socket, anything closeable.
+	 * Never throws any exception, if it's not closeable there's
+	 * not much else we can do.
+	 * 
+	 * @param list one or more closeables. Pass one, many, or an array
+	 */
+	static protected void safeClose( Closeable... list )
+	{
+		if ( list == null )
+			return;
+		for ( Closeable c : list ) {
+			if ( c == null )
+				continue;
+			try {
+				c.close();
+			} catch ( Throwable t ) {
+				// Silcence...
+			}
+		}
 	}
 
 	/**

@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.Socket;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
 
 import org.apache.log4j.Logger;
 
@@ -38,11 +38,20 @@ public class Downloader extends Transfer
 	 * @param socket established connection to peer which requested an upload.
 	 * @throws IOException
 	 */
-	protected Downloader( SSLSocket socket ) throws IOException
+	protected Downloader( Socket socket ) throws IOException
 	{
 		super( socket, log );
 	}
 
+	/**
+	 * Initiate the download. This method does not return until the file transfer finished.
+	 * 
+	 * @param destinationFile destination file name to download to
+	 * @param rangeCallback this object's .get() method is called whenever the downloader needs to
+	 *           know which part of the file to request next. This method should return null if no
+	 *           more parts are needed, which in turn let's this method return true
+	 * @return true on success, false otherwise
+	 */
 	public boolean download( final String destinationFile, final WantRangeCallback callback )
 	{
 		RandomAccessFile file = null;
@@ -69,14 +78,20 @@ public class Downloader extends Transfer
 			};
 			return download( cb, callback );
 		} finally {
-			if ( file != null )
-				try {
-					file.close();
-				} catch ( IOException e ) {
-				}
+			Transfer.safeClose( file );
 		}
 	}
 
+	/**
+	 * Initiate the download. This method does not return until the file transfer finished.
+	 * 
+	 * @param dataCallback this object's .dataReceived() method is called whenever a chunk of data is
+	 *           received
+	 * @param rangeCallback this object's .get() method is called whenever the downloader needs to
+	 *           know which part of the file to request next. This method should return null if no
+	 *           more parts are needed, which in turn let's this method return true
+	 * @return true on success, false otherwise
+	 */
 	public boolean download( DataReceivedCallback dataCallback, WantRangeCallback rangeCallback )
 	{
 		if ( shouldGetToken() ) {

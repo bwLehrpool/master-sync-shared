@@ -52,6 +52,7 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 
 	private final Set<String> thriftMethods;
 
+	@Override
 	public Object invoke( Object tproxy, Method method, Object[] args ) throws Throwable
 	{
 
@@ -73,25 +74,31 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 		T client = getClient( false );
 		Throwable cause = null;
 		for ( int i = 0; i < 3; i++ ) {
+			if ( client == null ) {
+				LOGGER.debug( "Transport error - re-initialising ..." );
+				try {
+					Thread.sleep( 1000 + 3000 * i );
+				} catch ( Exception eee ) {
+				}
+				client = getClient( true );
+				if ( client == null )
+					continue;
+			}
 			try {
 				return method.invoke( client, args );
 			} catch ( InvocationTargetException e ) {
 				cause = e.getCause();
-				if ( cause instanceof TTransportException ) {
-					LOGGER.debug( "Transport error - re-initialising ..." );
-					// new client
-					client = getClient( true );
-				}
+				client = null;
+				if ( cause != null && ! ( cause instanceof TTransportException ) )
+					throw cause;
 			}
 		}
-		
+
 		// Uh oh
 		callback.error( cause, "Could not reconnect to thrift server - network or server down?" );
-
 		if ( cause != null )
 			throw cause;
 		return null;
-
 	}
 
 	private T getClient( boolean forceNew )
@@ -101,10 +108,6 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 			return client;
 		}
 		client = callback.getNewClient();
-		if ( client == null ) {
-			// TODO own exception
-			throw new RuntimeException();
-		}
 		clients.set( client );
 		return client;
 	}

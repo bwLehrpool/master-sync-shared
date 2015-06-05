@@ -141,7 +141,7 @@ public class ClassTest
 	// Implementing IncomingEvent for testing case.
 	static class Test implements IncomingEvent
 	{
-		public void incomingUploader( Uploader uploader ) throws IOException
+		public void incomingDownloadRequest( Uploader uploader ) throws IOException
 		{
 			if ( uploader.getToken() == null ) {
 				System.out.println( "Incoming uploader: could not get token!" );
@@ -153,7 +153,7 @@ public class ClassTest
 				System.out.println( "Incomgin uploader OK" );
 		}
 
-		public void incomingDownloader( Downloader downloader ) throws IOException
+		public void incomingUploadRequest( Downloader downloader ) throws IOException
 		{
 			if ( downloader.getToken() == null ) {
 				System.out.println( "Incoming downloader: could not get token!" );
