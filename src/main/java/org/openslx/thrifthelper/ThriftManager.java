@@ -9,8 +9,8 @@ import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.openslx.imagemaster.thrift.iface.ImageServer;
-import org.openslx.sat.thrift.iface.Server;
+import org.openslx.bwlp.thrift.iface.MasterServer;
+import org.openslx.bwlp.thrift.iface.SatelliteServer;
 import org.openslx.thrifthelper.ThriftHandler.EventCallback;
 
 public class ThriftManager
@@ -48,17 +48,17 @@ public class ThriftManager
 	/**
 	 * Sat connection. Initialized when we know the sat server IP.
 	 */
-	private static Server.Iface _satClient = null;
+	private static SatelliteServer.Iface _satClient = null;
 
 	/**
 	 * Master connection. As its address is known in advance, create the object right away.
 	 */
-	private static ImageServer.Iface _masterClient = (ImageServer.Iface)Proxy.newProxyInstance(
-			ImageServer.Iface.class.getClassLoader(),
-			new Class[] { ImageServer.Iface.class }, new ThriftHandler<ImageServer.Client>( ImageServer.Client.class, new EventCallback<ImageServer.Client>() {
+	private static MasterServer.Iface _masterClient = (MasterServer.Iface)Proxy.newProxyInstance(
+			MasterServer.Iface.class.getClassLoader(),
+			new Class[] { MasterServer.Iface.class }, new ThriftHandler<MasterServer.Client>( MasterServer.Client.class, new EventCallback<MasterServer.Client>() {
 
 				@Override
-				public ImageServer.Client getNewClient()
+				public MasterServer.Client getNewClient()
 				{
 					// ok lets do it
 					TTransport transport =
@@ -72,7 +72,7 @@ public class ThriftManager
 					}
 					final TProtocol protocol = new TBinaryProtocol( transport );
 					// now we are ready to create the client, according to ClientType!
-					return new ImageServer.Client( protocol );
+					return new MasterServer.Client( protocol );
 
 				}
 
@@ -116,12 +116,12 @@ public class ThriftManager
 		SATELLITE_IP = ip;
 
 		// Create monster proxy class from interface
-		_satClient = (Server.Iface)Proxy.newProxyInstance(
-				Server.Iface.class.getClassLoader(),
-				new Class[] { Server.Iface.class }, new ThriftHandler<Server.Client>( Server.Client.class, new EventCallback<Server.Client>() {
+		_satClient = (SatelliteServer.Iface)Proxy.newProxyInstance(
+				SatelliteServer.Iface.class.getClassLoader(),
+				new Class[] { SatelliteServer.Iface.class }, new ThriftHandler<SatelliteServer.Client>( SatelliteServer.Client.class, new EventCallback<SatelliteServer.Client>() {
 
 					@Override
-					public Server.Client getNewClient()
+					public SatelliteServer.Client getNewClient()
 					{
 						// first check if we have a sat ip
 						if ( SATELLITE_IP == null ) {
@@ -141,7 +141,7 @@ public class ThriftManager
 						final TProtocol protocol = new TBinaryProtocol( transport );
 						// now we are ready to create the client, according to ClientType!
 						LOGGER.info( "Satellite '" + SATELLITE_IP + "' reachable. Client initialised." );
-						return new Server.Client( protocol );
+						return new SatelliteServer.Client( protocol );
 					}
 
 					@Override
@@ -161,7 +161,7 @@ public class ThriftManager
 	 * 
 	 * @return the thrift client to the satellite server
 	 */
-	public static Server.Iface getSatClient()
+	public static SatelliteServer.Iface getSatClient()
 	{
 		return _satClient;
 	}
@@ -171,7 +171,7 @@ public class ThriftManager
 	 * 
 	 * @return the thrift client to the master server
 	 */
-	public static ImageServer.Iface getMasterClient()
+	public static MasterServer.Iface getMasterClient()
 	{
 		return _masterClient;
 	}
