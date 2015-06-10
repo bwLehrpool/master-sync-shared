@@ -37,22 +37,23 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
 
   private static final org.apache.thrift.protocol.TField IMAGE_BASE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageBaseId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField CURRENT_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("currentVersionId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField OS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("osId", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField VIRT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("virtId", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createTime", org.apache.thrift.protocol.TType.I64, (short)6);
-  private static final org.apache.thrift.protocol.TField UPDATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("updateTime", org.apache.thrift.protocol.TType.I64, (short)7);
-  private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)8);
-  private static final org.apache.thrift.protocol.TField UPLOADER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("uploaderId", org.apache.thrift.protocol.TType.STRING, (short)9);
-  private static final org.apache.thrift.protocol.TField SHARE_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("shareMode", org.apache.thrift.protocol.TType.I32, (short)10);
-  private static final org.apache.thrift.protocol.TField FILE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSize", org.apache.thrift.protocol.TType.I64, (short)11);
-  private static final org.apache.thrift.protocol.TField IS_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("isEnabled", org.apache.thrift.protocol.TType.BOOL, (short)12);
-  private static final org.apache.thrift.protocol.TField IS_RESTRICTED_FIELD_DESC = new org.apache.thrift.protocol.TField("isRestricted", org.apache.thrift.protocol.TType.BOOL, (short)13);
-  private static final org.apache.thrift.protocol.TField IS_VALID_FIELD_DESC = new org.apache.thrift.protocol.TField("isValid", org.apache.thrift.protocol.TType.BOOL, (short)14);
-  private static final org.apache.thrift.protocol.TField IS_PROCESSED_FIELD_DESC = new org.apache.thrift.protocol.TField("isProcessed", org.apache.thrift.protocol.TType.BOOL, (short)15);
-  private static final org.apache.thrift.protocol.TField IS_TEMPLATE_FIELD_DESC = new org.apache.thrift.protocol.TField("isTemplate", org.apache.thrift.protocol.TType.BOOL, (short)16);
-  private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)17);
-  private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)18);
+  private static final org.apache.thrift.protocol.TField LATEST_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("latestVersionId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField OS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("osId", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField VIRT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("virtId", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createTime", org.apache.thrift.protocol.TType.I64, (short)7);
+  private static final org.apache.thrift.protocol.TField UPDATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("updateTime", org.apache.thrift.protocol.TType.I64, (short)8);
+  private static final org.apache.thrift.protocol.TField EXPIRE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("expireTime", org.apache.thrift.protocol.TType.I64, (short)9);
+  private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)10);
+  private static final org.apache.thrift.protocol.TField UPLOADER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("uploaderId", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField SHARE_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("shareMode", org.apache.thrift.protocol.TType.I32, (short)12);
+  private static final org.apache.thrift.protocol.TField FILE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSize", org.apache.thrift.protocol.TType.I64, (short)13);
+  private static final org.apache.thrift.protocol.TField IS_RESTRICTED_FIELD_DESC = new org.apache.thrift.protocol.TField("isRestricted", org.apache.thrift.protocol.TType.BOOL, (short)14);
+  private static final org.apache.thrift.protocol.TField IS_VALID_FIELD_DESC = new org.apache.thrift.protocol.TField("isValid", org.apache.thrift.protocol.TType.BOOL, (short)15);
+  private static final org.apache.thrift.protocol.TField IS_PROCESSED_FIELD_DESC = new org.apache.thrift.protocol.TField("isProcessed", org.apache.thrift.protocol.TType.BOOL, (short)16);
+  private static final org.apache.thrift.protocol.TField IS_TEMPLATE_FIELD_DESC = new org.apache.thrift.protocol.TField("isTemplate", org.apache.thrift.protocol.TType.BOOL, (short)17);
+  private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)18);
+  private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)19);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -62,11 +63,13 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
 
   public String imageBaseId; // required
   public String currentVersionId; // required
+  public String latestVersionId; // required
   public String imageName; // required
   public int osId; // required
   public String virtId; // required
   public long createTime; // required
   public long updateTime; // required
+  public long expireTime; // required
   public String ownerId; // required
   public String uploaderId; // required
   /**
@@ -75,7 +78,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
    */
   public ShareMode shareMode; // required
   public long fileSize; // required
-  public boolean isEnabled; // required
   public boolean isRestricted; // required
   public boolean isValid; // required
   public boolean isProcessed; // required
@@ -87,26 +89,27 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     IMAGE_BASE_ID((short)1, "imageBaseId"),
     CURRENT_VERSION_ID((short)2, "currentVersionId"),
-    IMAGE_NAME((short)3, "imageName"),
-    OS_ID((short)4, "osId"),
-    VIRT_ID((short)5, "virtId"),
-    CREATE_TIME((short)6, "createTime"),
-    UPDATE_TIME((short)7, "updateTime"),
-    OWNER_ID((short)8, "ownerId"),
-    UPLOADER_ID((short)9, "uploaderId"),
+    LATEST_VERSION_ID((short)3, "latestVersionId"),
+    IMAGE_NAME((short)4, "imageName"),
+    OS_ID((short)5, "osId"),
+    VIRT_ID((short)6, "virtId"),
+    CREATE_TIME((short)7, "createTime"),
+    UPDATE_TIME((short)8, "updateTime"),
+    EXPIRE_TIME((short)9, "expireTime"),
+    OWNER_ID((short)10, "ownerId"),
+    UPLOADER_ID((short)11, "uploaderId"),
     /**
      * 
      * @see ShareMode
      */
-    SHARE_MODE((short)10, "shareMode"),
-    FILE_SIZE((short)11, "fileSize"),
-    IS_ENABLED((short)12, "isEnabled"),
-    IS_RESTRICTED((short)13, "isRestricted"),
-    IS_VALID((short)14, "isValid"),
-    IS_PROCESSED((short)15, "isProcessed"),
-    IS_TEMPLATE((short)16, "isTemplate"),
-    DEFAULT_PERMISSIONS((short)17, "defaultPermissions"),
-    USER_PERMISSIONS((short)18, "userPermissions");
+    SHARE_MODE((short)12, "shareMode"),
+    FILE_SIZE((short)13, "fileSize"),
+    IS_RESTRICTED((short)14, "isRestricted"),
+    IS_VALID((short)15, "isValid"),
+    IS_PROCESSED((short)16, "isProcessed"),
+    IS_TEMPLATE((short)17, "isTemplate"),
+    DEFAULT_PERMISSIONS((short)18, "defaultPermissions"),
+    USER_PERMISSIONS((short)19, "userPermissions");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -125,37 +128,39 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
           return IMAGE_BASE_ID;
         case 2: // CURRENT_VERSION_ID
           return CURRENT_VERSION_ID;
-        case 3: // IMAGE_NAME
+        case 3: // LATEST_VERSION_ID
+          return LATEST_VERSION_ID;
+        case 4: // IMAGE_NAME
           return IMAGE_NAME;
-        case 4: // OS_ID
+        case 5: // OS_ID
           return OS_ID;
-        case 5: // VIRT_ID
+        case 6: // VIRT_ID
           return VIRT_ID;
-        case 6: // CREATE_TIME
+        case 7: // CREATE_TIME
           return CREATE_TIME;
-        case 7: // UPDATE_TIME
+        case 8: // UPDATE_TIME
           return UPDATE_TIME;
-        case 8: // OWNER_ID
+        case 9: // EXPIRE_TIME
+          return EXPIRE_TIME;
+        case 10: // OWNER_ID
           return OWNER_ID;
-        case 9: // UPLOADER_ID
+        case 11: // UPLOADER_ID
           return UPLOADER_ID;
-        case 10: // SHARE_MODE
+        case 12: // SHARE_MODE
           return SHARE_MODE;
-        case 11: // FILE_SIZE
+        case 13: // FILE_SIZE
           return FILE_SIZE;
-        case 12: // IS_ENABLED
-          return IS_ENABLED;
-        case 13: // IS_RESTRICTED
+        case 14: // IS_RESTRICTED
           return IS_RESTRICTED;
-        case 14: // IS_VALID
+        case 15: // IS_VALID
           return IS_VALID;
-        case 15: // IS_PROCESSED
+        case 16: // IS_PROCESSED
           return IS_PROCESSED;
-        case 16: // IS_TEMPLATE
+        case 17: // IS_TEMPLATE
           return IS_TEMPLATE;
-        case 17: // DEFAULT_PERMISSIONS
+        case 18: // DEFAULT_PERMISSIONS
           return DEFAULT_PERMISSIONS;
-        case 18: // USER_PERMISSIONS
+        case 19: // USER_PERMISSIONS
           return USER_PERMISSIONS;
         default:
           return null;
@@ -200,8 +205,8 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
   private static final int __OSID_ISSET_ID = 0;
   private static final int __CREATETIME_ISSET_ID = 1;
   private static final int __UPDATETIME_ISSET_ID = 2;
-  private static final int __FILESIZE_ISSET_ID = 3;
-  private static final int __ISENABLED_ISSET_ID = 4;
+  private static final int __EXPIRETIME_ISSET_ID = 3;
+  private static final int __FILESIZE_ISSET_ID = 4;
   private static final int __ISRESTRICTED_ISSET_ID = 5;
   private static final int __ISVALID_ISSET_ID = 6;
   private static final int __ISPROCESSED_ISSET_ID = 7;
@@ -215,6 +220,8 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.CURRENT_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("currentVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
+    tmpMap.put(_Fields.LATEST_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("latestVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.IMAGE_NAME, new org.apache.thrift.meta_data.FieldMetaData("imageName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.OS_ID, new org.apache.thrift.meta_data.FieldMetaData("osId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -225,6 +232,8 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
     tmpMap.put(_Fields.UPDATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("updateTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
+    tmpMap.put(_Fields.EXPIRE_TIME, new org.apache.thrift.meta_data.FieldMetaData("expireTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
     tmpMap.put(_Fields.OWNER_ID, new org.apache.thrift.meta_data.FieldMetaData("ownerId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.UPLOADER_ID, new org.apache.thrift.meta_data.FieldMetaData("uploaderId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -233,8 +242,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ShareMode.class)));
     tmpMap.put(_Fields.FILE_SIZE, new org.apache.thrift.meta_data.FieldMetaData("fileSize", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
-    tmpMap.put(_Fields.IS_ENABLED, new org.apache.thrift.meta_data.FieldMetaData("isEnabled", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.IS_RESTRICTED, new org.apache.thrift.meta_data.FieldMetaData("isRestricted", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.IS_VALID, new org.apache.thrift.meta_data.FieldMetaData("isValid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -257,16 +264,17 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
   public ImageSummaryRead(
     String imageBaseId,
     String currentVersionId,
+    String latestVersionId,
     String imageName,
     int osId,
     String virtId,
     long createTime,
     long updateTime,
+    long expireTime,
     String ownerId,
     String uploaderId,
     ShareMode shareMode,
     long fileSize,
-    boolean isEnabled,
     boolean isRestricted,
     boolean isValid,
     boolean isProcessed,
@@ -276,6 +284,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     this();
     this.imageBaseId = imageBaseId;
     this.currentVersionId = currentVersionId;
+    this.latestVersionId = latestVersionId;
     this.imageName = imageName;
     this.osId = osId;
     setOsIdIsSet(true);
@@ -284,13 +293,13 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     setCreateTimeIsSet(true);
     this.updateTime = updateTime;
     setUpdateTimeIsSet(true);
+    this.expireTime = expireTime;
+    setExpireTimeIsSet(true);
     this.ownerId = ownerId;
     this.uploaderId = uploaderId;
     this.shareMode = shareMode;
     this.fileSize = fileSize;
     setFileSizeIsSet(true);
-    this.isEnabled = isEnabled;
-    setIsEnabledIsSet(true);
     this.isRestricted = isRestricted;
     setIsRestrictedIsSet(true);
     this.isValid = isValid;
@@ -313,6 +322,9 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     if (other.isSetCurrentVersionId()) {
       this.currentVersionId = other.currentVersionId;
     }
+    if (other.isSetLatestVersionId()) {
+      this.latestVersionId = other.latestVersionId;
+    }
     if (other.isSetImageName()) {
       this.imageName = other.imageName;
     }
@@ -322,6 +334,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     }
     this.createTime = other.createTime;
     this.updateTime = other.updateTime;
+    this.expireTime = other.expireTime;
     if (other.isSetOwnerId()) {
       this.ownerId = other.ownerId;
     }
@@ -332,7 +345,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       this.shareMode = other.shareMode;
     }
     this.fileSize = other.fileSize;
-    this.isEnabled = other.isEnabled;
     this.isRestricted = other.isRestricted;
     this.isValid = other.isValid;
     this.isProcessed = other.isProcessed;
@@ -353,6 +365,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
   public void clear() {
     this.imageBaseId = null;
     this.currentVersionId = null;
+    this.latestVersionId = null;
     this.imageName = null;
     setOsIdIsSet(false);
     this.osId = 0;
@@ -361,13 +374,13 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     this.createTime = 0;
     setUpdateTimeIsSet(false);
     this.updateTime = 0;
+    setExpireTimeIsSet(false);
+    this.expireTime = 0;
     this.ownerId = null;
     this.uploaderId = null;
     this.shareMode = null;
     setFileSizeIsSet(false);
     this.fileSize = 0;
-    setIsEnabledIsSet(false);
-    this.isEnabled = false;
     setIsRestrictedIsSet(false);
     this.isRestricted = false;
     setIsValidIsSet(false);
@@ -425,6 +438,30 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
   public void setCurrentVersionIdIsSet(boolean value) {
     if (!value) {
       this.currentVersionId = null;
+    }
+  }
+
+  public String getLatestVersionId() {
+    return this.latestVersionId;
+  }
+
+  public ImageSummaryRead setLatestVersionId(String latestVersionId) {
+    this.latestVersionId = latestVersionId;
+    return this;
+  }
+
+  public void unsetLatestVersionId() {
+    this.latestVersionId = null;
+  }
+
+  /** Returns true if field latestVersionId is set (has been assigned a value) and false otherwise */
+  public boolean isSetLatestVersionId() {
+    return this.latestVersionId != null;
+  }
+
+  public void setLatestVersionIdIsSet(boolean value) {
+    if (!value) {
+      this.latestVersionId = null;
     }
   }
 
@@ -545,6 +582,29 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __UPDATETIME_ISSET_ID, value);
   }
 
+  public long getExpireTime() {
+    return this.expireTime;
+  }
+
+  public ImageSummaryRead setExpireTime(long expireTime) {
+    this.expireTime = expireTime;
+    setExpireTimeIsSet(true);
+    return this;
+  }
+
+  public void unsetExpireTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __EXPIRETIME_ISSET_ID);
+  }
+
+  /** Returns true if field expireTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetExpireTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __EXPIRETIME_ISSET_ID);
+  }
+
+  public void setExpireTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __EXPIRETIME_ISSET_ID, value);
+  }
+
   public String getOwnerId() {
     return this.ownerId;
   }
@@ -646,29 +706,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
 
   public void setFileSizeIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FILESIZE_ISSET_ID, value);
-  }
-
-  public boolean isIsEnabled() {
-    return this.isEnabled;
-  }
-
-  public ImageSummaryRead setIsEnabled(boolean isEnabled) {
-    this.isEnabled = isEnabled;
-    setIsEnabledIsSet(true);
-    return this;
-  }
-
-  public void unsetIsEnabled() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISENABLED_ISSET_ID);
-  }
-
-  /** Returns true if field isEnabled is set (has been assigned a value) and false otherwise */
-  public boolean isSetIsEnabled() {
-    return EncodingUtils.testBit(__isset_bitfield, __ISENABLED_ISSET_ID);
-  }
-
-  public void setIsEnabledIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISENABLED_ISSET_ID, value);
   }
 
   public boolean isIsRestricted() {
@@ -829,6 +866,14 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       }
       break;
 
+    case LATEST_VERSION_ID:
+      if (value == null) {
+        unsetLatestVersionId();
+      } else {
+        setLatestVersionId((String)value);
+      }
+      break;
+
     case IMAGE_NAME:
       if (value == null) {
         unsetImageName();
@@ -869,6 +914,14 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       }
       break;
 
+    case EXPIRE_TIME:
+      if (value == null) {
+        unsetExpireTime();
+      } else {
+        setExpireTime((Long)value);
+      }
+      break;
+
     case OWNER_ID:
       if (value == null) {
         unsetOwnerId();
@@ -898,14 +951,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
         unsetFileSize();
       } else {
         setFileSize((Long)value);
-      }
-      break;
-
-    case IS_ENABLED:
-      if (value == null) {
-        unsetIsEnabled();
-      } else {
-        setIsEnabled((Boolean)value);
       }
       break;
 
@@ -968,6 +1013,9 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     case CURRENT_VERSION_ID:
       return getCurrentVersionId();
 
+    case LATEST_VERSION_ID:
+      return getLatestVersionId();
+
     case IMAGE_NAME:
       return getImageName();
 
@@ -983,6 +1031,9 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     case UPDATE_TIME:
       return Long.valueOf(getUpdateTime());
 
+    case EXPIRE_TIME:
+      return Long.valueOf(getExpireTime());
+
     case OWNER_ID:
       return getOwnerId();
 
@@ -994,9 +1045,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
 
     case FILE_SIZE:
       return Long.valueOf(getFileSize());
-
-    case IS_ENABLED:
-      return Boolean.valueOf(isIsEnabled());
 
     case IS_RESTRICTED:
       return Boolean.valueOf(isIsRestricted());
@@ -1031,6 +1079,8 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       return isSetImageBaseId();
     case CURRENT_VERSION_ID:
       return isSetCurrentVersionId();
+    case LATEST_VERSION_ID:
+      return isSetLatestVersionId();
     case IMAGE_NAME:
       return isSetImageName();
     case OS_ID:
@@ -1041,6 +1091,8 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       return isSetCreateTime();
     case UPDATE_TIME:
       return isSetUpdateTime();
+    case EXPIRE_TIME:
+      return isSetExpireTime();
     case OWNER_ID:
       return isSetOwnerId();
     case UPLOADER_ID:
@@ -1049,8 +1101,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       return isSetShareMode();
     case FILE_SIZE:
       return isSetFileSize();
-    case IS_ENABLED:
-      return isSetIsEnabled();
     case IS_RESTRICTED:
       return isSetIsRestricted();
     case IS_VALID:
@@ -1095,6 +1145,15 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       if (!(this_present_currentVersionId && that_present_currentVersionId))
         return false;
       if (!this.currentVersionId.equals(that.currentVersionId))
+        return false;
+    }
+
+    boolean this_present_latestVersionId = true && this.isSetLatestVersionId();
+    boolean that_present_latestVersionId = true && that.isSetLatestVersionId();
+    if (this_present_latestVersionId || that_present_latestVersionId) {
+      if (!(this_present_latestVersionId && that_present_latestVersionId))
+        return false;
+      if (!this.latestVersionId.equals(that.latestVersionId))
         return false;
     }
 
@@ -1143,6 +1202,15 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
         return false;
     }
 
+    boolean this_present_expireTime = true;
+    boolean that_present_expireTime = true;
+    if (this_present_expireTime || that_present_expireTime) {
+      if (!(this_present_expireTime && that_present_expireTime))
+        return false;
+      if (this.expireTime != that.expireTime)
+        return false;
+    }
+
     boolean this_present_ownerId = true && this.isSetOwnerId();
     boolean that_present_ownerId = true && that.isSetOwnerId();
     if (this_present_ownerId || that_present_ownerId) {
@@ -1176,15 +1244,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       if (!(this_present_fileSize && that_present_fileSize))
         return false;
       if (this.fileSize != that.fileSize)
-        return false;
-    }
-
-    boolean this_present_isEnabled = true;
-    boolean that_present_isEnabled = true;
-    if (this_present_isEnabled || that_present_isEnabled) {
-      if (!(this_present_isEnabled && that_present_isEnabled))
-        return false;
-      if (this.isEnabled != that.isEnabled)
         return false;
     }
 
@@ -1278,6 +1337,16 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetLatestVersionId()).compareTo(other.isSetLatestVersionId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetLatestVersionId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.latestVersionId, other.latestVersionId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetImageName()).compareTo(other.isSetImageName());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1328,6 +1397,16 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetExpireTime()).compareTo(other.isSetExpireTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetExpireTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.expireTime, other.expireTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetOwnerId()).compareTo(other.isSetOwnerId());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1364,16 +1443,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     }
     if (isSetFileSize()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fileSize, other.fileSize);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetIsEnabled()).compareTo(other.isSetIsEnabled());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIsEnabled()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isEnabled, other.isEnabled);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1474,6 +1543,14 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("latestVersionId:");
+    if (this.latestVersionId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.latestVersionId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("imageName:");
     if (this.imageName == null) {
       sb.append("null");
@@ -1502,6 +1579,10 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     sb.append(this.updateTime);
     first = false;
     if (!first) sb.append(", ");
+    sb.append("expireTime:");
+    sb.append(this.expireTime);
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("ownerId:");
     if (this.ownerId == null) {
       sb.append("null");
@@ -1528,10 +1609,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     if (!first) sb.append(", ");
     sb.append("fileSize:");
     sb.append(this.fileSize);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("isEnabled:");
-    sb.append(this.isEnabled);
     first = false;
     if (!first) sb.append(", ");
     sb.append("isRestricted:");
@@ -1634,7 +1711,15 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // IMAGE_NAME
+          case 3: // LATEST_VERSION_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.latestVersionId = iprot.readString();
+              struct.setLatestVersionIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // IMAGE_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.imageName = iprot.readString();
               struct.setImageNameIsSet(true);
@@ -1642,7 +1727,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // OS_ID
+          case 5: // OS_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.osId = iprot.readI32();
               struct.setOsIdIsSet(true);
@@ -1650,7 +1735,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // VIRT_ID
+          case 6: // VIRT_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.virtId = iprot.readString();
               struct.setVirtIdIsSet(true);
@@ -1658,7 +1743,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // CREATE_TIME
+          case 7: // CREATE_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.createTime = iprot.readI64();
               struct.setCreateTimeIsSet(true);
@@ -1666,7 +1751,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // UPDATE_TIME
+          case 8: // UPDATE_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.updateTime = iprot.readI64();
               struct.setUpdateTimeIsSet(true);
@@ -1674,7 +1759,15 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // OWNER_ID
+          case 9: // EXPIRE_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.expireTime = iprot.readI64();
+              struct.setExpireTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 10: // OWNER_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.ownerId = iprot.readString();
               struct.setOwnerIdIsSet(true);
@@ -1682,7 +1775,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // UPLOADER_ID
+          case 11: // UPLOADER_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.uploaderId = iprot.readString();
               struct.setUploaderIdIsSet(true);
@@ -1690,7 +1783,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // SHARE_MODE
+          case 12: // SHARE_MODE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.shareMode = ShareMode.findByValue(iprot.readI32());
               struct.setShareModeIsSet(true);
@@ -1698,7 +1791,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // FILE_SIZE
+          case 13: // FILE_SIZE
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.fileSize = iprot.readI64();
               struct.setFileSizeIsSet(true);
@@ -1706,15 +1799,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // IS_ENABLED
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.isEnabled = iprot.readBool();
-              struct.setIsEnabledIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 13: // IS_RESTRICTED
+          case 14: // IS_RESTRICTED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isRestricted = iprot.readBool();
               struct.setIsRestrictedIsSet(true);
@@ -1722,7 +1807,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 14: // IS_VALID
+          case 15: // IS_VALID
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isValid = iprot.readBool();
               struct.setIsValidIsSet(true);
@@ -1730,7 +1815,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 15: // IS_PROCESSED
+          case 16: // IS_PROCESSED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isProcessed = iprot.readBool();
               struct.setIsProcessedIsSet(true);
@@ -1738,7 +1823,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 16: // IS_TEMPLATE
+          case 17: // IS_TEMPLATE
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isTemplate = iprot.readBool();
               struct.setIsTemplateIsSet(true);
@@ -1746,7 +1831,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 17: // DEFAULT_PERMISSIONS
+          case 18: // DEFAULT_PERMISSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.defaultPermissions = new ImagePermissions();
               struct.defaultPermissions.read(iprot);
@@ -1755,7 +1840,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 18: // USER_PERMISSIONS
+          case 19: // USER_PERMISSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.userPermissions = new ImagePermissions();
               struct.userPermissions.read(iprot);
@@ -1789,6 +1874,11 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
         oprot.writeString(struct.currentVersionId);
         oprot.writeFieldEnd();
       }
+      if (struct.latestVersionId != null) {
+        oprot.writeFieldBegin(LATEST_VERSION_ID_FIELD_DESC);
+        oprot.writeString(struct.latestVersionId);
+        oprot.writeFieldEnd();
+      }
       if (struct.imageName != null) {
         oprot.writeFieldBegin(IMAGE_NAME_FIELD_DESC);
         oprot.writeString(struct.imageName);
@@ -1808,6 +1898,9 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       oprot.writeFieldBegin(UPDATE_TIME_FIELD_DESC);
       oprot.writeI64(struct.updateTime);
       oprot.writeFieldEnd();
+      oprot.writeFieldBegin(EXPIRE_TIME_FIELD_DESC);
+      oprot.writeI64(struct.expireTime);
+      oprot.writeFieldEnd();
       if (struct.ownerId != null) {
         oprot.writeFieldBegin(OWNER_ID_FIELD_DESC);
         oprot.writeString(struct.ownerId);
@@ -1825,9 +1918,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       }
       oprot.writeFieldBegin(FILE_SIZE_FIELD_DESC);
       oprot.writeI64(struct.fileSize);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(IS_ENABLED_FIELD_DESC);
-      oprot.writeBool(struct.isEnabled);
       oprot.writeFieldEnd();
       oprot.writeFieldBegin(IS_RESTRICTED_FIELD_DESC);
       oprot.writeBool(struct.isRestricted);
@@ -1877,60 +1967,66 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       if (struct.isSetCurrentVersionId()) {
         optionals.set(1);
       }
-      if (struct.isSetImageName()) {
+      if (struct.isSetLatestVersionId()) {
         optionals.set(2);
       }
-      if (struct.isSetOsId()) {
+      if (struct.isSetImageName()) {
         optionals.set(3);
       }
-      if (struct.isSetVirtId()) {
+      if (struct.isSetOsId()) {
         optionals.set(4);
       }
-      if (struct.isSetCreateTime()) {
+      if (struct.isSetVirtId()) {
         optionals.set(5);
       }
-      if (struct.isSetUpdateTime()) {
+      if (struct.isSetCreateTime()) {
         optionals.set(6);
       }
-      if (struct.isSetOwnerId()) {
+      if (struct.isSetUpdateTime()) {
         optionals.set(7);
       }
-      if (struct.isSetUploaderId()) {
+      if (struct.isSetExpireTime()) {
         optionals.set(8);
       }
-      if (struct.isSetShareMode()) {
+      if (struct.isSetOwnerId()) {
         optionals.set(9);
       }
-      if (struct.isSetFileSize()) {
+      if (struct.isSetUploaderId()) {
         optionals.set(10);
       }
-      if (struct.isSetIsEnabled()) {
+      if (struct.isSetShareMode()) {
         optionals.set(11);
       }
-      if (struct.isSetIsRestricted()) {
+      if (struct.isSetFileSize()) {
         optionals.set(12);
       }
-      if (struct.isSetIsValid()) {
+      if (struct.isSetIsRestricted()) {
         optionals.set(13);
       }
-      if (struct.isSetIsProcessed()) {
+      if (struct.isSetIsValid()) {
         optionals.set(14);
       }
-      if (struct.isSetIsTemplate()) {
+      if (struct.isSetIsProcessed()) {
         optionals.set(15);
       }
-      if (struct.isSetDefaultPermissions()) {
+      if (struct.isSetIsTemplate()) {
         optionals.set(16);
       }
-      if (struct.isSetUserPermissions()) {
+      if (struct.isSetDefaultPermissions()) {
         optionals.set(17);
       }
-      oprot.writeBitSet(optionals, 18);
+      if (struct.isSetUserPermissions()) {
+        optionals.set(18);
+      }
+      oprot.writeBitSet(optionals, 19);
       if (struct.isSetImageBaseId()) {
         oprot.writeString(struct.imageBaseId);
       }
       if (struct.isSetCurrentVersionId()) {
         oprot.writeString(struct.currentVersionId);
+      }
+      if (struct.isSetLatestVersionId()) {
+        oprot.writeString(struct.latestVersionId);
       }
       if (struct.isSetImageName()) {
         oprot.writeString(struct.imageName);
@@ -1947,6 +2043,9 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       if (struct.isSetUpdateTime()) {
         oprot.writeI64(struct.updateTime);
       }
+      if (struct.isSetExpireTime()) {
+        oprot.writeI64(struct.expireTime);
+      }
       if (struct.isSetOwnerId()) {
         oprot.writeString(struct.ownerId);
       }
@@ -1958,9 +2057,6 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
       }
       if (struct.isSetFileSize()) {
         oprot.writeI64(struct.fileSize);
-      }
-      if (struct.isSetIsEnabled()) {
-        oprot.writeBool(struct.isEnabled);
       }
       if (struct.isSetIsRestricted()) {
         oprot.writeBool(struct.isRestricted);
@@ -1985,7 +2081,7 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ImageSummaryRead struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(18);
+      BitSet incoming = iprot.readBitSet(19);
       if (incoming.get(0)) {
         struct.imageBaseId = iprot.readString();
         struct.setImageBaseIdIsSet(true);
@@ -1995,67 +2091,71 @@ public class ImageSummaryRead implements org.apache.thrift.TBase<ImageSummaryRea
         struct.setCurrentVersionIdIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.latestVersionId = iprot.readString();
+        struct.setLatestVersionIdIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.imageName = iprot.readString();
         struct.setImageNameIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
         struct.osId = iprot.readI32();
         struct.setOsIdIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.virtId = iprot.readString();
         struct.setVirtIdIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         struct.createTime = iprot.readI64();
         struct.setCreateTimeIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(7)) {
         struct.updateTime = iprot.readI64();
         struct.setUpdateTimeIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(8)) {
+        struct.expireTime = iprot.readI64();
+        struct.setExpireTimeIsSet(true);
+      }
+      if (incoming.get(9)) {
         struct.ownerId = iprot.readString();
         struct.setOwnerIdIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(10)) {
         struct.uploaderId = iprot.readString();
         struct.setUploaderIdIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(11)) {
         struct.shareMode = ShareMode.findByValue(iprot.readI32());
         struct.setShareModeIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(12)) {
         struct.fileSize = iprot.readI64();
         struct.setFileSizeIsSet(true);
       }
-      if (incoming.get(11)) {
-        struct.isEnabled = iprot.readBool();
-        struct.setIsEnabledIsSet(true);
-      }
-      if (incoming.get(12)) {
+      if (incoming.get(13)) {
         struct.isRestricted = iprot.readBool();
         struct.setIsRestrictedIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(14)) {
         struct.isValid = iprot.readBool();
         struct.setIsValidIsSet(true);
       }
-      if (incoming.get(14)) {
+      if (incoming.get(15)) {
         struct.isProcessed = iprot.readBool();
         struct.setIsProcessedIsSet(true);
       }
-      if (incoming.get(15)) {
+      if (incoming.get(16)) {
         struct.isTemplate = iprot.readBool();
         struct.setIsTemplateIsSet(true);
       }
-      if (incoming.get(16)) {
+      if (incoming.get(17)) {
         struct.defaultPermissions = new ImagePermissions();
         struct.defaultPermissions.read(iprot);
         struct.setDefaultPermissionsIsSet(true);
       }
-      if (incoming.get(17)) {
+      if (incoming.get(18)) {
         struct.userPermissions = new ImagePermissions();
         struct.userPermissions.read(iprot);
         struct.setUserPermissionsIsSet(true);
