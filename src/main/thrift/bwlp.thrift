@@ -168,16 +168,17 @@ struct ImageVersionDetails {
 	7: bool isRestricted,
 	8: bool isValid,
 	9: bool isProcessed,
+	10: list<string> software,
 }
 
 struct ImageDetailsRead {
 	1: UUID imageBaseId,
 	2: UUID currentVersionId,
+	17: UUID latestVersionId,
 	3: list<ImageVersionDetails> versions,
 	4: string imageName,
 	5: string description,
 	6: list<string> tags,
-	7: list<string> software,
 	8: i32 osId,
 	9: string virtId,
 	10: UnixTimestamp createTime,
@@ -187,7 +188,7 @@ struct ImageDetailsRead {
 	14: ShareMode shareMode,
 	15: bool isTemplate,
 	16: ImagePermissions defaultPermissions,
-	17: optional ImagePermissions userPermissions,
+	18: optional ImagePermissions userPermissions,
 }
 
 struct LectureWrite {
@@ -245,6 +246,8 @@ struct TransferInformation {
 	3: i32 sslPort,
 }
 
+// Used to tell status of an upload. The blockStatus is one byte per 16MB block,
+// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying 
 struct UploadStatus {
 	1: binary blockStatus,
 }
@@ -269,6 +272,9 @@ exception TInvalidTokenException {
 }
 
 exception TNotFoundException {
+}
+
+exception TInternalServerError {
 }
 
 exception TImageDataException {

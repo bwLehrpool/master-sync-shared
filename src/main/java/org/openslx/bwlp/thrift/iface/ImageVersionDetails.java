@@ -44,6 +44,7 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
   private static final org.apache.thrift.protocol.TField IS_RESTRICTED_FIELD_DESC = new org.apache.thrift.protocol.TField("isRestricted", org.apache.thrift.protocol.TType.BOOL, (short)7);
   private static final org.apache.thrift.protocol.TField IS_VALID_FIELD_DESC = new org.apache.thrift.protocol.TField("isValid", org.apache.thrift.protocol.TType.BOOL, (short)8);
   private static final org.apache.thrift.protocol.TField IS_PROCESSED_FIELD_DESC = new org.apache.thrift.protocol.TField("isProcessed", org.apache.thrift.protocol.TType.BOOL, (short)9);
+  private static final org.apache.thrift.protocol.TField SOFTWARE_FIELD_DESC = new org.apache.thrift.protocol.TField("software", org.apache.thrift.protocol.TType.LIST, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -60,6 +61,7 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
   public boolean isRestricted; // required
   public boolean isValid; // required
   public boolean isProcessed; // required
+  public List<String> software; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -71,7 +73,8 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     IS_ENABLED((short)6, "isEnabled"),
     IS_RESTRICTED((short)7, "isRestricted"),
     IS_VALID((short)8, "isValid"),
-    IS_PROCESSED((short)9, "isProcessed");
+    IS_PROCESSED((short)9, "isProcessed"),
+    SOFTWARE((short)10, "software");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -104,6 +107,8 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
           return IS_VALID;
         case 9: // IS_PROCESSED
           return IS_PROCESSED;
+        case 10: // SOFTWARE
+          return SOFTWARE;
         default:
           return null;
       }
@@ -173,6 +178,9 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.IS_PROCESSED, new org.apache.thrift.meta_data.FieldMetaData("isProcessed", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.SOFTWARE, new org.apache.thrift.meta_data.FieldMetaData("software", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ImageVersionDetails.class, metaDataMap);
   }
@@ -189,7 +197,8 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     boolean isEnabled,
     boolean isRestricted,
     boolean isValid,
-    boolean isProcessed)
+    boolean isProcessed,
+    List<String> software)
   {
     this();
     this.versionId = versionId;
@@ -208,6 +217,7 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     setIsValidIsSet(true);
     this.isProcessed = isProcessed;
     setIsProcessedIsSet(true);
+    this.software = software;
   }
 
   /**
@@ -228,6 +238,10 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     this.isRestricted = other.isRestricted;
     this.isValid = other.isValid;
     this.isProcessed = other.isProcessed;
+    if (other.isSetSoftware()) {
+      List<String> __this__software = new ArrayList<String>(other.software);
+      this.software = __this__software;
+    }
   }
 
   public ImageVersionDetails deepCopy() {
@@ -252,6 +266,7 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     this.isValid = false;
     setIsProcessedIsSet(false);
     this.isProcessed = false;
+    this.software = null;
   }
 
   public String getVersionId() {
@@ -463,6 +478,45 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISPROCESSED_ISSET_ID, value);
   }
 
+  public int getSoftwareSize() {
+    return (this.software == null) ? 0 : this.software.size();
+  }
+
+  public java.util.Iterator<String> getSoftwareIterator() {
+    return (this.software == null) ? null : this.software.iterator();
+  }
+
+  public void addToSoftware(String elem) {
+    if (this.software == null) {
+      this.software = new ArrayList<String>();
+    }
+    this.software.add(elem);
+  }
+
+  public List<String> getSoftware() {
+    return this.software;
+  }
+
+  public ImageVersionDetails setSoftware(List<String> software) {
+    this.software = software;
+    return this;
+  }
+
+  public void unsetSoftware() {
+    this.software = null;
+  }
+
+  /** Returns true if field software is set (has been assigned a value) and false otherwise */
+  public boolean isSetSoftware() {
+    return this.software != null;
+  }
+
+  public void setSoftwareIsSet(boolean value) {
+    if (!value) {
+      this.software = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case VERSION_ID:
@@ -537,6 +591,14 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       }
       break;
 
+    case SOFTWARE:
+      if (value == null) {
+        unsetSoftware();
+      } else {
+        setSoftware((List<String>)value);
+      }
+      break;
+
     }
   }
 
@@ -569,6 +631,9 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     case IS_PROCESSED:
       return Boolean.valueOf(isIsProcessed());
 
+    case SOFTWARE:
+      return getSoftware();
+
     }
     throw new IllegalStateException();
   }
@@ -598,6 +663,8 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       return isSetIsValid();
     case IS_PROCESSED:
       return isSetIsProcessed();
+    case SOFTWARE:
+      return isSetSoftware();
     }
     throw new IllegalStateException();
   }
@@ -693,6 +760,15 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       if (!(this_present_isProcessed && that_present_isProcessed))
         return false;
       if (this.isProcessed != that.isProcessed)
+        return false;
+    }
+
+    boolean this_present_software = true && this.isSetSoftware();
+    boolean that_present_software = true && that.isSetSoftware();
+    if (this_present_software || that_present_software) {
+      if (!(this_present_software && that_present_software))
+        return false;
+      if (!this.software.equals(that.software))
         return false;
     }
 
@@ -802,6 +878,16 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetSoftware()).compareTo(other.isSetSoftware());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSoftware()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.software, other.software);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -864,6 +950,14 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     if (!first) sb.append(", ");
     sb.append("isProcessed:");
     sb.append(this.isProcessed);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("software:");
+    if (this.software == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.software);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -982,6 +1076,24 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 10: // SOFTWARE
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list34 = iprot.readListBegin();
+                struct.software = new ArrayList<String>(_list34.size);
+                for (int _i35 = 0; _i35 < _list34.size; ++_i35)
+                {
+                  String _elem36;
+                  _elem36 = iprot.readString();
+                  struct.software.add(_elem36);
+                }
+                iprot.readListEnd();
+              }
+              struct.setSoftwareIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1028,6 +1140,18 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       oprot.writeFieldBegin(IS_PROCESSED_FIELD_DESC);
       oprot.writeBool(struct.isProcessed);
       oprot.writeFieldEnd();
+      if (struct.software != null) {
+        oprot.writeFieldBegin(SOFTWARE_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.software.size()));
+          for (String _iter37 : struct.software)
+          {
+            oprot.writeString(_iter37);
+          }
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1073,7 +1197,10 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       if (struct.isSetIsProcessed()) {
         optionals.set(8);
       }
-      oprot.writeBitSet(optionals, 9);
+      if (struct.isSetSoftware()) {
+        optionals.set(9);
+      }
+      oprot.writeBitSet(optionals, 10);
       if (struct.isSetVersionId()) {
         oprot.writeString(struct.versionId);
       }
@@ -1101,12 +1228,21 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       if (struct.isSetIsProcessed()) {
         oprot.writeBool(struct.isProcessed);
       }
+      if (struct.isSetSoftware()) {
+        {
+          oprot.writeI32(struct.software.size());
+          for (String _iter38 : struct.software)
+          {
+            oprot.writeString(_iter38);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ImageVersionDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(9);
+      BitSet incoming = iprot.readBitSet(10);
       if (incoming.get(0)) {
         struct.versionId = iprot.readString();
         struct.setVersionIdIsSet(true);
@@ -1142,6 +1278,19 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       if (incoming.get(8)) {
         struct.isProcessed = iprot.readBool();
         struct.setIsProcessedIsSet(true);
+      }
+      if (incoming.get(9)) {
+        {
+          org.apache.thrift.protocol.TList _list39 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.software = new ArrayList<String>(_list39.size);
+          for (int _i40 = 0; _i40 < _list39.size; ++_i40)
+          {
+            String _elem41;
+            _elem41 = iprot.readString();
+            struct.software.add(_elem41);
+          }
+        }
+        struct.setSoftwareIsSet(true);
       }
     }
   }

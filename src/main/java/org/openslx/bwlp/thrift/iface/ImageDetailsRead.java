@@ -37,11 +37,11 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
 
   private static final org.apache.thrift.protocol.TField IMAGE_BASE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageBaseId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField CURRENT_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("currentVersionId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField LATEST_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("latestVersionId", org.apache.thrift.protocol.TType.STRING, (short)17);
   private static final org.apache.thrift.protocol.TField VERSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("versions", org.apache.thrift.protocol.TType.LIST, (short)3);
   private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)5);
   private static final org.apache.thrift.protocol.TField TAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("tags", org.apache.thrift.protocol.TType.LIST, (short)6);
-  private static final org.apache.thrift.protocol.TField SOFTWARE_FIELD_DESC = new org.apache.thrift.protocol.TField("software", org.apache.thrift.protocol.TType.LIST, (short)7);
   private static final org.apache.thrift.protocol.TField OS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("osId", org.apache.thrift.protocol.TType.I32, (short)8);
   private static final org.apache.thrift.protocol.TField VIRT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("virtId", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createTime", org.apache.thrift.protocol.TType.I64, (short)10);
@@ -51,7 +51,7 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   private static final org.apache.thrift.protocol.TField SHARE_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("shareMode", org.apache.thrift.protocol.TType.I32, (short)14);
   private static final org.apache.thrift.protocol.TField IS_TEMPLATE_FIELD_DESC = new org.apache.thrift.protocol.TField("isTemplate", org.apache.thrift.protocol.TType.BOOL, (short)15);
   private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)16);
-  private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)17);
+  private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)18);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -61,11 +61,11 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
 
   public String imageBaseId; // required
   public String currentVersionId; // required
+  public String latestVersionId; // required
   public List<ImageVersionDetails> versions; // required
   public String imageName; // required
   public String description; // required
   public List<String> tags; // required
-  public List<String> software; // required
   public int osId; // required
   public String virtId; // required
   public long createTime; // required
@@ -85,11 +85,11 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     IMAGE_BASE_ID((short)1, "imageBaseId"),
     CURRENT_VERSION_ID((short)2, "currentVersionId"),
+    LATEST_VERSION_ID((short)17, "latestVersionId"),
     VERSIONS((short)3, "versions"),
     IMAGE_NAME((short)4, "imageName"),
     DESCRIPTION((short)5, "description"),
     TAGS((short)6, "tags"),
-    SOFTWARE((short)7, "software"),
     OS_ID((short)8, "osId"),
     VIRT_ID((short)9, "virtId"),
     CREATE_TIME((short)10, "createTime"),
@@ -103,7 +103,7 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     SHARE_MODE((short)14, "shareMode"),
     IS_TEMPLATE((short)15, "isTemplate"),
     DEFAULT_PERMISSIONS((short)16, "defaultPermissions"),
-    USER_PERMISSIONS((short)17, "userPermissions");
+    USER_PERMISSIONS((short)18, "userPermissions");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -122,6 +122,8 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
           return IMAGE_BASE_ID;
         case 2: // CURRENT_VERSION_ID
           return CURRENT_VERSION_ID;
+        case 17: // LATEST_VERSION_ID
+          return LATEST_VERSION_ID;
         case 3: // VERSIONS
           return VERSIONS;
         case 4: // IMAGE_NAME
@@ -130,8 +132,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
           return DESCRIPTION;
         case 6: // TAGS
           return TAGS;
-        case 7: // SOFTWARE
-          return SOFTWARE;
         case 8: // OS_ID
           return OS_ID;
         case 9: // VIRT_ID
@@ -150,7 +150,7 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
           return IS_TEMPLATE;
         case 16: // DEFAULT_PERMISSIONS
           return DEFAULT_PERMISSIONS;
-        case 17: // USER_PERMISSIONS
+        case 18: // USER_PERMISSIONS
           return USER_PERMISSIONS;
         default:
           return null;
@@ -205,6 +205,8 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.CURRENT_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("currentVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
+    tmpMap.put(_Fields.LATEST_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("latestVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.VERSIONS, new org.apache.thrift.meta_data.FieldMetaData("versions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ImageVersionDetails.class))));
@@ -213,9 +215,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TAGS, new org.apache.thrift.meta_data.FieldMetaData("tags", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-    tmpMap.put(_Fields.SOFTWARE, new org.apache.thrift.meta_data.FieldMetaData("software", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.OS_ID, new org.apache.thrift.meta_data.FieldMetaData("osId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -248,11 +247,11 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   public ImageDetailsRead(
     String imageBaseId,
     String currentVersionId,
+    String latestVersionId,
     List<ImageVersionDetails> versions,
     String imageName,
     String description,
     List<String> tags,
-    List<String> software,
     int osId,
     String virtId,
     long createTime,
@@ -266,11 +265,11 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     this();
     this.imageBaseId = imageBaseId;
     this.currentVersionId = currentVersionId;
+    this.latestVersionId = latestVersionId;
     this.versions = versions;
     this.imageName = imageName;
     this.description = description;
     this.tags = tags;
-    this.software = software;
     this.osId = osId;
     setOsIdIsSet(true);
     this.virtId = virtId;
@@ -297,6 +296,9 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     if (other.isSetCurrentVersionId()) {
       this.currentVersionId = other.currentVersionId;
     }
+    if (other.isSetLatestVersionId()) {
+      this.latestVersionId = other.latestVersionId;
+    }
     if (other.isSetVersions()) {
       List<ImageVersionDetails> __this__versions = new ArrayList<ImageVersionDetails>(other.versions.size());
       for (ImageVersionDetails other_element : other.versions) {
@@ -313,10 +315,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     if (other.isSetTags()) {
       List<String> __this__tags = new ArrayList<String>(other.tags);
       this.tags = __this__tags;
-    }
-    if (other.isSetSoftware()) {
-      List<String> __this__software = new ArrayList<String>(other.software);
-      this.software = __this__software;
     }
     this.osId = other.osId;
     if (other.isSetVirtId()) {
@@ -350,11 +348,11 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   public void clear() {
     this.imageBaseId = null;
     this.currentVersionId = null;
+    this.latestVersionId = null;
     this.versions = null;
     this.imageName = null;
     this.description = null;
     this.tags = null;
-    this.software = null;
     setOsIdIsSet(false);
     this.osId = 0;
     this.virtId = null;
@@ -416,6 +414,30 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   public void setCurrentVersionIdIsSet(boolean value) {
     if (!value) {
       this.currentVersionId = null;
+    }
+  }
+
+  public String getLatestVersionId() {
+    return this.latestVersionId;
+  }
+
+  public ImageDetailsRead setLatestVersionId(String latestVersionId) {
+    this.latestVersionId = latestVersionId;
+    return this;
+  }
+
+  public void unsetLatestVersionId() {
+    this.latestVersionId = null;
+  }
+
+  /** Returns true if field latestVersionId is set (has been assigned a value) and false otherwise */
+  public boolean isSetLatestVersionId() {
+    return this.latestVersionId != null;
+  }
+
+  public void setLatestVersionIdIsSet(boolean value) {
+    if (!value) {
+      this.latestVersionId = null;
     }
   }
 
@@ -542,45 +564,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   public void setTagsIsSet(boolean value) {
     if (!value) {
       this.tags = null;
-    }
-  }
-
-  public int getSoftwareSize() {
-    return (this.software == null) ? 0 : this.software.size();
-  }
-
-  public java.util.Iterator<String> getSoftwareIterator() {
-    return (this.software == null) ? null : this.software.iterator();
-  }
-
-  public void addToSoftware(String elem) {
-    if (this.software == null) {
-      this.software = new ArrayList<String>();
-    }
-    this.software.add(elem);
-  }
-
-  public List<String> getSoftware() {
-    return this.software;
-  }
-
-  public ImageDetailsRead setSoftware(List<String> software) {
-    this.software = software;
-    return this;
-  }
-
-  public void unsetSoftware() {
-    this.software = null;
-  }
-
-  /** Returns true if field software is set (has been assigned a value) and false otherwise */
-  public boolean isSetSoftware() {
-    return this.software != null;
-  }
-
-  public void setSoftwareIsSet(boolean value) {
-    if (!value) {
-      this.software = null;
     }
   }
 
@@ -846,6 +829,14 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       }
       break;
 
+    case LATEST_VERSION_ID:
+      if (value == null) {
+        unsetLatestVersionId();
+      } else {
+        setLatestVersionId((String)value);
+      }
+      break;
+
     case VERSIONS:
       if (value == null) {
         unsetVersions();
@@ -875,14 +866,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         unsetTags();
       } else {
         setTags((List<String>)value);
-      }
-      break;
-
-    case SOFTWARE:
-      if (value == null) {
-        unsetSoftware();
-      } else {
-        setSoftware((List<String>)value);
       }
       break;
 
@@ -977,6 +960,9 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     case CURRENT_VERSION_ID:
       return getCurrentVersionId();
 
+    case LATEST_VERSION_ID:
+      return getLatestVersionId();
+
     case VERSIONS:
       return getVersions();
 
@@ -988,9 +974,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
 
     case TAGS:
       return getTags();
-
-    case SOFTWARE:
-      return getSoftware();
 
     case OS_ID:
       return Integer.valueOf(getOsId());
@@ -1037,6 +1020,8 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       return isSetImageBaseId();
     case CURRENT_VERSION_ID:
       return isSetCurrentVersionId();
+    case LATEST_VERSION_ID:
+      return isSetLatestVersionId();
     case VERSIONS:
       return isSetVersions();
     case IMAGE_NAME:
@@ -1045,8 +1030,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       return isSetDescription();
     case TAGS:
       return isSetTags();
-    case SOFTWARE:
-      return isSetSoftware();
     case OS_ID:
       return isSetOsId();
     case VIRT_ID:
@@ -1102,6 +1085,15 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         return false;
     }
 
+    boolean this_present_latestVersionId = true && this.isSetLatestVersionId();
+    boolean that_present_latestVersionId = true && that.isSetLatestVersionId();
+    if (this_present_latestVersionId || that_present_latestVersionId) {
+      if (!(this_present_latestVersionId && that_present_latestVersionId))
+        return false;
+      if (!this.latestVersionId.equals(that.latestVersionId))
+        return false;
+    }
+
     boolean this_present_versions = true && this.isSetVersions();
     boolean that_present_versions = true && that.isSetVersions();
     if (this_present_versions || that_present_versions) {
@@ -1135,15 +1127,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (!(this_present_tags && that_present_tags))
         return false;
       if (!this.tags.equals(that.tags))
-        return false;
-    }
-
-    boolean this_present_software = true && this.isSetSoftware();
-    boolean that_present_software = true && that.isSetSoftware();
-    if (this_present_software || that_present_software) {
-      if (!(this_present_software && that_present_software))
-        return false;
-      if (!this.software.equals(that.software))
         return false;
     }
 
@@ -1273,6 +1256,16 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetLatestVersionId()).compareTo(other.isSetLatestVersionId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetLatestVersionId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.latestVersionId, other.latestVersionId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetVersions()).compareTo(other.isSetVersions());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1309,16 +1302,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     }
     if (isSetTags()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tags, other.tags);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetSoftware()).compareTo(other.isSetSoftware());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetSoftware()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.software, other.software);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1459,6 +1442,14 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("latestVersionId:");
+    if (this.latestVersionId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.latestVersionId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("versions:");
     if (this.versions == null) {
       sb.append("null");
@@ -1488,14 +1479,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       sb.append("null");
     } else {
       sb.append(this.tags);
-    }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("software:");
-    if (this.software == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.software);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -1631,17 +1614,25 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 17: // LATEST_VERSION_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.latestVersionId = iprot.readString();
+              struct.setLatestVersionIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           case 3: // VERSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list34 = iprot.readListBegin();
-                struct.versions = new ArrayList<ImageVersionDetails>(_list34.size);
-                for (int _i35 = 0; _i35 < _list34.size; ++_i35)
+                org.apache.thrift.protocol.TList _list42 = iprot.readListBegin();
+                struct.versions = new ArrayList<ImageVersionDetails>(_list42.size);
+                for (int _i43 = 0; _i43 < _list42.size; ++_i43)
                 {
-                  ImageVersionDetails _elem36;
-                  _elem36 = new ImageVersionDetails();
-                  _elem36.read(iprot);
-                  struct.versions.add(_elem36);
+                  ImageVersionDetails _elem44;
+                  _elem44 = new ImageVersionDetails();
+                  _elem44.read(iprot);
+                  struct.versions.add(_elem44);
                 }
                 iprot.readListEnd();
               }
@@ -1669,35 +1660,17 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
           case 6: // TAGS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list37 = iprot.readListBegin();
-                struct.tags = new ArrayList<String>(_list37.size);
-                for (int _i38 = 0; _i38 < _list37.size; ++_i38)
+                org.apache.thrift.protocol.TList _list45 = iprot.readListBegin();
+                struct.tags = new ArrayList<String>(_list45.size);
+                for (int _i46 = 0; _i46 < _list45.size; ++_i46)
                 {
-                  String _elem39;
-                  _elem39 = iprot.readString();
-                  struct.tags.add(_elem39);
+                  String _elem47;
+                  _elem47 = iprot.readString();
+                  struct.tags.add(_elem47);
                 }
                 iprot.readListEnd();
               }
               struct.setTagsIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 7: // SOFTWARE
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list40 = iprot.readListBegin();
-                struct.software = new ArrayList<String>(_list40.size);
-                for (int _i41 = 0; _i41 < _list40.size; ++_i41)
-                {
-                  String _elem42;
-                  _elem42 = iprot.readString();
-                  struct.software.add(_elem42);
-                }
-                iprot.readListEnd();
-              }
-              struct.setSoftwareIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1775,7 +1748,7 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 17: // USER_PERMISSIONS
+          case 18: // USER_PERMISSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.userPermissions = new ImagePermissions();
               struct.userPermissions.read(iprot);
@@ -1813,9 +1786,9 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         oprot.writeFieldBegin(VERSIONS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.versions.size()));
-          for (ImageVersionDetails _iter43 : struct.versions)
+          for (ImageVersionDetails _iter48 : struct.versions)
           {
-            _iter43.write(oprot);
+            _iter48.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -1835,21 +1808,9 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         oprot.writeFieldBegin(TAGS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.tags.size()));
-          for (String _iter44 : struct.tags)
+          for (String _iter49 : struct.tags)
           {
-            oprot.writeString(_iter44);
-          }
-          oprot.writeListEnd();
-        }
-        oprot.writeFieldEnd();
-      }
-      if (struct.software != null) {
-        oprot.writeFieldBegin(SOFTWARE_FIELD_DESC);
-        {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.software.size()));
-          for (String _iter45 : struct.software)
-          {
-            oprot.writeString(_iter45);
+            oprot.writeString(_iter49);
           }
           oprot.writeListEnd();
         }
@@ -1892,6 +1853,11 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         struct.defaultPermissions.write(oprot);
         oprot.writeFieldEnd();
       }
+      if (struct.latestVersionId != null) {
+        oprot.writeFieldBegin(LATEST_VERSION_ID_FIELD_DESC);
+        oprot.writeString(struct.latestVersionId);
+        oprot.writeFieldEnd();
+      }
       if (struct.userPermissions != null) {
         if (struct.isSetUserPermissions()) {
           oprot.writeFieldBegin(USER_PERMISSIONS_FIELD_DESC);
@@ -1923,19 +1889,19 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (struct.isSetCurrentVersionId()) {
         optionals.set(1);
       }
-      if (struct.isSetVersions()) {
+      if (struct.isSetLatestVersionId()) {
         optionals.set(2);
       }
-      if (struct.isSetImageName()) {
+      if (struct.isSetVersions()) {
         optionals.set(3);
       }
-      if (struct.isSetDescription()) {
+      if (struct.isSetImageName()) {
         optionals.set(4);
       }
-      if (struct.isSetTags()) {
+      if (struct.isSetDescription()) {
         optionals.set(5);
       }
-      if (struct.isSetSoftware()) {
+      if (struct.isSetTags()) {
         optionals.set(6);
       }
       if (struct.isSetOsId()) {
@@ -1975,12 +1941,15 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (struct.isSetCurrentVersionId()) {
         oprot.writeString(struct.currentVersionId);
       }
+      if (struct.isSetLatestVersionId()) {
+        oprot.writeString(struct.latestVersionId);
+      }
       if (struct.isSetVersions()) {
         {
           oprot.writeI32(struct.versions.size());
-          for (ImageVersionDetails _iter46 : struct.versions)
+          for (ImageVersionDetails _iter50 : struct.versions)
           {
-            _iter46.write(oprot);
+            _iter50.write(oprot);
           }
         }
       }
@@ -1993,18 +1962,9 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (struct.isSetTags()) {
         {
           oprot.writeI32(struct.tags.size());
-          for (String _iter47 : struct.tags)
+          for (String _iter51 : struct.tags)
           {
-            oprot.writeString(_iter47);
-          }
-        }
-      }
-      if (struct.isSetSoftware()) {
-        {
-          oprot.writeI32(struct.software.size());
-          for (String _iter48 : struct.software)
-          {
-            oprot.writeString(_iter48);
+            oprot.writeString(_iter51);
           }
         }
       }
@@ -2053,52 +2013,43 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         struct.setCurrentVersionIdIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.latestVersionId = iprot.readString();
+        struct.setLatestVersionIdIsSet(true);
+      }
+      if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list49 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.versions = new ArrayList<ImageVersionDetails>(_list49.size);
-          for (int _i50 = 0; _i50 < _list49.size; ++_i50)
+          org.apache.thrift.protocol.TList _list52 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.versions = new ArrayList<ImageVersionDetails>(_list52.size);
+          for (int _i53 = 0; _i53 < _list52.size; ++_i53)
           {
-            ImageVersionDetails _elem51;
-            _elem51 = new ImageVersionDetails();
-            _elem51.read(iprot);
-            struct.versions.add(_elem51);
+            ImageVersionDetails _elem54;
+            _elem54 = new ImageVersionDetails();
+            _elem54.read(iprot);
+            struct.versions.add(_elem54);
           }
         }
         struct.setVersionsIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
         struct.imageName = iprot.readString();
         struct.setImageNameIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.description = iprot.readString();
         struct.setDescriptionIsSet(true);
-      }
-      if (incoming.get(5)) {
-        {
-          org.apache.thrift.protocol.TList _list52 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.tags = new ArrayList<String>(_list52.size);
-          for (int _i53 = 0; _i53 < _list52.size; ++_i53)
-          {
-            String _elem54;
-            _elem54 = iprot.readString();
-            struct.tags.add(_elem54);
-          }
-        }
-        struct.setTagsIsSet(true);
       }
       if (incoming.get(6)) {
         {
           org.apache.thrift.protocol.TList _list55 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.software = new ArrayList<String>(_list55.size);
+          struct.tags = new ArrayList<String>(_list55.size);
           for (int _i56 = 0; _i56 < _list55.size; ++_i56)
           {
             String _elem57;
             _elem57 = iprot.readString();
-            struct.software.add(_elem57);
+            struct.tags.add(_elem57);
           }
         }
-        struct.setSoftwareIsSet(true);
+        struct.setTagsIsSet(true);
       }
       if (incoming.get(7)) {
         struct.osId = iprot.readI32();
