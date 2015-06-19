@@ -44,6 +44,11 @@ enum ShareMode {
 	DOWNLOAD
 }
 
+enum NetDirection {
+	IN,
+	OUT
+}
+
 // ############## STRUCT ###############
 
 struct UserInfo {
@@ -191,17 +196,29 @@ struct ImageDetailsRead {
 	18: optional ImagePermissions userPermissions,
 }
 
+struct NetRule {
+	1: i32 ruleId,
+	2: NetDirection direction,
+	3: string host,
+	4: i32 port,
+}
+
 struct LectureWrite {
 	1: string lectureName,
 	2: string description,
 	3: UUID imageVersionId,
-	4: bool isEnabled,
-	5: UnixTimestamp startTime,
-	6: UnixTimestamp endTime,
-	7: UUID ownerId,
-	8: bool isExam,
-	9: bool hasInternetAccess,
-	10: LecturePermissions defaultPermissions,
+	4: bool autoUpdate,
+	5: bool isEnabled,
+	6: UnixTimestamp startTime,
+	7: UnixTimestamp endTime,
+	8: UUID ownerId,
+	9: string runscript,
+	10: list<string> nics,
+	11: list<string> allowedUsers, // allowed to see/select image in vmchooser. These are local accounts, not bwIDM/Master
+	12: list<NetRule> networkExceptions,
+	13: bool isExam,
+	14: bool hasInternetAccess,
+	15: LecturePermissions defaultPermissions,
 }
 
 struct LectureSummary {
@@ -227,17 +244,22 @@ struct LectureRead {
 	2: string lectureName,
 	3: string description,
 	4: ImageSummaryRead image,
-	5: bool isEnabled,
-	6: UnixTimestamp startTime,
-	7: UnixTimestamp endTime,
-	8: UnixTimestamp lastUsed,
-	9: i32 useCount,
-	10: UUID ownerId,
-	11: UUID updaterId,
-	12: bool isExam,
-	13: bool hasInternetAccess,
-	14: LecturePermissions defaultPermissions,
-	15: optional LecturePermissions userPermissions,
+	5: bool autoUpdate,
+	6: bool isEnabled,
+	7: UnixTimestamp startTime,
+	8: UnixTimestamp endTime,
+	9: UnixTimestamp lastUsed,
+	10: i32 useCount,
+	11: UUID ownerId,
+	12: UUID updaterId,
+	13: string runscript,
+	14: list<string> nics,
+	15: list<string> allowedUsers, // allowed to see/select image in vmchooser. These are local accounts, not bwIDM/Master
+	16: list<NetRule> networkExceptions,
+	17: bool isExam,
+	18: bool hasInternetAccess,
+	19: LecturePermissions defaultPermissions,
+	20: optional LecturePermissions userPermissions,
 }
 
 struct TransferInformation {
@@ -302,6 +324,10 @@ service SatelliteServer {
 	bool isAuthenticated(1: Token userToken),
 	void invalidateSession(1: Token userToken),
 	
+	// find a user in a given organization by a search term
+	list<UserInfo> getUserList(1:Token userToken, 2:i32 page)
+		throws (1:TAuthorizationException failure),
+	
 	// Misc
     list<OperatingSystem> getOperatingSystems(),
 	list<Virtualizer> getVirtualizers(),
@@ -327,7 +353,7 @@ service SatelliteServer {
 	bool deleteImageVersion(1: Token userToken, 2: UUID imageVersionId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
 	// Write list of permissions for given image 
-	bool writeImagePermissions(1: Token userToken, 2: UUID imageId, 3: map<UUID, ImagePermissions> permissions)
+	bool writeImagePermissions(1: Token userToken, 2: UUID imageBaseId, 3: map<UUID, ImagePermissions> permissions)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
 	// Get all user-permissions for given image 
 	map<UUID, ImagePermissions> getImagePermissions(1: Token userToken, 2: UUID imageBaseId)
@@ -357,6 +383,7 @@ service SatelliteServer {
 	// Write list of permissions for given lecture
 	bool writeLecturePermissions(1: Token userToken, 2: UUID lectureId, 3: map<UUID, LecturePermissions> permissions)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+	// Get list of permissions for given lecture
 	map<UUID, LecturePermissions> getLecturePermissions(1: Token userToken, 2: UUID lectureId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
 }

@@ -39,17 +39,22 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   private static final org.apache.thrift.protocol.TField LECTURE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("lectureName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField IMAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("image", org.apache.thrift.protocol.TType.STRUCT, (short)4);
-  private static final org.apache.thrift.protocol.TField IS_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("isEnabled", org.apache.thrift.protocol.TType.BOOL, (short)5);
-  private static final org.apache.thrift.protocol.TField START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("startTime", org.apache.thrift.protocol.TType.I64, (short)6);
-  private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short)7);
-  private static final org.apache.thrift.protocol.TField LAST_USED_FIELD_DESC = new org.apache.thrift.protocol.TField("lastUsed", org.apache.thrift.protocol.TType.I64, (short)8);
-  private static final org.apache.thrift.protocol.TField USE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("useCount", org.apache.thrift.protocol.TType.I32, (short)9);
-  private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)10);
-  private static final org.apache.thrift.protocol.TField UPDATER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("updaterId", org.apache.thrift.protocol.TType.STRING, (short)11);
-  private static final org.apache.thrift.protocol.TField IS_EXAM_FIELD_DESC = new org.apache.thrift.protocol.TField("isExam", org.apache.thrift.protocol.TType.BOOL, (short)12);
-  private static final org.apache.thrift.protocol.TField HAS_INTERNET_ACCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("hasInternetAccess", org.apache.thrift.protocol.TType.BOOL, (short)13);
-  private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)14);
-  private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)15);
+  private static final org.apache.thrift.protocol.TField AUTO_UPDATE_FIELD_DESC = new org.apache.thrift.protocol.TField("autoUpdate", org.apache.thrift.protocol.TType.BOOL, (short)5);
+  private static final org.apache.thrift.protocol.TField IS_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("isEnabled", org.apache.thrift.protocol.TType.BOOL, (short)6);
+  private static final org.apache.thrift.protocol.TField START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("startTime", org.apache.thrift.protocol.TType.I64, (short)7);
+  private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short)8);
+  private static final org.apache.thrift.protocol.TField LAST_USED_FIELD_DESC = new org.apache.thrift.protocol.TField("lastUsed", org.apache.thrift.protocol.TType.I64, (short)9);
+  private static final org.apache.thrift.protocol.TField USE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("useCount", org.apache.thrift.protocol.TType.I32, (short)10);
+  private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField UPDATER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("updaterId", org.apache.thrift.protocol.TType.STRING, (short)12);
+  private static final org.apache.thrift.protocol.TField RUNSCRIPT_FIELD_DESC = new org.apache.thrift.protocol.TField("runscript", org.apache.thrift.protocol.TType.STRING, (short)13);
+  private static final org.apache.thrift.protocol.TField NICS_FIELD_DESC = new org.apache.thrift.protocol.TField("nics", org.apache.thrift.protocol.TType.LIST, (short)14);
+  private static final org.apache.thrift.protocol.TField ALLOWED_USERS_FIELD_DESC = new org.apache.thrift.protocol.TField("allowedUsers", org.apache.thrift.protocol.TType.LIST, (short)15);
+  private static final org.apache.thrift.protocol.TField NETWORK_EXCEPTIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("networkExceptions", org.apache.thrift.protocol.TType.LIST, (short)16);
+  private static final org.apache.thrift.protocol.TField IS_EXAM_FIELD_DESC = new org.apache.thrift.protocol.TField("isExam", org.apache.thrift.protocol.TType.BOOL, (short)17);
+  private static final org.apache.thrift.protocol.TField HAS_INTERNET_ACCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("hasInternetAccess", org.apache.thrift.protocol.TType.BOOL, (short)18);
+  private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)19);
+  private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)20);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -61,6 +66,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   public String lectureName; // required
   public String description; // required
   public ImageSummaryRead image; // required
+  public boolean autoUpdate; // required
   public boolean isEnabled; // required
   public long startTime; // required
   public long endTime; // required
@@ -68,6 +74,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   public int useCount; // required
   public String ownerId; // required
   public String updaterId; // required
+  public String runscript; // required
+  public List<String> nics; // required
+  public List<String> allowedUsers; // required
+  public List<NetRule> networkExceptions; // required
   public boolean isExam; // required
   public boolean hasInternetAccess; // required
   public LecturePermissions defaultPermissions; // required
@@ -79,17 +89,22 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     LECTURE_NAME((short)2, "lectureName"),
     DESCRIPTION((short)3, "description"),
     IMAGE((short)4, "image"),
-    IS_ENABLED((short)5, "isEnabled"),
-    START_TIME((short)6, "startTime"),
-    END_TIME((short)7, "endTime"),
-    LAST_USED((short)8, "lastUsed"),
-    USE_COUNT((short)9, "useCount"),
-    OWNER_ID((short)10, "ownerId"),
-    UPDATER_ID((short)11, "updaterId"),
-    IS_EXAM((short)12, "isExam"),
-    HAS_INTERNET_ACCESS((short)13, "hasInternetAccess"),
-    DEFAULT_PERMISSIONS((short)14, "defaultPermissions"),
-    USER_PERMISSIONS((short)15, "userPermissions");
+    AUTO_UPDATE((short)5, "autoUpdate"),
+    IS_ENABLED((short)6, "isEnabled"),
+    START_TIME((short)7, "startTime"),
+    END_TIME((short)8, "endTime"),
+    LAST_USED((short)9, "lastUsed"),
+    USE_COUNT((short)10, "useCount"),
+    OWNER_ID((short)11, "ownerId"),
+    UPDATER_ID((short)12, "updaterId"),
+    RUNSCRIPT((short)13, "runscript"),
+    NICS((short)14, "nics"),
+    ALLOWED_USERS((short)15, "allowedUsers"),
+    NETWORK_EXCEPTIONS((short)16, "networkExceptions"),
+    IS_EXAM((short)17, "isExam"),
+    HAS_INTERNET_ACCESS((short)18, "hasInternetAccess"),
+    DEFAULT_PERMISSIONS((short)19, "defaultPermissions"),
+    USER_PERMISSIONS((short)20, "userPermissions");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -112,27 +127,37 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
           return DESCRIPTION;
         case 4: // IMAGE
           return IMAGE;
-        case 5: // IS_ENABLED
+        case 5: // AUTO_UPDATE
+          return AUTO_UPDATE;
+        case 6: // IS_ENABLED
           return IS_ENABLED;
-        case 6: // START_TIME
+        case 7: // START_TIME
           return START_TIME;
-        case 7: // END_TIME
+        case 8: // END_TIME
           return END_TIME;
-        case 8: // LAST_USED
+        case 9: // LAST_USED
           return LAST_USED;
-        case 9: // USE_COUNT
+        case 10: // USE_COUNT
           return USE_COUNT;
-        case 10: // OWNER_ID
+        case 11: // OWNER_ID
           return OWNER_ID;
-        case 11: // UPDATER_ID
+        case 12: // UPDATER_ID
           return UPDATER_ID;
-        case 12: // IS_EXAM
+        case 13: // RUNSCRIPT
+          return RUNSCRIPT;
+        case 14: // NICS
+          return NICS;
+        case 15: // ALLOWED_USERS
+          return ALLOWED_USERS;
+        case 16: // NETWORK_EXCEPTIONS
+          return NETWORK_EXCEPTIONS;
+        case 17: // IS_EXAM
           return IS_EXAM;
-        case 13: // HAS_INTERNET_ACCESS
+        case 18: // HAS_INTERNET_ACCESS
           return HAS_INTERNET_ACCESS;
-        case 14: // DEFAULT_PERMISSIONS
+        case 19: // DEFAULT_PERMISSIONS
           return DEFAULT_PERMISSIONS;
-        case 15: // USER_PERMISSIONS
+        case 20: // USER_PERMISSIONS
           return USER_PERMISSIONS;
         default:
           return null;
@@ -174,13 +199,14 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   }
 
   // isset id assignments
-  private static final int __ISENABLED_ISSET_ID = 0;
-  private static final int __STARTTIME_ISSET_ID = 1;
-  private static final int __ENDTIME_ISSET_ID = 2;
-  private static final int __LASTUSED_ISSET_ID = 3;
-  private static final int __USECOUNT_ISSET_ID = 4;
-  private static final int __ISEXAM_ISSET_ID = 5;
-  private static final int __HASINTERNETACCESS_ISSET_ID = 6;
+  private static final int __AUTOUPDATE_ISSET_ID = 0;
+  private static final int __ISENABLED_ISSET_ID = 1;
+  private static final int __STARTTIME_ISSET_ID = 2;
+  private static final int __ENDTIME_ISSET_ID = 3;
+  private static final int __LASTUSED_ISSET_ID = 4;
+  private static final int __USECOUNT_ISSET_ID = 5;
+  private static final int __ISEXAM_ISSET_ID = 6;
+  private static final int __HASINTERNETACCESS_ISSET_ID = 7;
   private byte __isset_bitfield = 0;
   private _Fields optionals[] = {_Fields.USER_PERMISSIONS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
@@ -194,6 +220,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.IMAGE, new org.apache.thrift.meta_data.FieldMetaData("image", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ImageSummaryRead.class)));
+    tmpMap.put(_Fields.AUTO_UPDATE, new org.apache.thrift.meta_data.FieldMetaData("autoUpdate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.IS_ENABLED, new org.apache.thrift.meta_data.FieldMetaData("isEnabled", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.START_TIME, new org.apache.thrift.meta_data.FieldMetaData("startTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -208,6 +236,17 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.UPDATER_ID, new org.apache.thrift.meta_data.FieldMetaData("updaterId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
+    tmpMap.put(_Fields.RUNSCRIPT, new org.apache.thrift.meta_data.FieldMetaData("runscript", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.NICS, new org.apache.thrift.meta_data.FieldMetaData("nics", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.ALLOWED_USERS, new org.apache.thrift.meta_data.FieldMetaData("allowedUsers", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.NETWORK_EXCEPTIONS, new org.apache.thrift.meta_data.FieldMetaData("networkExceptions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, NetRule.class))));
     tmpMap.put(_Fields.IS_EXAM, new org.apache.thrift.meta_data.FieldMetaData("isExam", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.HAS_INTERNET_ACCESS, new org.apache.thrift.meta_data.FieldMetaData("hasInternetAccess", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -228,6 +267,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     String lectureName,
     String description,
     ImageSummaryRead image,
+    boolean autoUpdate,
     boolean isEnabled,
     long startTime,
     long endTime,
@@ -235,6 +275,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     int useCount,
     String ownerId,
     String updaterId,
+    String runscript,
+    List<String> nics,
+    List<String> allowedUsers,
+    List<NetRule> networkExceptions,
     boolean isExam,
     boolean hasInternetAccess,
     LecturePermissions defaultPermissions)
@@ -244,6 +288,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     this.lectureName = lectureName;
     this.description = description;
     this.image = image;
+    this.autoUpdate = autoUpdate;
+    setAutoUpdateIsSet(true);
     this.isEnabled = isEnabled;
     setIsEnabledIsSet(true);
     this.startTime = startTime;
@@ -256,6 +302,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     setUseCountIsSet(true);
     this.ownerId = ownerId;
     this.updaterId = updaterId;
+    this.runscript = runscript;
+    this.nics = nics;
+    this.allowedUsers = allowedUsers;
+    this.networkExceptions = networkExceptions;
     this.isExam = isExam;
     setIsExamIsSet(true);
     this.hasInternetAccess = hasInternetAccess;
@@ -280,6 +330,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     if (other.isSetImage()) {
       this.image = new ImageSummaryRead(other.image);
     }
+    this.autoUpdate = other.autoUpdate;
     this.isEnabled = other.isEnabled;
     this.startTime = other.startTime;
     this.endTime = other.endTime;
@@ -290,6 +341,24 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     }
     if (other.isSetUpdaterId()) {
       this.updaterId = other.updaterId;
+    }
+    if (other.isSetRunscript()) {
+      this.runscript = other.runscript;
+    }
+    if (other.isSetNics()) {
+      List<String> __this__nics = new ArrayList<String>(other.nics);
+      this.nics = __this__nics;
+    }
+    if (other.isSetAllowedUsers()) {
+      List<String> __this__allowedUsers = new ArrayList<String>(other.allowedUsers);
+      this.allowedUsers = __this__allowedUsers;
+    }
+    if (other.isSetNetworkExceptions()) {
+      List<NetRule> __this__networkExceptions = new ArrayList<NetRule>(other.networkExceptions.size());
+      for (NetRule other_element : other.networkExceptions) {
+        __this__networkExceptions.add(new NetRule(other_element));
+      }
+      this.networkExceptions = __this__networkExceptions;
     }
     this.isExam = other.isExam;
     this.hasInternetAccess = other.hasInternetAccess;
@@ -311,6 +380,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     this.lectureName = null;
     this.description = null;
     this.image = null;
+    setAutoUpdateIsSet(false);
+    this.autoUpdate = false;
     setIsEnabledIsSet(false);
     this.isEnabled = false;
     setStartTimeIsSet(false);
@@ -323,6 +394,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     this.useCount = 0;
     this.ownerId = null;
     this.updaterId = null;
+    this.runscript = null;
+    this.nics = null;
+    this.allowedUsers = null;
+    this.networkExceptions = null;
     setIsExamIsSet(false);
     this.isExam = false;
     setHasInternetAccessIsSet(false);
@@ -425,6 +500,29 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     if (!value) {
       this.image = null;
     }
+  }
+
+  public boolean isAutoUpdate() {
+    return this.autoUpdate;
+  }
+
+  public LectureRead setAutoUpdate(boolean autoUpdate) {
+    this.autoUpdate = autoUpdate;
+    setAutoUpdateIsSet(true);
+    return this;
+  }
+
+  public void unsetAutoUpdate() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __AUTOUPDATE_ISSET_ID);
+  }
+
+  /** Returns true if field autoUpdate is set (has been assigned a value) and false otherwise */
+  public boolean isSetAutoUpdate() {
+    return EncodingUtils.testBit(__isset_bitfield, __AUTOUPDATE_ISSET_ID);
+  }
+
+  public void setAutoUpdateIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __AUTOUPDATE_ISSET_ID, value);
   }
 
   public boolean isIsEnabled() {
@@ -590,6 +688,147 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     }
   }
 
+  public String getRunscript() {
+    return this.runscript;
+  }
+
+  public LectureRead setRunscript(String runscript) {
+    this.runscript = runscript;
+    return this;
+  }
+
+  public void unsetRunscript() {
+    this.runscript = null;
+  }
+
+  /** Returns true if field runscript is set (has been assigned a value) and false otherwise */
+  public boolean isSetRunscript() {
+    return this.runscript != null;
+  }
+
+  public void setRunscriptIsSet(boolean value) {
+    if (!value) {
+      this.runscript = null;
+    }
+  }
+
+  public int getNicsSize() {
+    return (this.nics == null) ? 0 : this.nics.size();
+  }
+
+  public java.util.Iterator<String> getNicsIterator() {
+    return (this.nics == null) ? null : this.nics.iterator();
+  }
+
+  public void addToNics(String elem) {
+    if (this.nics == null) {
+      this.nics = new ArrayList<String>();
+    }
+    this.nics.add(elem);
+  }
+
+  public List<String> getNics() {
+    return this.nics;
+  }
+
+  public LectureRead setNics(List<String> nics) {
+    this.nics = nics;
+    return this;
+  }
+
+  public void unsetNics() {
+    this.nics = null;
+  }
+
+  /** Returns true if field nics is set (has been assigned a value) and false otherwise */
+  public boolean isSetNics() {
+    return this.nics != null;
+  }
+
+  public void setNicsIsSet(boolean value) {
+    if (!value) {
+      this.nics = null;
+    }
+  }
+
+  public int getAllowedUsersSize() {
+    return (this.allowedUsers == null) ? 0 : this.allowedUsers.size();
+  }
+
+  public java.util.Iterator<String> getAllowedUsersIterator() {
+    return (this.allowedUsers == null) ? null : this.allowedUsers.iterator();
+  }
+
+  public void addToAllowedUsers(String elem) {
+    if (this.allowedUsers == null) {
+      this.allowedUsers = new ArrayList<String>();
+    }
+    this.allowedUsers.add(elem);
+  }
+
+  public List<String> getAllowedUsers() {
+    return this.allowedUsers;
+  }
+
+  public LectureRead setAllowedUsers(List<String> allowedUsers) {
+    this.allowedUsers = allowedUsers;
+    return this;
+  }
+
+  public void unsetAllowedUsers() {
+    this.allowedUsers = null;
+  }
+
+  /** Returns true if field allowedUsers is set (has been assigned a value) and false otherwise */
+  public boolean isSetAllowedUsers() {
+    return this.allowedUsers != null;
+  }
+
+  public void setAllowedUsersIsSet(boolean value) {
+    if (!value) {
+      this.allowedUsers = null;
+    }
+  }
+
+  public int getNetworkExceptionsSize() {
+    return (this.networkExceptions == null) ? 0 : this.networkExceptions.size();
+  }
+
+  public java.util.Iterator<NetRule> getNetworkExceptionsIterator() {
+    return (this.networkExceptions == null) ? null : this.networkExceptions.iterator();
+  }
+
+  public void addToNetworkExceptions(NetRule elem) {
+    if (this.networkExceptions == null) {
+      this.networkExceptions = new ArrayList<NetRule>();
+    }
+    this.networkExceptions.add(elem);
+  }
+
+  public List<NetRule> getNetworkExceptions() {
+    return this.networkExceptions;
+  }
+
+  public LectureRead setNetworkExceptions(List<NetRule> networkExceptions) {
+    this.networkExceptions = networkExceptions;
+    return this;
+  }
+
+  public void unsetNetworkExceptions() {
+    this.networkExceptions = null;
+  }
+
+  /** Returns true if field networkExceptions is set (has been assigned a value) and false otherwise */
+  public boolean isSetNetworkExceptions() {
+    return this.networkExceptions != null;
+  }
+
+  public void setNetworkExceptionsIsSet(boolean value) {
+    if (!value) {
+      this.networkExceptions = null;
+    }
+  }
+
   public boolean isIsExam() {
     return this.isExam;
   }
@@ -718,6 +957,14 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       }
       break;
 
+    case AUTO_UPDATE:
+      if (value == null) {
+        unsetAutoUpdate();
+      } else {
+        setAutoUpdate((Boolean)value);
+      }
+      break;
+
     case IS_ENABLED:
       if (value == null) {
         unsetIsEnabled();
@@ -774,6 +1021,38 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       }
       break;
 
+    case RUNSCRIPT:
+      if (value == null) {
+        unsetRunscript();
+      } else {
+        setRunscript((String)value);
+      }
+      break;
+
+    case NICS:
+      if (value == null) {
+        unsetNics();
+      } else {
+        setNics((List<String>)value);
+      }
+      break;
+
+    case ALLOWED_USERS:
+      if (value == null) {
+        unsetAllowedUsers();
+      } else {
+        setAllowedUsers((List<String>)value);
+      }
+      break;
+
+    case NETWORK_EXCEPTIONS:
+      if (value == null) {
+        unsetNetworkExceptions();
+      } else {
+        setNetworkExceptions((List<NetRule>)value);
+      }
+      break;
+
     case IS_EXAM:
       if (value == null) {
         unsetIsExam();
@@ -823,6 +1102,9 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     case IMAGE:
       return getImage();
 
+    case AUTO_UPDATE:
+      return Boolean.valueOf(isAutoUpdate());
+
     case IS_ENABLED:
       return Boolean.valueOf(isIsEnabled());
 
@@ -843,6 +1125,18 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
 
     case UPDATER_ID:
       return getUpdaterId();
+
+    case RUNSCRIPT:
+      return getRunscript();
+
+    case NICS:
+      return getNics();
+
+    case ALLOWED_USERS:
+      return getAllowedUsers();
+
+    case NETWORK_EXCEPTIONS:
+      return getNetworkExceptions();
 
     case IS_EXAM:
       return Boolean.valueOf(isIsExam());
@@ -875,6 +1169,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       return isSetDescription();
     case IMAGE:
       return isSetImage();
+    case AUTO_UPDATE:
+      return isSetAutoUpdate();
     case IS_ENABLED:
       return isSetIsEnabled();
     case START_TIME:
@@ -889,6 +1185,14 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       return isSetOwnerId();
     case UPDATER_ID:
       return isSetUpdaterId();
+    case RUNSCRIPT:
+      return isSetRunscript();
+    case NICS:
+      return isSetNics();
+    case ALLOWED_USERS:
+      return isSetAllowedUsers();
+    case NETWORK_EXCEPTIONS:
+      return isSetNetworkExceptions();
     case IS_EXAM:
       return isSetIsExam();
     case HAS_INTERNET_ACCESS:
@@ -947,6 +1251,15 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (!(this_present_image && that_present_image))
         return false;
       if (!this.image.equals(that.image))
+        return false;
+    }
+
+    boolean this_present_autoUpdate = true;
+    boolean that_present_autoUpdate = true;
+    if (this_present_autoUpdate || that_present_autoUpdate) {
+      if (!(this_present_autoUpdate && that_present_autoUpdate))
+        return false;
+      if (this.autoUpdate != that.autoUpdate)
         return false;
     }
 
@@ -1010,6 +1323,42 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (!(this_present_updaterId && that_present_updaterId))
         return false;
       if (!this.updaterId.equals(that.updaterId))
+        return false;
+    }
+
+    boolean this_present_runscript = true && this.isSetRunscript();
+    boolean that_present_runscript = true && that.isSetRunscript();
+    if (this_present_runscript || that_present_runscript) {
+      if (!(this_present_runscript && that_present_runscript))
+        return false;
+      if (!this.runscript.equals(that.runscript))
+        return false;
+    }
+
+    boolean this_present_nics = true && this.isSetNics();
+    boolean that_present_nics = true && that.isSetNics();
+    if (this_present_nics || that_present_nics) {
+      if (!(this_present_nics && that_present_nics))
+        return false;
+      if (!this.nics.equals(that.nics))
+        return false;
+    }
+
+    boolean this_present_allowedUsers = true && this.isSetAllowedUsers();
+    boolean that_present_allowedUsers = true && that.isSetAllowedUsers();
+    if (this_present_allowedUsers || that_present_allowedUsers) {
+      if (!(this_present_allowedUsers && that_present_allowedUsers))
+        return false;
+      if (!this.allowedUsers.equals(that.allowedUsers))
+        return false;
+    }
+
+    boolean this_present_networkExceptions = true && this.isSetNetworkExceptions();
+    boolean that_present_networkExceptions = true && that.isSetNetworkExceptions();
+    if (this_present_networkExceptions || that_present_networkExceptions) {
+      if (!(this_present_networkExceptions && that_present_networkExceptions))
+        return false;
+      if (!this.networkExceptions.equals(that.networkExceptions))
         return false;
     }
 
@@ -1105,6 +1454,16 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetAutoUpdate()).compareTo(other.isSetAutoUpdate());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAutoUpdate()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.autoUpdate, other.autoUpdate);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetIsEnabled()).compareTo(other.isSetIsEnabled());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1171,6 +1530,46 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     }
     if (isSetUpdaterId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updaterId, other.updaterId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetRunscript()).compareTo(other.isSetRunscript());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRunscript()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.runscript, other.runscript);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetNics()).compareTo(other.isSetNics());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetNics()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.nics, other.nics);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAllowedUsers()).compareTo(other.isSetAllowedUsers());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAllowedUsers()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.allowedUsers, other.allowedUsers);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetNetworkExceptions()).compareTo(other.isSetNetworkExceptions());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetNetworkExceptions()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.networkExceptions, other.networkExceptions);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1267,6 +1666,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("autoUpdate:");
+    sb.append(this.autoUpdate);
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("isEnabled:");
     sb.append(this.isEnabled);
     first = false;
@@ -1300,6 +1703,38 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       sb.append("null");
     } else {
       sb.append(this.updaterId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("runscript:");
+    if (this.runscript == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.runscript);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("nics:");
+    if (this.nics == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.nics);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("allowedUsers:");
+    if (this.allowedUsers == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.allowedUsers);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("networkExceptions:");
+    if (this.networkExceptions == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.networkExceptions);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -1415,7 +1850,15 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // IS_ENABLED
+          case 5: // AUTO_UPDATE
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.autoUpdate = iprot.readBool();
+              struct.setAutoUpdateIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // IS_ENABLED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isEnabled = iprot.readBool();
               struct.setIsEnabledIsSet(true);
@@ -1423,7 +1866,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // START_TIME
+          case 7: // START_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.startTime = iprot.readI64();
               struct.setStartTimeIsSet(true);
@@ -1431,7 +1874,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // END_TIME
+          case 8: // END_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.endTime = iprot.readI64();
               struct.setEndTimeIsSet(true);
@@ -1439,7 +1882,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // LAST_USED
+          case 9: // LAST_USED
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.lastUsed = iprot.readI64();
               struct.setLastUsedIsSet(true);
@@ -1447,7 +1890,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // USE_COUNT
+          case 10: // USE_COUNT
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.useCount = iprot.readI32();
               struct.setUseCountIsSet(true);
@@ -1455,7 +1898,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // OWNER_ID
+          case 11: // OWNER_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.ownerId = iprot.readString();
               struct.setOwnerIdIsSet(true);
@@ -1463,7 +1906,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // UPDATER_ID
+          case 12: // UPDATER_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.updaterId = iprot.readString();
               struct.setUpdaterIdIsSet(true);
@@ -1471,7 +1914,70 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // IS_EXAM
+          case 13: // RUNSCRIPT
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.runscript = iprot.readString();
+              struct.setRunscriptIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 14: // NICS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list82 = iprot.readListBegin();
+                struct.nics = new ArrayList<String>(_list82.size);
+                for (int _i83 = 0; _i83 < _list82.size; ++_i83)
+                {
+                  String _elem84;
+                  _elem84 = iprot.readString();
+                  struct.nics.add(_elem84);
+                }
+                iprot.readListEnd();
+              }
+              struct.setNicsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 15: // ALLOWED_USERS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list85 = iprot.readListBegin();
+                struct.allowedUsers = new ArrayList<String>(_list85.size);
+                for (int _i86 = 0; _i86 < _list85.size; ++_i86)
+                {
+                  String _elem87;
+                  _elem87 = iprot.readString();
+                  struct.allowedUsers.add(_elem87);
+                }
+                iprot.readListEnd();
+              }
+              struct.setAllowedUsersIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 16: // NETWORK_EXCEPTIONS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list88 = iprot.readListBegin();
+                struct.networkExceptions = new ArrayList<NetRule>(_list88.size);
+                for (int _i89 = 0; _i89 < _list88.size; ++_i89)
+                {
+                  NetRule _elem90;
+                  _elem90 = new NetRule();
+                  _elem90.read(iprot);
+                  struct.networkExceptions.add(_elem90);
+                }
+                iprot.readListEnd();
+              }
+              struct.setNetworkExceptionsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 17: // IS_EXAM
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isExam = iprot.readBool();
               struct.setIsExamIsSet(true);
@@ -1479,7 +1985,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 13: // HAS_INTERNET_ACCESS
+          case 18: // HAS_INTERNET_ACCESS
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.hasInternetAccess = iprot.readBool();
               struct.setHasInternetAccessIsSet(true);
@@ -1487,7 +1993,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 14: // DEFAULT_PERMISSIONS
+          case 19: // DEFAULT_PERMISSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.defaultPermissions = new LecturePermissions();
               struct.defaultPermissions.read(iprot);
@@ -1496,7 +2002,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 15: // USER_PERMISSIONS
+          case 20: // USER_PERMISSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.userPermissions = new LecturePermissions();
               struct.userPermissions.read(iprot);
@@ -1540,6 +2046,9 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         struct.image.write(oprot);
         oprot.writeFieldEnd();
       }
+      oprot.writeFieldBegin(AUTO_UPDATE_FIELD_DESC);
+      oprot.writeBool(struct.autoUpdate);
+      oprot.writeFieldEnd();
       oprot.writeFieldBegin(IS_ENABLED_FIELD_DESC);
       oprot.writeBool(struct.isEnabled);
       oprot.writeFieldEnd();
@@ -1563,6 +2072,47 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (struct.updaterId != null) {
         oprot.writeFieldBegin(UPDATER_ID_FIELD_DESC);
         oprot.writeString(struct.updaterId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.runscript != null) {
+        oprot.writeFieldBegin(RUNSCRIPT_FIELD_DESC);
+        oprot.writeString(struct.runscript);
+        oprot.writeFieldEnd();
+      }
+      if (struct.nics != null) {
+        oprot.writeFieldBegin(NICS_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.nics.size()));
+          for (String _iter91 : struct.nics)
+          {
+            oprot.writeString(_iter91);
+          }
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
+      if (struct.allowedUsers != null) {
+        oprot.writeFieldBegin(ALLOWED_USERS_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.allowedUsers.size()));
+          for (String _iter92 : struct.allowedUsers)
+          {
+            oprot.writeString(_iter92);
+          }
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
+      if (struct.networkExceptions != null) {
+        oprot.writeFieldBegin(NETWORK_EXCEPTIONS_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.networkExceptions.size()));
+          for (NetRule _iter93 : struct.networkExceptions)
+          {
+            _iter93.write(oprot);
+          }
+          oprot.writeListEnd();
+        }
         oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(IS_EXAM_FIELD_DESC);
@@ -1613,40 +2163,55 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (struct.isSetImage()) {
         optionals.set(3);
       }
-      if (struct.isSetIsEnabled()) {
+      if (struct.isSetAutoUpdate()) {
         optionals.set(4);
       }
-      if (struct.isSetStartTime()) {
+      if (struct.isSetIsEnabled()) {
         optionals.set(5);
       }
-      if (struct.isSetEndTime()) {
+      if (struct.isSetStartTime()) {
         optionals.set(6);
       }
-      if (struct.isSetLastUsed()) {
+      if (struct.isSetEndTime()) {
         optionals.set(7);
       }
-      if (struct.isSetUseCount()) {
+      if (struct.isSetLastUsed()) {
         optionals.set(8);
       }
-      if (struct.isSetOwnerId()) {
+      if (struct.isSetUseCount()) {
         optionals.set(9);
       }
-      if (struct.isSetUpdaterId()) {
+      if (struct.isSetOwnerId()) {
         optionals.set(10);
       }
-      if (struct.isSetIsExam()) {
+      if (struct.isSetUpdaterId()) {
         optionals.set(11);
       }
-      if (struct.isSetHasInternetAccess()) {
+      if (struct.isSetRunscript()) {
         optionals.set(12);
       }
-      if (struct.isSetDefaultPermissions()) {
+      if (struct.isSetNics()) {
         optionals.set(13);
       }
-      if (struct.isSetUserPermissions()) {
+      if (struct.isSetAllowedUsers()) {
         optionals.set(14);
       }
-      oprot.writeBitSet(optionals, 15);
+      if (struct.isSetNetworkExceptions()) {
+        optionals.set(15);
+      }
+      if (struct.isSetIsExam()) {
+        optionals.set(16);
+      }
+      if (struct.isSetHasInternetAccess()) {
+        optionals.set(17);
+      }
+      if (struct.isSetDefaultPermissions()) {
+        optionals.set(18);
+      }
+      if (struct.isSetUserPermissions()) {
+        optionals.set(19);
+      }
+      oprot.writeBitSet(optionals, 20);
       if (struct.isSetLectureId()) {
         oprot.writeString(struct.lectureId);
       }
@@ -1658,6 +2223,9 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       }
       if (struct.isSetImage()) {
         struct.image.write(oprot);
+      }
+      if (struct.isSetAutoUpdate()) {
+        oprot.writeBool(struct.autoUpdate);
       }
       if (struct.isSetIsEnabled()) {
         oprot.writeBool(struct.isEnabled);
@@ -1680,6 +2248,36 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (struct.isSetUpdaterId()) {
         oprot.writeString(struct.updaterId);
       }
+      if (struct.isSetRunscript()) {
+        oprot.writeString(struct.runscript);
+      }
+      if (struct.isSetNics()) {
+        {
+          oprot.writeI32(struct.nics.size());
+          for (String _iter94 : struct.nics)
+          {
+            oprot.writeString(_iter94);
+          }
+        }
+      }
+      if (struct.isSetAllowedUsers()) {
+        {
+          oprot.writeI32(struct.allowedUsers.size());
+          for (String _iter95 : struct.allowedUsers)
+          {
+            oprot.writeString(_iter95);
+          }
+        }
+      }
+      if (struct.isSetNetworkExceptions()) {
+        {
+          oprot.writeI32(struct.networkExceptions.size());
+          for (NetRule _iter96 : struct.networkExceptions)
+          {
+            _iter96.write(oprot);
+          }
+        }
+      }
       if (struct.isSetIsExam()) {
         oprot.writeBool(struct.isExam);
       }
@@ -1697,7 +2295,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, LectureRead struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(15);
+      BitSet incoming = iprot.readBitSet(20);
       if (incoming.get(0)) {
         struct.lectureId = iprot.readString();
         struct.setLectureIdIsSet(true);
@@ -1716,47 +2314,95 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         struct.setImageIsSet(true);
       }
       if (incoming.get(4)) {
+        struct.autoUpdate = iprot.readBool();
+        struct.setAutoUpdateIsSet(true);
+      }
+      if (incoming.get(5)) {
         struct.isEnabled = iprot.readBool();
         struct.setIsEnabledIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         struct.startTime = iprot.readI64();
         struct.setStartTimeIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(7)) {
         struct.endTime = iprot.readI64();
         struct.setEndTimeIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(8)) {
         struct.lastUsed = iprot.readI64();
         struct.setLastUsedIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(9)) {
         struct.useCount = iprot.readI32();
         struct.setUseCountIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(10)) {
         struct.ownerId = iprot.readString();
         struct.setOwnerIdIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(11)) {
         struct.updaterId = iprot.readString();
         struct.setUpdaterIdIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(12)) {
+        struct.runscript = iprot.readString();
+        struct.setRunscriptIsSet(true);
+      }
+      if (incoming.get(13)) {
+        {
+          org.apache.thrift.protocol.TList _list97 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.nics = new ArrayList<String>(_list97.size);
+          for (int _i98 = 0; _i98 < _list97.size; ++_i98)
+          {
+            String _elem99;
+            _elem99 = iprot.readString();
+            struct.nics.add(_elem99);
+          }
+        }
+        struct.setNicsIsSet(true);
+      }
+      if (incoming.get(14)) {
+        {
+          org.apache.thrift.protocol.TList _list100 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.allowedUsers = new ArrayList<String>(_list100.size);
+          for (int _i101 = 0; _i101 < _list100.size; ++_i101)
+          {
+            String _elem102;
+            _elem102 = iprot.readString();
+            struct.allowedUsers.add(_elem102);
+          }
+        }
+        struct.setAllowedUsersIsSet(true);
+      }
+      if (incoming.get(15)) {
+        {
+          org.apache.thrift.protocol.TList _list103 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.networkExceptions = new ArrayList<NetRule>(_list103.size);
+          for (int _i104 = 0; _i104 < _list103.size; ++_i104)
+          {
+            NetRule _elem105;
+            _elem105 = new NetRule();
+            _elem105.read(iprot);
+            struct.networkExceptions.add(_elem105);
+          }
+        }
+        struct.setNetworkExceptionsIsSet(true);
+      }
+      if (incoming.get(16)) {
         struct.isExam = iprot.readBool();
         struct.setIsExamIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(17)) {
         struct.hasInternetAccess = iprot.readBool();
         struct.setHasInternetAccessIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(18)) {
         struct.defaultPermissions = new LecturePermissions();
         struct.defaultPermissions.read(iprot);
         struct.setDefaultPermissionsIsSet(true);
       }
-      if (incoming.get(14)) {
+      if (incoming.get(19)) {
         struct.userPermissions = new LecturePermissions();
         struct.userPermissions.read(iprot);
         struct.setUserPermissionsIsSet(true);
