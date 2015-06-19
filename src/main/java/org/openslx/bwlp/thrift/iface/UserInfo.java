@@ -40,6 +40,7 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
   private static final org.apache.thrift.protocol.TField LAST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("lastName", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField E_MAIL_FIELD_DESC = new org.apache.thrift.protocol.TField("eMail", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField ORGANIZATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("organizationId", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField ROLE_FIELD_DESC = new org.apache.thrift.protocol.TField("role", org.apache.thrift.protocol.TType.I32, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -52,6 +53,11 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
   public String lastName; // required
   public String eMail; // required
   public String organizationId; // required
+  /**
+   * 
+   * @see Role
+   */
+  public Role role; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -59,7 +65,12 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
     FIRST_NAME((short)2, "firstName"),
     LAST_NAME((short)3, "lastName"),
     E_MAIL((short)4, "eMail"),
-    ORGANIZATION_ID((short)5, "organizationId");
+    ORGANIZATION_ID((short)5, "organizationId"),
+    /**
+     * 
+     * @see Role
+     */
+    ROLE((short)6, "role");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -84,6 +95,8 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
           return E_MAIL;
         case 5: // ORGANIZATION_ID
           return ORGANIZATION_ID;
+        case 6: // ROLE
+          return ROLE;
         default:
           return null;
       }
@@ -124,6 +137,7 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
   }
 
   // isset id assignments
+  private _Fields optionals[] = {_Fields.ROLE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -137,6 +151,8 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.ORGANIZATION_ID, new org.apache.thrift.meta_data.FieldMetaData("organizationId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.ROLE, new org.apache.thrift.meta_data.FieldMetaData("role", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, Role.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserInfo.class, metaDataMap);
   }
@@ -178,6 +194,9 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
     if (other.isSetOrganizationId()) {
       this.organizationId = other.organizationId;
     }
+    if (other.isSetRole()) {
+      this.role = other.role;
+    }
   }
 
   public UserInfo deepCopy() {
@@ -191,6 +210,7 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
     this.lastName = null;
     this.eMail = null;
     this.organizationId = null;
+    this.role = null;
   }
 
   public String getUserId() {
@@ -313,6 +333,38 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
     }
   }
 
+  /**
+   * 
+   * @see Role
+   */
+  public Role getRole() {
+    return this.role;
+  }
+
+  /**
+   * 
+   * @see Role
+   */
+  public UserInfo setRole(Role role) {
+    this.role = role;
+    return this;
+  }
+
+  public void unsetRole() {
+    this.role = null;
+  }
+
+  /** Returns true if field role is set (has been assigned a value) and false otherwise */
+  public boolean isSetRole() {
+    return this.role != null;
+  }
+
+  public void setRoleIsSet(boolean value) {
+    if (!value) {
+      this.role = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case USER_ID:
@@ -355,6 +407,14 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       }
       break;
 
+    case ROLE:
+      if (value == null) {
+        unsetRole();
+      } else {
+        setRole((Role)value);
+      }
+      break;
+
     }
   }
 
@@ -374,6 +434,9 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
 
     case ORGANIZATION_ID:
       return getOrganizationId();
+
+    case ROLE:
+      return getRole();
 
     }
     throw new IllegalStateException();
@@ -396,6 +459,8 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       return isSetEMail();
     case ORGANIZATION_ID:
       return isSetOrganizationId();
+    case ROLE:
+      return isSetRole();
     }
     throw new IllegalStateException();
   }
@@ -455,6 +520,15 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       if (!(this_present_organizationId && that_present_organizationId))
         return false;
       if (!this.organizationId.equals(that.organizationId))
+        return false;
+    }
+
+    boolean this_present_role = true && this.isSetRole();
+    boolean that_present_role = true && that.isSetRole();
+    if (this_present_role || that_present_role) {
+      if (!(this_present_role && that_present_role))
+        return false;
+      if (!this.role.equals(that.role))
         return false;
     }
 
@@ -524,6 +598,16 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetRole()).compareTo(other.isSetRole());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRole()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.role, other.role);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -583,6 +667,16 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       sb.append(this.organizationId);
     }
     first = false;
+    if (isSetRole()) {
+      if (!first) sb.append(", ");
+      sb.append("role:");
+      if (this.role == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.role);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -666,6 +760,14 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // ROLE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.role = Role.findByValue(iprot.readI32());
+              struct.setRoleIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -706,6 +808,13 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
         oprot.writeString(struct.organizationId);
         oprot.writeFieldEnd();
       }
+      if (struct.role != null) {
+        if (struct.isSetRole()) {
+          oprot.writeFieldBegin(ROLE_FIELD_DESC);
+          oprot.writeI32(struct.role.getValue());
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -739,7 +848,10 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       if (struct.isSetOrganizationId()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetRole()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetUserId()) {
         oprot.writeString(struct.userId);
       }
@@ -755,12 +867,15 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       if (struct.isSetOrganizationId()) {
         oprot.writeString(struct.organizationId);
       }
+      if (struct.isSetRole()) {
+        oprot.writeI32(struct.role.getValue());
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, UserInfo struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.userId = iprot.readString();
         struct.setUserIdIsSet(true);
@@ -780,6 +895,10 @@ public class UserInfo implements org.apache.thrift.TBase<UserInfo, UserInfo._Fie
       if (incoming.get(4)) {
         struct.organizationId = iprot.readString();
         struct.setOrganizationIdIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.role = Role.findByValue(iprot.readI32());
+        struct.setRoleIsSet(true);
       }
     }
   }

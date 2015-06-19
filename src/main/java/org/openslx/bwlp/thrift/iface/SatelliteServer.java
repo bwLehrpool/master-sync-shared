@@ -64,6 +64,8 @@ public class SatelliteServer {
 
     public ImageDetailsRead getImageDetails(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, org.apache.thrift.TException;
 
+    public boolean createImage(String userToken, String imageName) throws TAuthorizationException, org.apache.thrift.TException;
+
     public boolean updateImageBase(String userToken, String imageBaseId, ImageBaseWrite image) throws TAuthorizationException, org.apache.thrift.TException;
 
     public boolean updateImageVersion(String userToken, String imageVersionId, ImageVersionWrite image) throws TAuthorizationException, org.apache.thrift.TException;
@@ -121,6 +123,8 @@ public class SatelliteServer {
     public void getImageList(String userToken, List<String> tagSearch, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getImageDetails(String userToken, String imageBaseId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void createImage(String userToken, String imageName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void updateImageBase(String userToken, String imageBaseId, ImageBaseWrite image, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -508,6 +512,33 @@ public class SatelliteServer {
         throw result.notFound;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getImageDetails failed: unknown result");
+    }
+
+    public boolean createImage(String userToken, String imageName) throws TAuthorizationException, org.apache.thrift.TException
+    {
+      send_createImage(userToken, imageName);
+      return recv_createImage();
+    }
+
+    public void send_createImage(String userToken, String imageName) throws org.apache.thrift.TException
+    {
+      createImage_args args = new createImage_args();
+      args.setUserToken(userToken);
+      args.setImageName(imageName);
+      sendBase("createImage", args);
+    }
+
+    public boolean recv_createImage() throws TAuthorizationException, org.apache.thrift.TException
+    {
+      createImage_result result = new createImage_result();
+      receiveBase(result, "createImage");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.authError != null) {
+        throw result.authError;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createImage failed: unknown result");
     }
 
     public boolean updateImageBase(String userToken, String imageBaseId, ImageBaseWrite image) throws TAuthorizationException, org.apache.thrift.TException
@@ -1367,6 +1398,41 @@ public class SatelliteServer {
       }
     }
 
+    public void createImage(String userToken, String imageName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      createImage_call method_call = new createImage_call(userToken, imageName, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class createImage_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String userToken;
+      private String imageName;
+      public createImage_call(String userToken, String imageName, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.userToken = userToken;
+        this.imageName = imageName;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("createImage", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        createImage_args args = new createImage_args();
+        args.setUserToken(userToken);
+        args.setImageName(imageName);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws TAuthorizationException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_createImage();
+      }
+    }
+
     public void updateImageBase(String userToken, String imageBaseId, ImageBaseWrite image, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       updateImageBase_call method_call = new updateImageBase_call(userToken, imageBaseId, image, resultHandler, this, ___protocolFactory, ___transport);
@@ -1861,6 +1927,7 @@ public class SatelliteServer {
       processMap.put("getAllOrganizations", new getAllOrganizations());
       processMap.put("getImageList", new getImageList());
       processMap.put("getImageDetails", new getImageDetails());
+      processMap.put("createImage", new createImage());
       processMap.put("updateImageBase", new updateImageBase());
       processMap.put("updateImageVersion", new updateImageVersion());
       processMap.put("deleteImageVersion", new deleteImageVersion());
@@ -2182,6 +2249,31 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
+        }
+        return result;
+      }
+    }
+
+    public static class createImage<I extends Iface> extends org.apache.thrift.ProcessFunction<I, createImage_args> {
+      public createImage() {
+        super("createImage");
+      }
+
+      public createImage_args getEmptyArgsInstance() {
+        return new createImage_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public createImage_result getResult(I iface, createImage_args args) throws org.apache.thrift.TException {
+        createImage_result result = new createImage_result();
+        try {
+          result.success = iface.createImage(args.userToken, args.imageName);
+          result.setSuccessIsSet(true);
+        } catch (TAuthorizationException authError) {
+          result.authError = authError;
         }
         return result;
       }
@@ -2551,6 +2643,7 @@ public class SatelliteServer {
       processMap.put("getAllOrganizations", new getAllOrganizations());
       processMap.put("getImageList", new getImageList());
       processMap.put("getImageDetails", new getImageDetails());
+      processMap.put("createImage", new createImage());
       processMap.put("updateImageBase", new updateImageBase());
       processMap.put("updateImageVersion", new updateImageVersion());
       processMap.put("deleteImageVersion", new deleteImageVersion());
@@ -3323,6 +3416,64 @@ public class SatelliteServer {
 
       public void start(I iface, getImageDetails_args args, org.apache.thrift.async.AsyncMethodCallback<ImageDetailsRead> resultHandler) throws TException {
         iface.getImageDetails(args.userToken, args.imageBaseId,resultHandler);
+      }
+    }
+
+    public static class createImage<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, createImage_args, Boolean> {
+      public createImage() {
+        super("createImage");
+      }
+
+      public createImage_args getEmptyArgsInstance() {
+        return new createImage_args();
+      }
+
+      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Boolean>() { 
+          public void onComplete(Boolean o) {
+            createImage_result result = new createImage_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            createImage_result result = new createImage_result();
+            if (e instanceof TAuthorizationException) {
+                        result.authError = (TAuthorizationException) e;
+                        result.setAuthErrorIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, createImage_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.createImage(args.userToken, args.imageName,resultHandler);
       }
     }
 
@@ -15171,6 +15322,916 @@ public class SatelliteServer {
           struct.notFound = new TNotFoundException();
           struct.notFound.read(iprot);
           struct.setNotFoundIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class createImage_args implements org.apache.thrift.TBase<createImage_args, createImage_args._Fields>, java.io.Serializable, Cloneable, Comparable<createImage_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createImage_args");
+
+    private static final org.apache.thrift.protocol.TField USER_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("userToken", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new createImage_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new createImage_argsTupleSchemeFactory());
+    }
+
+    public String userToken; // required
+    public String imageName; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      USER_TOKEN((short)1, "userToken"),
+      IMAGE_NAME((short)2, "imageName");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // USER_TOKEN
+            return USER_TOKEN;
+          case 2: // IMAGE_NAME
+            return IMAGE_NAME;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.USER_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("userToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "Token")));
+      tmpMap.put(_Fields.IMAGE_NAME, new org.apache.thrift.meta_data.FieldMetaData("imageName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createImage_args.class, metaDataMap);
+    }
+
+    public createImage_args() {
+    }
+
+    public createImage_args(
+      String userToken,
+      String imageName)
+    {
+      this();
+      this.userToken = userToken;
+      this.imageName = imageName;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public createImage_args(createImage_args other) {
+      if (other.isSetUserToken()) {
+        this.userToken = other.userToken;
+      }
+      if (other.isSetImageName()) {
+        this.imageName = other.imageName;
+      }
+    }
+
+    public createImage_args deepCopy() {
+      return new createImage_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.userToken = null;
+      this.imageName = null;
+    }
+
+    public String getUserToken() {
+      return this.userToken;
+    }
+
+    public createImage_args setUserToken(String userToken) {
+      this.userToken = userToken;
+      return this;
+    }
+
+    public void unsetUserToken() {
+      this.userToken = null;
+    }
+
+    /** Returns true if field userToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserToken() {
+      return this.userToken != null;
+    }
+
+    public void setUserTokenIsSet(boolean value) {
+      if (!value) {
+        this.userToken = null;
+      }
+    }
+
+    public String getImageName() {
+      return this.imageName;
+    }
+
+    public createImage_args setImageName(String imageName) {
+      this.imageName = imageName;
+      return this;
+    }
+
+    public void unsetImageName() {
+      this.imageName = null;
+    }
+
+    /** Returns true if field imageName is set (has been assigned a value) and false otherwise */
+    public boolean isSetImageName() {
+      return this.imageName != null;
+    }
+
+    public void setImageNameIsSet(boolean value) {
+      if (!value) {
+        this.imageName = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case USER_TOKEN:
+        if (value == null) {
+          unsetUserToken();
+        } else {
+          setUserToken((String)value);
+        }
+        break;
+
+      case IMAGE_NAME:
+        if (value == null) {
+          unsetImageName();
+        } else {
+          setImageName((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case USER_TOKEN:
+        return getUserToken();
+
+      case IMAGE_NAME:
+        return getImageName();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case USER_TOKEN:
+        return isSetUserToken();
+      case IMAGE_NAME:
+        return isSetImageName();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof createImage_args)
+        return this.equals((createImage_args)that);
+      return false;
+    }
+
+    public boolean equals(createImage_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_userToken = true && this.isSetUserToken();
+      boolean that_present_userToken = true && that.isSetUserToken();
+      if (this_present_userToken || that_present_userToken) {
+        if (!(this_present_userToken && that_present_userToken))
+          return false;
+        if (!this.userToken.equals(that.userToken))
+          return false;
+      }
+
+      boolean this_present_imageName = true && this.isSetImageName();
+      boolean that_present_imageName = true && that.isSetImageName();
+      if (this_present_imageName || that_present_imageName) {
+        if (!(this_present_imageName && that_present_imageName))
+          return false;
+        if (!this.imageName.equals(that.imageName))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(createImage_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetUserToken()).compareTo(other.isSetUserToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userToken, other.userToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetImageName()).compareTo(other.isSetImageName());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetImageName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageName, other.imageName);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("createImage_args(");
+      boolean first = true;
+
+      sb.append("userToken:");
+      if (this.userToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("imageName:");
+      if (this.imageName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.imageName);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class createImage_argsStandardSchemeFactory implements SchemeFactory {
+      public createImage_argsStandardScheme getScheme() {
+        return new createImage_argsStandardScheme();
+      }
+    }
+
+    private static class createImage_argsStandardScheme extends StandardScheme<createImage_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, createImage_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // USER_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userToken = iprot.readString();
+                struct.setUserTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // IMAGE_NAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.imageName = iprot.readString();
+                struct.setImageNameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, createImage_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.userToken != null) {
+          oprot.writeFieldBegin(USER_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.userToken);
+          oprot.writeFieldEnd();
+        }
+        if (struct.imageName != null) {
+          oprot.writeFieldBegin(IMAGE_NAME_FIELD_DESC);
+          oprot.writeString(struct.imageName);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class createImage_argsTupleSchemeFactory implements SchemeFactory {
+      public createImage_argsTupleScheme getScheme() {
+        return new createImage_argsTupleScheme();
+      }
+    }
+
+    private static class createImage_argsTupleScheme extends TupleScheme<createImage_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, createImage_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetUserToken()) {
+          optionals.set(0);
+        }
+        if (struct.isSetImageName()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetUserToken()) {
+          oprot.writeString(struct.userToken);
+        }
+        if (struct.isSetImageName()) {
+          oprot.writeString(struct.imageName);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, createImage_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.userToken = iprot.readString();
+          struct.setUserTokenIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.imageName = iprot.readString();
+          struct.setImageNameIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class createImage_result implements org.apache.thrift.TBase<createImage_result, createImage_result._Fields>, java.io.Serializable, Cloneable, Comparable<createImage_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createImage_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new createImage_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new createImage_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+    public TAuthorizationException authError; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      AUTH_ERROR((short)1, "authError");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // AUTH_ERROR
+            return AUTH_ERROR;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.AUTH_ERROR, new org.apache.thrift.meta_data.FieldMetaData("authError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createImage_result.class, metaDataMap);
+    }
+
+    public createImage_result() {
+    }
+
+    public createImage_result(
+      boolean success,
+      TAuthorizationException authError)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.authError = authError;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public createImage_result(createImage_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetAuthError()) {
+        this.authError = new TAuthorizationException(other.authError);
+      }
+    }
+
+    public createImage_result deepCopy() {
+      return new createImage_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.authError = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public createImage_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public TAuthorizationException getAuthError() {
+      return this.authError;
+    }
+
+    public createImage_result setAuthError(TAuthorizationException authError) {
+      this.authError = authError;
+      return this;
+    }
+
+    public void unsetAuthError() {
+      this.authError = null;
+    }
+
+    /** Returns true if field authError is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthError() {
+      return this.authError != null;
+    }
+
+    public void setAuthErrorIsSet(boolean value) {
+      if (!value) {
+        this.authError = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      case AUTH_ERROR:
+        if (value == null) {
+          unsetAuthError();
+        } else {
+          setAuthError((TAuthorizationException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return Boolean.valueOf(isSuccess());
+
+      case AUTH_ERROR:
+        return getAuthError();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case AUTH_ERROR:
+        return isSetAuthError();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof createImage_result)
+        return this.equals((createImage_result)that);
+      return false;
+    }
+
+    public boolean equals(createImage_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_authError = true && this.isSetAuthError();
+      boolean that_present_authError = true && that.isSetAuthError();
+      if (this_present_authError || that_present_authError) {
+        if (!(this_present_authError && that_present_authError))
+          return false;
+        if (!this.authError.equals(that.authError))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(createImage_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAuthError()).compareTo(other.isSetAuthError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authError, other.authError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("createImage_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("authError:");
+      if (this.authError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authError);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class createImage_resultStandardSchemeFactory implements SchemeFactory {
+      public createImage_resultStandardScheme getScheme() {
+        return new createImage_resultStandardScheme();
+      }
+    }
+
+    private static class createImage_resultStandardScheme extends StandardScheme<createImage_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, createImage_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // AUTH_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authError = new TAuthorizationException();
+                struct.authError.read(iprot);
+                struct.setAuthErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, createImage_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.authError != null) {
+          oprot.writeFieldBegin(AUTH_ERROR_FIELD_DESC);
+          struct.authError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class createImage_resultTupleSchemeFactory implements SchemeFactory {
+      public createImage_resultTupleScheme getScheme() {
+        return new createImage_resultTupleScheme();
+      }
+    }
+
+    private static class createImage_resultTupleScheme extends TupleScheme<createImage_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, createImage_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetAuthError()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetAuthError()) {
+          struct.authError.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, createImage_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.authError = new TAuthorizationException();
+          struct.authError.read(iprot);
+          struct.setAuthErrorIsSet(true);
         }
       }
     }

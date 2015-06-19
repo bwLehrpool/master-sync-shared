@@ -49,6 +49,11 @@ enum NetDirection {
 	OUT
 }
 
+enum Role {
+	STUDENT,
+	TUTOR
+}
+
 // ############## STRUCT ###############
 
 struct UserInfo {
@@ -56,7 +61,8 @@ struct UserInfo {
 	2: string firstName,
 	3: string lastName,
 	4: string eMail,
-	5: string organizationId
+	5: string organizationId,
+	6: optional Role role,
 }
 
 struct Organization {
@@ -342,6 +348,9 @@ service SatelliteServer {
 	// Query detailed information about an image
 	ImageDetailsRead getImageDetails(1: Token userToken, 2: UUID imageBaseId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+	// Create a new image; the image will have no versions, so the user needs to upload one and set meta data later on
+	bool createImage(1: Token userToken, 2: string imageName)
+		throws (1:TAuthorizationException authError),
 	// Update given image's base meta data
 	bool updateImageBase(1: Token userToken, 2: UUID imageBaseId 3: ImageBaseWrite image)
 		throws (1:TAuthorizationException authError),
