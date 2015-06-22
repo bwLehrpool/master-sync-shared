@@ -67,8 +67,8 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
   public String ownerId; // required
   public String runscript; // required
   public List<String> nics; // required
-  public List<String> allowedUsers; // required
-  public List<NetRule> networkExceptions; // required
+  public List<String> allowedUsers; // optional
+  public List<NetRule> networkExceptions; // optional
   public boolean isExam; // required
   public boolean hasInternetAccess; // required
   public LecturePermissions defaultPermissions; // required
@@ -181,6 +181,7 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
   private static final int __ISEXAM_ISSET_ID = 4;
   private static final int __HASINTERNETACCESS_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.ALLOWED_USERS,_Fields.NETWORK_EXCEPTIONS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -205,10 +206,10 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     tmpMap.put(_Fields.NICS, new org.apache.thrift.meta_data.FieldMetaData("nics", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-    tmpMap.put(_Fields.ALLOWED_USERS, new org.apache.thrift.meta_data.FieldMetaData("allowedUsers", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.ALLOWED_USERS, new org.apache.thrift.meta_data.FieldMetaData("allowedUsers", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-    tmpMap.put(_Fields.NETWORK_EXCEPTIONS, new org.apache.thrift.meta_data.FieldMetaData("networkExceptions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.NETWORK_EXCEPTIONS, new org.apache.thrift.meta_data.FieldMetaData("networkExceptions", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, NetRule.class))));
     tmpMap.put(_Fields.IS_EXAM, new org.apache.thrift.meta_data.FieldMetaData("isExam", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -235,8 +236,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     String ownerId,
     String runscript,
     List<String> nics,
-    List<String> allowedUsers,
-    List<NetRule> networkExceptions,
     boolean isExam,
     boolean hasInternetAccess,
     LecturePermissions defaultPermissions)
@@ -256,8 +255,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     this.ownerId = ownerId;
     this.runscript = runscript;
     this.nics = nics;
-    this.allowedUsers = allowedUsers;
-    this.networkExceptions = networkExceptions;
     this.isExam = isExam;
     setIsExamIsSet(true);
     this.hasInternetAccess = hasInternetAccess;
@@ -1353,22 +1350,26 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       sb.append(this.nics);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("allowedUsers:");
-    if (this.allowedUsers == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.allowedUsers);
+    if (isSetAllowedUsers()) {
+      if (!first) sb.append(", ");
+      sb.append("allowedUsers:");
+      if (this.allowedUsers == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.allowedUsers);
+      }
+      first = false;
     }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("networkExceptions:");
-    if (this.networkExceptions == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.networkExceptions);
+    if (isSetNetworkExceptions()) {
+      if (!first) sb.append(", ");
+      sb.append("networkExceptions:");
+      if (this.networkExceptions == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.networkExceptions);
+      }
+      first = false;
     }
-    first = false;
     if (!first) sb.append(", ");
     sb.append("isExam:");
     sb.append(this.isExam);
@@ -1650,28 +1651,32 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         oprot.writeFieldEnd();
       }
       if (struct.allowedUsers != null) {
-        oprot.writeFieldBegin(ALLOWED_USERS_FIELD_DESC);
-        {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.allowedUsers.size()));
-          for (String _iter68 : struct.allowedUsers)
+        if (struct.isSetAllowedUsers()) {
+          oprot.writeFieldBegin(ALLOWED_USERS_FIELD_DESC);
           {
-            oprot.writeString(_iter68);
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.allowedUsers.size()));
+            for (String _iter68 : struct.allowedUsers)
+            {
+              oprot.writeString(_iter68);
+            }
+            oprot.writeListEnd();
           }
-          oprot.writeListEnd();
+          oprot.writeFieldEnd();
         }
-        oprot.writeFieldEnd();
       }
       if (struct.networkExceptions != null) {
-        oprot.writeFieldBegin(NETWORK_EXCEPTIONS_FIELD_DESC);
-        {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.networkExceptions.size()));
-          for (NetRule _iter69 : struct.networkExceptions)
+        if (struct.isSetNetworkExceptions()) {
+          oprot.writeFieldBegin(NETWORK_EXCEPTIONS_FIELD_DESC);
           {
-            _iter69.write(oprot);
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.networkExceptions.size()));
+            for (NetRule _iter69 : struct.networkExceptions)
+            {
+              _iter69.write(oprot);
+            }
+            oprot.writeListEnd();
           }
-          oprot.writeListEnd();
+          oprot.writeFieldEnd();
         }
-        oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(IS_EXAM_FIELD_DESC);
       oprot.writeBool(struct.isExam);

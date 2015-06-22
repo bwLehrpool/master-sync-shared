@@ -46,4 +46,16 @@ public class TimeoutReference<T>
 		this.deadline = System.currentTimeMillis() + timeoutMs;
 	}
 
+	@Override
+	public int hashCode()
+	{
+		return item.hashCode();
+	}
+
+	@Override
+	public boolean equals( Object o )
+	{
+		return this == o || item.equals( o );
+	}
+
 }

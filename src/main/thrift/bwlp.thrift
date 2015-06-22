@@ -106,6 +106,21 @@ struct OperatingSystem {
 	4: string architecture,
 }
 
+// Sat <-> Master
+struct ImagePublishData {
+	1: UUID imageBaseId,
+	2: UUID currentVersionId,
+	3: string imageName,
+	4: i32 osId,
+	5: string virtId,
+	6: UnixTimestamp baseCreateTime,
+	7: UnixTimestamp versionCreateTime,
+	8: UUID ownerId,
+	9: UUID uploaderId,
+	11: i64 fileSize,
+	16: bool isTemplate,
+}
+
 struct ImagePermissions {
 	1: bool link
 	2: bool download
@@ -126,20 +141,6 @@ struct ImageBaseWrite {
 	5: ImagePermissions defaultPermissions,
 	6: ShareMode shareMode,
 	7: optional UUID ownerId,
-}
-
-struct ImagePublishData {
-	1: UUID imageBaseId,
-	2: UUID currentVersionId,
-	3: string imageName,
-	4: i32 osId,
-	5: string virtId,
-	6: UnixTimestamp baseCreateTime,
-	7: UnixTimestamp versionCreateTime,
-	8: UUID ownerId,
-	9: UUID uploaderId,
-	11: i64 fileSize,
-	16: bool isTemplate,
 }
 
 struct ImageVersionWrite {
@@ -209,6 +210,7 @@ struct NetRule {
 	4: i32 port,
 }
 
+// Write lecture to sat. if optional fields are not set or null, their value stays unchanged
 struct LectureWrite {
 	1: string lectureName,
 	2: string description,
@@ -220,8 +222,8 @@ struct LectureWrite {
 	8: UUID ownerId,
 	9: string runscript,
 	10: list<string> nics,
-	11: list<string> allowedUsers, // allowed to see/select image in vmchooser. These are local accounts, not bwIDM/Master
-	12: list<NetRule> networkExceptions,
+	11: optional list<string> allowedUsers, // allowed to see/select image in vmchooser. These are local accounts, not bwIDM/Master
+	12: optional list<NetRule> networkExceptions,
 	13: bool isExam,
 	14: bool hasInternetAccess,
 	15: LecturePermissions defaultPermissions,
