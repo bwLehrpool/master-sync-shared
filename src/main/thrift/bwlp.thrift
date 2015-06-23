@@ -137,10 +137,10 @@ struct ImageBaseWrite {
 	1: string imageName,
     2: string description,
 	3: i32 osId,
-	4: bool isTemplate,
-	5: ImagePermissions defaultPermissions,
-	6: ShareMode shareMode,
-	7: optional UUID ownerId,
+	4: string virtId,
+	5: bool isTemplate,
+	6: ImagePermissions defaultPermissions,
+	7: ShareMode shareMode,
 }
 
 struct ImageVersionWrite {
@@ -334,7 +334,7 @@ service SatelliteServer {
 	
 	// find a user in a given organization by a search term
 	list<UserInfo> getUserList(1:Token userToken, 2:i32 page)
-		throws (1:TAuthorizationException failure),
+		throws (1:TAuthorizationException failure, 2:TInternalServerError serverError),
 	
 	// Misc
     list<OperatingSystem> getOperatingSystems(),
@@ -346,57 +346,63 @@ service SatelliteServer {
 	 */
 	// Get image list. tagSearch can be null, which disables this type of filtering and returns all
     list<ImageSummaryRead> getImageList(1: Token userToken, 2: list<string> tagSearch)
-		throws (1:TAuthorizationException authError),
+		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
 	// Query detailed information about an image
 	ImageDetailsRead getImageDetails(1: Token userToken, 2: UUID imageBaseId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Create a new image; the image will have no versions, so the user needs to upload one and set meta data later on
-	bool createImage(1: Token userToken, 2: string imageName)
-		throws (1:TAuthorizationException authError),
+	UUID createImage(1: Token userToken, 2: string imageName)
+		throws (1:TAuthorizationException authError, 2:TImageDataException imgError, 3:TInternalServerError serverError),
 	// Update given image's base meta data
-	bool updateImageBase(1: Token userToken, 2: UUID imageBaseId 3: ImageBaseWrite image)
-		throws (1:TAuthorizationException authError),
+	void updateImageBase(1: Token userToken, 2: UUID imageBaseId 3: ImageBaseWrite image)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TImageDataException imgError, 4:TInternalServerError serverError),
 	// Update a certain image version's meta data
-	bool updateImageVersion(1: Token userToken, 2: UUID imageVersionId 3: ImageVersionWrite image)
-		throws (1:TAuthorizationException authError),
+	void updateImageVersion(1: Token userToken, 2: UUID imageVersionId 3: ImageVersionWrite image)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TImageDataException imgError, 4:TInternalServerError serverError),
 	// Delete given image version. If the version is currently in use by a lecture, it will not be
 	// deleted and false is returned
-	bool deleteImageVersion(1: Token userToken, 2: UUID imageVersionId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+	void deleteImageVersion(1: Token userToken, 2: UUID imageVersionId)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Write list of permissions for given image 
-	bool writeImagePermissions(1: Token userToken, 2: UUID imageBaseId, 3: map<UUID, ImagePermissions> permissions)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+	void writeImagePermissions(1: Token userToken, 2: UUID imageBaseId, 3: map<UUID, ImagePermissions> permissions)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Get all user-permissions for given image 
 	map<UUID, ImagePermissions> getImagePermissions(1: Token userToken, 2: UUID imageBaseId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+	// Set new owner of image
+	void setImageOwner(1: Token userToken, 2: UUID imageBaseId 3: UUID newOwnerId)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	
 	/*
 	 * Lecture related
 	 */
 	// Create new lecture
     UUID createLecture(1: Token userToken, 2: LectureWrite lecture)
-		throws (1:TAuthorizationException authError),
+		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
 	// Update existing lecture
-    bool updateLecture(1: Token userToken, 2: UUID lectureId, 3: LectureWrite lecture)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+    void updateLecture(1: Token userToken, 2: UUID lectureId, 3: LectureWrite lecture)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Get list of all lectures
     list<LectureSummary> getLectureList(1: Token userToken)
-		throws (1:TAuthorizationException authError),
+		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
 	// Get detailed lecture information
 	LectureRead getLectureDetails(1: Token userToken, 2: UUID lectureId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Get list of lectures that are using the given image version
 	list<LectureSummary> getLecturesByImageVersion(1: Token userToken, 2: UUID imageVersionId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Delete given lecture
-	bool deleteLecture(1: Token userToken, 2: UUID lectureId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+	void deleteLecture(1: Token userToken, 2: UUID lectureId)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Write list of permissions for given lecture
-	bool writeLecturePermissions(1: Token userToken, 2: UUID lectureId, 3: map<UUID, LecturePermissions> permissions)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+	void writeLecturePermissions(1: Token userToken, 2: UUID lectureId, 3: map<UUID, LecturePermissions> permissions)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Get list of permissions for given lecture
 	map<UUID, LecturePermissions> getLecturePermissions(1: Token userToken, 2: UUID lectureId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+	// Set new owner of lecture
+	void setLectureOwner(1: Token userToken, 2: UUID lectureId 3: UUID newOwnerId)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 }
 
 // Central master server

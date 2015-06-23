@@ -38,10 +38,10 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
   private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField OS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("osId", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField IS_TEMPLATE_FIELD_DESC = new org.apache.thrift.protocol.TField("isTemplate", org.apache.thrift.protocol.TType.BOOL, (short)4);
-  private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)5);
-  private static final org.apache.thrift.protocol.TField SHARE_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("shareMode", org.apache.thrift.protocol.TType.I32, (short)6);
-  private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField VIRT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("virtId", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField IS_TEMPLATE_FIELD_DESC = new org.apache.thrift.protocol.TField("isTemplate", org.apache.thrift.protocol.TType.BOOL, (short)5);
+  private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)6);
+  private static final org.apache.thrift.protocol.TField SHARE_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("shareMode", org.apache.thrift.protocol.TType.I32, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -52,6 +52,7 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
   public String imageName; // required
   public String description; // required
   public int osId; // required
+  public String virtId; // required
   public boolean isTemplate; // required
   public ImagePermissions defaultPermissions; // required
   /**
@@ -59,21 +60,20 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
    * @see ShareMode
    */
   public ShareMode shareMode; // required
-  public String ownerId; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     IMAGE_NAME((short)1, "imageName"),
     DESCRIPTION((short)2, "description"),
     OS_ID((short)3, "osId"),
-    IS_TEMPLATE((short)4, "isTemplate"),
-    DEFAULT_PERMISSIONS((short)5, "defaultPermissions"),
+    VIRT_ID((short)4, "virtId"),
+    IS_TEMPLATE((short)5, "isTemplate"),
+    DEFAULT_PERMISSIONS((short)6, "defaultPermissions"),
     /**
      * 
      * @see ShareMode
      */
-    SHARE_MODE((short)6, "shareMode"),
-    OWNER_ID((short)7, "ownerId");
+    SHARE_MODE((short)7, "shareMode");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -94,14 +94,14 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
           return DESCRIPTION;
         case 3: // OS_ID
           return OS_ID;
-        case 4: // IS_TEMPLATE
+        case 4: // VIRT_ID
+          return VIRT_ID;
+        case 5: // IS_TEMPLATE
           return IS_TEMPLATE;
-        case 5: // DEFAULT_PERMISSIONS
+        case 6: // DEFAULT_PERMISSIONS
           return DEFAULT_PERMISSIONS;
-        case 6: // SHARE_MODE
+        case 7: // SHARE_MODE
           return SHARE_MODE;
-        case 7: // OWNER_ID
-          return OWNER_ID;
         default:
           return null;
       }
@@ -145,7 +145,6 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
   private static final int __OSID_ISSET_ID = 0;
   private static final int __ISTEMPLATE_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.OWNER_ID};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -155,14 +154,14 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.OS_ID, new org.apache.thrift.meta_data.FieldMetaData("osId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.VIRT_ID, new org.apache.thrift.meta_data.FieldMetaData("virtId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.IS_TEMPLATE, new org.apache.thrift.meta_data.FieldMetaData("isTemplate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.DEFAULT_PERMISSIONS, new org.apache.thrift.meta_data.FieldMetaData("defaultPermissions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ImagePermissions.class)));
     tmpMap.put(_Fields.SHARE_MODE, new org.apache.thrift.meta_data.FieldMetaData("shareMode", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ShareMode.class)));
-    tmpMap.put(_Fields.OWNER_ID, new org.apache.thrift.meta_data.FieldMetaData("ownerId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ImageBaseWrite.class, metaDataMap);
   }
@@ -174,6 +173,7 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     String imageName,
     String description,
     int osId,
+    String virtId,
     boolean isTemplate,
     ImagePermissions defaultPermissions,
     ShareMode shareMode)
@@ -183,6 +183,7 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     this.description = description;
     this.osId = osId;
     setOsIdIsSet(true);
+    this.virtId = virtId;
     this.isTemplate = isTemplate;
     setIsTemplateIsSet(true);
     this.defaultPermissions = defaultPermissions;
@@ -201,15 +202,15 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       this.description = other.description;
     }
     this.osId = other.osId;
+    if (other.isSetVirtId()) {
+      this.virtId = other.virtId;
+    }
     this.isTemplate = other.isTemplate;
     if (other.isSetDefaultPermissions()) {
       this.defaultPermissions = new ImagePermissions(other.defaultPermissions);
     }
     if (other.isSetShareMode()) {
       this.shareMode = other.shareMode;
-    }
-    if (other.isSetOwnerId()) {
-      this.ownerId = other.ownerId;
     }
   }
 
@@ -223,11 +224,11 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     this.description = null;
     setOsIdIsSet(false);
     this.osId = 0;
+    this.virtId = null;
     setIsTemplateIsSet(false);
     this.isTemplate = false;
     this.defaultPermissions = null;
     this.shareMode = null;
-    this.ownerId = null;
   }
 
   public String getImageName() {
@@ -299,6 +300,30 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
 
   public void setOsIdIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __OSID_ISSET_ID, value);
+  }
+
+  public String getVirtId() {
+    return this.virtId;
+  }
+
+  public ImageBaseWrite setVirtId(String virtId) {
+    this.virtId = virtId;
+    return this;
+  }
+
+  public void unsetVirtId() {
+    this.virtId = null;
+  }
+
+  /** Returns true if field virtId is set (has been assigned a value) and false otherwise */
+  public boolean isSetVirtId() {
+    return this.virtId != null;
+  }
+
+  public void setVirtIdIsSet(boolean value) {
+    if (!value) {
+      this.virtId = null;
+    }
   }
 
   public boolean isIsTemplate() {
@@ -380,30 +405,6 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     }
   }
 
-  public String getOwnerId() {
-    return this.ownerId;
-  }
-
-  public ImageBaseWrite setOwnerId(String ownerId) {
-    this.ownerId = ownerId;
-    return this;
-  }
-
-  public void unsetOwnerId() {
-    this.ownerId = null;
-  }
-
-  /** Returns true if field ownerId is set (has been assigned a value) and false otherwise */
-  public boolean isSetOwnerId() {
-    return this.ownerId != null;
-  }
-
-  public void setOwnerIdIsSet(boolean value) {
-    if (!value) {
-      this.ownerId = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case IMAGE_NAME:
@@ -427,6 +428,14 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
         unsetOsId();
       } else {
         setOsId((Integer)value);
+      }
+      break;
+
+    case VIRT_ID:
+      if (value == null) {
+        unsetVirtId();
+      } else {
+        setVirtId((String)value);
       }
       break;
 
@@ -454,14 +463,6 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       }
       break;
 
-    case OWNER_ID:
-      if (value == null) {
-        unsetOwnerId();
-      } else {
-        setOwnerId((String)value);
-      }
-      break;
-
     }
   }
 
@@ -476,6 +477,9 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     case OS_ID:
       return Integer.valueOf(getOsId());
 
+    case VIRT_ID:
+      return getVirtId();
+
     case IS_TEMPLATE:
       return Boolean.valueOf(isIsTemplate());
 
@@ -484,9 +488,6 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
 
     case SHARE_MODE:
       return getShareMode();
-
-    case OWNER_ID:
-      return getOwnerId();
 
     }
     throw new IllegalStateException();
@@ -505,14 +506,14 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       return isSetDescription();
     case OS_ID:
       return isSetOsId();
+    case VIRT_ID:
+      return isSetVirtId();
     case IS_TEMPLATE:
       return isSetIsTemplate();
     case DEFAULT_PERMISSIONS:
       return isSetDefaultPermissions();
     case SHARE_MODE:
       return isSetShareMode();
-    case OWNER_ID:
-      return isSetOwnerId();
     }
     throw new IllegalStateException();
   }
@@ -557,6 +558,15 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
         return false;
     }
 
+    boolean this_present_virtId = true && this.isSetVirtId();
+    boolean that_present_virtId = true && that.isSetVirtId();
+    if (this_present_virtId || that_present_virtId) {
+      if (!(this_present_virtId && that_present_virtId))
+        return false;
+      if (!this.virtId.equals(that.virtId))
+        return false;
+    }
+
     boolean this_present_isTemplate = true;
     boolean that_present_isTemplate = true;
     if (this_present_isTemplate || that_present_isTemplate) {
@@ -581,15 +591,6 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       if (!(this_present_shareMode && that_present_shareMode))
         return false;
       if (!this.shareMode.equals(that.shareMode))
-        return false;
-    }
-
-    boolean this_present_ownerId = true && this.isSetOwnerId();
-    boolean that_present_ownerId = true && that.isSetOwnerId();
-    if (this_present_ownerId || that_present_ownerId) {
-      if (!(this_present_ownerId && that_present_ownerId))
-        return false;
-      if (!this.ownerId.equals(that.ownerId))
         return false;
     }
 
@@ -639,6 +640,16 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetVirtId()).compareTo(other.isSetVirtId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetVirtId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.virtId, other.virtId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetIsTemplate()).compareTo(other.isSetIsTemplate());
     if (lastComparison != 0) {
       return lastComparison;
@@ -665,16 +676,6 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     }
     if (isSetShareMode()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.shareMode, other.shareMode);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetOwnerId()).compareTo(other.isSetOwnerId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetOwnerId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ownerId, other.ownerId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -719,6 +720,14 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     sb.append(this.osId);
     first = false;
     if (!first) sb.append(", ");
+    sb.append("virtId:");
+    if (this.virtId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.virtId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("isTemplate:");
     sb.append(this.isTemplate);
     first = false;
@@ -738,16 +747,6 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       sb.append(this.shareMode);
     }
     first = false;
-    if (isSetOwnerId()) {
-      if (!first) sb.append(", ");
-      sb.append("ownerId:");
-      if (this.ownerId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.ownerId);
-      }
-      first = false;
-    }
     sb.append(")");
     return sb.toString();
   }
@@ -820,7 +819,15 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // IS_TEMPLATE
+          case 4: // VIRT_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.virtId = iprot.readString();
+              struct.setVirtIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // IS_TEMPLATE
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isTemplate = iprot.readBool();
               struct.setIsTemplateIsSet(true);
@@ -828,7 +835,7 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // DEFAULT_PERMISSIONS
+          case 6: // DEFAULT_PERMISSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.defaultPermissions = new ImagePermissions();
               struct.defaultPermissions.read(iprot);
@@ -837,18 +844,10 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // SHARE_MODE
+          case 7: // SHARE_MODE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.shareMode = ShareMode.findByValue(iprot.readI32());
               struct.setShareModeIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 7: // OWNER_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.ownerId = iprot.readString();
-              struct.setOwnerIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -881,6 +880,11 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       oprot.writeFieldBegin(OS_ID_FIELD_DESC);
       oprot.writeI32(struct.osId);
       oprot.writeFieldEnd();
+      if (struct.virtId != null) {
+        oprot.writeFieldBegin(VIRT_ID_FIELD_DESC);
+        oprot.writeString(struct.virtId);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldBegin(IS_TEMPLATE_FIELD_DESC);
       oprot.writeBool(struct.isTemplate);
       oprot.writeFieldEnd();
@@ -893,13 +897,6 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
         oprot.writeFieldBegin(SHARE_MODE_FIELD_DESC);
         oprot.writeI32(struct.shareMode.getValue());
         oprot.writeFieldEnd();
-      }
-      if (struct.ownerId != null) {
-        if (struct.isSetOwnerId()) {
-          oprot.writeFieldBegin(OWNER_ID_FIELD_DESC);
-          oprot.writeString(struct.ownerId);
-          oprot.writeFieldEnd();
-        }
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -928,16 +925,16 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       if (struct.isSetOsId()) {
         optionals.set(2);
       }
-      if (struct.isSetIsTemplate()) {
+      if (struct.isSetVirtId()) {
         optionals.set(3);
       }
-      if (struct.isSetDefaultPermissions()) {
+      if (struct.isSetIsTemplate()) {
         optionals.set(4);
       }
-      if (struct.isSetShareMode()) {
+      if (struct.isSetDefaultPermissions()) {
         optionals.set(5);
       }
-      if (struct.isSetOwnerId()) {
+      if (struct.isSetShareMode()) {
         optionals.set(6);
       }
       oprot.writeBitSet(optionals, 7);
@@ -950,6 +947,9 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       if (struct.isSetOsId()) {
         oprot.writeI32(struct.osId);
       }
+      if (struct.isSetVirtId()) {
+        oprot.writeString(struct.virtId);
+      }
       if (struct.isSetIsTemplate()) {
         oprot.writeBool(struct.isTemplate);
       }
@@ -958,9 +958,6 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       }
       if (struct.isSetShareMode()) {
         oprot.writeI32(struct.shareMode.getValue());
-      }
-      if (struct.isSetOwnerId()) {
-        oprot.writeString(struct.ownerId);
       }
     }
 
@@ -981,21 +978,21 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
         struct.setOsIdIsSet(true);
       }
       if (incoming.get(3)) {
+        struct.virtId = iprot.readString();
+        struct.setVirtIdIsSet(true);
+      }
+      if (incoming.get(4)) {
         struct.isTemplate = iprot.readBool();
         struct.setIsTemplateIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.defaultPermissions = new ImagePermissions();
         struct.defaultPermissions.read(iprot);
         struct.setDefaultPermissionsIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         struct.shareMode = ShareMode.findByValue(iprot.readI32());
         struct.setShareModeIsSet(true);
-      }
-      if (incoming.get(6)) {
-        struct.ownerId = iprot.readString();
-        struct.setOwnerIdIsSet(true);
       }
     }
   }
