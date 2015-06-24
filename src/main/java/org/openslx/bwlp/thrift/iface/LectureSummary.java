@@ -50,6 +50,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
   private static final org.apache.thrift.protocol.TField HAS_INTERNET_ACCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("hasInternetAccess", org.apache.thrift.protocol.TType.BOOL, (short)13);
   private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)14);
   private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)15);
+  private static final org.apache.thrift.protocol.TField IS_IMAGE_VERSION_USABLE_FIELD_DESC = new org.apache.thrift.protocol.TField("isImageVersionUsable", org.apache.thrift.protocol.TType.BOOL, (short)16);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -72,6 +73,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
   public boolean hasInternetAccess; // required
   public LecturePermissions defaultPermissions; // required
   public LecturePermissions userPermissions; // optional
+  public boolean isImageVersionUsable; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -89,7 +91,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     IS_EXAM((short)12, "isExam"),
     HAS_INTERNET_ACCESS((short)13, "hasInternetAccess"),
     DEFAULT_PERMISSIONS((short)14, "defaultPermissions"),
-    USER_PERMISSIONS((short)15, "userPermissions");
+    USER_PERMISSIONS((short)15, "userPermissions"),
+    IS_IMAGE_VERSION_USABLE((short)16, "isImageVersionUsable");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -134,6 +137,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
           return DEFAULT_PERMISSIONS;
         case 15: // USER_PERMISSIONS
           return USER_PERMISSIONS;
+        case 16: // IS_IMAGE_VERSION_USABLE
+          return IS_IMAGE_VERSION_USABLE;
         default:
           return null;
       }
@@ -181,6 +186,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
   private static final int __USECOUNT_ISSET_ID = 4;
   private static final int __ISEXAM_ISSET_ID = 5;
   private static final int __HASINTERNETACCESS_ISSET_ID = 6;
+  private static final int __ISIMAGEVERSIONUSABLE_ISSET_ID = 7;
   private byte __isset_bitfield = 0;
   private _Fields optionals[] = {_Fields.USER_PERMISSIONS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
@@ -216,6 +222,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, LecturePermissions.class)));
     tmpMap.put(_Fields.USER_PERMISSIONS, new org.apache.thrift.meta_data.FieldMetaData("userPermissions", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, LecturePermissions.class)));
+    tmpMap.put(_Fields.IS_IMAGE_VERSION_USABLE, new org.apache.thrift.meta_data.FieldMetaData("isImageVersionUsable", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(LectureSummary.class, metaDataMap);
   }
@@ -237,7 +245,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     String updaterId,
     boolean isExam,
     boolean hasInternetAccess,
-    LecturePermissions defaultPermissions)
+    LecturePermissions defaultPermissions,
+    boolean isImageVersionUsable)
   {
     this();
     this.lectureId = lectureId;
@@ -261,6 +270,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     this.hasInternetAccess = hasInternetAccess;
     setHasInternetAccessIsSet(true);
     this.defaultPermissions = defaultPermissions;
+    this.isImageVersionUsable = isImageVersionUsable;
+    setIsImageVersionUsableIsSet(true);
   }
 
   /**
@@ -299,6 +310,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     if (other.isSetUserPermissions()) {
       this.userPermissions = new LecturePermissions(other.userPermissions);
     }
+    this.isImageVersionUsable = other.isImageVersionUsable;
   }
 
   public LectureSummary deepCopy() {
@@ -329,6 +341,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     this.hasInternetAccess = false;
     this.defaultPermissions = null;
     this.userPermissions = null;
+    setIsImageVersionUsableIsSet(false);
+    this.isImageVersionUsable = false;
   }
 
   public String getLectureId() {
@@ -684,6 +698,29 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     }
   }
 
+  public boolean isIsImageVersionUsable() {
+    return this.isImageVersionUsable;
+  }
+
+  public LectureSummary setIsImageVersionUsable(boolean isImageVersionUsable) {
+    this.isImageVersionUsable = isImageVersionUsable;
+    setIsImageVersionUsableIsSet(true);
+    return this;
+  }
+
+  public void unsetIsImageVersionUsable() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISIMAGEVERSIONUSABLE_ISSET_ID);
+  }
+
+  /** Returns true if field isImageVersionUsable is set (has been assigned a value) and false otherwise */
+  public boolean isSetIsImageVersionUsable() {
+    return EncodingUtils.testBit(__isset_bitfield, __ISIMAGEVERSIONUSABLE_ISSET_ID);
+  }
+
+  public void setIsImageVersionUsableIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISIMAGEVERSIONUSABLE_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case LECTURE_ID:
@@ -806,6 +843,14 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       }
       break;
 
+    case IS_IMAGE_VERSION_USABLE:
+      if (value == null) {
+        unsetIsImageVersionUsable();
+      } else {
+        setIsImageVersionUsable((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -856,6 +901,9 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     case USER_PERMISSIONS:
       return getUserPermissions();
 
+    case IS_IMAGE_VERSION_USABLE:
+      return Boolean.valueOf(isIsImageVersionUsable());
+
     }
     throw new IllegalStateException();
   }
@@ -897,6 +945,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       return isSetDefaultPermissions();
     case USER_PERMISSIONS:
       return isSetUserPermissions();
+    case IS_IMAGE_VERSION_USABLE:
+      return isSetIsImageVersionUsable();
     }
     throw new IllegalStateException();
   }
@@ -1046,6 +1096,15 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       if (!(this_present_userPermissions && that_present_userPermissions))
         return false;
       if (!this.userPermissions.equals(that.userPermissions))
+        return false;
+    }
+
+    boolean this_present_isImageVersionUsable = true;
+    boolean that_present_isImageVersionUsable = true;
+    if (this_present_isImageVersionUsable || that_present_isImageVersionUsable) {
+      if (!(this_present_isImageVersionUsable && that_present_isImageVersionUsable))
+        return false;
+      if (this.isImageVersionUsable != that.isImageVersionUsable)
         return false;
     }
 
@@ -1215,6 +1274,16 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetIsImageVersionUsable()).compareTo(other.isSetIsImageVersionUsable());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetIsImageVersionUsable()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isImageVersionUsable, other.isImageVersionUsable);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1328,6 +1397,10 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       }
       first = false;
     }
+    if (!first) sb.append(", ");
+    sb.append("isImageVersionUsable:");
+    sb.append(this.isImageVersionUsable);
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -1501,6 +1574,14 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 16: // IS_IMAGE_VERSION_USABLE
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.isImageVersionUsable = iprot.readBool();
+              struct.setIsImageVersionUsableIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1579,6 +1660,9 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
           oprot.writeFieldEnd();
         }
       }
+      oprot.writeFieldBegin(IS_IMAGE_VERSION_USABLE_FIELD_DESC);
+      oprot.writeBool(struct.isImageVersionUsable);
+      oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1642,7 +1726,10 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       if (struct.isSetUserPermissions()) {
         optionals.set(14);
       }
-      oprot.writeBitSet(optionals, 15);
+      if (struct.isSetIsImageVersionUsable()) {
+        optionals.set(15);
+      }
+      oprot.writeBitSet(optionals, 16);
       if (struct.isSetLectureId()) {
         oprot.writeString(struct.lectureId);
       }
@@ -1688,12 +1775,15 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       if (struct.isSetUserPermissions()) {
         struct.userPermissions.write(oprot);
       }
+      if (struct.isSetIsImageVersionUsable()) {
+        oprot.writeBool(struct.isImageVersionUsable);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, LectureSummary struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(15);
+      BitSet incoming = iprot.readBitSet(16);
       if (incoming.get(0)) {
         struct.lectureId = iprot.readString();
         struct.setLectureIdIsSet(true);
@@ -1755,6 +1845,10 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
         struct.userPermissions = new LecturePermissions();
         struct.userPermissions.read(iprot);
         struct.setUserPermissionsIsSet(true);
+      }
+      if (incoming.get(15)) {
+        struct.isImageVersionUsable = iprot.readBool();
+        struct.setIsImageVersionUsableIsSet(true);
       }
     }
   }

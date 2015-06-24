@@ -42,7 +42,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
   private static final org.apache.thrift.protocol.TField IS_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("isEnabled", org.apache.thrift.protocol.TType.BOOL, (short)5);
   private static final org.apache.thrift.protocol.TField START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("startTime", org.apache.thrift.protocol.TType.I64, (short)6);
   private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short)7);
-  private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField RUNSCRIPT_FIELD_DESC = new org.apache.thrift.protocol.TField("runscript", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField NICS_FIELD_DESC = new org.apache.thrift.protocol.TField("nics", org.apache.thrift.protocol.TType.LIST, (short)10);
   private static final org.apache.thrift.protocol.TField ALLOWED_USERS_FIELD_DESC = new org.apache.thrift.protocol.TField("allowedUsers", org.apache.thrift.protocol.TType.LIST, (short)11);
@@ -64,7 +63,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
   public boolean isEnabled; // required
   public long startTime; // required
   public long endTime; // required
-  public String ownerId; // required
   public String runscript; // required
   public List<String> nics; // required
   public List<String> allowedUsers; // optional
@@ -82,7 +80,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     IS_ENABLED((short)5, "isEnabled"),
     START_TIME((short)6, "startTime"),
     END_TIME((short)7, "endTime"),
-    OWNER_ID((short)8, "ownerId"),
     RUNSCRIPT((short)9, "runscript"),
     NICS((short)10, "nics"),
     ALLOWED_USERS((short)11, "allowedUsers"),
@@ -118,8 +115,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
           return START_TIME;
         case 7: // END_TIME
           return END_TIME;
-        case 8: // OWNER_ID
-          return OWNER_ID;
         case 9: // RUNSCRIPT
           return RUNSCRIPT;
         case 10: // NICS
@@ -199,8 +194,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
     tmpMap.put(_Fields.END_TIME, new org.apache.thrift.meta_data.FieldMetaData("endTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
-    tmpMap.put(_Fields.OWNER_ID, new org.apache.thrift.meta_data.FieldMetaData("ownerId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.RUNSCRIPT, new org.apache.thrift.meta_data.FieldMetaData("runscript", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.NICS, new org.apache.thrift.meta_data.FieldMetaData("nics", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -233,7 +226,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     boolean isEnabled,
     long startTime,
     long endTime,
-    String ownerId,
     String runscript,
     List<String> nics,
     boolean isExam,
@@ -252,7 +244,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     setStartTimeIsSet(true);
     this.endTime = endTime;
     setEndTimeIsSet(true);
-    this.ownerId = ownerId;
     this.runscript = runscript;
     this.nics = nics;
     this.isExam = isExam;
@@ -280,9 +271,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     this.isEnabled = other.isEnabled;
     this.startTime = other.startTime;
     this.endTime = other.endTime;
-    if (other.isSetOwnerId()) {
-      this.ownerId = other.ownerId;
-    }
     if (other.isSetRunscript()) {
       this.runscript = other.runscript;
     }
@@ -325,7 +313,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     this.startTime = 0;
     setEndTimeIsSet(false);
     this.endTime = 0;
-    this.ownerId = null;
     this.runscript = null;
     this.nics = null;
     this.allowedUsers = null;
@@ -499,30 +486,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
 
   public void setEndTimeIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENDTIME_ISSET_ID, value);
-  }
-
-  public String getOwnerId() {
-    return this.ownerId;
-  }
-
-  public LectureWrite setOwnerId(String ownerId) {
-    this.ownerId = ownerId;
-    return this;
-  }
-
-  public void unsetOwnerId() {
-    this.ownerId = null;
-  }
-
-  /** Returns true if field ownerId is set (has been assigned a value) and false otherwise */
-  public boolean isSetOwnerId() {
-    return this.ownerId != null;
-  }
-
-  public void setOwnerIdIsSet(boolean value) {
-    if (!value) {
-      this.ownerId = null;
-    }
   }
 
   public String getRunscript() {
@@ -794,14 +757,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       }
       break;
 
-    case OWNER_ID:
-      if (value == null) {
-        unsetOwnerId();
-      } else {
-        setOwnerId((String)value);
-      }
-      break;
-
     case RUNSCRIPT:
       if (value == null) {
         unsetRunscript();
@@ -884,9 +839,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     case END_TIME:
       return Long.valueOf(getEndTime());
 
-    case OWNER_ID:
-      return getOwnerId();
-
     case RUNSCRIPT:
       return getRunscript();
 
@@ -933,8 +885,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       return isSetStartTime();
     case END_TIME:
       return isSetEndTime();
-    case OWNER_ID:
-      return isSetOwnerId();
     case RUNSCRIPT:
       return isSetRunscript();
     case NICS:
@@ -1026,15 +976,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       if (!(this_present_endTime && that_present_endTime))
         return false;
       if (this.endTime != that.endTime)
-        return false;
-    }
-
-    boolean this_present_ownerId = true && this.isSetOwnerId();
-    boolean that_present_ownerId = true && that.isSetOwnerId();
-    if (this_present_ownerId || that_present_ownerId) {
-      if (!(this_present_ownerId && that_present_ownerId))
-        return false;
-      if (!this.ownerId.equals(that.ownerId))
         return false;
     }
 
@@ -1187,16 +1128,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetOwnerId()).compareTo(other.isSetOwnerId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetOwnerId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ownerId, other.ownerId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetRunscript()).compareTo(other.isSetRunscript());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1325,14 +1256,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     if (!first) sb.append(", ");
     sb.append("endTime:");
     sb.append(this.endTime);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("ownerId:");
-    if (this.ownerId == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.ownerId);
-    }
     first = false;
     if (!first) sb.append(", ");
     sb.append("runscript:");
@@ -1490,14 +1413,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // OWNER_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.ownerId = iprot.readString();
-              struct.setOwnerIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           case 9: // RUNSCRIPT
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.runscript = iprot.readString();
@@ -1628,11 +1543,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       oprot.writeFieldBegin(END_TIME_FIELD_DESC);
       oprot.writeI64(struct.endTime);
       oprot.writeFieldEnd();
-      if (struct.ownerId != null) {
-        oprot.writeFieldBegin(OWNER_ID_FIELD_DESC);
-        oprot.writeString(struct.ownerId);
-        oprot.writeFieldEnd();
-      }
       if (struct.runscript != null) {
         oprot.writeFieldBegin(RUNSCRIPT_FIELD_DESC);
         oprot.writeString(struct.runscript);
@@ -1728,31 +1638,28 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       if (struct.isSetEndTime()) {
         optionals.set(6);
       }
-      if (struct.isSetOwnerId()) {
+      if (struct.isSetRunscript()) {
         optionals.set(7);
       }
-      if (struct.isSetRunscript()) {
+      if (struct.isSetNics()) {
         optionals.set(8);
       }
-      if (struct.isSetNics()) {
+      if (struct.isSetAllowedUsers()) {
         optionals.set(9);
       }
-      if (struct.isSetAllowedUsers()) {
+      if (struct.isSetNetworkExceptions()) {
         optionals.set(10);
       }
-      if (struct.isSetNetworkExceptions()) {
+      if (struct.isSetIsExam()) {
         optionals.set(11);
       }
-      if (struct.isSetIsExam()) {
+      if (struct.isSetHasInternetAccess()) {
         optionals.set(12);
       }
-      if (struct.isSetHasInternetAccess()) {
+      if (struct.isSetDefaultPermissions()) {
         optionals.set(13);
       }
-      if (struct.isSetDefaultPermissions()) {
-        optionals.set(14);
-      }
-      oprot.writeBitSet(optionals, 15);
+      oprot.writeBitSet(optionals, 14);
       if (struct.isSetLectureName()) {
         oprot.writeString(struct.lectureName);
       }
@@ -1773,9 +1680,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       }
       if (struct.isSetEndTime()) {
         oprot.writeI64(struct.endTime);
-      }
-      if (struct.isSetOwnerId()) {
-        oprot.writeString(struct.ownerId);
       }
       if (struct.isSetRunscript()) {
         oprot.writeString(struct.runscript);
@@ -1821,7 +1725,7 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, LectureWrite struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(15);
+      BitSet incoming = iprot.readBitSet(14);
       if (incoming.get(0)) {
         struct.lectureName = iprot.readString();
         struct.setLectureNameIsSet(true);
@@ -1851,14 +1755,10 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         struct.setEndTimeIsSet(true);
       }
       if (incoming.get(7)) {
-        struct.ownerId = iprot.readString();
-        struct.setOwnerIdIsSet(true);
-      }
-      if (incoming.get(8)) {
         struct.runscript = iprot.readString();
         struct.setRunscriptIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(8)) {
         {
           org.apache.thrift.protocol.TList _list73 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.nics = new ArrayList<String>(_list73.size);
@@ -1871,7 +1771,7 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         }
         struct.setNicsIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(9)) {
         {
           org.apache.thrift.protocol.TList _list76 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.allowedUsers = new ArrayList<String>(_list76.size);
@@ -1884,7 +1784,7 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         }
         struct.setAllowedUsersIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(10)) {
         {
           org.apache.thrift.protocol.TList _list79 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.networkExceptions = new ArrayList<NetRule>(_list79.size);
@@ -1898,15 +1798,15 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         }
         struct.setNetworkExceptionsIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(11)) {
         struct.isExam = iprot.readBool();
         struct.setIsExamIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(12)) {
         struct.hasInternetAccess = iprot.readBool();
         struct.setHasInternetAccessIsSet(true);
       }
-      if (incoming.get(14)) {
+      if (incoming.get(13)) {
         struct.defaultPermissions = new LecturePermissions();
         struct.defaultPermissions.read(iprot);
         struct.setDefaultPermissionsIsSet(true);

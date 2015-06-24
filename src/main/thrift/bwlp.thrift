@@ -219,7 +219,6 @@ struct LectureWrite {
 	5: bool isEnabled,
 	6: UnixTimestamp startTime,
 	7: UnixTimestamp endTime,
-	8: UUID ownerId,
 	9: string runscript,
 	10: list<string> nics,
 	11: optional list<string> allowedUsers, // allowed to see/select image in vmchooser. These are local accounts, not bwIDM/Master
@@ -245,6 +244,7 @@ struct LectureSummary {
 	13: bool hasInternetAccess,
 	14: LecturePermissions defaultPermissions,
 	15: optional LecturePermissions userPermissions,
+	16: bool isImageVersionUsable, // Is the linked image version valid and enabled?
 }
 
 struct LectureRead {
