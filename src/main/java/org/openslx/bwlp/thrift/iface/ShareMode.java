@@ -14,7 +14,8 @@ import org.apache.thrift.TEnum;
 public enum ShareMode implements org.apache.thrift.TEnum {
   LOCAL(0),
   PUBLISH(1),
-  DOWNLOAD(2);
+  DOWNLOAD(2),
+  FROZEN(3);
 
   private final int value;
 
@@ -41,6 +42,8 @@ public enum ShareMode implements org.apache.thrift.TEnum {
         return PUBLISH;
       case 2:
         return DOWNLOAD;
+      case 3:
+        return FROZEN;
       default:
         return null;
     }

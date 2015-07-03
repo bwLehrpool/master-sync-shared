@@ -38,7 +38,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
   private static final org.apache.thrift.protocol.TField LECTURE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("lectureId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField LECTURE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("lectureName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField IMAGE_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageVersionId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField IMAGE_BASE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageBaseId", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField IS_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("isEnabled", org.apache.thrift.protocol.TType.BOOL, (short)5);
   private static final org.apache.thrift.protocol.TField START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("startTime", org.apache.thrift.protocol.TType.I64, (short)6);
   private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short)7);
@@ -61,7 +61,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
   public String lectureId; // required
   public String lectureName; // required
   public String imageVersionId; // required
-  public String imageName; // required
+  public String imageBaseId; // required
   public boolean isEnabled; // required
   public long startTime; // required
   public long endTime; // required
@@ -80,7 +80,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     LECTURE_ID((short)1, "lectureId"),
     LECTURE_NAME((short)2, "lectureName"),
     IMAGE_VERSION_ID((short)3, "imageVersionId"),
-    IMAGE_NAME((short)4, "imageName"),
+    IMAGE_BASE_ID((short)4, "imageBaseId"),
     IS_ENABLED((short)5, "isEnabled"),
     START_TIME((short)6, "startTime"),
     END_TIME((short)7, "endTime"),
@@ -113,8 +113,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
           return LECTURE_NAME;
         case 3: // IMAGE_VERSION_ID
           return IMAGE_VERSION_ID;
-        case 4: // IMAGE_NAME
-          return IMAGE_NAME;
+        case 4: // IMAGE_BASE_ID
+          return IMAGE_BASE_ID;
         case 5: // IS_ENABLED
           return IS_ENABLED;
         case 6: // START_TIME
@@ -198,8 +198,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.IMAGE_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("imageVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
-    tmpMap.put(_Fields.IMAGE_NAME, new org.apache.thrift.meta_data.FieldMetaData("imageName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.IMAGE_BASE_ID, new org.apache.thrift.meta_data.FieldMetaData("imageBaseId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.IS_ENABLED, new org.apache.thrift.meta_data.FieldMetaData("isEnabled", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.START_TIME, new org.apache.thrift.meta_data.FieldMetaData("startTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -235,7 +235,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     String lectureId,
     String lectureName,
     String imageVersionId,
-    String imageName,
+    String imageBaseId,
     boolean isEnabled,
     long startTime,
     long endTime,
@@ -252,7 +252,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     this.lectureId = lectureId;
     this.lectureName = lectureName;
     this.imageVersionId = imageVersionId;
-    this.imageName = imageName;
+    this.imageBaseId = imageBaseId;
     this.isEnabled = isEnabled;
     setIsEnabledIsSet(true);
     this.startTime = startTime;
@@ -288,8 +288,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     if (other.isSetImageVersionId()) {
       this.imageVersionId = other.imageVersionId;
     }
-    if (other.isSetImageName()) {
-      this.imageName = other.imageName;
+    if (other.isSetImageBaseId()) {
+      this.imageBaseId = other.imageBaseId;
     }
     this.isEnabled = other.isEnabled;
     this.startTime = other.startTime;
@@ -322,7 +322,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     this.lectureId = null;
     this.lectureName = null;
     this.imageVersionId = null;
-    this.imageName = null;
+    this.imageBaseId = null;
     setIsEnabledIsSet(false);
     this.isEnabled = false;
     setStartTimeIsSet(false);
@@ -417,27 +417,27 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     }
   }
 
-  public String getImageName() {
-    return this.imageName;
+  public String getImageBaseId() {
+    return this.imageBaseId;
   }
 
-  public LectureSummary setImageName(String imageName) {
-    this.imageName = imageName;
+  public LectureSummary setImageBaseId(String imageBaseId) {
+    this.imageBaseId = imageBaseId;
     return this;
   }
 
-  public void unsetImageName() {
-    this.imageName = null;
+  public void unsetImageBaseId() {
+    this.imageBaseId = null;
   }
 
-  /** Returns true if field imageName is set (has been assigned a value) and false otherwise */
-  public boolean isSetImageName() {
-    return this.imageName != null;
+  /** Returns true if field imageBaseId is set (has been assigned a value) and false otherwise */
+  public boolean isSetImageBaseId() {
+    return this.imageBaseId != null;
   }
 
-  public void setImageNameIsSet(boolean value) {
+  public void setImageBaseIdIsSet(boolean value) {
     if (!value) {
-      this.imageName = null;
+      this.imageBaseId = null;
     }
   }
 
@@ -747,11 +747,11 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       }
       break;
 
-    case IMAGE_NAME:
+    case IMAGE_BASE_ID:
       if (value == null) {
-        unsetImageName();
+        unsetImageBaseId();
       } else {
-        setImageName((String)value);
+        setImageBaseId((String)value);
       }
       break;
 
@@ -865,8 +865,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     case IMAGE_VERSION_ID:
       return getImageVersionId();
 
-    case IMAGE_NAME:
-      return getImageName();
+    case IMAGE_BASE_ID:
+      return getImageBaseId();
 
     case IS_ENABLED:
       return Boolean.valueOf(isIsEnabled());
@@ -921,8 +921,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       return isSetLectureName();
     case IMAGE_VERSION_ID:
       return isSetImageVersionId();
-    case IMAGE_NAME:
-      return isSetImageName();
+    case IMAGE_BASE_ID:
+      return isSetImageBaseId();
     case IS_ENABLED:
       return isSetIsEnabled();
     case START_TIME:
@@ -991,12 +991,12 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
         return false;
     }
 
-    boolean this_present_imageName = true && this.isSetImageName();
-    boolean that_present_imageName = true && that.isSetImageName();
-    if (this_present_imageName || that_present_imageName) {
-      if (!(this_present_imageName && that_present_imageName))
+    boolean this_present_imageBaseId = true && this.isSetImageBaseId();
+    boolean that_present_imageBaseId = true && that.isSetImageBaseId();
+    if (this_present_imageBaseId || that_present_imageBaseId) {
+      if (!(this_present_imageBaseId && that_present_imageBaseId))
         return false;
-      if (!this.imageName.equals(that.imageName))
+      if (!this.imageBaseId.equals(that.imageBaseId))
         return false;
     }
 
@@ -1154,12 +1154,12 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetImageName()).compareTo(other.isSetImageName());
+    lastComparison = Boolean.valueOf(isSetImageBaseId()).compareTo(other.isSetImageBaseId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetImageName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageName, other.imageName);
+    if (isSetImageBaseId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageBaseId, other.imageBaseId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1328,11 +1328,11 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("imageName:");
-    if (this.imageName == null) {
+    sb.append("imageBaseId:");
+    if (this.imageBaseId == null) {
       sb.append("null");
     } else {
-      sb.append(this.imageName);
+      sb.append(this.imageBaseId);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -1476,10 +1476,10 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // IMAGE_NAME
+          case 4: // IMAGE_BASE_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.imageName = iprot.readString();
-              struct.setImageNameIsSet(true);
+              struct.imageBaseId = iprot.readString();
+              struct.setImageBaseIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1612,9 +1612,9 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
         oprot.writeString(struct.imageVersionId);
         oprot.writeFieldEnd();
       }
-      if (struct.imageName != null) {
-        oprot.writeFieldBegin(IMAGE_NAME_FIELD_DESC);
-        oprot.writeString(struct.imageName);
+      if (struct.imageBaseId != null) {
+        oprot.writeFieldBegin(IMAGE_BASE_ID_FIELD_DESC);
+        oprot.writeString(struct.imageBaseId);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(IS_ENABLED_FIELD_DESC);
@@ -1690,7 +1690,7 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       if (struct.isSetImageVersionId()) {
         optionals.set(2);
       }
-      if (struct.isSetImageName()) {
+      if (struct.isSetImageBaseId()) {
         optionals.set(3);
       }
       if (struct.isSetIsEnabled()) {
@@ -1739,8 +1739,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
       if (struct.isSetImageVersionId()) {
         oprot.writeString(struct.imageVersionId);
       }
-      if (struct.isSetImageName()) {
-        oprot.writeString(struct.imageName);
+      if (struct.isSetImageBaseId()) {
+        oprot.writeString(struct.imageBaseId);
       }
       if (struct.isSetIsEnabled()) {
         oprot.writeBool(struct.isEnabled);
@@ -1797,8 +1797,8 @@ public class LectureSummary implements org.apache.thrift.TBase<LectureSummary, L
         struct.setImageVersionIdIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.imageName = iprot.readString();
-        struct.setImageNameIsSet(true);
+        struct.imageBaseId = iprot.readString();
+        struct.setImageBaseIdIsSet(true);
       }
       if (incoming.get(4)) {
         struct.isEnabled = iprot.readBool();

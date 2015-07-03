@@ -45,6 +45,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short)8);
   private static final org.apache.thrift.protocol.TField LAST_USED_FIELD_DESC = new org.apache.thrift.protocol.TField("lastUsed", org.apache.thrift.protocol.TType.I64, (short)9);
   private static final org.apache.thrift.protocol.TField USE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("useCount", org.apache.thrift.protocol.TType.I32, (short)10);
+  private static final org.apache.thrift.protocol.TField CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createTime", org.apache.thrift.protocol.TType.I64, (short)20);
+  private static final org.apache.thrift.protocol.TField UPDATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("updateTime", org.apache.thrift.protocol.TType.I64, (short)21);
   private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)11);
   private static final org.apache.thrift.protocol.TField UPDATER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("updaterId", org.apache.thrift.protocol.TType.STRING, (short)12);
   private static final org.apache.thrift.protocol.TField RUNSCRIPT_FIELD_DESC = new org.apache.thrift.protocol.TField("runscript", org.apache.thrift.protocol.TType.STRING, (short)13);
@@ -54,7 +56,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   private static final org.apache.thrift.protocol.TField IS_EXAM_FIELD_DESC = new org.apache.thrift.protocol.TField("isExam", org.apache.thrift.protocol.TType.BOOL, (short)17);
   private static final org.apache.thrift.protocol.TField HAS_INTERNET_ACCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("hasInternetAccess", org.apache.thrift.protocol.TType.BOOL, (short)18);
   private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)19);
-  private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)20);
+  private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)22);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -72,6 +74,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   public long endTime; // required
   public long lastUsed; // required
   public int useCount; // required
+  public long createTime; // required
+  public long updateTime; // required
   public String ownerId; // required
   public String updaterId; // required
   public String runscript; // required
@@ -95,6 +99,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     END_TIME((short)8, "endTime"),
     LAST_USED((short)9, "lastUsed"),
     USE_COUNT((short)10, "useCount"),
+    CREATE_TIME((short)20, "createTime"),
+    UPDATE_TIME((short)21, "updateTime"),
     OWNER_ID((short)11, "ownerId"),
     UPDATER_ID((short)12, "updaterId"),
     RUNSCRIPT((short)13, "runscript"),
@@ -104,7 +110,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     IS_EXAM((short)17, "isExam"),
     HAS_INTERNET_ACCESS((short)18, "hasInternetAccess"),
     DEFAULT_PERMISSIONS((short)19, "defaultPermissions"),
-    USER_PERMISSIONS((short)20, "userPermissions");
+    USER_PERMISSIONS((short)22, "userPermissions");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -139,6 +145,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
           return LAST_USED;
         case 10: // USE_COUNT
           return USE_COUNT;
+        case 20: // CREATE_TIME
+          return CREATE_TIME;
+        case 21: // UPDATE_TIME
+          return UPDATE_TIME;
         case 11: // OWNER_ID
           return OWNER_ID;
         case 12: // UPDATER_ID
@@ -157,7 +167,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
           return HAS_INTERNET_ACCESS;
         case 19: // DEFAULT_PERMISSIONS
           return DEFAULT_PERMISSIONS;
-        case 20: // USER_PERMISSIONS
+        case 22: // USER_PERMISSIONS
           return USER_PERMISSIONS;
         default:
           return null;
@@ -205,9 +215,11 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   private static final int __ENDTIME_ISSET_ID = 3;
   private static final int __LASTUSED_ISSET_ID = 4;
   private static final int __USECOUNT_ISSET_ID = 5;
-  private static final int __ISEXAM_ISSET_ID = 6;
-  private static final int __HASINTERNETACCESS_ISSET_ID = 7;
-  private byte __isset_bitfield = 0;
+  private static final int __CREATETIME_ISSET_ID = 6;
+  private static final int __UPDATETIME_ISSET_ID = 7;
+  private static final int __ISEXAM_ISSET_ID = 8;
+  private static final int __HASINTERNETACCESS_ISSET_ID = 9;
+  private short __isset_bitfield = 0;
   private _Fields optionals[] = {_Fields.USER_PERMISSIONS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -232,6 +244,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
     tmpMap.put(_Fields.USE_COUNT, new org.apache.thrift.meta_data.FieldMetaData("useCount", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.CREATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("createTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
+    tmpMap.put(_Fields.UPDATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("updateTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
     tmpMap.put(_Fields.OWNER_ID, new org.apache.thrift.meta_data.FieldMetaData("ownerId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.UPDATER_ID, new org.apache.thrift.meta_data.FieldMetaData("updaterId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -273,6 +289,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     long endTime,
     long lastUsed,
     int useCount,
+    long createTime,
+    long updateTime,
     String ownerId,
     String updaterId,
     String runscript,
@@ -300,6 +318,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     setLastUsedIsSet(true);
     this.useCount = useCount;
     setUseCountIsSet(true);
+    this.createTime = createTime;
+    setCreateTimeIsSet(true);
+    this.updateTime = updateTime;
+    setUpdateTimeIsSet(true);
     this.ownerId = ownerId;
     this.updaterId = updaterId;
     this.runscript = runscript;
@@ -336,6 +358,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     this.endTime = other.endTime;
     this.lastUsed = other.lastUsed;
     this.useCount = other.useCount;
+    this.createTime = other.createTime;
+    this.updateTime = other.updateTime;
     if (other.isSetOwnerId()) {
       this.ownerId = other.ownerId;
     }
@@ -392,6 +416,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     this.lastUsed = 0;
     setUseCountIsSet(false);
     this.useCount = 0;
+    setCreateTimeIsSet(false);
+    this.createTime = 0;
+    setUpdateTimeIsSet(false);
+    this.updateTime = 0;
     this.ownerId = null;
     this.updaterId = null;
     this.runscript = null;
@@ -638,6 +666,52 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
 
   public void setUseCountIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __USECOUNT_ISSET_ID, value);
+  }
+
+  public long getCreateTime() {
+    return this.createTime;
+  }
+
+  public LectureRead setCreateTime(long createTime) {
+    this.createTime = createTime;
+    setCreateTimeIsSet(true);
+    return this;
+  }
+
+  public void unsetCreateTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CREATETIME_ISSET_ID);
+  }
+
+  /** Returns true if field createTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetCreateTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __CREATETIME_ISSET_ID);
+  }
+
+  public void setCreateTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CREATETIME_ISSET_ID, value);
+  }
+
+  public long getUpdateTime() {
+    return this.updateTime;
+  }
+
+  public LectureRead setUpdateTime(long updateTime) {
+    this.updateTime = updateTime;
+    setUpdateTimeIsSet(true);
+    return this;
+  }
+
+  public void unsetUpdateTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __UPDATETIME_ISSET_ID);
+  }
+
+  /** Returns true if field updateTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetUpdateTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __UPDATETIME_ISSET_ID);
+  }
+
+  public void setUpdateTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __UPDATETIME_ISSET_ID, value);
   }
 
   public String getOwnerId() {
@@ -1005,6 +1079,22 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       }
       break;
 
+    case CREATE_TIME:
+      if (value == null) {
+        unsetCreateTime();
+      } else {
+        setCreateTime((Long)value);
+      }
+      break;
+
+    case UPDATE_TIME:
+      if (value == null) {
+        unsetUpdateTime();
+      } else {
+        setUpdateTime((Long)value);
+      }
+      break;
+
     case OWNER_ID:
       if (value == null) {
         unsetOwnerId();
@@ -1120,6 +1210,12 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     case USE_COUNT:
       return Integer.valueOf(getUseCount());
 
+    case CREATE_TIME:
+      return Long.valueOf(getCreateTime());
+
+    case UPDATE_TIME:
+      return Long.valueOf(getUpdateTime());
+
     case OWNER_ID:
       return getOwnerId();
 
@@ -1181,6 +1277,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       return isSetLastUsed();
     case USE_COUNT:
       return isSetUseCount();
+    case CREATE_TIME:
+      return isSetCreateTime();
+    case UPDATE_TIME:
+      return isSetUpdateTime();
     case OWNER_ID:
       return isSetOwnerId();
     case UPDATER_ID:
@@ -1305,6 +1405,24 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (!(this_present_useCount && that_present_useCount))
         return false;
       if (this.useCount != that.useCount)
+        return false;
+    }
+
+    boolean this_present_createTime = true;
+    boolean that_present_createTime = true;
+    if (this_present_createTime || that_present_createTime) {
+      if (!(this_present_createTime && that_present_createTime))
+        return false;
+      if (this.createTime != that.createTime)
+        return false;
+    }
+
+    boolean this_present_updateTime = true;
+    boolean that_present_updateTime = true;
+    if (this_present_updateTime || that_present_updateTime) {
+      if (!(this_present_updateTime && that_present_updateTime))
+        return false;
+      if (this.updateTime != that.updateTime)
         return false;
     }
 
@@ -1514,6 +1632,26 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetCreateTime()).compareTo(other.isSetCreateTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCreateTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.createTime, other.createTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetUpdateTime()).compareTo(other.isSetUpdateTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUpdateTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updateTime, other.updateTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetOwnerId()).compareTo(other.isSetOwnerId());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1688,6 +1826,14 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     if (!first) sb.append(", ");
     sb.append("useCount:");
     sb.append(this.useCount);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("createTime:");
+    sb.append(this.createTime);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("updateTime:");
+    sb.append(this.updateTime);
     first = false;
     if (!first) sb.append(", ");
     sb.append("ownerId:");
@@ -1898,6 +2044,22 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 20: // CREATE_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.createTime = iprot.readI64();
+              struct.setCreateTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 21: // UPDATE_TIME
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.updateTime = iprot.readI64();
+              struct.setUpdateTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           case 11: // OWNER_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.ownerId = iprot.readString();
@@ -2002,7 +2164,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 20: // USER_PERMISSIONS
+          case 22: // USER_PERMISSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.userPermissions = new LecturePermissions();
               struct.userPermissions.read(iprot);
@@ -2126,6 +2288,12 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         struct.defaultPermissions.write(oprot);
         oprot.writeFieldEnd();
       }
+      oprot.writeFieldBegin(CREATE_TIME_FIELD_DESC);
+      oprot.writeI64(struct.createTime);
+      oprot.writeFieldEnd();
+      oprot.writeFieldBegin(UPDATE_TIME_FIELD_DESC);
+      oprot.writeI64(struct.updateTime);
+      oprot.writeFieldEnd();
       if (struct.userPermissions != null) {
         if (struct.isSetUserPermissions()) {
           oprot.writeFieldBegin(USER_PERMISSIONS_FIELD_DESC);
@@ -2181,37 +2349,43 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (struct.isSetUseCount()) {
         optionals.set(9);
       }
-      if (struct.isSetOwnerId()) {
+      if (struct.isSetCreateTime()) {
         optionals.set(10);
       }
-      if (struct.isSetUpdaterId()) {
+      if (struct.isSetUpdateTime()) {
         optionals.set(11);
       }
-      if (struct.isSetRunscript()) {
+      if (struct.isSetOwnerId()) {
         optionals.set(12);
       }
-      if (struct.isSetNics()) {
+      if (struct.isSetUpdaterId()) {
         optionals.set(13);
       }
-      if (struct.isSetAllowedUsers()) {
+      if (struct.isSetRunscript()) {
         optionals.set(14);
       }
-      if (struct.isSetNetworkExceptions()) {
+      if (struct.isSetNics()) {
         optionals.set(15);
       }
-      if (struct.isSetIsExam()) {
+      if (struct.isSetAllowedUsers()) {
         optionals.set(16);
       }
-      if (struct.isSetHasInternetAccess()) {
+      if (struct.isSetNetworkExceptions()) {
         optionals.set(17);
       }
-      if (struct.isSetDefaultPermissions()) {
+      if (struct.isSetIsExam()) {
         optionals.set(18);
       }
-      if (struct.isSetUserPermissions()) {
+      if (struct.isSetHasInternetAccess()) {
         optionals.set(19);
       }
-      oprot.writeBitSet(optionals, 20);
+      if (struct.isSetDefaultPermissions()) {
+        optionals.set(20);
+      }
+      if (struct.isSetUserPermissions()) {
+        optionals.set(21);
+      }
+      oprot.writeBitSet(optionals, 22);
       if (struct.isSetLectureId()) {
         oprot.writeString(struct.lectureId);
       }
@@ -2241,6 +2415,12 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       }
       if (struct.isSetUseCount()) {
         oprot.writeI32(struct.useCount);
+      }
+      if (struct.isSetCreateTime()) {
+        oprot.writeI64(struct.createTime);
+      }
+      if (struct.isSetUpdateTime()) {
+        oprot.writeI64(struct.updateTime);
       }
       if (struct.isSetOwnerId()) {
         oprot.writeString(struct.ownerId);
@@ -2295,7 +2475,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, LectureRead struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(20);
+      BitSet incoming = iprot.readBitSet(22);
       if (incoming.get(0)) {
         struct.lectureId = iprot.readString();
         struct.setLectureIdIsSet(true);
@@ -2338,18 +2518,26 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         struct.setUseCountIsSet(true);
       }
       if (incoming.get(10)) {
+        struct.createTime = iprot.readI64();
+        struct.setCreateTimeIsSet(true);
+      }
+      if (incoming.get(11)) {
+        struct.updateTime = iprot.readI64();
+        struct.setUpdateTimeIsSet(true);
+      }
+      if (incoming.get(12)) {
         struct.ownerId = iprot.readString();
         struct.setOwnerIdIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(13)) {
         struct.updaterId = iprot.readString();
         struct.setUpdaterIdIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(14)) {
         struct.runscript = iprot.readString();
         struct.setRunscriptIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(15)) {
         {
           org.apache.thrift.protocol.TList _list97 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.nics = new ArrayList<String>(_list97.size);
@@ -2362,7 +2550,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         }
         struct.setNicsIsSet(true);
       }
-      if (incoming.get(14)) {
+      if (incoming.get(16)) {
         {
           org.apache.thrift.protocol.TList _list100 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.allowedUsers = new ArrayList<String>(_list100.size);
@@ -2375,7 +2563,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         }
         struct.setAllowedUsersIsSet(true);
       }
-      if (incoming.get(15)) {
+      if (incoming.get(17)) {
         {
           org.apache.thrift.protocol.TList _list103 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.networkExceptions = new ArrayList<NetRule>(_list103.size);
@@ -2389,20 +2577,20 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         }
         struct.setNetworkExceptionsIsSet(true);
       }
-      if (incoming.get(16)) {
+      if (incoming.get(18)) {
         struct.isExam = iprot.readBool();
         struct.setIsExamIsSet(true);
       }
-      if (incoming.get(17)) {
+      if (incoming.get(19)) {
         struct.hasInternetAccess = iprot.readBool();
         struct.setHasInternetAccessIsSet(true);
       }
-      if (incoming.get(18)) {
+      if (incoming.get(20)) {
         struct.defaultPermissions = new LecturePermissions();
         struct.defaultPermissions.read(iprot);
         struct.setDefaultPermissionsIsSet(true);
       }
-      if (incoming.get(19)) {
+      if (incoming.get(21)) {
         struct.userPermissions = new LecturePermissions();
         struct.userPermissions.read(iprot);
         struct.setUserPermissionsIsSet(true);

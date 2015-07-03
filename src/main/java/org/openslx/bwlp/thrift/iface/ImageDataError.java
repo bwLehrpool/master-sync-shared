@@ -13,7 +13,8 @@ import org.apache.thrift.TEnum;
 
 public enum ImageDataError implements org.apache.thrift.TEnum {
   INVALID_DATA(0),
-  UNKNOWN_IMAGE(1);
+  UNKNOWN_IMAGE(1),
+  INVALID_SHARE_MODE(2);
 
   private final int value;
 
@@ -38,6 +39,8 @@ public enum ImageDataError implements org.apache.thrift.TEnum {
         return INVALID_DATA;
       case 1:
         return UNKNOWN_IMAGE;
+      case 2:
+        return INVALID_SHARE_MODE;
       default:
         return null;
     }

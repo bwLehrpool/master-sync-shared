@@ -35,13 +35,15 @@ enum AuthenticationError {
 
 enum ImageDataError {
 	INVALID_DATA,
-	UNKNOWN_IMAGE
+	UNKNOWN_IMAGE,
+	INVALID_SHARE_MODE
 }
 
 enum ShareMode {
-	LOCAL,
-	PUBLISH,
-	DOWNLOAD
+	LOCAL, // Managed by local user, do not upload to master server
+	PUBLISH, // Managed by local user, upload new versions to master server
+	DOWNLOAD, // Managed by remote user, automatically download new versions
+	FROZEN // Managed by remote user, but do not download any new versions
 }
 
 enum NetDirection {
@@ -232,7 +234,7 @@ struct LectureSummary {
 	1: UUID lectureId,
 	2: string lectureName,
 	3: UUID imageVersionId,
-	4: string imageName,
+	4: UUID imageBaseId,
 	5: bool isEnabled,
 	6: UnixTimestamp startTime,
 	7: UnixTimestamp endTime,
@@ -258,6 +260,8 @@ struct LectureRead {
 	8: UnixTimestamp endTime,
 	9: UnixTimestamp lastUsed,
 	10: i32 useCount,
+	20: UnixTimestamp createTime,
+	21: UnixTimestamp updateTime,
 	11: UUID ownerId,
 	12: UUID updaterId,
 	13: string runscript,
@@ -267,7 +271,7 @@ struct LectureRead {
 	17: bool isExam,
 	18: bool hasInternetAccess,
 	19: LecturePermissions defaultPermissions,
-	20: optional LecturePermissions userPermissions,
+	22: optional LecturePermissions userPermissions,
 }
 
 struct TransferInformation {
@@ -315,7 +319,11 @@ exception TImageDataException {
 // #############################################
 
 service SatelliteServer {
+	// Get server (thrift interface) version
 	int getVersion(),
+	
+	// Get number of items returned per page (for calls that have a page parameter)
+	i32 getPageSize(),
 	
 	// File transfer related
 	TransferInformation requestImageVersionUpload(1: Token userToken, 2: UUID imageBaseId, 3: i64 fileSize, 4: list<binary> blockHashes)
@@ -345,7 +353,7 @@ service SatelliteServer {
 	 * Image related
 	 */
 	// Get image list. tagSearch can be null, which disables this type of filtering and returns all
-    list<ImageSummaryRead> getImageList(1: Token userToken, 2: list<string> tagSearch)
+    list<ImageSummaryRead> getImageList(1: Token userToken, 2: list<string> tagSearch, 3: i32 page)
 		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
 	// Query detailed information about an image
 	ImageDetailsRead getImageDetails(1: Token userToken, 2: UUID imageBaseId)
@@ -383,13 +391,10 @@ service SatelliteServer {
     void updateLecture(1: Token userToken, 2: UUID lectureId, 3: LectureWrite lecture)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Get list of all lectures
-    list<LectureSummary> getLectureList(1: Token userToken)
+    list<LectureSummary> getLectureList(1: Token userToken, 2: i32 page)
 		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
 	// Get detailed lecture information
 	LectureRead getLectureDetails(1: Token userToken, 2: UUID lectureId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
-	// Get list of lectures that are using the given image version
-	list<LectureSummary> getLecturesByImageVersion(1: Token userToken, 2: UUID imageVersionId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Delete given lecture
 	void deleteLecture(1: Token userToken, 2: UUID lectureId)
