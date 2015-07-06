@@ -38,6 +38,7 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
   private static final org.apache.thrift.protocol.TField SESSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("sessionId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField AUTH_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("authToken", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField SATELLITES_FIELD_DESC = new org.apache.thrift.protocol.TField("satellites", org.apache.thrift.protocol.TType.LIST, (short)3);
+  private static final org.apache.thrift.protocol.TField USER_INFO_FIELD_DESC = new org.apache.thrift.protocol.TField("userInfo", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -48,12 +49,14 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
   public String sessionId; // required
   public String authToken; // required
   public List<Satellite> satellites; // required
+  public UserInfo userInfo; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     SESSION_ID((short)1, "sessionId"),
     AUTH_TOKEN((short)2, "authToken"),
-    SATELLITES((short)3, "satellites");
+    SATELLITES((short)3, "satellites"),
+    USER_INFO((short)4, "userInfo");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -74,6 +77,8 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
           return AUTH_TOKEN;
         case 3: // SATELLITES
           return SATELLITES;
+        case 4: // USER_INFO
+          return USER_INFO;
         default:
           return null;
       }
@@ -124,6 +129,8 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
     tmpMap.put(_Fields.SATELLITES, new org.apache.thrift.meta_data.FieldMetaData("satellites", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Satellite.class))));
+    tmpMap.put(_Fields.USER_INFO, new org.apache.thrift.meta_data.FieldMetaData("userInfo", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, UserInfo.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ClientSessionData.class, metaDataMap);
   }
@@ -134,12 +141,14 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
   public ClientSessionData(
     String sessionId,
     String authToken,
-    List<Satellite> satellites)
+    List<Satellite> satellites,
+    UserInfo userInfo)
   {
     this();
     this.sessionId = sessionId;
     this.authToken = authToken;
     this.satellites = satellites;
+    this.userInfo = userInfo;
   }
 
   /**
@@ -159,6 +168,9 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
       }
       this.satellites = __this__satellites;
     }
+    if (other.isSetUserInfo()) {
+      this.userInfo = new UserInfo(other.userInfo);
+    }
   }
 
   public ClientSessionData deepCopy() {
@@ -170,6 +182,7 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
     this.sessionId = null;
     this.authToken = null;
     this.satellites = null;
+    this.userInfo = null;
   }
 
   public String getSessionId() {
@@ -259,6 +272,30 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
     }
   }
 
+  public UserInfo getUserInfo() {
+    return this.userInfo;
+  }
+
+  public ClientSessionData setUserInfo(UserInfo userInfo) {
+    this.userInfo = userInfo;
+    return this;
+  }
+
+  public void unsetUserInfo() {
+    this.userInfo = null;
+  }
+
+  /** Returns true if field userInfo is set (has been assigned a value) and false otherwise */
+  public boolean isSetUserInfo() {
+    return this.userInfo != null;
+  }
+
+  public void setUserInfoIsSet(boolean value) {
+    if (!value) {
+      this.userInfo = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case SESSION_ID:
@@ -285,6 +322,14 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
       }
       break;
 
+    case USER_INFO:
+      if (value == null) {
+        unsetUserInfo();
+      } else {
+        setUserInfo((UserInfo)value);
+      }
+      break;
+
     }
   }
 
@@ -298,6 +343,9 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
 
     case SATELLITES:
       return getSatellites();
+
+    case USER_INFO:
+      return getUserInfo();
 
     }
     throw new IllegalStateException();
@@ -316,6 +364,8 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
       return isSetAuthToken();
     case SATELLITES:
       return isSetSatellites();
+    case USER_INFO:
+      return isSetUserInfo();
     }
     throw new IllegalStateException();
   }
@@ -357,6 +407,15 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
       if (!(this_present_satellites && that_present_satellites))
         return false;
       if (!this.satellites.equals(that.satellites))
+        return false;
+    }
+
+    boolean this_present_userInfo = true && this.isSetUserInfo();
+    boolean that_present_userInfo = true && that.isSetUserInfo();
+    if (this_present_userInfo || that_present_userInfo) {
+      if (!(this_present_userInfo && that_present_userInfo))
+        return false;
+      if (!this.userInfo.equals(that.userInfo))
         return false;
     }
 
@@ -406,6 +465,16 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetUserInfo()).compareTo(other.isSetUserInfo());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUserInfo()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userInfo, other.userInfo);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -449,6 +518,14 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
       sb.append(this.satellites);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("userInfo:");
+    if (this.userInfo == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.userInfo);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -456,6 +533,9 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
     // check for sub-struct validity
+    if (userInfo != null) {
+      userInfo.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -527,6 +607,15 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // USER_INFO
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.userInfo = new UserInfo();
+              struct.userInfo.read(iprot);
+              struct.setUserInfoIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -564,6 +653,11 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
         }
         oprot.writeFieldEnd();
       }
+      if (struct.userInfo != null) {
+        oprot.writeFieldBegin(USER_INFO_FIELD_DESC);
+        struct.userInfo.write(oprot);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -591,7 +685,10 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
       if (struct.isSetSatellites()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetUserInfo()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetSessionId()) {
         oprot.writeString(struct.sessionId);
       }
@@ -607,12 +704,15 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
           }
         }
       }
+      if (struct.isSetUserInfo()) {
+        struct.userInfo.write(oprot);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ClientSessionData struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.sessionId = iprot.readString();
         struct.setSessionIdIsSet(true);
@@ -634,6 +734,11 @@ public class ClientSessionData implements org.apache.thrift.TBase<ClientSessionD
           }
         }
         struct.setSatellitesIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.userInfo = new UserInfo();
+        struct.userInfo.read(iprot);
+        struct.setUserInfoIsSet(true);
       }
     }
   }

@@ -89,7 +89,8 @@ struct SessionData {
 struct ClientSessionData {
 	1: Token sessionId,
 	2: Token authToken,
-	3: list<Satellite> satellites
+	3: list<Satellite> satellites,
+	4: UserInfo userInfo,
 }
 
 struct ServerSessionData {
