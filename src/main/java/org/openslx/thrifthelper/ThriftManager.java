@@ -129,8 +129,7 @@ public class ThriftManager
 							return null;
 						}
 						// ok lets do it
-						TTransport transport =
-								new TSocket( SATELLITE_IP, SATELLITE_PORT, SATELLITE_TIMEOUT );
+						TTransport transport = new TFramedTransport(new TSocket( SATELLITE_IP, SATELLITE_PORT, SATELLITE_TIMEOUT ));
 						try {
 							transport.open();
 						} catch ( TTransportException e ) {
