@@ -20,7 +20,7 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 	{
 		public T getNewClient();
 
-		public void error( Throwable t, String message );
+		public boolean error( int failCount, String method, Throwable t );
 	}
 
 	private final ThreadLocal<T> clients = new ThreadLocal<T>();
@@ -59,12 +59,11 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 		// first find the thrift methods
 		if ( !thriftMethods.contains( method.getName() ) ) {
 			try {
-				return method.invoke( method, args );
+				return method.invoke( getClient( false ), args );
 			} catch ( InvocationTargetException e ) {
-				// TODO Auto-generated catch block
 				Throwable cause = e.getCause();
 				if ( cause == null ) {
-					throw new RuntimeException();
+					cause = e;
 				}
 				throw cause;
 			}
@@ -73,13 +72,9 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 
 		T client = getClient( false );
 		Throwable cause = null;
-		for ( int i = 0; i < 3; i++ ) {
+		for ( int i = 1; ; i++ ) {
 			if ( client == null ) {
 				LOGGER.debug( "Transport error - re-initialising ..." );
-				try {
-					Thread.sleep( 1000 + 3000 * i );
-				} catch ( Exception eee ) {
-				}
 				client = getClient( true );
 				if ( client == null )
 					continue;
@@ -88,14 +83,17 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 				return method.invoke( client, args );
 			} catch ( InvocationTargetException e ) {
 				cause = e.getCause();
-				client = null;
 				if ( cause != null && ! ( cause instanceof TTransportException ) )
 					throw cause;
+				client = null;
+				if ( cause == null )
+					cause = e;
 			}
+			if ( !callback.error( i, method.getName(), cause ) )
+				break;
 		}
 
 		// Uh oh
-		callback.error( cause, "Could not reconnect to thrift server - network or server down?" );
 		if ( cause != null )
 			throw cause;
 		return null;
