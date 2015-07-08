@@ -282,8 +282,8 @@ struct TransferInformation {
 }
 
 // Used to tell status of an upload. The blockStatus is one byte per 16MB block,
-// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying 
-struct UploadStatus {
+// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying
+struct TransferStatus {
 	1: binary blockStatus,
 }
 
@@ -330,7 +330,7 @@ service SatelliteServer {
 	TransferInformation requestImageVersionUpload(1: Token userToken, 2: UUID imageBaseId, 3: i64 fileSize, 4: list<binary> blockHashes)
 		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError),
 	void cancelUpload(1: Token uploadToken),
-	UploadStatus queryUploadStatus(1: Token uploadToken)
+	TransferStatus queryUploadStatus(1: Token uploadToken)
 		throws (1:TInvalidTokenException ex1),
 
 	TransferInformation requestDownload(1: Token userToken, 2: UUID imageVersionId)

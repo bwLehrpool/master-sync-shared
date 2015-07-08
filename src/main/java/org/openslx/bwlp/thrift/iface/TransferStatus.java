@@ -32,15 +32,15 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, UploadStatus._Fields>, java.io.Serializable, Cloneable, Comparable<UploadStatus> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("UploadStatus");
+public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, TransferStatus._Fields>, java.io.Serializable, Cloneable, Comparable<TransferStatus> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TransferStatus");
 
   private static final org.apache.thrift.protocol.TField BLOCK_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("blockStatus", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new UploadStatusStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new UploadStatusTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TransferStatusStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TransferStatusTupleSchemeFactory());
   }
 
   public ByteBuffer blockStatus; // required
@@ -110,13 +110,13 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
     tmpMap.put(_Fields.BLOCK_STATUS, new org.apache.thrift.meta_data.FieldMetaData("blockStatus", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UploadStatus.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TransferStatus.class, metaDataMap);
   }
 
-  public UploadStatus() {
+  public TransferStatus() {
   }
 
-  public UploadStatus(
+  public TransferStatus(
     ByteBuffer blockStatus)
   {
     this();
@@ -126,15 +126,15 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public UploadStatus(UploadStatus other) {
+  public TransferStatus(TransferStatus other) {
     if (other.isSetBlockStatus()) {
       this.blockStatus = org.apache.thrift.TBaseHelper.copyBinary(other.blockStatus);
 ;
     }
   }
 
-  public UploadStatus deepCopy() {
-    return new UploadStatus(this);
+  public TransferStatus deepCopy() {
+    return new TransferStatus(this);
   }
 
   @Override
@@ -151,12 +151,12 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
     return blockStatus;
   }
 
-  public UploadStatus setBlockStatus(byte[] blockStatus) {
+  public TransferStatus setBlockStatus(byte[] blockStatus) {
     setBlockStatus(blockStatus == null ? (ByteBuffer)null : ByteBuffer.wrap(blockStatus));
     return this;
   }
 
-  public UploadStatus setBlockStatus(ByteBuffer blockStatus) {
+  public TransferStatus setBlockStatus(ByteBuffer blockStatus) {
     this.blockStatus = blockStatus;
     return this;
   }
@@ -215,12 +215,12 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof UploadStatus)
-      return this.equals((UploadStatus)that);
+    if (that instanceof TransferStatus)
+      return this.equals((TransferStatus)that);
     return false;
   }
 
-  public boolean equals(UploadStatus that) {
+  public boolean equals(TransferStatus that) {
     if (that == null)
       return false;
 
@@ -242,7 +242,7 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
   }
 
   @Override
-  public int compareTo(UploadStatus other) {
+  public int compareTo(TransferStatus other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -276,7 +276,7 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("UploadStatus(");
+    StringBuilder sb = new StringBuilder("TransferStatus(");
     boolean first = true;
 
     sb.append("blockStatus:");
@@ -311,15 +311,15 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
     }
   }
 
-  private static class UploadStatusStandardSchemeFactory implements SchemeFactory {
-    public UploadStatusStandardScheme getScheme() {
-      return new UploadStatusStandardScheme();
+  private static class TransferStatusStandardSchemeFactory implements SchemeFactory {
+    public TransferStatusStandardScheme getScheme() {
+      return new TransferStatusStandardScheme();
     }
   }
 
-  private static class UploadStatusStandardScheme extends StandardScheme<UploadStatus> {
+  private static class TransferStatusStandardScheme extends StandardScheme<TransferStatus> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, UploadStatus struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TransferStatus struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -348,7 +348,7 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, UploadStatus struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TransferStatus struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -363,16 +363,16 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
 
   }
 
-  private static class UploadStatusTupleSchemeFactory implements SchemeFactory {
-    public UploadStatusTupleScheme getScheme() {
-      return new UploadStatusTupleScheme();
+  private static class TransferStatusTupleSchemeFactory implements SchemeFactory {
+    public TransferStatusTupleScheme getScheme() {
+      return new TransferStatusTupleScheme();
     }
   }
 
-  private static class UploadStatusTupleScheme extends TupleScheme<UploadStatus> {
+  private static class TransferStatusTupleScheme extends TupleScheme<TransferStatus> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, UploadStatus struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TransferStatus struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
       if (struct.isSetBlockStatus()) {
@@ -385,7 +385,7 @@ public class UploadStatus implements org.apache.thrift.TBase<UploadStatus, Uploa
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, UploadStatus struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TransferStatus struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {

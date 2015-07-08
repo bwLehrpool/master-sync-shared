@@ -44,7 +44,7 @@ public class SatelliteServer {
 
     public void cancelUpload(String uploadToken) throws org.apache.thrift.TException;
 
-    public UploadStatus queryUploadStatus(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException;
+    public TransferStatus queryUploadStatus(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException;
 
     public TransferInformation requestDownload(String userToken, String imageVersionId) throws TAuthorizationException, org.apache.thrift.TException;
 
@@ -278,7 +278,7 @@ public class SatelliteServer {
       return;
     }
 
-    public UploadStatus queryUploadStatus(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException
+    public TransferStatus queryUploadStatus(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException
     {
       send_queryUploadStatus(uploadToken);
       return recv_queryUploadStatus();
@@ -291,7 +291,7 @@ public class SatelliteServer {
       sendBase("queryUploadStatus", args);
     }
 
-    public UploadStatus recv_queryUploadStatus() throws TInvalidTokenException, org.apache.thrift.TException
+    public TransferStatus recv_queryUploadStatus() throws TInvalidTokenException, org.apache.thrift.TException
     {
       queryUploadStatus_result result = new queryUploadStatus_result();
       receiveBase(result, "queryUploadStatus");
@@ -1200,7 +1200,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public UploadStatus getResult() throws TInvalidTokenException, org.apache.thrift.TException {
+      public TransferStatus getResult() throws TInvalidTokenException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -3147,7 +3147,7 @@ public class SatelliteServer {
       }
     }
 
-    public static class queryUploadStatus<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, queryUploadStatus_args, UploadStatus> {
+    public static class queryUploadStatus<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, queryUploadStatus_args, TransferStatus> {
       public queryUploadStatus() {
         super("queryUploadStatus");
       }
@@ -3156,10 +3156,10 @@ public class SatelliteServer {
         return new queryUploadStatus_args();
       }
 
-      public AsyncMethodCallback<UploadStatus> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<TransferStatus> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<UploadStatus>() { 
-          public void onComplete(UploadStatus o) {
+        return new AsyncMethodCallback<TransferStatus>() { 
+          public void onComplete(TransferStatus o) {
             queryUploadStatus_result result = new queryUploadStatus_result();
             result.success = o;
             try {
@@ -3199,7 +3199,7 @@ public class SatelliteServer {
         return false;
       }
 
-      public void start(I iface, queryUploadStatus_args args, org.apache.thrift.async.AsyncMethodCallback<UploadStatus> resultHandler) throws TException {
+      public void start(I iface, queryUploadStatus_args args, org.apache.thrift.async.AsyncMethodCallback<TransferStatus> resultHandler) throws TException {
         iface.queryUploadStatus(args.uploadToken,resultHandler);
       }
     }
@@ -8185,7 +8185,7 @@ public class SatelliteServer {
       schemes.put(TupleScheme.class, new queryUploadStatus_resultTupleSchemeFactory());
     }
 
-    public UploadStatus success; // required
+    public TransferStatus success; // required
     public TInvalidTokenException ex1; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -8254,7 +8254,7 @@ public class SatelliteServer {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, UploadStatus.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, TransferStatus.class)));
       tmpMap.put(_Fields.EX1, new org.apache.thrift.meta_data.FieldMetaData("ex1", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -8265,7 +8265,7 @@ public class SatelliteServer {
     }
 
     public queryUploadStatus_result(
-      UploadStatus success,
+      TransferStatus success,
       TInvalidTokenException ex1)
     {
       this();
@@ -8278,7 +8278,7 @@ public class SatelliteServer {
      */
     public queryUploadStatus_result(queryUploadStatus_result other) {
       if (other.isSetSuccess()) {
-        this.success = new UploadStatus(other.success);
+        this.success = new TransferStatus(other.success);
       }
       if (other.isSetEx1()) {
         this.ex1 = new TInvalidTokenException(other.ex1);
@@ -8295,11 +8295,11 @@ public class SatelliteServer {
       this.ex1 = null;
     }
 
-    public UploadStatus getSuccess() {
+    public TransferStatus getSuccess() {
       return this.success;
     }
 
-    public queryUploadStatus_result setSuccess(UploadStatus success) {
+    public queryUploadStatus_result setSuccess(TransferStatus success) {
       this.success = success;
       return this;
     }
@@ -8349,7 +8349,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((UploadStatus)value);
+          setSuccess((TransferStatus)value);
         }
         break;
 
@@ -8541,7 +8541,7 @@ public class SatelliteServer {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new UploadStatus();
+                struct.success = new TransferStatus();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -8620,7 +8620,7 @@ public class SatelliteServer {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = new UploadStatus();
+          struct.success = new TransferStatus();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
