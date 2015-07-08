@@ -22,7 +22,7 @@ public class ThriftManager
 	{
 		/**
 		 * Called if connecting/reconnecting to the thrift server failed.
-		 *
+		 * 
 		 * @param failCount how many failures occured for this call so far
 		 * @param method name of method that failed
 		 * @param t the exception that occured (may be null)
@@ -52,80 +52,92 @@ public class ThriftManager
 	 */
 	private static SatelliteServer.Iface satClient = (SatelliteServer.Iface)Proxy.newProxyInstance(
 			SatelliteServer.Iface.class.getClassLoader(),
-			new Class[] { SatelliteServer.Iface.class }, new ThriftHandler<SatelliteServer.Client>( SatelliteServer.Client.class, new EventCallback<SatelliteServer.Client>() {
+			new Class[] { SatelliteServer.Iface.class }, new ThriftHandler<SatelliteServer.Client>(
+					SatelliteServer.Client.class, new EventCallback<SatelliteServer.Client>() {
 
-				@Override
-				public SatelliteServer.Client getNewClient()
-				{
-					// first check if we have a sat ip
-					if ( SATELLITE_IP == null ) {
-						LOGGER.error( "Satellite ip adress was not set prior to getting the sat client. Use setSatelliteAddress(<addr>)." );
-						return null;
-					}
-					// ok lets do it
-					TTransport transport = new TFramedTransport( new TSocket( SATELLITE_IP, SATELLITE_PORT, SATELLITE_TIMEOUT ) );
-					try {
-						transport.open();
-					} catch ( TTransportException e ) {
-						LOGGER.error( "Could not open transport to thrift's server with IP: " + SATELLITE_IP );
-						transport.close();
-						return null;
-					}
-					final TProtocol protocol = new TBinaryProtocol( transport );
-					// now we are ready to create the client, according to ClientType!
-					LOGGER.info( "Satellite '" + SATELLITE_IP + "' reachable. Client initialised." );
-					return new SatelliteServer.Client( protocol );
-				}
+						@Override
+						public SatelliteServer.Client getNewClient()
+						{
+							// first check if we have a sat ip
+							if ( SATELLITE_IP == null ) {
+								LOGGER.error( "Satellite ip adress was not set prior to getting the sat client. Use setSatelliteAddress(<addr>)." );
+								return null;
+							}
+							// ok lets do it
+							TTransport transport = new TFramedTransport(
+									new TSocket(
+											SATELLITE_IP, SATELLITE_PORT, SATELLITE_TIMEOUT ) );
+							try {
+								transport.open();
+							} catch ( TTransportException e ) {
+								LOGGER.error( "Could not open transport to thrift's server with IP: " + SATELLITE_IP );
+								transport.close();
+								return null;
+							}
+							final TProtocol protocol = new TBinaryProtocol(
+									transport );
+							// now we are ready to create the client, according to ClientType!
+							LOGGER.info( "Satellite '" + SATELLITE_IP + "' reachable. Client initialised." );
+							return new SatelliteServer.Client(
+									protocol );
+						}
 
-				@Override
-				public boolean error( int failCount, String method, Throwable t )
-				{
-					return errorCallback != null && errorCallback.thriftError( failCount, method, t );
-				}
-			} ) );
+						@Override
+						public boolean error( int failCount, String method, Throwable t )
+						{
+							return errorCallback != null && errorCallback.thriftError( failCount, method, t );
+						}
+					} ) );
 
 	/**
 	 * Master connection. As its address is known in advance, create the object right away.
 	 */
 	private static MasterServer.Iface masterClient = (MasterServer.Iface)Proxy.newProxyInstance(
 			MasterServer.Iface.class.getClassLoader(),
-			new Class[] { MasterServer.Iface.class }, new ThriftHandler<MasterServer.Client>( MasterServer.Client.class, new EventCallback<MasterServer.Client>() {
+			new Class[] { MasterServer.Iface.class }, new ThriftHandler<MasterServer.Client>(
+					MasterServer.Client.class, new EventCallback<MasterServer.Client>() {
 
-				@Override
-				public MasterServer.Client getNewClient()
-				{
-					// first check if we have a sat ip
-					if ( MASTERSERVER_ADDRESS == null ) {
-						LOGGER.error( "Master server adress was not set prior to getting the client. Use setMasterServerAddress(<addr>)." );
-						return null;
-					}
-					// ok lets do it
-					TTransport transport =
-							new TFramedTransport( new TSocket( MASTERSERVER_ADDRESS, MASTERSERVER_PORT, MASTERSERVER_TIMEOUT ) );
-					try {
-						transport.open();
-					} catch ( TTransportException e ) {
-						LOGGER.error( "Could not open transport to thrift's server with IP: " + MASTERSERVER_ADDRESS );
-						transport.close();
-						return null;
-					}
-					final TProtocol protocol = new TBinaryProtocol( transport );
-					// now we are ready to create the client, according to ClientType!
-					return new MasterServer.Client( protocol );
+						@Override
+						public MasterServer.Client getNewClient()
+						{
+							// first check if we have a sat ip
+							if ( MASTERSERVER_ADDRESS == null ) {
+								LOGGER.error( "Master server adress was not set prior to getting the client. Use setMasterServerAddress(<addr>)." );
+								return null;
+							}
+							// ok lets do it
+							TTransport transport =
+									new TFramedTransport(
+											new TSocket(
+													MASTERSERVER_ADDRESS, MASTERSERVER_PORT, MASTERSERVER_TIMEOUT ) );
+							try {
+								transport.open();
+							} catch ( TTransportException e ) {
+								LOGGER.error( "Could not open transport to thrift's server with IP: " + MASTERSERVER_ADDRESS );
+								transport.close();
+								return null;
+							}
+							final TProtocol protocol = new TBinaryProtocol(
+									transport );
+							// now we are ready to create the client, according to ClientType!
+							return new MasterServer.Client(
+									protocol );
 
-				}
+						}
 
-				@Override
-				public boolean error( int failCount, String method, Throwable t )
-				{
-					return errorCallback != null && errorCallback.thriftError( failCount, method, t );
-				}
-			} ) );
+						@Override
+						public boolean error( int failCount, String method, Throwable t )
+						{
+							synchronized ( LOGGER ) {
+								return errorCallback != null && errorCallback.thriftError( failCount, method, t );
+							}
+						}
+					} ) );
 
 	/**
 	 * Sets the address of the master server
 	 * 
-	 * @param host the ip/hostname  of the master server
+	 * @param host the ip/hostname of the master server
 	 * @return true if setting the address worked, false otherwise
 	 */
 	public static boolean setMasterServerAddress( String host )
@@ -146,7 +158,7 @@ public class ThriftManager
 	/**
 	 * Sets the IP of the satellite to connect to
 	 * 
-	 * @param host the ip/hostname  of the satellite
+	 * @param host the ip/hostname of the satellite
 	 * @return true if setting the address worked, false otherwise
 	 */
 	public static boolean setSatelliteAddress( String host )

@@ -68,35 +68,36 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 				throw cause;
 			}
 		}
-		LOGGER.debug( "Proxying '" + method.getName() + "'" );
 
 		T client = getClient( false );
 		Throwable cause = null;
-		for ( int i = 1; ; i++ ) {
+		for ( int i = 1;; i++ ) {
 			if ( client == null ) {
 				LOGGER.debug( "Transport error - re-initialising ..." );
 				client = getClient( true );
-				if ( client == null )
-					continue;
 			}
-			try {
-				return method.invoke( client, args );
-			} catch ( InvocationTargetException e ) {
-				cause = e.getCause();
-				if ( cause != null && ! ( cause instanceof TTransportException ) )
-					throw cause;
-				client = null;
-				if ( cause == null )
-					cause = e;
+			if ( client != null ) {
+				try {
+					return method.invoke( client, args );
+				} catch ( InvocationTargetException e ) {
+					cause = e.getCause();
+					if ( cause != null && ! ( cause instanceof TTransportException ) )
+						throw cause;
+					client = null;
+					if ( cause == null )
+						cause = e;
+				}
 			}
-			if ( !callback.error( i, method.getName(), cause ) )
+			// Call the error callback. As long as true is returned, keep retrying
+			if ( !callback.error( i, method.getName(), cause ) ) {
 				break;
+			}
 		}
 
 		// Uh oh
 		if ( cause != null )
 			throw cause;
-		return null;
+		throw new TTransportException( "Could not connect" );
 	}
 
 	private T getClient( boolean forceNew )
