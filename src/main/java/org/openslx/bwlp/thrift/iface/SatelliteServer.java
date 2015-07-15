@@ -40,7 +40,7 @@ public class SatelliteServer {
 
     public int getPageSize() throws org.apache.thrift.TException;
 
-    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes) throws TTransferRejectedException, TAuthorizationException, org.apache.thrift.TException;
+    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException;
 
     public void cancelUpload(String uploadToken) throws org.apache.thrift.TException;
 
@@ -226,7 +226,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPageSize failed: unknown result");
     }
 
-    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes) throws TTransferRejectedException, TAuthorizationException, org.apache.thrift.TException
+    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
     {
       send_requestImageVersionUpload(userToken, imageBaseId, fileSize, blockHashes);
       return recv_requestImageVersionUpload();
@@ -242,7 +242,7 @@ public class SatelliteServer {
       sendBase("requestImageVersionUpload", args);
     }
 
-    public TransferInformation recv_requestImageVersionUpload() throws TTransferRejectedException, TAuthorizationException, org.apache.thrift.TException
+    public TransferInformation recv_requestImageVersionUpload() throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
     {
       requestImageVersionUpload_result result = new requestImageVersionUpload_result();
       receiveBase(result, "requestImageVersionUpload");
@@ -254,6 +254,12 @@ public class SatelliteServer {
       }
       if (result.authError != null) {
         throw result.authError;
+      }
+      if (result.ffff != null) {
+        throw result.ffff;
+      }
+      if (result.sdf != null) {
+        throw result.sdf;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "requestImageVersionUpload failed: unknown result");
     }
@@ -1139,7 +1145,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public TransferInformation getResult() throws TTransferRejectedException, TAuthorizationException, org.apache.thrift.TException {
+      public TransferInformation getResult() throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2194,6 +2200,10 @@ public class SatelliteServer {
           result.rejection = rejection;
         } catch (TAuthorizationException authError) {
           result.authError = authError;
+        } catch (TInternalServerError ffff) {
+          result.ffff = ffff;
+        } catch (TNotFoundException sdf) {
+          result.sdf = sdf;
         }
         return result;
       }
@@ -3078,6 +3088,16 @@ public class SatelliteServer {
             else             if (e instanceof TAuthorizationException) {
                         result.authError = (TAuthorizationException) e;
                         result.setAuthErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInternalServerError) {
+                        result.ffff = (TInternalServerError) e;
+                        result.setFfffIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TNotFoundException) {
+                        result.sdf = (TNotFoundException) e;
+                        result.setSdfIsSet(true);
                         msg = result;
             }
              else 
@@ -6679,6 +6699,8 @@ public class SatelliteServer {
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField REJECTION_FIELD_DESC = new org.apache.thrift.protocol.TField("rejection", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField FFFF_FIELD_DESC = new org.apache.thrift.protocol.TField("ffff", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField SDF_FIELD_DESC = new org.apache.thrift.protocol.TField("sdf", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6689,12 +6711,16 @@ public class SatelliteServer {
     public TransferInformation success; // required
     public TTransferRejectedException rejection; // required
     public TAuthorizationException authError; // required
+    public TInternalServerError ffff; // required
+    public TNotFoundException sdf; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
       REJECTION((short)1, "rejection"),
-      AUTH_ERROR((short)2, "authError");
+      AUTH_ERROR((short)2, "authError"),
+      FFFF((short)3, "ffff"),
+      SDF((short)4, "sdf");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6715,6 +6741,10 @@ public class SatelliteServer {
             return REJECTION;
           case 2: // AUTH_ERROR
             return AUTH_ERROR;
+          case 3: // FFFF
+            return FFFF;
+          case 4: // SDF
+            return SDF;
           default:
             return null;
         }
@@ -6764,6 +6794,10 @@ public class SatelliteServer {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.AUTH_ERROR, new org.apache.thrift.meta_data.FieldMetaData("authError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.FFFF, new org.apache.thrift.meta_data.FieldMetaData("ffff", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.SDF, new org.apache.thrift.meta_data.FieldMetaData("sdf", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(requestImageVersionUpload_result.class, metaDataMap);
     }
@@ -6774,12 +6808,16 @@ public class SatelliteServer {
     public requestImageVersionUpload_result(
       TransferInformation success,
       TTransferRejectedException rejection,
-      TAuthorizationException authError)
+      TAuthorizationException authError,
+      TInternalServerError ffff,
+      TNotFoundException sdf)
     {
       this();
       this.success = success;
       this.rejection = rejection;
       this.authError = authError;
+      this.ffff = ffff;
+      this.sdf = sdf;
     }
 
     /**
@@ -6795,6 +6833,12 @@ public class SatelliteServer {
       if (other.isSetAuthError()) {
         this.authError = new TAuthorizationException(other.authError);
       }
+      if (other.isSetFfff()) {
+        this.ffff = new TInternalServerError(other.ffff);
+      }
+      if (other.isSetSdf()) {
+        this.sdf = new TNotFoundException(other.sdf);
+      }
     }
 
     public requestImageVersionUpload_result deepCopy() {
@@ -6806,6 +6850,8 @@ public class SatelliteServer {
       this.success = null;
       this.rejection = null;
       this.authError = null;
+      this.ffff = null;
+      this.sdf = null;
     }
 
     public TransferInformation getSuccess() {
@@ -6880,6 +6926,54 @@ public class SatelliteServer {
       }
     }
 
+    public TInternalServerError getFfff() {
+      return this.ffff;
+    }
+
+    public requestImageVersionUpload_result setFfff(TInternalServerError ffff) {
+      this.ffff = ffff;
+      return this;
+    }
+
+    public void unsetFfff() {
+      this.ffff = null;
+    }
+
+    /** Returns true if field ffff is set (has been assigned a value) and false otherwise */
+    public boolean isSetFfff() {
+      return this.ffff != null;
+    }
+
+    public void setFfffIsSet(boolean value) {
+      if (!value) {
+        this.ffff = null;
+      }
+    }
+
+    public TNotFoundException getSdf() {
+      return this.sdf;
+    }
+
+    public requestImageVersionUpload_result setSdf(TNotFoundException sdf) {
+      this.sdf = sdf;
+      return this;
+    }
+
+    public void unsetSdf() {
+      this.sdf = null;
+    }
+
+    /** Returns true if field sdf is set (has been assigned a value) and false otherwise */
+    public boolean isSetSdf() {
+      return this.sdf != null;
+    }
+
+    public void setSdfIsSet(boolean value) {
+      if (!value) {
+        this.sdf = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -6906,6 +7000,22 @@ public class SatelliteServer {
         }
         break;
 
+      case FFFF:
+        if (value == null) {
+          unsetFfff();
+        } else {
+          setFfff((TInternalServerError)value);
+        }
+        break;
+
+      case SDF:
+        if (value == null) {
+          unsetSdf();
+        } else {
+          setSdf((TNotFoundException)value);
+        }
+        break;
+
       }
     }
 
@@ -6919,6 +7029,12 @@ public class SatelliteServer {
 
       case AUTH_ERROR:
         return getAuthError();
+
+      case FFFF:
+        return getFfff();
+
+      case SDF:
+        return getSdf();
 
       }
       throw new IllegalStateException();
@@ -6937,6 +7053,10 @@ public class SatelliteServer {
         return isSetRejection();
       case AUTH_ERROR:
         return isSetAuthError();
+      case FFFF:
+        return isSetFfff();
+      case SDF:
+        return isSetSdf();
       }
       throw new IllegalStateException();
     }
@@ -6978,6 +7098,24 @@ public class SatelliteServer {
         if (!(this_present_authError && that_present_authError))
           return false;
         if (!this.authError.equals(that.authError))
+          return false;
+      }
+
+      boolean this_present_ffff = true && this.isSetFfff();
+      boolean that_present_ffff = true && that.isSetFfff();
+      if (this_present_ffff || that_present_ffff) {
+        if (!(this_present_ffff && that_present_ffff))
+          return false;
+        if (!this.ffff.equals(that.ffff))
+          return false;
+      }
+
+      boolean this_present_sdf = true && this.isSetSdf();
+      boolean that_present_sdf = true && that.isSetSdf();
+      if (this_present_sdf || that_present_sdf) {
+        if (!(this_present_sdf && that_present_sdf))
+          return false;
+        if (!this.sdf.equals(that.sdf))
           return false;
       }
 
@@ -7027,6 +7165,26 @@ public class SatelliteServer {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetFfff()).compareTo(other.isSetFfff());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetFfff()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ffff, other.ffff);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetSdf()).compareTo(other.isSetSdf());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSdf()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sdf, other.sdf);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -7068,6 +7226,22 @@ public class SatelliteServer {
         sb.append("null");
       } else {
         sb.append(this.authError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ffff:");
+      if (this.ffff == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ffff);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("sdf:");
+      if (this.sdf == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.sdf);
       }
       first = false;
       sb.append(")");
@@ -7143,6 +7317,24 @@ public class SatelliteServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // FFFF
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ffff = new TInternalServerError();
+                struct.ffff.read(iprot);
+                struct.setFfffIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 4: // SDF
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.sdf = new TNotFoundException();
+                struct.sdf.read(iprot);
+                struct.setSdfIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -7173,6 +7365,16 @@ public class SatelliteServer {
           struct.authError.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.ffff != null) {
+          oprot.writeFieldBegin(FFFF_FIELD_DESC);
+          struct.ffff.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.sdf != null) {
+          oprot.writeFieldBegin(SDF_FIELD_DESC);
+          struct.sdf.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -7200,7 +7402,13 @@ public class SatelliteServer {
         if (struct.isSetAuthError()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetFfff()) {
+          optionals.set(3);
+        }
+        if (struct.isSetSdf()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
@@ -7210,12 +7418,18 @@ public class SatelliteServer {
         if (struct.isSetAuthError()) {
           struct.authError.write(oprot);
         }
+        if (struct.isSetFfff()) {
+          struct.ffff.write(oprot);
+        }
+        if (struct.isSetSdf()) {
+          struct.sdf.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, requestImageVersionUpload_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           struct.success = new TransferInformation();
           struct.success.read(iprot);
@@ -7230,6 +7444,16 @@ public class SatelliteServer {
           struct.authError = new TAuthorizationException();
           struct.authError.read(iprot);
           struct.setAuthErrorIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ffff = new TInternalServerError();
+          struct.ffff.read(iprot);
+          struct.setFfffIsSet(true);
+        }
+        if (incoming.get(4)) {
+          struct.sdf = new TNotFoundException();
+          struct.sdf.read(iprot);
+          struct.setSdfIsSet(true);
         }
       }
     }

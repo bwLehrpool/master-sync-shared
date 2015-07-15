@@ -321,7 +321,7 @@ service SatelliteServer {
 	
 	// File transfer related
 	TransferInformation requestImageVersionUpload(1: Token userToken, 2: UUID imageBaseId, 3: i64 fileSize, 4: list<binary> blockHashes)
-		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError),
+		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError, 3:TInternalServerError ffff, 4:TNotFoundException sdf),
 	void cancelUpload(1: Token uploadToken),
 	TransferStatus queryUploadStatus(1: Token uploadToken)
 		throws (1:TInvalidTokenException ex1),
