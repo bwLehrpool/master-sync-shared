@@ -50,9 +50,9 @@ public class MasterServer {
 
     public boolean isServerAuthenticated(String serverSessionId) throws org.apache.thrift.TException;
 
-    public ByteBuffer startServerAuthentication(String organizationId) throws TAuthenticationException, org.apache.thrift.TException;
+    public ByteBuffer startServerAuthentication(String organizationId) throws TAuthorizationException, org.apache.thrift.TException;
 
-    public ServerSessionData serverAuthenticate(String organizationId, ByteBuffer challengeResponse) throws TAuthenticationException, org.apache.thrift.TException;
+    public ServerSessionData serverAuthenticate(String organizationId, ByteBuffer challengeResponse) throws TAuthorizationException, org.apache.thrift.TException;
 
     public TransferInformation submitImage(String serverSessionId, ImagePublishData imageDescription, List<ByteBuffer> blockHashes) throws TAuthorizationException, TImageDataException, TTransferRejectedException, org.apache.thrift.TException;
 
@@ -306,7 +306,7 @@ public class MasterServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "isServerAuthenticated failed: unknown result");
     }
 
-    public ByteBuffer startServerAuthentication(String organizationId) throws TAuthenticationException, org.apache.thrift.TException
+    public ByteBuffer startServerAuthentication(String organizationId) throws TAuthorizationException, org.apache.thrift.TException
     {
       send_startServerAuthentication(organizationId);
       return recv_startServerAuthentication();
@@ -319,7 +319,7 @@ public class MasterServer {
       sendBase("startServerAuthentication", args);
     }
 
-    public ByteBuffer recv_startServerAuthentication() throws TAuthenticationException, org.apache.thrift.TException
+    public ByteBuffer recv_startServerAuthentication() throws TAuthorizationException, org.apache.thrift.TException
     {
       startServerAuthentication_result result = new startServerAuthentication_result();
       receiveBase(result, "startServerAuthentication");
@@ -332,7 +332,7 @@ public class MasterServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "startServerAuthentication failed: unknown result");
     }
 
-    public ServerSessionData serverAuthenticate(String organizationId, ByteBuffer challengeResponse) throws TAuthenticationException, org.apache.thrift.TException
+    public ServerSessionData serverAuthenticate(String organizationId, ByteBuffer challengeResponse) throws TAuthorizationException, org.apache.thrift.TException
     {
       send_serverAuthenticate(organizationId, challengeResponse);
       return recv_serverAuthenticate();
@@ -346,7 +346,7 @@ public class MasterServer {
       sendBase("serverAuthenticate", args);
     }
 
-    public ServerSessionData recv_serverAuthenticate() throws TAuthenticationException, org.apache.thrift.TException
+    public ServerSessionData recv_serverAuthenticate() throws TAuthorizationException, org.apache.thrift.TException
     {
       serverAuthenticate_result result = new serverAuthenticate_result();
       receiveBase(result, "serverAuthenticate");
@@ -815,7 +815,7 @@ public class MasterServer {
         prot.writeMessageEnd();
       }
 
-      public ByteBuffer getResult() throws TAuthenticationException, org.apache.thrift.TException {
+      public ByteBuffer getResult() throws TAuthorizationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -850,7 +850,7 @@ public class MasterServer {
         prot.writeMessageEnd();
       }
 
-      public ServerSessionData getResult() throws TAuthenticationException, org.apache.thrift.TException {
+      public ServerSessionData getResult() throws TAuthorizationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1307,7 +1307,7 @@ public class MasterServer {
         startServerAuthentication_result result = new startServerAuthentication_result();
         try {
           result.success = iface.startServerAuthentication(args.organizationId);
-        } catch (TAuthenticationException failure) {
+        } catch (TAuthorizationException failure) {
           result.failure = failure;
         }
         return result;
@@ -1331,7 +1331,7 @@ public class MasterServer {
         serverAuthenticate_result result = new serverAuthenticate_result();
         try {
           result.success = iface.serverAuthenticate(args.organizationId, args.challengeResponse);
-        } catch (TAuthenticationException failure) {
+        } catch (TAuthorizationException failure) {
           result.failure = failure;
         }
         return result;
@@ -1942,8 +1942,8 @@ public class MasterServer {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             startServerAuthentication_result result = new startServerAuthentication_result();
-            if (e instanceof TAuthenticationException) {
-                        result.failure = (TAuthenticationException) e;
+            if (e instanceof TAuthorizationException) {
+                        result.failure = (TAuthorizationException) e;
                         result.setFailureIsSet(true);
                         msg = result;
             }
@@ -1999,8 +1999,8 @@ public class MasterServer {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             serverAuthenticate_result result = new serverAuthenticate_result();
-            if (e instanceof TAuthenticationException) {
-                        result.failure = (TAuthenticationException) e;
+            if (e instanceof TAuthorizationException) {
+                        result.failure = (TAuthorizationException) e;
                         result.setFailureIsSet(true);
                         msg = result;
             }
@@ -8763,7 +8763,7 @@ public class MasterServer {
     }
 
     public ByteBuffer success; // required
-    public TAuthenticationException failure; // required
+    public TAuthorizationException failure; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -8843,7 +8843,7 @@ public class MasterServer {
 
     public startServerAuthentication_result(
       ByteBuffer success,
-      TAuthenticationException failure)
+      TAuthorizationException failure)
     {
       this();
       this.success = success;
@@ -8859,7 +8859,7 @@ public class MasterServer {
 ;
       }
       if (other.isSetFailure()) {
-        this.failure = new TAuthenticationException(other.failure);
+        this.failure = new TAuthorizationException(other.failure);
       }
     }
 
@@ -8907,11 +8907,11 @@ public class MasterServer {
       }
     }
 
-    public TAuthenticationException getFailure() {
+    public TAuthorizationException getFailure() {
       return this.failure;
     }
 
-    public startServerAuthentication_result setFailure(TAuthenticationException failure) {
+    public startServerAuthentication_result setFailure(TAuthorizationException failure) {
       this.failure = failure;
       return this;
     }
@@ -8945,7 +8945,7 @@ public class MasterServer {
         if (value == null) {
           unsetFailure();
         } else {
-          setFailure((TAuthenticationException)value);
+          setFailure((TAuthorizationException)value);
         }
         break;
 
@@ -9134,7 +9134,7 @@ public class MasterServer {
               break;
             case 1: // FAILURE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.failure = new TAuthenticationException();
+                struct.failure = new TAuthorizationException();
                 struct.failure.read(iprot);
                 struct.setFailureIsSet(true);
               } else { 
@@ -9208,7 +9208,7 @@ public class MasterServer {
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.failure = new TAuthenticationException();
+          struct.failure = new TAuthorizationException();
           struct.failure.read(iprot);
           struct.setFailureIsSet(true);
         }
@@ -9695,7 +9695,7 @@ public class MasterServer {
     }
 
     public ServerSessionData success; // required
-    public TAuthenticationException failure; // required
+    public TAuthorizationException failure; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -9775,7 +9775,7 @@ public class MasterServer {
 
     public serverAuthenticate_result(
       ServerSessionData success,
-      TAuthenticationException failure)
+      TAuthorizationException failure)
     {
       this();
       this.success = success;
@@ -9790,7 +9790,7 @@ public class MasterServer {
         this.success = new ServerSessionData(other.success);
       }
       if (other.isSetFailure()) {
-        this.failure = new TAuthenticationException(other.failure);
+        this.failure = new TAuthorizationException(other.failure);
       }
     }
 
@@ -9828,11 +9828,11 @@ public class MasterServer {
       }
     }
 
-    public TAuthenticationException getFailure() {
+    public TAuthorizationException getFailure() {
       return this.failure;
     }
 
-    public serverAuthenticate_result setFailure(TAuthenticationException failure) {
+    public serverAuthenticate_result setFailure(TAuthorizationException failure) {
       this.failure = failure;
       return this;
     }
@@ -9866,7 +9866,7 @@ public class MasterServer {
         if (value == null) {
           unsetFailure();
         } else {
-          setFailure((TAuthenticationException)value);
+          setFailure((TAuthorizationException)value);
         }
         break;
 
@@ -10059,7 +10059,7 @@ public class MasterServer {
               break;
             case 1: // FAILURE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.failure = new TAuthenticationException();
+                struct.failure = new TAuthorizationException();
                 struct.failure.read(iprot);
                 struct.setFailureIsSet(true);
               } else { 
@@ -10134,7 +10134,7 @@ public class MasterServer {
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.failure = new TAuthenticationException();
+          struct.failure = new TAuthorizationException();
           struct.failure.read(iprot);
           struct.setFailureIsSet(true);
         }

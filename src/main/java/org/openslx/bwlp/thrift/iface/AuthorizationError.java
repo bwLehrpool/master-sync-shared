@@ -14,7 +14,15 @@ import org.apache.thrift.TEnum;
 public enum AuthorizationError implements org.apache.thrift.TEnum {
   GENERIC_ERROR(0),
   NOT_AUTHENTICATED(1),
-  NO_PERMISSION(2);
+  NO_PERMISSION(2),
+  ACCOUNT_SUSPENDED(3),
+  ORGANIZATION_SUSPENDED(4),
+  INVALID_CREDENTIALS(5),
+  INVALID_ORGANIZATION(6),
+  INVALID_KEY(7),
+  INVALID_TOKEN(8),
+  CHALLENGE_FAILED(9),
+  BANNED_NETWORK(10);
 
   private final int value;
 
@@ -41,6 +49,22 @@ public enum AuthorizationError implements org.apache.thrift.TEnum {
         return NOT_AUTHENTICATED;
       case 2:
         return NO_PERMISSION;
+      case 3:
+        return ACCOUNT_SUSPENDED;
+      case 4:
+        return ORGANIZATION_SUSPENDED;
+      case 5:
+        return INVALID_CREDENTIALS;
+      case 6:
+        return INVALID_ORGANIZATION;
+      case 7:
+        return INVALID_KEY;
+      case 8:
+        return INVALID_TOKEN;
+      case 9:
+        return CHALLENGE_FAILED;
+      case 10:
+        return BANNED_NETWORK;
       default:
         return null;
     }

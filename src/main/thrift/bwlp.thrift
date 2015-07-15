@@ -20,15 +20,13 @@ typedef i64 UnixTimestamp
 enum AuthorizationError {
 	GENERIC_ERROR,
 	NOT_AUTHENTICATED,
-	NO_PERMISSION
-}
-
-enum AuthenticationError {
-	GENERIC_ERROR,
-	INVALID_CREDENTIALS,
+	NO_PERMISSION,
 	ACCOUNT_SUSPENDED,
+	ORGANIZATION_SUSPENDED,
+	INVALID_CREDENTIALS,
 	INVALID_ORGANIZATION,
 	INVALID_KEY,
+	INVALID_TOKEN,
 	CHALLENGE_FAILED,
 	BANNED_NETWORK
 }
@@ -298,11 +296,6 @@ exception TAuthorizationException {
 	2: string message
 }
 
-exception TAuthenticationException {
-	1: AuthenticationError number,
-	2: string message
-}
-
 exception TInvalidTokenException {
 }
 
@@ -338,7 +331,8 @@ service SatelliteServer {
 	void cancelDownload(1: string downloadToken),
 	
 	// Authentication
-	bool isAuthenticated(1: Token userToken),
+	void isAuthenticated(1: Token userToken)
+		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
 	void invalidateSession(1: Token userToken),
 	
 	// find a user in a given organization by a search term
@@ -444,10 +438,10 @@ service MasterServer {
 	bool isServerAuthenticated(1:Token serverSessionId),
 	// Start authentication of server for given organization
 	binary startServerAuthentication(1:string organizationId)
-		throws (1: TAuthenticationException failure),
+		throws (1: TAuthorizationException failure),
 	// Reply to master server authentication challenge
 	ServerSessionData serverAuthenticate(1:string organizationId, 2:binary challengeResponse)
-		throws (1:TAuthenticationException failure),
+		throws (1:TAuthorizationException failure),
 	// Request upload of an image to the master server
 	TransferInformation submitImage(1:Token serverSessionId, 2:ImagePublishData imageDescription, 3:list<binary> blockHashes)
 		throws (1:TAuthorizationException failure, 2: TImageDataException failure2, 3: TTransferRejectedException failure3),

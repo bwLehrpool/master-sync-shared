@@ -50,7 +50,7 @@ public class SatelliteServer {
 
     public void cancelDownload(String downloadToken) throws org.apache.thrift.TException;
 
-    public boolean isAuthenticated(String userToken) throws org.apache.thrift.TException;
+    public void isAuthenticated(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
 
     public void invalidateSession(String userToken) throws org.apache.thrift.TException;
 
@@ -351,10 +351,10 @@ public class SatelliteServer {
       return;
     }
 
-    public boolean isAuthenticated(String userToken) throws org.apache.thrift.TException
+    public void isAuthenticated(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
     {
       send_isAuthenticated(userToken);
-      return recv_isAuthenticated();
+      recv_isAuthenticated();
     }
 
     public void send_isAuthenticated(String userToken) throws org.apache.thrift.TException
@@ -364,14 +364,17 @@ public class SatelliteServer {
       sendBase("isAuthenticated", args);
     }
 
-    public boolean recv_isAuthenticated() throws org.apache.thrift.TException
+    public void recv_isAuthenticated() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
     {
       isAuthenticated_result result = new isAuthenticated_result();
       receiveBase(result, "isAuthenticated");
-      if (result.isSetSuccess()) {
-        return result.success;
+      if (result.authError != null) {
+        throw result.authError;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "isAuthenticated failed: unknown result");
+      if (result.serverError != null) {
+        throw result.serverError;
+      }
+      return;
     }
 
     public void invalidateSession(String userToken) throws org.apache.thrift.TException
@@ -1299,13 +1302,13 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public boolean getResult() throws org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_isAuthenticated();
+        (new Client(prot)).recv_isAuthenticated();
       }
     }
 
@@ -2299,8 +2302,13 @@ public class SatelliteServer {
 
       public isAuthenticated_result getResult(I iface, isAuthenticated_args args) throws org.apache.thrift.TException {
         isAuthenticated_result result = new isAuthenticated_result();
-        result.success = iface.isAuthenticated(args.userToken);
-        result.setSuccessIsSet(true);
+        try {
+          iface.isAuthenticated(args.userToken);
+        } catch (TAuthorizationException authError) {
+          result.authError = authError;
+        } catch (TInternalServerError serverError) {
+          result.serverError = serverError;
+        }
         return result;
       }
     }
@@ -3311,7 +3319,7 @@ public class SatelliteServer {
       }
     }
 
-    public static class isAuthenticated<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, isAuthenticated_args, Boolean> {
+    public static class isAuthenticated<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, isAuthenticated_args, Void> {
       public isAuthenticated() {
         super("isAuthenticated");
       }
@@ -3320,13 +3328,11 @@ public class SatelliteServer {
         return new isAuthenticated_args();
       }
 
-      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Boolean>() { 
-          public void onComplete(Boolean o) {
+        return new AsyncMethodCallback<Void>() { 
+          public void onComplete(Void o) {
             isAuthenticated_result result = new isAuthenticated_result();
-            result.success = o;
-            result.setSuccessIsSet(true);
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -3339,6 +3345,17 @@ public class SatelliteServer {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             isAuthenticated_result result = new isAuthenticated_result();
+            if (e instanceof TAuthorizationException) {
+                        result.authError = (TAuthorizationException) e;
+                        result.setAuthErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInternalServerError) {
+                        result.serverError = (TInternalServerError) e;
+                        result.setServerErrorIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -3358,7 +3375,7 @@ public class SatelliteServer {
         return false;
       }
 
-      public void start(I iface, isAuthenticated_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+      public void start(I iface, isAuthenticated_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
         iface.isAuthenticated(args.userToken,resultHandler);
       }
     }
@@ -10506,7 +10523,8 @@ public class SatelliteServer {
   public static class isAuthenticated_result implements org.apache.thrift.TBase<isAuthenticated_result, isAuthenticated_result._Fields>, java.io.Serializable, Cloneable, Comparable<isAuthenticated_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("isAuthenticated_result");
 
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -10514,11 +10532,13 @@ public class SatelliteServer {
       schemes.put(TupleScheme.class, new isAuthenticated_resultTupleSchemeFactory());
     }
 
-    public boolean success; // required
+    public TAuthorizationException authError; // required
+    public TInternalServerError serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      AUTH_ERROR((short)1, "authError"),
+      SERVER_ERROR((short)2, "serverError");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -10533,8 +10553,10 @@ public class SatelliteServer {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 0: // SUCCESS
-            return SUCCESS;
+          case 1: // AUTH_ERROR
+            return AUTH_ERROR;
+          case 2: // SERVER_ERROR
+            return SERVER_ERROR;
           default:
             return null;
         }
@@ -10575,13 +10597,13 @@ public class SatelliteServer {
     }
 
     // isset id assignments
-    private static final int __SUCCESS_ISSET_ID = 0;
-    private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.AUTH_ERROR, new org.apache.thrift.meta_data.FieldMetaData("authError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(isAuthenticated_result.class, metaDataMap);
     }
@@ -10590,19 +10612,24 @@ public class SatelliteServer {
     }
 
     public isAuthenticated_result(
-      boolean success)
+      TAuthorizationException authError,
+      TInternalServerError serverError)
     {
       this();
-      this.success = success;
-      setSuccessIsSet(true);
+      this.authError = authError;
+      this.serverError = serverError;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public isAuthenticated_result(isAuthenticated_result other) {
-      __isset_bitfield = other.__isset_bitfield;
-      this.success = other.success;
+      if (other.isSetAuthError()) {
+        this.authError = new TAuthorizationException(other.authError);
+      }
+      if (other.isSetServerError()) {
+        this.serverError = new TInternalServerError(other.serverError);
+      }
     }
 
     public isAuthenticated_result deepCopy() {
@@ -10611,40 +10638,73 @@ public class SatelliteServer {
 
     @Override
     public void clear() {
-      setSuccessIsSet(false);
-      this.success = false;
+      this.authError = null;
+      this.serverError = null;
     }
 
-    public boolean isSuccess() {
-      return this.success;
+    public TAuthorizationException getAuthError() {
+      return this.authError;
     }
 
-    public isAuthenticated_result setSuccess(boolean success) {
-      this.success = success;
-      setSuccessIsSet(true);
+    public isAuthenticated_result setAuthError(TAuthorizationException authError) {
+      this.authError = authError;
       return this;
     }
 
-    public void unsetSuccess() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    public void unsetAuthError() {
+      this.authError = null;
     }
 
-    /** Returns true if field success is set (has been assigned a value) and false otherwise */
-    public boolean isSetSuccess() {
-      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    /** Returns true if field authError is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthError() {
+      return this.authError != null;
     }
 
-    public void setSuccessIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    public void setAuthErrorIsSet(boolean value) {
+      if (!value) {
+        this.authError = null;
+      }
+    }
+
+    public TInternalServerError getServerError() {
+      return this.serverError;
+    }
+
+    public isAuthenticated_result setServerError(TInternalServerError serverError) {
+      this.serverError = serverError;
+      return this;
+    }
+
+    public void unsetServerError() {
+      this.serverError = null;
+    }
+
+    /** Returns true if field serverError is set (has been assigned a value) and false otherwise */
+    public boolean isSetServerError() {
+      return this.serverError != null;
+    }
+
+    public void setServerErrorIsSet(boolean value) {
+      if (!value) {
+        this.serverError = null;
+      }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case SUCCESS:
+      case AUTH_ERROR:
         if (value == null) {
-          unsetSuccess();
+          unsetAuthError();
         } else {
-          setSuccess((Boolean)value);
+          setAuthError((TAuthorizationException)value);
+        }
+        break;
+
+      case SERVER_ERROR:
+        if (value == null) {
+          unsetServerError();
+        } else {
+          setServerError((TInternalServerError)value);
         }
         break;
 
@@ -10653,8 +10713,11 @@ public class SatelliteServer {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case SUCCESS:
-        return Boolean.valueOf(isSuccess());
+      case AUTH_ERROR:
+        return getAuthError();
+
+      case SERVER_ERROR:
+        return getServerError();
 
       }
       throw new IllegalStateException();
@@ -10667,8 +10730,10 @@ public class SatelliteServer {
       }
 
       switch (field) {
-      case SUCCESS:
-        return isSetSuccess();
+      case AUTH_ERROR:
+        return isSetAuthError();
+      case SERVER_ERROR:
+        return isSetServerError();
       }
       throw new IllegalStateException();
     }
@@ -10686,12 +10751,21 @@ public class SatelliteServer {
       if (that == null)
         return false;
 
-      boolean this_present_success = true;
-      boolean that_present_success = true;
-      if (this_present_success || that_present_success) {
-        if (!(this_present_success && that_present_success))
+      boolean this_present_authError = true && this.isSetAuthError();
+      boolean that_present_authError = true && that.isSetAuthError();
+      if (this_present_authError || that_present_authError) {
+        if (!(this_present_authError && that_present_authError))
           return false;
-        if (this.success != that.success)
+        if (!this.authError.equals(that.authError))
+          return false;
+      }
+
+      boolean this_present_serverError = true && this.isSetServerError();
+      boolean that_present_serverError = true && that.isSetServerError();
+      if (this_present_serverError || that_present_serverError) {
+        if (!(this_present_serverError && that_present_serverError))
+          return false;
+        if (!this.serverError.equals(that.serverError))
           return false;
       }
 
@@ -10711,12 +10785,22 @@ public class SatelliteServer {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      lastComparison = Boolean.valueOf(isSetAuthError()).compareTo(other.isSetAuthError());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetSuccess()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+      if (isSetAuthError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authError, other.authError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetServerError()).compareTo(other.isSetServerError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetServerError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverError, other.serverError);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -10741,8 +10825,20 @@ public class SatelliteServer {
       StringBuilder sb = new StringBuilder("isAuthenticated_result(");
       boolean first = true;
 
-      sb.append("success:");
-      sb.append(this.success);
+      sb.append("authError:");
+      if (this.authError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("serverError:");
+      if (this.serverError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.serverError);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -10763,8 +10859,6 @@ public class SatelliteServer {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
-        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);
@@ -10789,10 +10883,20 @@ public class SatelliteServer {
             break;
           }
           switch (schemeField.id) {
-            case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-                struct.success = iprot.readBool();
-                struct.setSuccessIsSet(true);
+            case 1: // AUTH_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authError = new TAuthorizationException();
+                struct.authError.read(iprot);
+                struct.setAuthErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // SERVER_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.serverError = new TInternalServerError();
+                struct.serverError.read(iprot);
+                struct.setServerErrorIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -10812,9 +10916,14 @@ public class SatelliteServer {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.isSetSuccess()) {
-          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          oprot.writeBool(struct.success);
+        if (struct.authError != null) {
+          oprot.writeFieldBegin(AUTH_ERROR_FIELD_DESC);
+          struct.authError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.serverError != null) {
+          oprot.writeFieldBegin(SERVER_ERROR_FIELD_DESC);
+          struct.serverError.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -10835,22 +10944,34 @@ public class SatelliteServer {
       public void write(org.apache.thrift.protocol.TProtocol prot, isAuthenticated_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetSuccess()) {
+        if (struct.isSetAuthError()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
-        if (struct.isSetSuccess()) {
-          oprot.writeBool(struct.success);
+        if (struct.isSetServerError()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAuthError()) {
+          struct.authError.write(oprot);
+        }
+        if (struct.isSetServerError()) {
+          struct.serverError.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, isAuthenticated_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = iprot.readBool();
-          struct.setSuccessIsSet(true);
+          struct.authError = new TAuthorizationException();
+          struct.authError.read(iprot);
+          struct.setAuthErrorIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.serverError = new TInternalServerError();
+          struct.serverError.read(iprot);
+          struct.setServerErrorIsSet(true);
         }
       }
     }
