@@ -54,6 +54,13 @@ enum Role {
 	TUTOR
 }
 
+enum TransferState {
+	IDLE,
+	WORKING,
+	FINISHED,
+	ERROR
+}
+
 // ############## STRUCT ###############
 
 struct UserInfo {
@@ -283,6 +290,7 @@ struct TransferInformation {
 // 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying
 struct TransferStatus {
 	1: binary blockStatus,
+	2: TransferState state,
 }
 
 // ############ EXCEPTION ######################

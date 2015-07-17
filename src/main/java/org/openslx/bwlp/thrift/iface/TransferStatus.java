@@ -36,6 +36,7 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TransferStatus");
 
   private static final org.apache.thrift.protocol.TField BLOCK_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("blockStatus", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("state", org.apache.thrift.protocol.TType.I32, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -44,10 +45,20 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
   }
 
   public ByteBuffer blockStatus; // required
+  /**
+   * 
+   * @see TransferState
+   */
+  public TransferState state; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    BLOCK_STATUS((short)1, "blockStatus");
+    BLOCK_STATUS((short)1, "blockStatus"),
+    /**
+     * 
+     * @see TransferState
+     */
+    STATE((short)2, "state");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -64,6 +75,8 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
       switch(fieldId) {
         case 1: // BLOCK_STATUS
           return BLOCK_STATUS;
+        case 2: // STATE
+          return STATE;
         default:
           return null;
       }
@@ -109,6 +122,8 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.BLOCK_STATUS, new org.apache.thrift.meta_data.FieldMetaData("blockStatus", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
+    tmpMap.put(_Fields.STATE, new org.apache.thrift.meta_data.FieldMetaData("state", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, TransferState.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TransferStatus.class, metaDataMap);
   }
@@ -117,10 +132,12 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
   }
 
   public TransferStatus(
-    ByteBuffer blockStatus)
+    ByteBuffer blockStatus,
+    TransferState state)
   {
     this();
     this.blockStatus = blockStatus;
+    this.state = state;
   }
 
   /**
@@ -131,6 +148,9 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
       this.blockStatus = org.apache.thrift.TBaseHelper.copyBinary(other.blockStatus);
 ;
     }
+    if (other.isSetState()) {
+      this.state = other.state;
+    }
   }
 
   public TransferStatus deepCopy() {
@@ -140,6 +160,7 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
   @Override
   public void clear() {
     this.blockStatus = null;
+    this.state = null;
   }
 
   public byte[] getBlockStatus() {
@@ -176,6 +197,38 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
     }
   }
 
+  /**
+   * 
+   * @see TransferState
+   */
+  public TransferState getState() {
+    return this.state;
+  }
+
+  /**
+   * 
+   * @see TransferState
+   */
+  public TransferStatus setState(TransferState state) {
+    this.state = state;
+    return this;
+  }
+
+  public void unsetState() {
+    this.state = null;
+  }
+
+  /** Returns true if field state is set (has been assigned a value) and false otherwise */
+  public boolean isSetState() {
+    return this.state != null;
+  }
+
+  public void setStateIsSet(boolean value) {
+    if (!value) {
+      this.state = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case BLOCK_STATUS:
@@ -186,6 +239,14 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
       }
       break;
 
+    case STATE:
+      if (value == null) {
+        unsetState();
+      } else {
+        setState((TransferState)value);
+      }
+      break;
+
     }
   }
 
@@ -193,6 +254,9 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
     switch (field) {
     case BLOCK_STATUS:
       return getBlockStatus();
+
+    case STATE:
+      return getState();
 
     }
     throw new IllegalStateException();
@@ -207,6 +271,8 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
     switch (field) {
     case BLOCK_STATUS:
       return isSetBlockStatus();
+    case STATE:
+      return isSetState();
     }
     throw new IllegalStateException();
   }
@@ -230,6 +296,15 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
       if (!(this_present_blockStatus && that_present_blockStatus))
         return false;
       if (!this.blockStatus.equals(that.blockStatus))
+        return false;
+    }
+
+    boolean this_present_state = true && this.isSetState();
+    boolean that_present_state = true && that.isSetState();
+    if (this_present_state || that_present_state) {
+      if (!(this_present_state && that_present_state))
+        return false;
+      if (!this.state.equals(that.state))
         return false;
     }
 
@@ -259,6 +334,16 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetState()).compareTo(other.isSetState());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetState()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.state, other.state);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -284,6 +369,14 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
       sb.append("null");
     } else {
       org.apache.thrift.TBaseHelper.toString(this.blockStatus, sb);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("state:");
+    if (this.state == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.state);
     }
     first = false;
     sb.append(")");
@@ -337,6 +430,14 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 2: // STATE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.state = TransferState.findByValue(iprot.readI32());
+              struct.setStateIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -355,6 +456,11 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
       if (struct.blockStatus != null) {
         oprot.writeFieldBegin(BLOCK_STATUS_FIELD_DESC);
         oprot.writeBinary(struct.blockStatus);
+        oprot.writeFieldEnd();
+      }
+      if (struct.state != null) {
+        oprot.writeFieldBegin(STATE_FIELD_DESC);
+        oprot.writeI32(struct.state.getValue());
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -378,19 +484,29 @@ public class TransferStatus implements org.apache.thrift.TBase<TransferStatus, T
       if (struct.isSetBlockStatus()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetState()) {
+        optionals.set(1);
+      }
+      oprot.writeBitSet(optionals, 2);
       if (struct.isSetBlockStatus()) {
         oprot.writeBinary(struct.blockStatus);
+      }
+      if (struct.isSetState()) {
+        oprot.writeI32(struct.state.getValue());
       }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, TransferStatus struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
         struct.blockStatus = iprot.readBinary();
         struct.setBlockStatusIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.state = TransferState.findByValue(iprot.readI32());
+        struct.setStateIsSet(true);
       }
     }
   }
