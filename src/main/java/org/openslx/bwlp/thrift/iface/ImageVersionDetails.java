@@ -1079,13 +1079,13 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
           case 10: // SOFTWARE
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list34 = iprot.readListBegin();
-                struct.software = new ArrayList<String>(_list34.size);
-                for (int _i35 = 0; _i35 < _list34.size; ++_i35)
+                org.apache.thrift.protocol.TList _list50 = iprot.readListBegin();
+                struct.software = new ArrayList<String>(_list50.size);
+                for (int _i51 = 0; _i51 < _list50.size; ++_i51)
                 {
-                  String _elem36;
-                  _elem36 = iprot.readString();
-                  struct.software.add(_elem36);
+                  String _elem52;
+                  _elem52 = iprot.readString();
+                  struct.software.add(_elem52);
                 }
                 iprot.readListEnd();
               }
@@ -1144,9 +1144,9 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
         oprot.writeFieldBegin(SOFTWARE_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.software.size()));
-          for (String _iter37 : struct.software)
+          for (String _iter53 : struct.software)
           {
-            oprot.writeString(_iter37);
+            oprot.writeString(_iter53);
           }
           oprot.writeListEnd();
         }
@@ -1231,9 +1231,9 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       if (struct.isSetSoftware()) {
         {
           oprot.writeI32(struct.software.size());
-          for (String _iter38 : struct.software)
+          for (String _iter54 : struct.software)
           {
-            oprot.writeString(_iter38);
+            oprot.writeString(_iter54);
           }
         }
       }
@@ -1281,13 +1281,13 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       }
       if (incoming.get(9)) {
         {
-          org.apache.thrift.protocol.TList _list39 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.software = new ArrayList<String>(_list39.size);
-          for (int _i40 = 0; _i40 < _list39.size; ++_i40)
+          org.apache.thrift.protocol.TList _list55 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.software = new ArrayList<String>(_list55.size);
+          for (int _i56 = 0; _i56 < _list55.size; ++_i56)
           {
-            String _elem41;
-            _elem41 = iprot.readString();
-            struct.software.add(_elem41);
+            String _elem57;
+            _elem57 = iprot.readString();
+            struct.software.add(_elem57);
           }
         }
         struct.setSoftwareIsSet(true);

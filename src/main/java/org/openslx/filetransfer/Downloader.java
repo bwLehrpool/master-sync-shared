@@ -23,9 +23,9 @@ public class Downloader extends Transfer
 	 * @param port Port to connect to
 	 * @throws IOException
 	 */
-	public Downloader( String host, int port, SSLContext context, String token ) throws IOException
+	public Downloader( String host, int port, int readTimeoutMs, SSLContext context, String token ) throws IOException
 	{
-		super( host, port, context, log );
+		super( host, port, readTimeoutMs, context, log );
 		outStream.writeByte( 'D' );
 		if ( !sendToken( token ) || !sendEndOfMeta() )
 			throw new IOException( "Sending token failed" );

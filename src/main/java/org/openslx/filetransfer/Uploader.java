@@ -24,9 +24,9 @@ public class Uploader extends Transfer
 	 * @param context ssl context for establishing a secure connection
 	 * @throws IOException
 	 */
-	public Uploader( String host, int port, SSLContext context, String token ) throws IOException
+	public Uploader( String host, int port, int readTimeoutMs, SSLContext context, String token ) throws IOException
 	{
-		super( host, port, context, log );
+		super( host, port, readTimeoutMs, context, log );
 		outStream.writeByte( 'U' );
 		if ( !sendToken( token ) || !sendEndOfMeta() )
 			throw new IOException( "Sending token failed" );
@@ -141,7 +141,7 @@ public class Uploader extends Transfer
 				}
 			}
 		} finally {
-			Transfer.safeClose( file );
+			Transfer.safeClose( file, transferSocket );
 		}
 		return true;
 	}

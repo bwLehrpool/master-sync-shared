@@ -1625,14 +1625,14 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
           case 3: // VERSIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list42 = iprot.readListBegin();
-                struct.versions = new ArrayList<ImageVersionDetails>(_list42.size);
-                for (int _i43 = 0; _i43 < _list42.size; ++_i43)
+                org.apache.thrift.protocol.TList _list58 = iprot.readListBegin();
+                struct.versions = new ArrayList<ImageVersionDetails>(_list58.size);
+                for (int _i59 = 0; _i59 < _list58.size; ++_i59)
                 {
-                  ImageVersionDetails _elem44;
-                  _elem44 = new ImageVersionDetails();
-                  _elem44.read(iprot);
-                  struct.versions.add(_elem44);
+                  ImageVersionDetails _elem60;
+                  _elem60 = new ImageVersionDetails();
+                  _elem60.read(iprot);
+                  struct.versions.add(_elem60);
                 }
                 iprot.readListEnd();
               }
@@ -1660,13 +1660,13 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
           case 6: // TAGS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list45 = iprot.readListBegin();
-                struct.tags = new ArrayList<String>(_list45.size);
-                for (int _i46 = 0; _i46 < _list45.size; ++_i46)
+                org.apache.thrift.protocol.TList _list61 = iprot.readListBegin();
+                struct.tags = new ArrayList<String>(_list61.size);
+                for (int _i62 = 0; _i62 < _list61.size; ++_i62)
                 {
-                  String _elem47;
-                  _elem47 = iprot.readString();
-                  struct.tags.add(_elem47);
+                  String _elem63;
+                  _elem63 = iprot.readString();
+                  struct.tags.add(_elem63);
                 }
                 iprot.readListEnd();
               }
@@ -1786,9 +1786,9 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         oprot.writeFieldBegin(VERSIONS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.versions.size()));
-          for (ImageVersionDetails _iter48 : struct.versions)
+          for (ImageVersionDetails _iter64 : struct.versions)
           {
-            _iter48.write(oprot);
+            _iter64.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -1808,9 +1808,9 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         oprot.writeFieldBegin(TAGS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.tags.size()));
-          for (String _iter49 : struct.tags)
+          for (String _iter65 : struct.tags)
           {
-            oprot.writeString(_iter49);
+            oprot.writeString(_iter65);
           }
           oprot.writeListEnd();
         }
@@ -1947,9 +1947,9 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (struct.isSetVersions()) {
         {
           oprot.writeI32(struct.versions.size());
-          for (ImageVersionDetails _iter50 : struct.versions)
+          for (ImageVersionDetails _iter66 : struct.versions)
           {
-            _iter50.write(oprot);
+            _iter66.write(oprot);
           }
         }
       }
@@ -1962,9 +1962,9 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (struct.isSetTags()) {
         {
           oprot.writeI32(struct.tags.size());
-          for (String _iter51 : struct.tags)
+          for (String _iter67 : struct.tags)
           {
-            oprot.writeString(_iter51);
+            oprot.writeString(_iter67);
           }
         }
       }
@@ -2018,14 +2018,14 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list52 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.versions = new ArrayList<ImageVersionDetails>(_list52.size);
-          for (int _i53 = 0; _i53 < _list52.size; ++_i53)
+          org.apache.thrift.protocol.TList _list68 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.versions = new ArrayList<ImageVersionDetails>(_list68.size);
+          for (int _i69 = 0; _i69 < _list68.size; ++_i69)
           {
-            ImageVersionDetails _elem54;
-            _elem54 = new ImageVersionDetails();
-            _elem54.read(iprot);
-            struct.versions.add(_elem54);
+            ImageVersionDetails _elem70;
+            _elem70 = new ImageVersionDetails();
+            _elem70.read(iprot);
+            struct.versions.add(_elem70);
           }
         }
         struct.setVersionsIsSet(true);
@@ -2040,13 +2040,13 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       }
       if (incoming.get(6)) {
         {
-          org.apache.thrift.protocol.TList _list55 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.tags = new ArrayList<String>(_list55.size);
-          for (int _i56 = 0; _i56 < _list55.size; ++_i56)
+          org.apache.thrift.protocol.TList _list71 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.tags = new ArrayList<String>(_list71.size);
+          for (int _i72 = 0; _i72 < _list71.size; ++_i72)
           {
-            String _elem57;
-            _elem57 = iprot.readString();
-            struct.tags.add(_elem57);
+            String _elem73;
+            _elem73 = iprot.readString();
+            struct.tags.add(_elem73);
           }
         }
         struct.setTagsIsSet(true);

@@ -42,6 +42,8 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
   private static final org.apache.thrift.protocol.TField IS_TEMPLATE_FIELD_DESC = new org.apache.thrift.protocol.TField("isTemplate", org.apache.thrift.protocol.TType.BOOL, (short)5);
   private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)6);
   private static final org.apache.thrift.protocol.TField SHARE_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("shareMode", org.apache.thrift.protocol.TType.I32, (short)7);
+  private static final org.apache.thrift.protocol.TField ADD_TAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("addTags", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField REM_TAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("remTags", org.apache.thrift.protocol.TType.LIST, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -60,6 +62,8 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
    * @see ShareMode
    */
   public ShareMode shareMode; // required
+  public List<String> addTags; // optional
+  public List<String> remTags; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -73,7 +77,9 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
      * 
      * @see ShareMode
      */
-    SHARE_MODE((short)7, "shareMode");
+    SHARE_MODE((short)7, "shareMode"),
+    ADD_TAGS((short)8, "addTags"),
+    REM_TAGS((short)9, "remTags");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -102,6 +108,10 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
           return DEFAULT_PERMISSIONS;
         case 7: // SHARE_MODE
           return SHARE_MODE;
+        case 8: // ADD_TAGS
+          return ADD_TAGS;
+        case 9: // REM_TAGS
+          return REM_TAGS;
         default:
           return null;
       }
@@ -145,6 +155,7 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
   private static final int __OSID_ISSET_ID = 0;
   private static final int __ISTEMPLATE_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.ADD_TAGS,_Fields.REM_TAGS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -162,6 +173,12 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ImagePermissions.class)));
     tmpMap.put(_Fields.SHARE_MODE, new org.apache.thrift.meta_data.FieldMetaData("shareMode", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ShareMode.class)));
+    tmpMap.put(_Fields.ADD_TAGS, new org.apache.thrift.meta_data.FieldMetaData("addTags", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.REM_TAGS, new org.apache.thrift.meta_data.FieldMetaData("remTags", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ImageBaseWrite.class, metaDataMap);
   }
@@ -212,6 +229,14 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     if (other.isSetShareMode()) {
       this.shareMode = other.shareMode;
     }
+    if (other.isSetAddTags()) {
+      List<String> __this__addTags = new ArrayList<String>(other.addTags);
+      this.addTags = __this__addTags;
+    }
+    if (other.isSetRemTags()) {
+      List<String> __this__remTags = new ArrayList<String>(other.remTags);
+      this.remTags = __this__remTags;
+    }
   }
 
   public ImageBaseWrite deepCopy() {
@@ -229,6 +254,8 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     this.isTemplate = false;
     this.defaultPermissions = null;
     this.shareMode = null;
+    this.addTags = null;
+    this.remTags = null;
   }
 
   public String getImageName() {
@@ -405,6 +432,84 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     }
   }
 
+  public int getAddTagsSize() {
+    return (this.addTags == null) ? 0 : this.addTags.size();
+  }
+
+  public java.util.Iterator<String> getAddTagsIterator() {
+    return (this.addTags == null) ? null : this.addTags.iterator();
+  }
+
+  public void addToAddTags(String elem) {
+    if (this.addTags == null) {
+      this.addTags = new ArrayList<String>();
+    }
+    this.addTags.add(elem);
+  }
+
+  public List<String> getAddTags() {
+    return this.addTags;
+  }
+
+  public ImageBaseWrite setAddTags(List<String> addTags) {
+    this.addTags = addTags;
+    return this;
+  }
+
+  public void unsetAddTags() {
+    this.addTags = null;
+  }
+
+  /** Returns true if field addTags is set (has been assigned a value) and false otherwise */
+  public boolean isSetAddTags() {
+    return this.addTags != null;
+  }
+
+  public void setAddTagsIsSet(boolean value) {
+    if (!value) {
+      this.addTags = null;
+    }
+  }
+
+  public int getRemTagsSize() {
+    return (this.remTags == null) ? 0 : this.remTags.size();
+  }
+
+  public java.util.Iterator<String> getRemTagsIterator() {
+    return (this.remTags == null) ? null : this.remTags.iterator();
+  }
+
+  public void addToRemTags(String elem) {
+    if (this.remTags == null) {
+      this.remTags = new ArrayList<String>();
+    }
+    this.remTags.add(elem);
+  }
+
+  public List<String> getRemTags() {
+    return this.remTags;
+  }
+
+  public ImageBaseWrite setRemTags(List<String> remTags) {
+    this.remTags = remTags;
+    return this;
+  }
+
+  public void unsetRemTags() {
+    this.remTags = null;
+  }
+
+  /** Returns true if field remTags is set (has been assigned a value) and false otherwise */
+  public boolean isSetRemTags() {
+    return this.remTags != null;
+  }
+
+  public void setRemTagsIsSet(boolean value) {
+    if (!value) {
+      this.remTags = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case IMAGE_NAME:
@@ -463,6 +568,22 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       }
       break;
 
+    case ADD_TAGS:
+      if (value == null) {
+        unsetAddTags();
+      } else {
+        setAddTags((List<String>)value);
+      }
+      break;
+
+    case REM_TAGS:
+      if (value == null) {
+        unsetRemTags();
+      } else {
+        setRemTags((List<String>)value);
+      }
+      break;
+
     }
   }
 
@@ -489,6 +610,12 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
     case SHARE_MODE:
       return getShareMode();
 
+    case ADD_TAGS:
+      return getAddTags();
+
+    case REM_TAGS:
+      return getRemTags();
+
     }
     throw new IllegalStateException();
   }
@@ -514,6 +641,10 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       return isSetDefaultPermissions();
     case SHARE_MODE:
       return isSetShareMode();
+    case ADD_TAGS:
+      return isSetAddTags();
+    case REM_TAGS:
+      return isSetRemTags();
     }
     throw new IllegalStateException();
   }
@@ -591,6 +722,24 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       if (!(this_present_shareMode && that_present_shareMode))
         return false;
       if (!this.shareMode.equals(that.shareMode))
+        return false;
+    }
+
+    boolean this_present_addTags = true && this.isSetAddTags();
+    boolean that_present_addTags = true && that.isSetAddTags();
+    if (this_present_addTags || that_present_addTags) {
+      if (!(this_present_addTags && that_present_addTags))
+        return false;
+      if (!this.addTags.equals(that.addTags))
+        return false;
+    }
+
+    boolean this_present_remTags = true && this.isSetRemTags();
+    boolean that_present_remTags = true && that.isSetRemTags();
+    if (this_present_remTags || that_present_remTags) {
+      if (!(this_present_remTags && that_present_remTags))
+        return false;
+      if (!this.remTags.equals(that.remTags))
         return false;
     }
 
@@ -680,6 +829,26 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetAddTags()).compareTo(other.isSetAddTags());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAddTags()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.addTags, other.addTags);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetRemTags()).compareTo(other.isSetRemTags());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRemTags()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.remTags, other.remTags);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -747,6 +916,26 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       sb.append(this.shareMode);
     }
     first = false;
+    if (isSetAddTags()) {
+      if (!first) sb.append(", ");
+      sb.append("addTags:");
+      if (this.addTags == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.addTags);
+      }
+      first = false;
+    }
+    if (isSetRemTags()) {
+      if (!first) sb.append(", ");
+      sb.append("remTags:");
+      if (this.remTags == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.remTags);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -852,6 +1041,42 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 8: // ADD_TAGS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list34 = iprot.readListBegin();
+                struct.addTags = new ArrayList<String>(_list34.size);
+                for (int _i35 = 0; _i35 < _list34.size; ++_i35)
+                {
+                  String _elem36;
+                  _elem36 = iprot.readString();
+                  struct.addTags.add(_elem36);
+                }
+                iprot.readListEnd();
+              }
+              struct.setAddTagsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 9: // REM_TAGS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list37 = iprot.readListBegin();
+                struct.remTags = new ArrayList<String>(_list37.size);
+                for (int _i38 = 0; _i38 < _list37.size; ++_i38)
+                {
+                  String _elem39;
+                  _elem39 = iprot.readString();
+                  struct.remTags.add(_elem39);
+                }
+                iprot.readListEnd();
+              }
+              struct.setRemTagsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -898,6 +1123,34 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
         oprot.writeI32(struct.shareMode.getValue());
         oprot.writeFieldEnd();
       }
+      if (struct.addTags != null) {
+        if (struct.isSetAddTags()) {
+          oprot.writeFieldBegin(ADD_TAGS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.addTags.size()));
+            for (String _iter40 : struct.addTags)
+            {
+              oprot.writeString(_iter40);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.remTags != null) {
+        if (struct.isSetRemTags()) {
+          oprot.writeFieldBegin(REM_TAGS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.remTags.size()));
+            for (String _iter41 : struct.remTags)
+            {
+              oprot.writeString(_iter41);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -937,7 +1190,13 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       if (struct.isSetShareMode()) {
         optionals.set(6);
       }
-      oprot.writeBitSet(optionals, 7);
+      if (struct.isSetAddTags()) {
+        optionals.set(7);
+      }
+      if (struct.isSetRemTags()) {
+        optionals.set(8);
+      }
+      oprot.writeBitSet(optionals, 9);
       if (struct.isSetImageName()) {
         oprot.writeString(struct.imageName);
       }
@@ -959,12 +1218,30 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       if (struct.isSetShareMode()) {
         oprot.writeI32(struct.shareMode.getValue());
       }
+      if (struct.isSetAddTags()) {
+        {
+          oprot.writeI32(struct.addTags.size());
+          for (String _iter42 : struct.addTags)
+          {
+            oprot.writeString(_iter42);
+          }
+        }
+      }
+      if (struct.isSetRemTags()) {
+        {
+          oprot.writeI32(struct.remTags.size());
+          for (String _iter43 : struct.remTags)
+          {
+            oprot.writeString(_iter43);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ImageBaseWrite struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(7);
+      BitSet incoming = iprot.readBitSet(9);
       if (incoming.get(0)) {
         struct.imageName = iprot.readString();
         struct.setImageNameIsSet(true);
@@ -993,6 +1270,32 @@ public class ImageBaseWrite implements org.apache.thrift.TBase<ImageBaseWrite, I
       if (incoming.get(6)) {
         struct.shareMode = ShareMode.findByValue(iprot.readI32());
         struct.setShareModeIsSet(true);
+      }
+      if (incoming.get(7)) {
+        {
+          org.apache.thrift.protocol.TList _list44 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.addTags = new ArrayList<String>(_list44.size);
+          for (int _i45 = 0; _i45 < _list44.size; ++_i45)
+          {
+            String _elem46;
+            _elem46 = iprot.readString();
+            struct.addTags.add(_elem46);
+          }
+        }
+        struct.setAddTagsIsSet(true);
+      }
+      if (incoming.get(8)) {
+        {
+          org.apache.thrift.protocol.TList _list47 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.remTags = new ArrayList<String>(_list47.size);
+          for (int _i48 = 0; _i48 < _list47.size; ++_i48)
+          {
+            String _elem49;
+            _elem49 = iprot.readString();
+            struct.remTags.add(_elem49);
+          }
+        }
+        struct.setRemTagsIsSet(true);
       }
     }
   }

@@ -149,6 +149,8 @@ struct ImageBaseWrite {
 	5: bool isTemplate,
 	6: ImagePermissions defaultPermissions,
 	7: ShareMode shareMode,
+	8: optional list<string> addTags,
+	9: optional list<string> remTags,
 }
 
 struct ImageVersionWrite {
@@ -229,11 +231,12 @@ struct LectureWrite {
 	7: UnixTimestamp endTime,
 	9: string runscript,
 	10: list<string> nics,
-	11: optional list<string> allowedUsers, // allowed to see/select image in vmchooser. These are local accounts, not bwIDM/Master
-	12: optional list<NetRule> networkExceptions,
+	12: optional list<NetRule> networkExceptions, // Atomically replace rules
 	13: bool isExam,
 	14: bool hasInternetAccess,
 	15: LecturePermissions defaultPermissions,
+	11: optional list<string> addAllowedUsers, // add allowed to see/select image in vmchooser. These are local accounts, not bwIDM/Master
+	16: optional list<string> remAllowedUsers, // users to remove from that list
 }
 
 struct LectureSummary {
@@ -278,6 +281,17 @@ struct LectureRead {
 	18: bool hasInternetAccess,
 	19: LecturePermissions defaultPermissions,
 	22: optional LecturePermissions userPermissions,
+}
+
+struct MasterTag {
+	1: string tag,
+	2: UnixTimestamp createTime,
+}
+
+struct MasterSoftware {
+	1: string software,
+	2: bool isRestricted,
+	3: UnixTimestamp createTime,
 }
 
 struct TransferInformation {
@@ -465,10 +479,23 @@ service MasterServer {
  * Shared calls
  */
  	// Get list of known organizations with meta data 
-	list<Organization> getOrganizations(),
+	list<Organization> getOrganizations()
+		throws (1:TInternalServerError serverError),
 
-	list<OperatingSystem> getOperatingSystems(),
+	// List of known/defined operating systems
+	list<OperatingSystem> getOperatingSystems()
+		throws (1:TInternalServerError serverError),
 	
-	list<Virtualizer> getVirtualizers(),
+	// List of known/defined virtualizers
+	list<Virtualizer> getVirtualizers()
+		throws (1:TInternalServerError serverError),
+	
+	// List of "official" tags, starting from specific date
+	list<MasterTag> getTags(1:UnixTimestamp startDate)
+		throws (1:TInternalServerError serverError),
+	
+	// List of "official" software, starting from specific date
+	list<MasterSoftware> getSoftware(1:UnixTimestamp startDate)
+		throws (1:TInternalServerError serverError),
 
 }

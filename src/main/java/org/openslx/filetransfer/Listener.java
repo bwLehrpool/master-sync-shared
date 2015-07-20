@@ -1,8 +1,9 @@
 package org.openslx.filetransfer;
 
-import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -16,6 +17,7 @@ public class Listener
 	private final int port;
 	private ServerSocket listenSocket = null;
 	private Thread acceptThread = null;
+	private final int readTimeoutMs;
 
 	private static final byte U = 85; // hex - code 'U' = 85.
 	private static final byte D = 68; // hex - code 'D' = 68.
@@ -30,12 +32,14 @@ public class Listener
 	 * @param context the SSL context used for encryption; if null, unencrypted connections will be
 	 *           used
 	 * @param port port to listen on
+	 * @param timeoutMs socket timeout for accepted connections
 	 */
-	public Listener( IncomingEvent e, SSLContext context, int port )
+	public Listener( IncomingEvent e, SSLContext context, int port, int readTimeoutMs )
 	{
 		this.incomingEvent = e;
 		this.context = context;
 		this.port = port;
+		this.readTimeoutMs = readTimeoutMs;
 	}
 
 	/***********************************************************************/
@@ -48,13 +52,15 @@ public class Listener
 	{
 		try {
 			if ( this.context == null ) {
-				listenSocket = new ServerSocket( this.port );
+				listenSocket = new ServerSocket();
 			} else {
 				SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
-				listenSocket = sslServerSocketFactory.createServerSocket( this.port );
+				listenSocket = sslServerSocketFactory.createServerSocket();
 			}
+			listenSocket.setReuseAddress( true );
+			listenSocket.bind( new InetSocketAddress( this.port ) );
 		} catch ( Exception e ) {
-			log.error( "Cannot listen on port " + this.port );
+			log.error( "Cannot listen on port " + this.port, e );
 			return false;
 		}
 		return true;
@@ -63,7 +69,7 @@ public class Listener
 	private void run()
 	{
 		final Listener instance = this;
-		acceptThread = new Thread() {
+		acceptThread = new Thread( "BFTP-Listen-" + this.port ) {
 			@Override
 			public void run()
 			{
@@ -72,34 +78,44 @@ public class Listener
 						Socket connectionSocket = null;
 						try {
 							connectionSocket = listenSocket.accept();
+						} catch ( SocketTimeoutException e ) {
+							continue;
+						} catch ( Exception e ) {
+							log.warn( "Some exception when accepting! Trying to resume...", e );
+							Transfer.safeClose( listenSocket );
+							if ( !listen() ) {
+								log.error( "Could not re-open listening socket" );
+								break;
+							}
+							continue;
+						}
+						try {
 							connectionSocket.setSoTimeout( 2000 ); // 2 second timeout enough? Maybe even use a small thread pool for handling accepted connections
 
 							byte[] b = new byte[ 1 ];
 							int length = connectionSocket.getInputStream().read( b );
+							if ( length == -1 )
+								continue;
 
-							connectionSocket.setSoTimeout( 10000 );
-
-							log.debug( "Length (Listener): " + length );
+							connectionSocket.setSoTimeout( readTimeoutMs );
 
 							if ( b[0] == U ) {
-								log.debug( "recognized U --> starting Downloader" );
 								// --> start Downloader(socket).
 								Downloader d = new Downloader( connectionSocket );
 								incomingEvent.incomingUploadRequest( d );
 							}
 							else if ( b[0] == D ) {
-								log.debug( "recognized D --> starting Uploader" );
 								// --> start Uploader(socket).
 								Uploader u = new Uploader( connectionSocket );
 								incomingEvent.incomingDownloadRequest( u );
 							}
 							else {
-								log.debug( "Got invalid option ... close connection" );
+								log.debug( "Got invalid init-byte ... close connection" );
 								connectionSocket.close();
 							}
-						} catch ( IOException e ) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						} catch ( Exception e ) {
+							log.warn( "Error accepting client", e );
+							Transfer.safeClose( connectionSocket );
 						}
 					}
 				} finally {
@@ -110,6 +126,7 @@ public class Listener
 				}
 			}
 		};
+		acceptThread.setDaemon( true );
 		acceptThread.start();
 		log.info( "Starting to accept " + ( this.context == null ? "UNENCRYPTED" : "encrypted" ) + " connections on port " + this.port );
 	}

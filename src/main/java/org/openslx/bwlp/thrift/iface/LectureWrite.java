@@ -44,11 +44,12 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
   private static final org.apache.thrift.protocol.TField END_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("endTime", org.apache.thrift.protocol.TType.I64, (short)7);
   private static final org.apache.thrift.protocol.TField RUNSCRIPT_FIELD_DESC = new org.apache.thrift.protocol.TField("runscript", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField NICS_FIELD_DESC = new org.apache.thrift.protocol.TField("nics", org.apache.thrift.protocol.TType.LIST, (short)10);
-  private static final org.apache.thrift.protocol.TField ALLOWED_USERS_FIELD_DESC = new org.apache.thrift.protocol.TField("allowedUsers", org.apache.thrift.protocol.TType.LIST, (short)11);
   private static final org.apache.thrift.protocol.TField NETWORK_EXCEPTIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("networkExceptions", org.apache.thrift.protocol.TType.LIST, (short)12);
   private static final org.apache.thrift.protocol.TField IS_EXAM_FIELD_DESC = new org.apache.thrift.protocol.TField("isExam", org.apache.thrift.protocol.TType.BOOL, (short)13);
   private static final org.apache.thrift.protocol.TField HAS_INTERNET_ACCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("hasInternetAccess", org.apache.thrift.protocol.TType.BOOL, (short)14);
   private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)15);
+  private static final org.apache.thrift.protocol.TField ADD_ALLOWED_USERS_FIELD_DESC = new org.apache.thrift.protocol.TField("addAllowedUsers", org.apache.thrift.protocol.TType.LIST, (short)11);
+  private static final org.apache.thrift.protocol.TField REM_ALLOWED_USERS_FIELD_DESC = new org.apache.thrift.protocol.TField("remAllowedUsers", org.apache.thrift.protocol.TType.LIST, (short)16);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -65,11 +66,12 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
   public long endTime; // required
   public String runscript; // required
   public List<String> nics; // required
-  public List<String> allowedUsers; // optional
   public List<NetRule> networkExceptions; // optional
   public boolean isExam; // required
   public boolean hasInternetAccess; // required
   public LecturePermissions defaultPermissions; // required
+  public List<String> addAllowedUsers; // optional
+  public List<String> remAllowedUsers; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -82,11 +84,12 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     END_TIME((short)7, "endTime"),
     RUNSCRIPT((short)9, "runscript"),
     NICS((short)10, "nics"),
-    ALLOWED_USERS((short)11, "allowedUsers"),
     NETWORK_EXCEPTIONS((short)12, "networkExceptions"),
     IS_EXAM((short)13, "isExam"),
     HAS_INTERNET_ACCESS((short)14, "hasInternetAccess"),
-    DEFAULT_PERMISSIONS((short)15, "defaultPermissions");
+    DEFAULT_PERMISSIONS((short)15, "defaultPermissions"),
+    ADD_ALLOWED_USERS((short)11, "addAllowedUsers"),
+    REM_ALLOWED_USERS((short)16, "remAllowedUsers");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -119,8 +122,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
           return RUNSCRIPT;
         case 10: // NICS
           return NICS;
-        case 11: // ALLOWED_USERS
-          return ALLOWED_USERS;
         case 12: // NETWORK_EXCEPTIONS
           return NETWORK_EXCEPTIONS;
         case 13: // IS_EXAM
@@ -129,6 +130,10 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
           return HAS_INTERNET_ACCESS;
         case 15: // DEFAULT_PERMISSIONS
           return DEFAULT_PERMISSIONS;
+        case 11: // ADD_ALLOWED_USERS
+          return ADD_ALLOWED_USERS;
+        case 16: // REM_ALLOWED_USERS
+          return REM_ALLOWED_USERS;
         default:
           return null;
       }
@@ -176,7 +181,7 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
   private static final int __ISEXAM_ISSET_ID = 4;
   private static final int __HASINTERNETACCESS_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.ALLOWED_USERS,_Fields.NETWORK_EXCEPTIONS};
+  private _Fields optionals[] = {_Fields.NETWORK_EXCEPTIONS,_Fields.ADD_ALLOWED_USERS,_Fields.REM_ALLOWED_USERS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -199,9 +204,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     tmpMap.put(_Fields.NICS, new org.apache.thrift.meta_data.FieldMetaData("nics", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-    tmpMap.put(_Fields.ALLOWED_USERS, new org.apache.thrift.meta_data.FieldMetaData("allowedUsers", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.NETWORK_EXCEPTIONS, new org.apache.thrift.meta_data.FieldMetaData("networkExceptions", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, NetRule.class))));
@@ -211,6 +213,12 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.DEFAULT_PERMISSIONS, new org.apache.thrift.meta_data.FieldMetaData("defaultPermissions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, LecturePermissions.class)));
+    tmpMap.put(_Fields.ADD_ALLOWED_USERS, new org.apache.thrift.meta_data.FieldMetaData("addAllowedUsers", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.REM_ALLOWED_USERS, new org.apache.thrift.meta_data.FieldMetaData("remAllowedUsers", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(LectureWrite.class, metaDataMap);
   }
@@ -278,10 +286,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       List<String> __this__nics = new ArrayList<String>(other.nics);
       this.nics = __this__nics;
     }
-    if (other.isSetAllowedUsers()) {
-      List<String> __this__allowedUsers = new ArrayList<String>(other.allowedUsers);
-      this.allowedUsers = __this__allowedUsers;
-    }
     if (other.isSetNetworkExceptions()) {
       List<NetRule> __this__networkExceptions = new ArrayList<NetRule>(other.networkExceptions.size());
       for (NetRule other_element : other.networkExceptions) {
@@ -293,6 +297,14 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     this.hasInternetAccess = other.hasInternetAccess;
     if (other.isSetDefaultPermissions()) {
       this.defaultPermissions = new LecturePermissions(other.defaultPermissions);
+    }
+    if (other.isSetAddAllowedUsers()) {
+      List<String> __this__addAllowedUsers = new ArrayList<String>(other.addAllowedUsers);
+      this.addAllowedUsers = __this__addAllowedUsers;
+    }
+    if (other.isSetRemAllowedUsers()) {
+      List<String> __this__remAllowedUsers = new ArrayList<String>(other.remAllowedUsers);
+      this.remAllowedUsers = __this__remAllowedUsers;
     }
   }
 
@@ -315,13 +327,14 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     this.endTime = 0;
     this.runscript = null;
     this.nics = null;
-    this.allowedUsers = null;
     this.networkExceptions = null;
     setIsExamIsSet(false);
     this.isExam = false;
     setHasInternetAccessIsSet(false);
     this.hasInternetAccess = false;
     this.defaultPermissions = null;
+    this.addAllowedUsers = null;
+    this.remAllowedUsers = null;
   }
 
   public String getLectureName() {
@@ -551,45 +564,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     }
   }
 
-  public int getAllowedUsersSize() {
-    return (this.allowedUsers == null) ? 0 : this.allowedUsers.size();
-  }
-
-  public java.util.Iterator<String> getAllowedUsersIterator() {
-    return (this.allowedUsers == null) ? null : this.allowedUsers.iterator();
-  }
-
-  public void addToAllowedUsers(String elem) {
-    if (this.allowedUsers == null) {
-      this.allowedUsers = new ArrayList<String>();
-    }
-    this.allowedUsers.add(elem);
-  }
-
-  public List<String> getAllowedUsers() {
-    return this.allowedUsers;
-  }
-
-  public LectureWrite setAllowedUsers(List<String> allowedUsers) {
-    this.allowedUsers = allowedUsers;
-    return this;
-  }
-
-  public void unsetAllowedUsers() {
-    this.allowedUsers = null;
-  }
-
-  /** Returns true if field allowedUsers is set (has been assigned a value) and false otherwise */
-  public boolean isSetAllowedUsers() {
-    return this.allowedUsers != null;
-  }
-
-  public void setAllowedUsersIsSet(boolean value) {
-    if (!value) {
-      this.allowedUsers = null;
-    }
-  }
-
   public int getNetworkExceptionsSize() {
     return (this.networkExceptions == null) ? 0 : this.networkExceptions.size();
   }
@@ -699,6 +673,84 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     }
   }
 
+  public int getAddAllowedUsersSize() {
+    return (this.addAllowedUsers == null) ? 0 : this.addAllowedUsers.size();
+  }
+
+  public java.util.Iterator<String> getAddAllowedUsersIterator() {
+    return (this.addAllowedUsers == null) ? null : this.addAllowedUsers.iterator();
+  }
+
+  public void addToAddAllowedUsers(String elem) {
+    if (this.addAllowedUsers == null) {
+      this.addAllowedUsers = new ArrayList<String>();
+    }
+    this.addAllowedUsers.add(elem);
+  }
+
+  public List<String> getAddAllowedUsers() {
+    return this.addAllowedUsers;
+  }
+
+  public LectureWrite setAddAllowedUsers(List<String> addAllowedUsers) {
+    this.addAllowedUsers = addAllowedUsers;
+    return this;
+  }
+
+  public void unsetAddAllowedUsers() {
+    this.addAllowedUsers = null;
+  }
+
+  /** Returns true if field addAllowedUsers is set (has been assigned a value) and false otherwise */
+  public boolean isSetAddAllowedUsers() {
+    return this.addAllowedUsers != null;
+  }
+
+  public void setAddAllowedUsersIsSet(boolean value) {
+    if (!value) {
+      this.addAllowedUsers = null;
+    }
+  }
+
+  public int getRemAllowedUsersSize() {
+    return (this.remAllowedUsers == null) ? 0 : this.remAllowedUsers.size();
+  }
+
+  public java.util.Iterator<String> getRemAllowedUsersIterator() {
+    return (this.remAllowedUsers == null) ? null : this.remAllowedUsers.iterator();
+  }
+
+  public void addToRemAllowedUsers(String elem) {
+    if (this.remAllowedUsers == null) {
+      this.remAllowedUsers = new ArrayList<String>();
+    }
+    this.remAllowedUsers.add(elem);
+  }
+
+  public List<String> getRemAllowedUsers() {
+    return this.remAllowedUsers;
+  }
+
+  public LectureWrite setRemAllowedUsers(List<String> remAllowedUsers) {
+    this.remAllowedUsers = remAllowedUsers;
+    return this;
+  }
+
+  public void unsetRemAllowedUsers() {
+    this.remAllowedUsers = null;
+  }
+
+  /** Returns true if field remAllowedUsers is set (has been assigned a value) and false otherwise */
+  public boolean isSetRemAllowedUsers() {
+    return this.remAllowedUsers != null;
+  }
+
+  public void setRemAllowedUsersIsSet(boolean value) {
+    if (!value) {
+      this.remAllowedUsers = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case LECTURE_NAME:
@@ -773,14 +825,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       }
       break;
 
-    case ALLOWED_USERS:
-      if (value == null) {
-        unsetAllowedUsers();
-      } else {
-        setAllowedUsers((List<String>)value);
-      }
-      break;
-
     case NETWORK_EXCEPTIONS:
       if (value == null) {
         unsetNetworkExceptions();
@@ -810,6 +854,22 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         unsetDefaultPermissions();
       } else {
         setDefaultPermissions((LecturePermissions)value);
+      }
+      break;
+
+    case ADD_ALLOWED_USERS:
+      if (value == null) {
+        unsetAddAllowedUsers();
+      } else {
+        setAddAllowedUsers((List<String>)value);
+      }
+      break;
+
+    case REM_ALLOWED_USERS:
+      if (value == null) {
+        unsetRemAllowedUsers();
+      } else {
+        setRemAllowedUsers((List<String>)value);
       }
       break;
 
@@ -845,9 +905,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     case NICS:
       return getNics();
 
-    case ALLOWED_USERS:
-      return getAllowedUsers();
-
     case NETWORK_EXCEPTIONS:
       return getNetworkExceptions();
 
@@ -859,6 +916,12 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
 
     case DEFAULT_PERMISSIONS:
       return getDefaultPermissions();
+
+    case ADD_ALLOWED_USERS:
+      return getAddAllowedUsers();
+
+    case REM_ALLOWED_USERS:
+      return getRemAllowedUsers();
 
     }
     throw new IllegalStateException();
@@ -889,8 +952,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       return isSetRunscript();
     case NICS:
       return isSetNics();
-    case ALLOWED_USERS:
-      return isSetAllowedUsers();
     case NETWORK_EXCEPTIONS:
       return isSetNetworkExceptions();
     case IS_EXAM:
@@ -899,6 +960,10 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       return isSetHasInternetAccess();
     case DEFAULT_PERMISSIONS:
       return isSetDefaultPermissions();
+    case ADD_ALLOWED_USERS:
+      return isSetAddAllowedUsers();
+    case REM_ALLOWED_USERS:
+      return isSetRemAllowedUsers();
     }
     throw new IllegalStateException();
   }
@@ -997,15 +1062,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         return false;
     }
 
-    boolean this_present_allowedUsers = true && this.isSetAllowedUsers();
-    boolean that_present_allowedUsers = true && that.isSetAllowedUsers();
-    if (this_present_allowedUsers || that_present_allowedUsers) {
-      if (!(this_present_allowedUsers && that_present_allowedUsers))
-        return false;
-      if (!this.allowedUsers.equals(that.allowedUsers))
-        return false;
-    }
-
     boolean this_present_networkExceptions = true && this.isSetNetworkExceptions();
     boolean that_present_networkExceptions = true && that.isSetNetworkExceptions();
     if (this_present_networkExceptions || that_present_networkExceptions) {
@@ -1039,6 +1095,24 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       if (!(this_present_defaultPermissions && that_present_defaultPermissions))
         return false;
       if (!this.defaultPermissions.equals(that.defaultPermissions))
+        return false;
+    }
+
+    boolean this_present_addAllowedUsers = true && this.isSetAddAllowedUsers();
+    boolean that_present_addAllowedUsers = true && that.isSetAddAllowedUsers();
+    if (this_present_addAllowedUsers || that_present_addAllowedUsers) {
+      if (!(this_present_addAllowedUsers && that_present_addAllowedUsers))
+        return false;
+      if (!this.addAllowedUsers.equals(that.addAllowedUsers))
+        return false;
+    }
+
+    boolean this_present_remAllowedUsers = true && this.isSetRemAllowedUsers();
+    boolean that_present_remAllowedUsers = true && that.isSetRemAllowedUsers();
+    if (this_present_remAllowedUsers || that_present_remAllowedUsers) {
+      if (!(this_present_remAllowedUsers && that_present_remAllowedUsers))
+        return false;
+      if (!this.remAllowedUsers.equals(that.remAllowedUsers))
         return false;
     }
 
@@ -1148,16 +1222,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetAllowedUsers()).compareTo(other.isSetAllowedUsers());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetAllowedUsers()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.allowedUsers, other.allowedUsers);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetNetworkExceptions()).compareTo(other.isSetNetworkExceptions());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1194,6 +1258,26 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
     }
     if (isSetDefaultPermissions()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.defaultPermissions, other.defaultPermissions);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAddAllowedUsers()).compareTo(other.isSetAddAllowedUsers());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAddAllowedUsers()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.addAllowedUsers, other.addAllowedUsers);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetRemAllowedUsers()).compareTo(other.isSetRemAllowedUsers());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRemAllowedUsers()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.remAllowedUsers, other.remAllowedUsers);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1273,16 +1357,6 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       sb.append(this.nics);
     }
     first = false;
-    if (isSetAllowedUsers()) {
-      if (!first) sb.append(", ");
-      sb.append("allowedUsers:");
-      if (this.allowedUsers == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.allowedUsers);
-      }
-      first = false;
-    }
     if (isSetNetworkExceptions()) {
       if (!first) sb.append(", ");
       sb.append("networkExceptions:");
@@ -1309,6 +1383,26 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       sb.append(this.defaultPermissions);
     }
     first = false;
+    if (isSetAddAllowedUsers()) {
+      if (!first) sb.append(", ");
+      sb.append("addAllowedUsers:");
+      if (this.addAllowedUsers == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.addAllowedUsers);
+      }
+      first = false;
+    }
+    if (isSetRemAllowedUsers()) {
+      if (!first) sb.append(", ");
+      sb.append("remAllowedUsers:");
+      if (this.remAllowedUsers == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.remAllowedUsers);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -1424,13 +1518,13 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
           case 10: // NICS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list58 = iprot.readListBegin();
-                struct.nics = new ArrayList<String>(_list58.size);
-                for (int _i59 = 0; _i59 < _list58.size; ++_i59)
+                org.apache.thrift.protocol.TList _list74 = iprot.readListBegin();
+                struct.nics = new ArrayList<String>(_list74.size);
+                for (int _i75 = 0; _i75 < _list74.size; ++_i75)
                 {
-                  String _elem60;
-                  _elem60 = iprot.readString();
-                  struct.nics.add(_elem60);
+                  String _elem76;
+                  _elem76 = iprot.readString();
+                  struct.nics.add(_elem76);
                 }
                 iprot.readListEnd();
               }
@@ -1439,35 +1533,17 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // ALLOWED_USERS
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list61 = iprot.readListBegin();
-                struct.allowedUsers = new ArrayList<String>(_list61.size);
-                for (int _i62 = 0; _i62 < _list61.size; ++_i62)
-                {
-                  String _elem63;
-                  _elem63 = iprot.readString();
-                  struct.allowedUsers.add(_elem63);
-                }
-                iprot.readListEnd();
-              }
-              struct.setAllowedUsersIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           case 12: // NETWORK_EXCEPTIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list64 = iprot.readListBegin();
-                struct.networkExceptions = new ArrayList<NetRule>(_list64.size);
-                for (int _i65 = 0; _i65 < _list64.size; ++_i65)
+                org.apache.thrift.protocol.TList _list77 = iprot.readListBegin();
+                struct.networkExceptions = new ArrayList<NetRule>(_list77.size);
+                for (int _i78 = 0; _i78 < _list77.size; ++_i78)
                 {
-                  NetRule _elem66;
-                  _elem66 = new NetRule();
-                  _elem66.read(iprot);
-                  struct.networkExceptions.add(_elem66);
+                  NetRule _elem79;
+                  _elem79 = new NetRule();
+                  _elem79.read(iprot);
+                  struct.networkExceptions.add(_elem79);
                 }
                 iprot.readListEnd();
               }
@@ -1497,6 +1573,42 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
               struct.defaultPermissions = new LecturePermissions();
               struct.defaultPermissions.read(iprot);
               struct.setDefaultPermissionsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 11: // ADD_ALLOWED_USERS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list80 = iprot.readListBegin();
+                struct.addAllowedUsers = new ArrayList<String>(_list80.size);
+                for (int _i81 = 0; _i81 < _list80.size; ++_i81)
+                {
+                  String _elem82;
+                  _elem82 = iprot.readString();
+                  struct.addAllowedUsers.add(_elem82);
+                }
+                iprot.readListEnd();
+              }
+              struct.setAddAllowedUsersIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 16: // REM_ALLOWED_USERS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list83 = iprot.readListBegin();
+                struct.remAllowedUsers = new ArrayList<String>(_list83.size);
+                for (int _i84 = 0; _i84 < _list83.size; ++_i84)
+                {
+                  String _elem85;
+                  _elem85 = iprot.readString();
+                  struct.remAllowedUsers.add(_elem85);
+                }
+                iprot.readListEnd();
+              }
+              struct.setRemAllowedUsersIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1552,22 +1664,22 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         oprot.writeFieldBegin(NICS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.nics.size()));
-          for (String _iter67 : struct.nics)
+          for (String _iter86 : struct.nics)
           {
-            oprot.writeString(_iter67);
+            oprot.writeString(_iter86);
           }
           oprot.writeListEnd();
         }
         oprot.writeFieldEnd();
       }
-      if (struct.allowedUsers != null) {
-        if (struct.isSetAllowedUsers()) {
-          oprot.writeFieldBegin(ALLOWED_USERS_FIELD_DESC);
+      if (struct.addAllowedUsers != null) {
+        if (struct.isSetAddAllowedUsers()) {
+          oprot.writeFieldBegin(ADD_ALLOWED_USERS_FIELD_DESC);
           {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.allowedUsers.size()));
-            for (String _iter68 : struct.allowedUsers)
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.addAllowedUsers.size()));
+            for (String _iter87 : struct.addAllowedUsers)
             {
-              oprot.writeString(_iter68);
+              oprot.writeString(_iter87);
             }
             oprot.writeListEnd();
           }
@@ -1579,9 +1691,9 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
           oprot.writeFieldBegin(NETWORK_EXCEPTIONS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.networkExceptions.size()));
-            for (NetRule _iter69 : struct.networkExceptions)
+            for (NetRule _iter88 : struct.networkExceptions)
             {
-              _iter69.write(oprot);
+              _iter88.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1598,6 +1710,20 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
         oprot.writeFieldBegin(DEFAULT_PERMISSIONS_FIELD_DESC);
         struct.defaultPermissions.write(oprot);
         oprot.writeFieldEnd();
+      }
+      if (struct.remAllowedUsers != null) {
+        if (struct.isSetRemAllowedUsers()) {
+          oprot.writeFieldBegin(REM_ALLOWED_USERS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.remAllowedUsers.size()));
+            for (String _iter89 : struct.remAllowedUsers)
+            {
+              oprot.writeString(_iter89);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -1644,22 +1770,25 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       if (struct.isSetNics()) {
         optionals.set(8);
       }
-      if (struct.isSetAllowedUsers()) {
+      if (struct.isSetNetworkExceptions()) {
         optionals.set(9);
       }
-      if (struct.isSetNetworkExceptions()) {
+      if (struct.isSetIsExam()) {
         optionals.set(10);
       }
-      if (struct.isSetIsExam()) {
+      if (struct.isSetHasInternetAccess()) {
         optionals.set(11);
       }
-      if (struct.isSetHasInternetAccess()) {
+      if (struct.isSetDefaultPermissions()) {
         optionals.set(12);
       }
-      if (struct.isSetDefaultPermissions()) {
+      if (struct.isSetAddAllowedUsers()) {
         optionals.set(13);
       }
-      oprot.writeBitSet(optionals, 14);
+      if (struct.isSetRemAllowedUsers()) {
+        optionals.set(14);
+      }
+      oprot.writeBitSet(optionals, 15);
       if (struct.isSetLectureName()) {
         oprot.writeString(struct.lectureName);
       }
@@ -1687,27 +1816,18 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       if (struct.isSetNics()) {
         {
           oprot.writeI32(struct.nics.size());
-          for (String _iter70 : struct.nics)
+          for (String _iter90 : struct.nics)
           {
-            oprot.writeString(_iter70);
-          }
-        }
-      }
-      if (struct.isSetAllowedUsers()) {
-        {
-          oprot.writeI32(struct.allowedUsers.size());
-          for (String _iter71 : struct.allowedUsers)
-          {
-            oprot.writeString(_iter71);
+            oprot.writeString(_iter90);
           }
         }
       }
       if (struct.isSetNetworkExceptions()) {
         {
           oprot.writeI32(struct.networkExceptions.size());
-          for (NetRule _iter72 : struct.networkExceptions)
+          for (NetRule _iter91 : struct.networkExceptions)
           {
-            _iter72.write(oprot);
+            _iter91.write(oprot);
           }
         }
       }
@@ -1720,12 +1840,30 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       if (struct.isSetDefaultPermissions()) {
         struct.defaultPermissions.write(oprot);
       }
+      if (struct.isSetAddAllowedUsers()) {
+        {
+          oprot.writeI32(struct.addAllowedUsers.size());
+          for (String _iter92 : struct.addAllowedUsers)
+          {
+            oprot.writeString(_iter92);
+          }
+        }
+      }
+      if (struct.isSetRemAllowedUsers()) {
+        {
+          oprot.writeI32(struct.remAllowedUsers.size());
+          for (String _iter93 : struct.remAllowedUsers)
+          {
+            oprot.writeString(_iter93);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, LectureWrite struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(14);
+      BitSet incoming = iprot.readBitSet(15);
       if (incoming.get(0)) {
         struct.lectureName = iprot.readString();
         struct.setLectureNameIsSet(true);
@@ -1760,56 +1898,69 @@ public class LectureWrite implements org.apache.thrift.TBase<LectureWrite, Lectu
       }
       if (incoming.get(8)) {
         {
-          org.apache.thrift.protocol.TList _list73 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.nics = new ArrayList<String>(_list73.size);
-          for (int _i74 = 0; _i74 < _list73.size; ++_i74)
+          org.apache.thrift.protocol.TList _list94 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.nics = new ArrayList<String>(_list94.size);
+          for (int _i95 = 0; _i95 < _list94.size; ++_i95)
           {
-            String _elem75;
-            _elem75 = iprot.readString();
-            struct.nics.add(_elem75);
+            String _elem96;
+            _elem96 = iprot.readString();
+            struct.nics.add(_elem96);
           }
         }
         struct.setNicsIsSet(true);
       }
       if (incoming.get(9)) {
         {
-          org.apache.thrift.protocol.TList _list76 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.allowedUsers = new ArrayList<String>(_list76.size);
-          for (int _i77 = 0; _i77 < _list76.size; ++_i77)
+          org.apache.thrift.protocol.TList _list97 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.networkExceptions = new ArrayList<NetRule>(_list97.size);
+          for (int _i98 = 0; _i98 < _list97.size; ++_i98)
           {
-            String _elem78;
-            _elem78 = iprot.readString();
-            struct.allowedUsers.add(_elem78);
-          }
-        }
-        struct.setAllowedUsersIsSet(true);
-      }
-      if (incoming.get(10)) {
-        {
-          org.apache.thrift.protocol.TList _list79 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.networkExceptions = new ArrayList<NetRule>(_list79.size);
-          for (int _i80 = 0; _i80 < _list79.size; ++_i80)
-          {
-            NetRule _elem81;
-            _elem81 = new NetRule();
-            _elem81.read(iprot);
-            struct.networkExceptions.add(_elem81);
+            NetRule _elem99;
+            _elem99 = new NetRule();
+            _elem99.read(iprot);
+            struct.networkExceptions.add(_elem99);
           }
         }
         struct.setNetworkExceptionsIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(10)) {
         struct.isExam = iprot.readBool();
         struct.setIsExamIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(11)) {
         struct.hasInternetAccess = iprot.readBool();
         struct.setHasInternetAccessIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(12)) {
         struct.defaultPermissions = new LecturePermissions();
         struct.defaultPermissions.read(iprot);
         struct.setDefaultPermissionsIsSet(true);
+      }
+      if (incoming.get(13)) {
+        {
+          org.apache.thrift.protocol.TList _list100 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.addAllowedUsers = new ArrayList<String>(_list100.size);
+          for (int _i101 = 0; _i101 < _list100.size; ++_i101)
+          {
+            String _elem102;
+            _elem102 = iprot.readString();
+            struct.addAllowedUsers.add(_elem102);
+          }
+        }
+        struct.setAddAllowedUsersIsSet(true);
+      }
+      if (incoming.get(14)) {
+        {
+          org.apache.thrift.protocol.TList _list103 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.remAllowedUsers = new ArrayList<String>(_list103.size);
+          for (int _i104 = 0; _i104 < _list103.size; ++_i104)
+          {
+            String _elem105;
+            _elem105 = iprot.readString();
+            struct.remAllowedUsers.add(_elem105);
+          }
+        }
+        struct.setRemAllowedUsersIsSet(true);
       }
     }
   }

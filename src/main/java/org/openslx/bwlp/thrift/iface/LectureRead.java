@@ -2087,13 +2087,13 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
           case 14: // NICS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list82 = iprot.readListBegin();
-                struct.nics = new ArrayList<String>(_list82.size);
-                for (int _i83 = 0; _i83 < _list82.size; ++_i83)
+                org.apache.thrift.protocol.TList _list106 = iprot.readListBegin();
+                struct.nics = new ArrayList<String>(_list106.size);
+                for (int _i107 = 0; _i107 < _list106.size; ++_i107)
                 {
-                  String _elem84;
-                  _elem84 = iprot.readString();
-                  struct.nics.add(_elem84);
+                  String _elem108;
+                  _elem108 = iprot.readString();
+                  struct.nics.add(_elem108);
                 }
                 iprot.readListEnd();
               }
@@ -2105,13 +2105,13 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
           case 15: // ALLOWED_USERS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list85 = iprot.readListBegin();
-                struct.allowedUsers = new ArrayList<String>(_list85.size);
-                for (int _i86 = 0; _i86 < _list85.size; ++_i86)
+                org.apache.thrift.protocol.TList _list109 = iprot.readListBegin();
+                struct.allowedUsers = new ArrayList<String>(_list109.size);
+                for (int _i110 = 0; _i110 < _list109.size; ++_i110)
                 {
-                  String _elem87;
-                  _elem87 = iprot.readString();
-                  struct.allowedUsers.add(_elem87);
+                  String _elem111;
+                  _elem111 = iprot.readString();
+                  struct.allowedUsers.add(_elem111);
                 }
                 iprot.readListEnd();
               }
@@ -2123,14 +2123,14 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
           case 16: // NETWORK_EXCEPTIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list88 = iprot.readListBegin();
-                struct.networkExceptions = new ArrayList<NetRule>(_list88.size);
-                for (int _i89 = 0; _i89 < _list88.size; ++_i89)
+                org.apache.thrift.protocol.TList _list112 = iprot.readListBegin();
+                struct.networkExceptions = new ArrayList<NetRule>(_list112.size);
+                for (int _i113 = 0; _i113 < _list112.size; ++_i113)
                 {
-                  NetRule _elem90;
-                  _elem90 = new NetRule();
-                  _elem90.read(iprot);
-                  struct.networkExceptions.add(_elem90);
+                  NetRule _elem114;
+                  _elem114 = new NetRule();
+                  _elem114.read(iprot);
+                  struct.networkExceptions.add(_elem114);
                 }
                 iprot.readListEnd();
               }
@@ -2245,9 +2245,9 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         oprot.writeFieldBegin(NICS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.nics.size()));
-          for (String _iter91 : struct.nics)
+          for (String _iter115 : struct.nics)
           {
-            oprot.writeString(_iter91);
+            oprot.writeString(_iter115);
           }
           oprot.writeListEnd();
         }
@@ -2257,9 +2257,9 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         oprot.writeFieldBegin(ALLOWED_USERS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.allowedUsers.size()));
-          for (String _iter92 : struct.allowedUsers)
+          for (String _iter116 : struct.allowedUsers)
           {
-            oprot.writeString(_iter92);
+            oprot.writeString(_iter116);
           }
           oprot.writeListEnd();
         }
@@ -2269,9 +2269,9 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         oprot.writeFieldBegin(NETWORK_EXCEPTIONS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.networkExceptions.size()));
-          for (NetRule _iter93 : struct.networkExceptions)
+          for (NetRule _iter117 : struct.networkExceptions)
           {
-            _iter93.write(oprot);
+            _iter117.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -2434,27 +2434,27 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (struct.isSetNics()) {
         {
           oprot.writeI32(struct.nics.size());
-          for (String _iter94 : struct.nics)
+          for (String _iter118 : struct.nics)
           {
-            oprot.writeString(_iter94);
+            oprot.writeString(_iter118);
           }
         }
       }
       if (struct.isSetAllowedUsers()) {
         {
           oprot.writeI32(struct.allowedUsers.size());
-          for (String _iter95 : struct.allowedUsers)
+          for (String _iter119 : struct.allowedUsers)
           {
-            oprot.writeString(_iter95);
+            oprot.writeString(_iter119);
           }
         }
       }
       if (struct.isSetNetworkExceptions()) {
         {
           oprot.writeI32(struct.networkExceptions.size());
-          for (NetRule _iter96 : struct.networkExceptions)
+          for (NetRule _iter120 : struct.networkExceptions)
           {
-            _iter96.write(oprot);
+            _iter120.write(oprot);
           }
         }
       }
@@ -2539,40 +2539,40 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       }
       if (incoming.get(15)) {
         {
-          org.apache.thrift.protocol.TList _list97 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.nics = new ArrayList<String>(_list97.size);
-          for (int _i98 = 0; _i98 < _list97.size; ++_i98)
+          org.apache.thrift.protocol.TList _list121 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.nics = new ArrayList<String>(_list121.size);
+          for (int _i122 = 0; _i122 < _list121.size; ++_i122)
           {
-            String _elem99;
-            _elem99 = iprot.readString();
-            struct.nics.add(_elem99);
+            String _elem123;
+            _elem123 = iprot.readString();
+            struct.nics.add(_elem123);
           }
         }
         struct.setNicsIsSet(true);
       }
       if (incoming.get(16)) {
         {
-          org.apache.thrift.protocol.TList _list100 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.allowedUsers = new ArrayList<String>(_list100.size);
-          for (int _i101 = 0; _i101 < _list100.size; ++_i101)
+          org.apache.thrift.protocol.TList _list124 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.allowedUsers = new ArrayList<String>(_list124.size);
+          for (int _i125 = 0; _i125 < _list124.size; ++_i125)
           {
-            String _elem102;
-            _elem102 = iprot.readString();
-            struct.allowedUsers.add(_elem102);
+            String _elem126;
+            _elem126 = iprot.readString();
+            struct.allowedUsers.add(_elem126);
           }
         }
         struct.setAllowedUsersIsSet(true);
       }
       if (incoming.get(17)) {
         {
-          org.apache.thrift.protocol.TList _list103 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.networkExceptions = new ArrayList<NetRule>(_list103.size);
-          for (int _i104 = 0; _i104 < _list103.size; ++_i104)
+          org.apache.thrift.protocol.TList _list127 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.networkExceptions = new ArrayList<NetRule>(_list127.size);
+          for (int _i128 = 0; _i128 < _list127.size; ++_i128)
           {
-            NetRule _elem105;
-            _elem105 = new NetRule();
-            _elem105.read(iprot);
-            struct.networkExceptions.add(_elem105);
+            NetRule _elem129;
+            _elem129 = new NetRule();
+            _elem129.read(iprot);
+            struct.networkExceptions.add(_elem129);
           }
         }
         struct.setNetworkExceptionsIsSet(true);

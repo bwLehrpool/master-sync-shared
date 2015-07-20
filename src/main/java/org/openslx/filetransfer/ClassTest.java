@@ -65,7 +65,7 @@ public class ClassTest
 
 		context.init( keyManagers, null, null );
 
-		Listener listener = new Listener( new Test(), context, 6789 );
+		Listener listener = new Listener( new Test(), context, 6789, 10000 );
 		listener.start();
 
 		Thread.sleep( 2000 );
@@ -78,7 +78,7 @@ public class ClassTest
 
 		context.init( null, trustManagers, null );
 
-		Downloader d = new Downloader( "localhost", 6789, context, "xyz" );
+		Downloader d = new Downloader( "localhost", 6789, 10000, context, "xyz" );
 		boolean res = d.download( outFile, new WantRangeCallback() {
 			long pos = 0;
 			long size = -1;

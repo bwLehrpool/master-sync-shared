@@ -34,7 +34,7 @@ public abstract class Transfer
 	 * @param log Logger to use
 	 * @throws IOException
 	 */
-	protected Transfer( String host, int port, SSLContext context, Logger log ) throws IOException
+	protected Transfer( String host, int port, int readTimeoutMs, SSLContext context, Logger log ) throws IOException
 	{
 		this.log = log;
 		// create socket.
@@ -44,7 +44,7 @@ public abstract class Transfer
 			SSLSocketFactory sslSocketFactory = context.getSocketFactory();
 			transferSocket = sslSocketFactory.createSocket();
 		}
-		transferSocket.setSoTimeout( 10000 ); // set socket timeout.
+		transferSocket.setSoTimeout( readTimeoutMs );
 		transferSocket.connect( new InetSocketAddress( host, port ) );
 
 		outStream = new DataOutputStream( transferSocket.getOutputStream() );
@@ -196,7 +196,7 @@ public abstract class Transfer
 	 * Method for closing connection, if download has finished.
 	 * 
 	 */
-	public void close( String error, UploadStatusCallback callback, boolean sendToPeer )
+	protected void close( String error, UploadStatusCallback callback, boolean sendToPeer )
 	{
 		if ( error != null ) {
 			if ( sendToPeer )
@@ -205,12 +205,28 @@ public abstract class Transfer
 				callback.uploadError( error );
 			log.info( error );
 		}
-		safeClose( dataFromServer, outStream, transferSocket );
+		synchronized ( transferSocket ) {
+			safeClose( dataFromServer, outStream, transferSocket );
+		}
 	}
 
-	public void close( String error )
+	protected void close( String error )
 	{
 		close( error, null, false );
+	}
+
+	public void cancel()
+	{
+		synchronized ( transferSocket ) {
+			if ( isValid() ) {
+				try {
+					transferSocket.shutdownInput();
+					transferSocket.shutdownOutput();
+				} catch ( Exception e ) {
+					// Silence
+				}
+			}
+		}
 	}
 
 	/**
@@ -221,8 +237,10 @@ public abstract class Transfer
 	 */
 	public boolean isValid()
 	{
-		return transferSocket.isConnected() && !transferSocket.isClosed()
-				&& !transferSocket.isInputShutdown() && !transferSocket.isOutputShutdown();
+		synchronized ( transferSocket ) {
+			return transferSocket.isConnected() && !transferSocket.isClosed()
+					&& !transferSocket.isInputShutdown() && !transferSocket.isOutputShutdown();
+		}
 	}
 
 	/**
