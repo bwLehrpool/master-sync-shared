@@ -3,7 +3,6 @@ package org.openslx.util;
 import java.io.Closeable;
 
 import org.apache.log4j.Logger;
-import org.openslx.util.Util;
 
 public class Util
 {
@@ -43,24 +42,24 @@ public class Util
 		}
 	}
 
-	
 	/**
-	 * Tries to parse an int. Returns 0 on error.
+	 * Parse the given String as a base10 integer.
+	 * If the string does not represent a valid integer, return the given
+	 * default value.
 	 * 
-	 * @param s
-	 *           The string to parse
-	 * @return The parsed int or 0 on error
+	 * @param value string representation to parse to an int
+	 * @param defaultValue fallback value if given string can't be parsed
+	 * @return
 	 */
-	public static int tryToParseInt( String s )
-	{
+	public static int parseInt(String value, int defaultValue) {
 		try {
-			return Integer.parseInt( s );
-		} catch ( NumberFormatException e ) {
-			return 0;
+			return Integer.parseInt(value);
+		} catch (Exception e) {
+			return defaultValue;
 		}
 	}
 	
-	public static void streamClose( Closeable... closeable )
+	public static void safeClose( Closeable... closeable )
 	{
 		for ( Closeable c : closeable ) {
 			if ( c == null )
@@ -69,6 +68,37 @@ public class Util
 				c.close();
 			} catch ( Throwable t ) {
 			}
+		}
+	}
+	
+	public static void safeClose( AutoCloseable... closeable )
+	{
+		for ( AutoCloseable c : closeable ) {
+			if ( c == null )
+				continue;
+			try {
+				c.close();
+			} catch ( Throwable t ) {
+			}
+		}
+	}
+	
+	public static boolean sleep(int millis) {
+		try {
+			Thread.sleep( millis );
+			return true;
+		} catch ( InterruptedException e ) {
+			Thread.currentThread().interrupt();
+			return false;
+		}
+	}
+	
+	public static boolean joinThread(Thread t) {
+		try {
+			t.join();
+			return true;
+		} catch ( InterruptedException e ) {
+			return false;
 		}
 	}
 }

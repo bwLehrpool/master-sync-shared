@@ -70,7 +70,7 @@ public class VmwareMetaData extends VmMetaData
 				offset += ret;
 			}
 		} finally {
-			Util.streamClose( fr );
+			Util.safeClose( fr );
 		}
 		init( data, offset );
 	}
@@ -112,7 +112,7 @@ public class VmwareMetaData extends VmMetaData
 					handleLoadEntry( entry );
 			}
 		} finally {
-			Util.streamClose( reader );
+			Util.safeClose( reader );
 		}
 		// Now find the HDDs and add to list
 		for ( Entry<String, Controller> cEntry : disks.entrySet() ) {
@@ -205,7 +205,7 @@ public class VmwareMetaData extends VmMetaData
 		} catch ( Exception e ) {
 			LOGGER.warn( "Could not detect charset, fallback to latin1", e );
 		} finally {
-			Util.streamClose( csDetectReader );
+			Util.safeClose( csDetectReader );
 		}
 		// Dumb fallback
 		return "ISO-8859-1";

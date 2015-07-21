@@ -14,6 +14,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.log4j.Logger;
+import org.openslx.util.Util;
 
 public abstract class Transfer
 {
@@ -296,17 +297,7 @@ public abstract class Transfer
 	 */
 	static protected void safeClose( Closeable... list )
 	{
-		if ( list == null )
-			return;
-		for ( Closeable c : list ) {
-			if ( c == null )
-				continue;
-			try {
-				c.close();
-			} catch ( Throwable t ) {
-				// Silcence...
-			}
-		}
+		Util.safeClose( list );
 	}
 
 	/**

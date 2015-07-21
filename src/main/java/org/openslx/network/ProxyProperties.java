@@ -39,7 +39,7 @@ public class ProxyProperties
 	// Integers //
 	public static int getProxyPort()
 	{
-		return Util.tryToParseInt( properties.getProperty( "PROXY_PORT", "0" ) );
+		return Util.parseInt( properties.getProperty( "PROXY_PORT", "0" ), 0 );
 	}
 
 	static
@@ -63,7 +63,7 @@ public class ProxyProperties
 		} catch ( IOException e ) {
 			log.warn( "Could not load proxy properties from '/opt/openslx/proxy/conf'." );
 		} finally {
-			Util.streamClose( stream );
+			Util.safeClose( stream );
 		}
 	}
 
