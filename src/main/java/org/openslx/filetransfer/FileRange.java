@@ -34,6 +34,19 @@ public class FileRange
 		return (int) ( endOffset - startOffset );
 	}
 
+	/**
+	 * Check if the given range lies within this chunk's range.
+	 * 
+	 * @param startOffset Start offset to compare to
+	 * @param endOffset End offset to compare to
+	 * @return true iff the given offsets are a subset or equal to the offsets represented by this
+	 *         class
+	 */
+	public boolean contains( long startOffset, long endOffset )
+	{
+		return this.startOffset <= startOffset && this.endOffset >= endOffset;
+	}
+
 	@Override
 	public boolean equals( Object other )
 	{
