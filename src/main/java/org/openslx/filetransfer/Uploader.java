@@ -70,7 +70,7 @@ public class Uploader extends Transfer
 				this.close( "Could not open given file for reading.", callback, true );
 				return false;
 			}
-			for ( ;; ) { // Loop as long as remote peer is requesting chunks from this file
+			while ( !Thread.currentThread().isInterrupted() ) { // Loop as long as remote peer is requesting chunks from this file
 				// Read meta data of remote peer - either new range, or it's telling us it's done
 				MetaData meta = readMetaData();
 				if ( meta == null ) {

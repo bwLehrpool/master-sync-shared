@@ -129,6 +129,10 @@ public class Downloader extends Transfer
 					int ret;
 					try {
 						ret = dataFromServer.read( incoming, 0, Math.min( chunkLength - hasRead, incoming.length ) );
+						if ( Thread.currentThread().isInterrupted() ) {
+							log.debug( "Thread interrupted in download loop" );
+							return false;
+						}
 					} catch ( IOException e ) {
 						log.error( "Could not read payload from socket" );
 						sendErrorCode( "payload read error" );

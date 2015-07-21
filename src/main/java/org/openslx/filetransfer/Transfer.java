@@ -169,13 +169,11 @@ public abstract class Transfer
 				}
 			}
 		} catch ( SocketTimeoutException ste ) {
-			ste.printStackTrace();
 			sendErrorCode( "timeout" );
 			this.close( "Socket Timeout occured in readMetaData." );
 			return null;
 		} catch ( Exception e ) {
-			e.printStackTrace();
-			this.close( e.toString() );
+			this.close( "Exception occured in readMetaData: " + e.toString() );
 			return null;
 		}
 		return new MetaData( entries );
@@ -219,13 +217,15 @@ public abstract class Transfer
 	public void cancel()
 	{
 		synchronized ( transferSocket ) {
-			if ( isValid() ) {
-				try {
-					transferSocket.shutdownInput();
-					transferSocket.shutdownOutput();
-				} catch ( Exception e ) {
-					// Silence
-				}
+			try {
+				transferSocket.shutdownInput();
+			} catch ( Exception e ) {
+				// Silence
+			}
+			try {
+				transferSocket.shutdownOutput();
+			} catch ( Exception e ) {
+				// Silence
 			}
 		}
 	}
