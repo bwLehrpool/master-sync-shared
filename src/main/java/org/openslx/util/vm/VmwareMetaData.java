@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -18,12 +19,15 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
+import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.util.Util;
 
 public class VmwareMetaData extends VmMetaData
 {
 
 	private static final Logger LOGGER = Logger.getLogger( VmwareMetaData.class );
+	
+	private static final Virtualizer virtualizer = new Virtualizer( "vmware", "VMware" );
 
 	private static class Device
 	{
@@ -223,7 +227,7 @@ public class VmwareMetaData extends VmMetaData
 	}
 
 	@Override
-	public String getFilteredDefinition()
+	public ByteBuffer getFilteredDefinition()
 	{
 		// TODO Auto-generated method stub
 		return null;
@@ -239,6 +243,12 @@ public class VmwareMetaData extends VmMetaData
 			this.key = key;
 			this.value = value;
 		}
+	}
+
+	@Override
+	public Virtualizer getVirtualizer()
+	{
+		return virtualizer;
 	}
 
 }

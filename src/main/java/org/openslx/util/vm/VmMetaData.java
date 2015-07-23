@@ -1,11 +1,13 @@
 package org.openslx.util.vm;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
+import org.openslx.bwlp.thrift.iface.Virtualizer;
 
 /**
  * Describes a configured virtual machine. This class is parsed from a machine description, like a
@@ -85,7 +87,7 @@ public abstract class VmMetaData
 	 * CD/DVD/FLoppy drives, serial or parallel ports, shared folders, or anything else that could be
 	 * considered sensible information (absolute paths containing the local user's name).
 	 */
-	public abstract String getFilteredDefinition();
+	public abstract ByteBuffer getFilteredDefinition();
 
 	/*
 	 * Methods
@@ -121,5 +123,7 @@ public abstract class VmMetaData
 		}
 		this.os = lazyMatch;
 	}
+	
+	public abstract Virtualizer getVirtualizer();
 
 }
