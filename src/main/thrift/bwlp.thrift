@@ -341,20 +341,31 @@ service SatelliteServer {
 	// Get number of items returned per page (for calls that have a page parameter)
 	i32 getPageSize(),
 	
-	// File transfer related
-	TransferInformation requestImageVersionUpload(1: Token userToken, 2: UUID imageBaseId, 3: i64 fileSize, 4: list<binary> blockHashes)
+	/*
+	 * File transfer related
+	 */
+	TransferInformation requestImageVersionUpload(1: Token userToken, 2: UUID imageBaseId, 3: i64 fileSize, 4: list<binary> blockHashes, 5: binary machineDescription)
 		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError, 3:TInternalServerError ffff, 4:TNotFoundException sdf),
-	void cancelUpload(1: Token uploadToken),
+
+	void cancelUpload(1: Token uploadToken)
+		throws (1:TInvalidTokenException ex1),
+
 	TransferStatus queryUploadStatus(1: Token uploadToken)
 		throws (1:TInvalidTokenException ex1),
 
 	TransferInformation requestDownload(1: Token userToken, 2: UUID imageVersionId)
-		throws (1:TAuthorizationException authError),
-	void cancelDownload(1: string downloadToken),
+		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError, 3:TInternalServerError ffff, 4:TNotFoundException sdf),
+
+	void cancelDownload(1: string downloadToken)
+		throws (1:TInvalidTokenException ex1),
+
+	binary getMachineDescription(1: Token userToken, 2: UUID imageVersionId)
+		throws (1:TAuthorizationException authError, 2:TInternalServerError ffff, 3:TNotFoundException sdf),
 	
 	// Authentication
 	void isAuthenticated(1: Token userToken)
 		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
+
 	void invalidateSession(1: Token userToken),
 	
 	// find a user in a given organization by a search term

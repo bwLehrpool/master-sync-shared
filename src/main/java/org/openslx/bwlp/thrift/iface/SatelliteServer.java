@@ -40,15 +40,17 @@ public class SatelliteServer {
 
     public int getPageSize() throws org.apache.thrift.TException;
 
-    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException;
+    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException;
 
-    public void cancelUpload(String uploadToken) throws org.apache.thrift.TException;
+    public void cancelUpload(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException;
 
     public TransferStatus queryUploadStatus(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException;
 
-    public TransferInformation requestDownload(String userToken, String imageVersionId) throws TAuthorizationException, org.apache.thrift.TException;
+    public TransferInformation requestDownload(String userToken, String imageVersionId) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException;
 
-    public void cancelDownload(String downloadToken) throws org.apache.thrift.TException;
+    public void cancelDownload(String downloadToken) throws TInvalidTokenException, org.apache.thrift.TException;
+
+    public ByteBuffer getMachineDescription(String userToken, String imageVersionId) throws TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException;
 
     public void isAuthenticated(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
 
@@ -104,7 +106,7 @@ public class SatelliteServer {
 
     public void getPageSize(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void cancelUpload(String uploadToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -113,6 +115,8 @@ public class SatelliteServer {
     public void requestDownload(String userToken, String imageVersionId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void cancelDownload(String downloadToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void getMachineDescription(String userToken, String imageVersionId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void isAuthenticated(String userToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -226,19 +230,20 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPageSize failed: unknown result");
     }
 
-    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
+    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
     {
-      send_requestImageVersionUpload(userToken, imageBaseId, fileSize, blockHashes);
+      send_requestImageVersionUpload(userToken, imageBaseId, fileSize, blockHashes, machineDescription);
       return recv_requestImageVersionUpload();
     }
 
-    public void send_requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes) throws org.apache.thrift.TException
+    public void send_requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription) throws org.apache.thrift.TException
     {
       requestImageVersionUpload_args args = new requestImageVersionUpload_args();
       args.setUserToken(userToken);
       args.setImageBaseId(imageBaseId);
       args.setFileSize(fileSize);
       args.setBlockHashes(blockHashes);
+      args.setMachineDescription(machineDescription);
       sendBase("requestImageVersionUpload", args);
     }
 
@@ -264,7 +269,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "requestImageVersionUpload failed: unknown result");
     }
 
-    public void cancelUpload(String uploadToken) throws org.apache.thrift.TException
+    public void cancelUpload(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException
     {
       send_cancelUpload(uploadToken);
       recv_cancelUpload();
@@ -277,10 +282,13 @@ public class SatelliteServer {
       sendBase("cancelUpload", args);
     }
 
-    public void recv_cancelUpload() throws org.apache.thrift.TException
+    public void recv_cancelUpload() throws TInvalidTokenException, org.apache.thrift.TException
     {
       cancelUpload_result result = new cancelUpload_result();
       receiveBase(result, "cancelUpload");
+      if (result.ex1 != null) {
+        throw result.ex1;
+      }
       return;
     }
 
@@ -310,7 +318,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "queryUploadStatus failed: unknown result");
     }
 
-    public TransferInformation requestDownload(String userToken, String imageVersionId) throws TAuthorizationException, org.apache.thrift.TException
+    public TransferInformation requestDownload(String userToken, String imageVersionId) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
     {
       send_requestDownload(userToken, imageVersionId);
       return recv_requestDownload();
@@ -324,20 +332,29 @@ public class SatelliteServer {
       sendBase("requestDownload", args);
     }
 
-    public TransferInformation recv_requestDownload() throws TAuthorizationException, org.apache.thrift.TException
+    public TransferInformation recv_requestDownload() throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
     {
       requestDownload_result result = new requestDownload_result();
       receiveBase(result, "requestDownload");
       if (result.isSetSuccess()) {
         return result.success;
       }
+      if (result.rejection != null) {
+        throw result.rejection;
+      }
       if (result.authError != null) {
         throw result.authError;
+      }
+      if (result.ffff != null) {
+        throw result.ffff;
+      }
+      if (result.sdf != null) {
+        throw result.sdf;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "requestDownload failed: unknown result");
     }
 
-    public void cancelDownload(String downloadToken) throws org.apache.thrift.TException
+    public void cancelDownload(String downloadToken) throws TInvalidTokenException, org.apache.thrift.TException
     {
       send_cancelDownload(downloadToken);
       recv_cancelDownload();
@@ -350,11 +367,47 @@ public class SatelliteServer {
       sendBase("cancelDownload", args);
     }
 
-    public void recv_cancelDownload() throws org.apache.thrift.TException
+    public void recv_cancelDownload() throws TInvalidTokenException, org.apache.thrift.TException
     {
       cancelDownload_result result = new cancelDownload_result();
       receiveBase(result, "cancelDownload");
+      if (result.ex1 != null) {
+        throw result.ex1;
+      }
       return;
+    }
+
+    public ByteBuffer getMachineDescription(String userToken, String imageVersionId) throws TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
+    {
+      send_getMachineDescription(userToken, imageVersionId);
+      return recv_getMachineDescription();
+    }
+
+    public void send_getMachineDescription(String userToken, String imageVersionId) throws org.apache.thrift.TException
+    {
+      getMachineDescription_args args = new getMachineDescription_args();
+      args.setUserToken(userToken);
+      args.setImageVersionId(imageVersionId);
+      sendBase("getMachineDescription", args);
+    }
+
+    public ByteBuffer recv_getMachineDescription() throws TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
+    {
+      getMachineDescription_result result = new getMachineDescription_result();
+      receiveBase(result, "getMachineDescription");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.authError != null) {
+        throw result.authError;
+      }
+      if (result.ffff != null) {
+        throw result.ffff;
+      }
+      if (result.sdf != null) {
+        throw result.sdf;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getMachineDescription failed: unknown result");
     }
 
     public void isAuthenticated(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
@@ -1114,9 +1167,9 @@ public class SatelliteServer {
       }
     }
 
-    public void requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      requestImageVersionUpload_call method_call = new requestImageVersionUpload_call(userToken, imageBaseId, fileSize, blockHashes, resultHandler, this, ___protocolFactory, ___transport);
+      requestImageVersionUpload_call method_call = new requestImageVersionUpload_call(userToken, imageBaseId, fileSize, blockHashes, machineDescription, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -1126,12 +1179,14 @@ public class SatelliteServer {
       private String imageBaseId;
       private long fileSize;
       private List<ByteBuffer> blockHashes;
-      public requestImageVersionUpload_call(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private ByteBuffer machineDescription;
+      public requestImageVersionUpload_call(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.userToken = userToken;
         this.imageBaseId = imageBaseId;
         this.fileSize = fileSize;
         this.blockHashes = blockHashes;
+        this.machineDescription = machineDescription;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -1141,6 +1196,7 @@ public class SatelliteServer {
         args.setImageBaseId(imageBaseId);
         args.setFileSize(fileSize);
         args.setBlockHashes(blockHashes);
+        args.setMachineDescription(machineDescription);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1177,7 +1233,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.thrift.TException {
+      public void getResult() throws TInvalidTokenException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1244,7 +1300,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public TransferInformation getResult() throws TAuthorizationException, org.apache.thrift.TException {
+      public TransferInformation getResult() throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1276,13 +1332,48 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.thrift.TException {
+      public void getResult() throws TInvalidTokenException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
         (new Client(prot)).recv_cancelDownload();
+      }
+    }
+
+    public void getMachineDescription(String userToken, String imageVersionId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getMachineDescription_call method_call = new getMachineDescription_call(userToken, imageVersionId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getMachineDescription_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String userToken;
+      private String imageVersionId;
+      public getMachineDescription_call(String userToken, String imageVersionId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.userToken = userToken;
+        this.imageVersionId = imageVersionId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getMachineDescription", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getMachineDescription_args args = new getMachineDescription_args();
+        args.setUserToken(userToken);
+        args.setImageVersionId(imageVersionId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public ByteBuffer getResult() throws TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getMachineDescription();
       }
     }
 
@@ -2111,6 +2202,7 @@ public class SatelliteServer {
       processMap.put("queryUploadStatus", new queryUploadStatus());
       processMap.put("requestDownload", new requestDownload());
       processMap.put("cancelDownload", new cancelDownload());
+      processMap.put("getMachineDescription", new getMachineDescription());
       processMap.put("isAuthenticated", new isAuthenticated());
       processMap.put("invalidateSession", new invalidateSession());
       processMap.put("getUserList", new getUserList());
@@ -2195,7 +2287,7 @@ public class SatelliteServer {
       public requestImageVersionUpload_result getResult(I iface, requestImageVersionUpload_args args) throws org.apache.thrift.TException {
         requestImageVersionUpload_result result = new requestImageVersionUpload_result();
         try {
-          result.success = iface.requestImageVersionUpload(args.userToken, args.imageBaseId, args.fileSize, args.blockHashes);
+          result.success = iface.requestImageVersionUpload(args.userToken, args.imageBaseId, args.fileSize, args.blockHashes, args.machineDescription);
         } catch (TTransferRejectedException rejection) {
           result.rejection = rejection;
         } catch (TAuthorizationException authError) {
@@ -2224,7 +2316,11 @@ public class SatelliteServer {
 
       public cancelUpload_result getResult(I iface, cancelUpload_args args) throws org.apache.thrift.TException {
         cancelUpload_result result = new cancelUpload_result();
-        iface.cancelUpload(args.uploadToken);
+        try {
+          iface.cancelUpload(args.uploadToken);
+        } catch (TInvalidTokenException ex1) {
+          result.ex1 = ex1;
+        }
         return result;
       }
     }
@@ -2270,8 +2366,14 @@ public class SatelliteServer {
         requestDownload_result result = new requestDownload_result();
         try {
           result.success = iface.requestDownload(args.userToken, args.imageVersionId);
+        } catch (TTransferRejectedException rejection) {
+          result.rejection = rejection;
         } catch (TAuthorizationException authError) {
           result.authError = authError;
+        } catch (TInternalServerError ffff) {
+          result.ffff = ffff;
+        } catch (TNotFoundException sdf) {
+          result.sdf = sdf;
         }
         return result;
       }
@@ -2292,7 +2394,39 @@ public class SatelliteServer {
 
       public cancelDownload_result getResult(I iface, cancelDownload_args args) throws org.apache.thrift.TException {
         cancelDownload_result result = new cancelDownload_result();
-        iface.cancelDownload(args.downloadToken);
+        try {
+          iface.cancelDownload(args.downloadToken);
+        } catch (TInvalidTokenException ex1) {
+          result.ex1 = ex1;
+        }
+        return result;
+      }
+    }
+
+    public static class getMachineDescription<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getMachineDescription_args> {
+      public getMachineDescription() {
+        super("getMachineDescription");
+      }
+
+      public getMachineDescription_args getEmptyArgsInstance() {
+        return new getMachineDescription_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getMachineDescription_result getResult(I iface, getMachineDescription_args args) throws org.apache.thrift.TException {
+        getMachineDescription_result result = new getMachineDescription_result();
+        try {
+          result.success = iface.getMachineDescription(args.userToken, args.imageVersionId);
+        } catch (TAuthorizationException authError) {
+          result.authError = authError;
+        } catch (TInternalServerError ffff) {
+          result.ffff = ffff;
+        } catch (TNotFoundException sdf) {
+          result.sdf = sdf;
+        }
         return result;
       }
     }
@@ -2923,6 +3057,7 @@ public class SatelliteServer {
       processMap.put("queryUploadStatus", new queryUploadStatus());
       processMap.put("requestDownload", new requestDownload());
       processMap.put("cancelDownload", new cancelDownload());
+      processMap.put("getMachineDescription", new getMachineDescription());
       processMap.put("isAuthenticated", new isAuthenticated());
       processMap.put("invalidateSession", new invalidateSession());
       processMap.put("getUserList", new getUserList());
@@ -3121,7 +3256,7 @@ public class SatelliteServer {
       }
 
       public void start(I iface, requestImageVersionUpload_args args, org.apache.thrift.async.AsyncMethodCallback<TransferInformation> resultHandler) throws TException {
-        iface.requestImageVersionUpload(args.userToken, args.imageBaseId, args.fileSize, args.blockHashes,resultHandler);
+        iface.requestImageVersionUpload(args.userToken, args.imageBaseId, args.fileSize, args.blockHashes, args.machineDescription,resultHandler);
       }
     }
 
@@ -3151,6 +3286,12 @@ public class SatelliteServer {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             cancelUpload_result result = new cancelUpload_result();
+            if (e instanceof TInvalidTokenException) {
+                        result.ex1 = (TInvalidTokenException) e;
+                        result.setEx1IsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -3259,9 +3400,24 @@ public class SatelliteServer {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             requestDownload_result result = new requestDownload_result();
-            if (e instanceof TAuthorizationException) {
+            if (e instanceof TTransferRejectedException) {
+                        result.rejection = (TTransferRejectedException) e;
+                        result.setRejectionIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TAuthorizationException) {
                         result.authError = (TAuthorizationException) e;
                         result.setAuthErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInternalServerError) {
+                        result.ffff = (TInternalServerError) e;
+                        result.setFfffIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TNotFoundException) {
+                        result.sdf = (TNotFoundException) e;
+                        result.setSdfIsSet(true);
                         msg = result;
             }
              else 
@@ -3315,6 +3471,12 @@ public class SatelliteServer {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             cancelDownload_result result = new cancelDownload_result();
+            if (e instanceof TInvalidTokenException) {
+                        result.ex1 = (TInvalidTokenException) e;
+                        result.setEx1IsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -3336,6 +3498,73 @@ public class SatelliteServer {
 
       public void start(I iface, cancelDownload_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
         iface.cancelDownload(args.downloadToken,resultHandler);
+      }
+    }
+
+    public static class getMachineDescription<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getMachineDescription_args, ByteBuffer> {
+      public getMachineDescription() {
+        super("getMachineDescription");
+      }
+
+      public getMachineDescription_args getEmptyArgsInstance() {
+        return new getMachineDescription_args();
+      }
+
+      public AsyncMethodCallback<ByteBuffer> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<ByteBuffer>() { 
+          public void onComplete(ByteBuffer o) {
+            getMachineDescription_result result = new getMachineDescription_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getMachineDescription_result result = new getMachineDescription_result();
+            if (e instanceof TAuthorizationException) {
+                        result.authError = (TAuthorizationException) e;
+                        result.setAuthErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInternalServerError) {
+                        result.ffff = (TInternalServerError) e;
+                        result.setFfffIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TNotFoundException) {
+                        result.sdf = (TNotFoundException) e;
+                        result.setSdfIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getMachineDescription_args args, org.apache.thrift.async.AsyncMethodCallback<ByteBuffer> resultHandler) throws TException {
+        iface.getMachineDescription(args.userToken, args.imageVersionId,resultHandler);
       }
     }
 
@@ -5999,6 +6228,7 @@ public class SatelliteServer {
     private static final org.apache.thrift.protocol.TField IMAGE_BASE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageBaseId", org.apache.thrift.protocol.TType.STRING, (short)2);
     private static final org.apache.thrift.protocol.TField FILE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSize", org.apache.thrift.protocol.TType.I64, (short)3);
     private static final org.apache.thrift.protocol.TField BLOCK_HASHES_FIELD_DESC = new org.apache.thrift.protocol.TField("blockHashes", org.apache.thrift.protocol.TType.LIST, (short)4);
+    private static final org.apache.thrift.protocol.TField MACHINE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("machineDescription", org.apache.thrift.protocol.TType.STRING, (short)5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6010,13 +6240,15 @@ public class SatelliteServer {
     public String imageBaseId; // required
     public long fileSize; // required
     public List<ByteBuffer> blockHashes; // required
+    public ByteBuffer machineDescription; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       USER_TOKEN((short)1, "userToken"),
       IMAGE_BASE_ID((short)2, "imageBaseId"),
       FILE_SIZE((short)3, "fileSize"),
-      BLOCK_HASHES((short)4, "blockHashes");
+      BLOCK_HASHES((short)4, "blockHashes"),
+      MACHINE_DESCRIPTION((short)5, "machineDescription");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6039,6 +6271,8 @@ public class SatelliteServer {
             return FILE_SIZE;
           case 4: // BLOCK_HASHES
             return BLOCK_HASHES;
+          case 5: // MACHINE_DESCRIPTION
+            return MACHINE_DESCRIPTION;
           default:
             return null;
         }
@@ -6093,6 +6327,8 @@ public class SatelliteServer {
       tmpMap.put(_Fields.BLOCK_HASHES, new org.apache.thrift.meta_data.FieldMetaData("blockHashes", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING              , true))));
+      tmpMap.put(_Fields.MACHINE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("machineDescription", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , true)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(requestImageVersionUpload_args.class, metaDataMap);
     }
@@ -6104,7 +6340,8 @@ public class SatelliteServer {
       String userToken,
       String imageBaseId,
       long fileSize,
-      List<ByteBuffer> blockHashes)
+      List<ByteBuffer> blockHashes,
+      ByteBuffer machineDescription)
     {
       this();
       this.userToken = userToken;
@@ -6112,6 +6349,7 @@ public class SatelliteServer {
       this.fileSize = fileSize;
       setFileSizeIsSet(true);
       this.blockHashes = blockHashes;
+      this.machineDescription = machineDescription;
     }
 
     /**
@@ -6130,6 +6368,10 @@ public class SatelliteServer {
         List<ByteBuffer> __this__blockHashes = new ArrayList<ByteBuffer>(other.blockHashes);
         this.blockHashes = __this__blockHashes;
       }
+      if (other.isSetMachineDescription()) {
+        this.machineDescription = org.apache.thrift.TBaseHelper.copyBinary(other.machineDescription);
+;
+      }
     }
 
     public requestImageVersionUpload_args deepCopy() {
@@ -6143,6 +6385,7 @@ public class SatelliteServer {
       setFileSizeIsSet(false);
       this.fileSize = 0;
       this.blockHashes = null;
+      this.machineDescription = null;
     }
 
     public String getUserToken() {
@@ -6255,6 +6498,40 @@ public class SatelliteServer {
       }
     }
 
+    public byte[] getMachineDescription() {
+      setMachineDescription(org.apache.thrift.TBaseHelper.rightSize(machineDescription));
+      return machineDescription == null ? null : machineDescription.array();
+    }
+
+    public ByteBuffer bufferForMachineDescription() {
+      return machineDescription;
+    }
+
+    public requestImageVersionUpload_args setMachineDescription(byte[] machineDescription) {
+      setMachineDescription(machineDescription == null ? (ByteBuffer)null : ByteBuffer.wrap(machineDescription));
+      return this;
+    }
+
+    public requestImageVersionUpload_args setMachineDescription(ByteBuffer machineDescription) {
+      this.machineDescription = machineDescription;
+      return this;
+    }
+
+    public void unsetMachineDescription() {
+      this.machineDescription = null;
+    }
+
+    /** Returns true if field machineDescription is set (has been assigned a value) and false otherwise */
+    public boolean isSetMachineDescription() {
+      return this.machineDescription != null;
+    }
+
+    public void setMachineDescriptionIsSet(boolean value) {
+      if (!value) {
+        this.machineDescription = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case USER_TOKEN:
@@ -6289,6 +6566,14 @@ public class SatelliteServer {
         }
         break;
 
+      case MACHINE_DESCRIPTION:
+        if (value == null) {
+          unsetMachineDescription();
+        } else {
+          setMachineDescription((ByteBuffer)value);
+        }
+        break;
+
       }
     }
 
@@ -6305,6 +6590,9 @@ public class SatelliteServer {
 
       case BLOCK_HASHES:
         return getBlockHashes();
+
+      case MACHINE_DESCRIPTION:
+        return getMachineDescription();
 
       }
       throw new IllegalStateException();
@@ -6325,6 +6613,8 @@ public class SatelliteServer {
         return isSetFileSize();
       case BLOCK_HASHES:
         return isSetBlockHashes();
+      case MACHINE_DESCRIPTION:
+        return isSetMachineDescription();
       }
       throw new IllegalStateException();
     }
@@ -6375,6 +6665,15 @@ public class SatelliteServer {
         if (!(this_present_blockHashes && that_present_blockHashes))
           return false;
         if (!this.blockHashes.equals(that.blockHashes))
+          return false;
+      }
+
+      boolean this_present_machineDescription = true && this.isSetMachineDescription();
+      boolean that_present_machineDescription = true && that.isSetMachineDescription();
+      if (this_present_machineDescription || that_present_machineDescription) {
+        if (!(this_present_machineDescription && that_present_machineDescription))
+          return false;
+        if (!this.machineDescription.equals(that.machineDescription))
           return false;
       }
 
@@ -6434,6 +6733,16 @@ public class SatelliteServer {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetMachineDescription()).compareTo(other.isSetMachineDescription());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetMachineDescription()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.machineDescription, other.machineDescription);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -6479,6 +6788,14 @@ public class SatelliteServer {
         sb.append("null");
       } else {
         sb.append(this.blockHashes);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("machineDescription:");
+      if (this.machineDescription == null) {
+        sb.append("null");
+      } else {
+        org.apache.thrift.TBaseHelper.toString(this.machineDescription, sb);
       }
       first = false;
       sb.append(")");
@@ -6568,6 +6885,14 @@ public class SatelliteServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 5: // MACHINE_DESCRIPTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.machineDescription = iprot.readBinary();
+                struct.setMachineDescriptionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -6608,6 +6933,11 @@ public class SatelliteServer {
           }
           oprot.writeFieldEnd();
         }
+        if (struct.machineDescription != null) {
+          oprot.writeFieldBegin(MACHINE_DESCRIPTION_FIELD_DESC);
+          oprot.writeBinary(struct.machineDescription);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -6638,7 +6968,10 @@ public class SatelliteServer {
         if (struct.isSetBlockHashes()) {
           optionals.set(3);
         }
-        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetMachineDescription()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetUserToken()) {
           oprot.writeString(struct.userToken);
         }
@@ -6657,12 +6990,15 @@ public class SatelliteServer {
             }
           }
         }
+        if (struct.isSetMachineDescription()) {
+          oprot.writeBinary(struct.machineDescription);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, requestImageVersionUpload_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           struct.userToken = iprot.readString();
           struct.setUserTokenIsSet(true);
@@ -6687,6 +7023,10 @@ public class SatelliteServer {
             }
           }
           struct.setBlockHashesIsSet(true);
+        }
+        if (incoming.get(4)) {
+          struct.machineDescription = iprot.readBinary();
+          struct.setMachineDescriptionIsSet(true);
         }
       }
     }
@@ -7817,6 +8157,7 @@ public class SatelliteServer {
   public static class cancelUpload_result implements org.apache.thrift.TBase<cancelUpload_result, cancelUpload_result._Fields>, java.io.Serializable, Cloneable, Comparable<cancelUpload_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("cancelUpload_result");
 
+    private static final org.apache.thrift.protocol.TField EX1_FIELD_DESC = new org.apache.thrift.protocol.TField("ex1", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -7824,10 +8165,11 @@ public class SatelliteServer {
       schemes.put(TupleScheme.class, new cancelUpload_resultTupleSchemeFactory());
     }
 
+    public TInvalidTokenException ex1; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-;
+      EX1((short)1, "ex1");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -7842,6 +8184,8 @@ public class SatelliteServer {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 1: // EX1
+            return EX1;
           default:
             return null;
         }
@@ -7880,9 +8224,13 @@ public class SatelliteServer {
         return _fieldName;
       }
     }
+
+    // isset id assignments
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.EX1, new org.apache.thrift.meta_data.FieldMetaData("ex1", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(cancelUpload_result.class, metaDataMap);
     }
@@ -7890,10 +8238,20 @@ public class SatelliteServer {
     public cancelUpload_result() {
     }
 
+    public cancelUpload_result(
+      TInvalidTokenException ex1)
+    {
+      this();
+      this.ex1 = ex1;
+    }
+
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public cancelUpload_result(cancelUpload_result other) {
+      if (other.isSetEx1()) {
+        this.ex1 = new TInvalidTokenException(other.ex1);
+      }
     }
 
     public cancelUpload_result deepCopy() {
@@ -7902,15 +8260,51 @@ public class SatelliteServer {
 
     @Override
     public void clear() {
+      this.ex1 = null;
+    }
+
+    public TInvalidTokenException getEx1() {
+      return this.ex1;
+    }
+
+    public cancelUpload_result setEx1(TInvalidTokenException ex1) {
+      this.ex1 = ex1;
+      return this;
+    }
+
+    public void unsetEx1() {
+      this.ex1 = null;
+    }
+
+    /** Returns true if field ex1 is set (has been assigned a value) and false otherwise */
+    public boolean isSetEx1() {
+      return this.ex1 != null;
+    }
+
+    public void setEx1IsSet(boolean value) {
+      if (!value) {
+        this.ex1 = null;
+      }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case EX1:
+        if (value == null) {
+          unsetEx1();
+        } else {
+          setEx1((TInvalidTokenException)value);
+        }
+        break;
+
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case EX1:
+        return getEx1();
+
       }
       throw new IllegalStateException();
     }
@@ -7922,6 +8316,8 @@ public class SatelliteServer {
       }
 
       switch (field) {
+      case EX1:
+        return isSetEx1();
       }
       throw new IllegalStateException();
     }
@@ -7939,6 +8335,15 @@ public class SatelliteServer {
       if (that == null)
         return false;
 
+      boolean this_present_ex1 = true && this.isSetEx1();
+      boolean that_present_ex1 = true && that.isSetEx1();
+      if (this_present_ex1 || that_present_ex1) {
+        if (!(this_present_ex1 && that_present_ex1))
+          return false;
+        if (!this.ex1.equals(that.ex1))
+          return false;
+      }
+
       return true;
     }
 
@@ -7955,6 +8360,16 @@ public class SatelliteServer {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetEx1()).compareTo(other.isSetEx1());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetEx1()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ex1, other.ex1);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -7975,6 +8390,13 @@ public class SatelliteServer {
       StringBuilder sb = new StringBuilder("cancelUpload_result(");
       boolean first = true;
 
+      sb.append("ex1:");
+      if (this.ex1 == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ex1);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -8018,6 +8440,15 @@ public class SatelliteServer {
             break;
           }
           switch (schemeField.id) {
+            case 1: // EX1
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ex1 = new TInvalidTokenException();
+                struct.ex1.read(iprot);
+                struct.setEx1IsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -8033,6 +8464,11 @@ public class SatelliteServer {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.ex1 != null) {
+          oprot.writeFieldBegin(EX1_FIELD_DESC);
+          struct.ex1.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -8050,11 +8486,25 @@ public class SatelliteServer {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, cancelUpload_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetEx1()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetEx1()) {
+          struct.ex1.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, cancelUpload_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.ex1 = new TInvalidTokenException();
+          struct.ex1.read(iprot);
+          struct.setEx1IsSet(true);
+        }
       }
     }
 
@@ -9333,7 +9783,10 @@ public class SatelliteServer {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("requestDownload_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-    private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField REJECTION_FIELD_DESC = new org.apache.thrift.protocol.TField("rejection", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField FFFF_FIELD_DESC = new org.apache.thrift.protocol.TField("ffff", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField SDF_FIELD_DESC = new org.apache.thrift.protocol.TField("sdf", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -9342,12 +9795,18 @@ public class SatelliteServer {
     }
 
     public TransferInformation success; // required
+    public TTransferRejectedException rejection; // required
     public TAuthorizationException authError; // required
+    public TInternalServerError ffff; // required
+    public TNotFoundException sdf; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
-      AUTH_ERROR((short)1, "authError");
+      REJECTION((short)1, "rejection"),
+      AUTH_ERROR((short)2, "authError"),
+      FFFF((short)3, "ffff"),
+      SDF((short)4, "sdf");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -9364,8 +9823,14 @@ public class SatelliteServer {
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
-          case 1: // AUTH_ERROR
+          case 1: // REJECTION
+            return REJECTION;
+          case 2: // AUTH_ERROR
             return AUTH_ERROR;
+          case 3: // FFFF
+            return FFFF;
+          case 4: // SDF
+            return SDF;
           default:
             return null;
         }
@@ -9411,7 +9876,13 @@ public class SatelliteServer {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, TransferInformation.class)));
+      tmpMap.put(_Fields.REJECTION, new org.apache.thrift.meta_data.FieldMetaData("rejection", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.AUTH_ERROR, new org.apache.thrift.meta_data.FieldMetaData("authError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.FFFF, new org.apache.thrift.meta_data.FieldMetaData("ffff", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.SDF, new org.apache.thrift.meta_data.FieldMetaData("sdf", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(requestDownload_result.class, metaDataMap);
@@ -9422,11 +9893,17 @@ public class SatelliteServer {
 
     public requestDownload_result(
       TransferInformation success,
-      TAuthorizationException authError)
+      TTransferRejectedException rejection,
+      TAuthorizationException authError,
+      TInternalServerError ffff,
+      TNotFoundException sdf)
     {
       this();
       this.success = success;
+      this.rejection = rejection;
       this.authError = authError;
+      this.ffff = ffff;
+      this.sdf = sdf;
     }
 
     /**
@@ -9436,8 +9913,17 @@ public class SatelliteServer {
       if (other.isSetSuccess()) {
         this.success = new TransferInformation(other.success);
       }
+      if (other.isSetRejection()) {
+        this.rejection = new TTransferRejectedException(other.rejection);
+      }
       if (other.isSetAuthError()) {
         this.authError = new TAuthorizationException(other.authError);
+      }
+      if (other.isSetFfff()) {
+        this.ffff = new TInternalServerError(other.ffff);
+      }
+      if (other.isSetSdf()) {
+        this.sdf = new TNotFoundException(other.sdf);
       }
     }
 
@@ -9448,7 +9934,10 @@ public class SatelliteServer {
     @Override
     public void clear() {
       this.success = null;
+      this.rejection = null;
       this.authError = null;
+      this.ffff = null;
+      this.sdf = null;
     }
 
     public TransferInformation getSuccess() {
@@ -9472,6 +9961,30 @@ public class SatelliteServer {
     public void setSuccessIsSet(boolean value) {
       if (!value) {
         this.success = null;
+      }
+    }
+
+    public TTransferRejectedException getRejection() {
+      return this.rejection;
+    }
+
+    public requestDownload_result setRejection(TTransferRejectedException rejection) {
+      this.rejection = rejection;
+      return this;
+    }
+
+    public void unsetRejection() {
+      this.rejection = null;
+    }
+
+    /** Returns true if field rejection is set (has been assigned a value) and false otherwise */
+    public boolean isSetRejection() {
+      return this.rejection != null;
+    }
+
+    public void setRejectionIsSet(boolean value) {
+      if (!value) {
+        this.rejection = null;
       }
     }
 
@@ -9499,6 +10012,54 @@ public class SatelliteServer {
       }
     }
 
+    public TInternalServerError getFfff() {
+      return this.ffff;
+    }
+
+    public requestDownload_result setFfff(TInternalServerError ffff) {
+      this.ffff = ffff;
+      return this;
+    }
+
+    public void unsetFfff() {
+      this.ffff = null;
+    }
+
+    /** Returns true if field ffff is set (has been assigned a value) and false otherwise */
+    public boolean isSetFfff() {
+      return this.ffff != null;
+    }
+
+    public void setFfffIsSet(boolean value) {
+      if (!value) {
+        this.ffff = null;
+      }
+    }
+
+    public TNotFoundException getSdf() {
+      return this.sdf;
+    }
+
+    public requestDownload_result setSdf(TNotFoundException sdf) {
+      this.sdf = sdf;
+      return this;
+    }
+
+    public void unsetSdf() {
+      this.sdf = null;
+    }
+
+    /** Returns true if field sdf is set (has been assigned a value) and false otherwise */
+    public boolean isSetSdf() {
+      return this.sdf != null;
+    }
+
+    public void setSdfIsSet(boolean value) {
+      if (!value) {
+        this.sdf = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -9506,6 +10067,14 @@ public class SatelliteServer {
           unsetSuccess();
         } else {
           setSuccess((TransferInformation)value);
+        }
+        break;
+
+      case REJECTION:
+        if (value == null) {
+          unsetRejection();
+        } else {
+          setRejection((TTransferRejectedException)value);
         }
         break;
 
@@ -9517,6 +10086,22 @@ public class SatelliteServer {
         }
         break;
 
+      case FFFF:
+        if (value == null) {
+          unsetFfff();
+        } else {
+          setFfff((TInternalServerError)value);
+        }
+        break;
+
+      case SDF:
+        if (value == null) {
+          unsetSdf();
+        } else {
+          setSdf((TNotFoundException)value);
+        }
+        break;
+
       }
     }
 
@@ -9525,8 +10110,17 @@ public class SatelliteServer {
       case SUCCESS:
         return getSuccess();
 
+      case REJECTION:
+        return getRejection();
+
       case AUTH_ERROR:
         return getAuthError();
+
+      case FFFF:
+        return getFfff();
+
+      case SDF:
+        return getSdf();
 
       }
       throw new IllegalStateException();
@@ -9541,8 +10135,14 @@ public class SatelliteServer {
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case REJECTION:
+        return isSetRejection();
       case AUTH_ERROR:
         return isSetAuthError();
+      case FFFF:
+        return isSetFfff();
+      case SDF:
+        return isSetSdf();
       }
       throw new IllegalStateException();
     }
@@ -9569,12 +10169,39 @@ public class SatelliteServer {
           return false;
       }
 
+      boolean this_present_rejection = true && this.isSetRejection();
+      boolean that_present_rejection = true && that.isSetRejection();
+      if (this_present_rejection || that_present_rejection) {
+        if (!(this_present_rejection && that_present_rejection))
+          return false;
+        if (!this.rejection.equals(that.rejection))
+          return false;
+      }
+
       boolean this_present_authError = true && this.isSetAuthError();
       boolean that_present_authError = true && that.isSetAuthError();
       if (this_present_authError || that_present_authError) {
         if (!(this_present_authError && that_present_authError))
           return false;
         if (!this.authError.equals(that.authError))
+          return false;
+      }
+
+      boolean this_present_ffff = true && this.isSetFfff();
+      boolean that_present_ffff = true && that.isSetFfff();
+      if (this_present_ffff || that_present_ffff) {
+        if (!(this_present_ffff && that_present_ffff))
+          return false;
+        if (!this.ffff.equals(that.ffff))
+          return false;
+      }
+
+      boolean this_present_sdf = true && this.isSetSdf();
+      boolean that_present_sdf = true && that.isSetSdf();
+      if (this_present_sdf || that_present_sdf) {
+        if (!(this_present_sdf && that_present_sdf))
+          return false;
+        if (!this.sdf.equals(that.sdf))
           return false;
       }
 
@@ -9604,12 +10231,42 @@ public class SatelliteServer {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetRejection()).compareTo(other.isSetRejection());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetRejection()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.rejection, other.rejection);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetAuthError()).compareTo(other.isSetAuthError());
       if (lastComparison != 0) {
         return lastComparison;
       }
       if (isSetAuthError()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authError, other.authError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetFfff()).compareTo(other.isSetFfff());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetFfff()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ffff, other.ffff);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetSdf()).compareTo(other.isSetSdf());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSdf()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sdf, other.sdf);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -9642,11 +10299,35 @@ public class SatelliteServer {
       }
       first = false;
       if (!first) sb.append(", ");
+      sb.append("rejection:");
+      if (this.rejection == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.rejection);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("authError:");
       if (this.authError == null) {
         sb.append("null");
       } else {
         sb.append(this.authError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ffff:");
+      if (this.ffff == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ffff);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("sdf:");
+      if (this.sdf == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.sdf);
       }
       first = false;
       sb.append(")");
@@ -9704,11 +10385,38 @@ public class SatelliteServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 1: // AUTH_ERROR
+            case 1: // REJECTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.rejection = new TTransferRejectedException();
+                struct.rejection.read(iprot);
+                struct.setRejectionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // AUTH_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.authError = new TAuthorizationException();
                 struct.authError.read(iprot);
                 struct.setAuthErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // FFFF
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ffff = new TInternalServerError();
+                struct.ffff.read(iprot);
+                struct.setFfffIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 4: // SDF
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.sdf = new TNotFoundException();
+                struct.sdf.read(iprot);
+                struct.setSdfIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -9733,9 +10441,24 @@ public class SatelliteServer {
           struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.rejection != null) {
+          oprot.writeFieldBegin(REJECTION_FIELD_DESC);
+          struct.rejection.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.authError != null) {
           oprot.writeFieldBegin(AUTH_ERROR_FIELD_DESC);
           struct.authError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ffff != null) {
+          oprot.writeFieldBegin(FFFF_FIELD_DESC);
+          struct.ffff.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.sdf != null) {
+          oprot.writeFieldBegin(SDF_FIELD_DESC);
+          struct.sdf.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -9759,31 +10482,64 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetAuthError()) {
+        if (struct.isSetRejection()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAuthError()) {
+          optionals.set(2);
+        }
+        if (struct.isSetFfff()) {
+          optionals.set(3);
+        }
+        if (struct.isSetSdf()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
+        if (struct.isSetRejection()) {
+          struct.rejection.write(oprot);
+        }
         if (struct.isSetAuthError()) {
           struct.authError.write(oprot);
+        }
+        if (struct.isSetFfff()) {
+          struct.ffff.write(oprot);
+        }
+        if (struct.isSetSdf()) {
+          struct.sdf.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, requestDownload_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           struct.success = new TransferInformation();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
+          struct.rejection = new TTransferRejectedException();
+          struct.rejection.read(iprot);
+          struct.setRejectionIsSet(true);
+        }
+        if (incoming.get(2)) {
           struct.authError = new TAuthorizationException();
           struct.authError.read(iprot);
           struct.setAuthErrorIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ffff = new TInternalServerError();
+          struct.ffff.read(iprot);
+          struct.setFfffIsSet(true);
+        }
+        if (incoming.get(4)) {
+          struct.sdf = new TNotFoundException();
+          struct.sdf.read(iprot);
+          struct.setSdfIsSet(true);
         }
       }
     }
@@ -10147,6 +10903,7 @@ public class SatelliteServer {
   public static class cancelDownload_result implements org.apache.thrift.TBase<cancelDownload_result, cancelDownload_result._Fields>, java.io.Serializable, Cloneable, Comparable<cancelDownload_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("cancelDownload_result");
 
+    private static final org.apache.thrift.protocol.TField EX1_FIELD_DESC = new org.apache.thrift.protocol.TField("ex1", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -10154,10 +10911,11 @@ public class SatelliteServer {
       schemes.put(TupleScheme.class, new cancelDownload_resultTupleSchemeFactory());
     }
 
+    public TInvalidTokenException ex1; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-;
+      EX1((short)1, "ex1");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -10172,6 +10930,8 @@ public class SatelliteServer {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 1: // EX1
+            return EX1;
           default:
             return null;
         }
@@ -10210,9 +10970,13 @@ public class SatelliteServer {
         return _fieldName;
       }
     }
+
+    // isset id assignments
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.EX1, new org.apache.thrift.meta_data.FieldMetaData("ex1", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(cancelDownload_result.class, metaDataMap);
     }
@@ -10220,10 +10984,20 @@ public class SatelliteServer {
     public cancelDownload_result() {
     }
 
+    public cancelDownload_result(
+      TInvalidTokenException ex1)
+    {
+      this();
+      this.ex1 = ex1;
+    }
+
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public cancelDownload_result(cancelDownload_result other) {
+      if (other.isSetEx1()) {
+        this.ex1 = new TInvalidTokenException(other.ex1);
+      }
     }
 
     public cancelDownload_result deepCopy() {
@@ -10232,15 +11006,51 @@ public class SatelliteServer {
 
     @Override
     public void clear() {
+      this.ex1 = null;
+    }
+
+    public TInvalidTokenException getEx1() {
+      return this.ex1;
+    }
+
+    public cancelDownload_result setEx1(TInvalidTokenException ex1) {
+      this.ex1 = ex1;
+      return this;
+    }
+
+    public void unsetEx1() {
+      this.ex1 = null;
+    }
+
+    /** Returns true if field ex1 is set (has been assigned a value) and false otherwise */
+    public boolean isSetEx1() {
+      return this.ex1 != null;
+    }
+
+    public void setEx1IsSet(boolean value) {
+      if (!value) {
+        this.ex1 = null;
+      }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case EX1:
+        if (value == null) {
+          unsetEx1();
+        } else {
+          setEx1((TInvalidTokenException)value);
+        }
+        break;
+
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case EX1:
+        return getEx1();
+
       }
       throw new IllegalStateException();
     }
@@ -10252,6 +11062,8 @@ public class SatelliteServer {
       }
 
       switch (field) {
+      case EX1:
+        return isSetEx1();
       }
       throw new IllegalStateException();
     }
@@ -10269,6 +11081,15 @@ public class SatelliteServer {
       if (that == null)
         return false;
 
+      boolean this_present_ex1 = true && this.isSetEx1();
+      boolean that_present_ex1 = true && that.isSetEx1();
+      if (this_present_ex1 || that_present_ex1) {
+        if (!(this_present_ex1 && that_present_ex1))
+          return false;
+        if (!this.ex1.equals(that.ex1))
+          return false;
+      }
+
       return true;
     }
 
@@ -10285,6 +11106,16 @@ public class SatelliteServer {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetEx1()).compareTo(other.isSetEx1());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetEx1()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ex1, other.ex1);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -10305,6 +11136,13 @@ public class SatelliteServer {
       StringBuilder sb = new StringBuilder("cancelDownload_result(");
       boolean first = true;
 
+      sb.append("ex1:");
+      if (this.ex1 == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ex1);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -10348,6 +11186,15 @@ public class SatelliteServer {
             break;
           }
           switch (schemeField.id) {
+            case 1: // EX1
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ex1 = new TInvalidTokenException();
+                struct.ex1.read(iprot);
+                struct.setEx1IsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -10363,6 +11210,11 @@ public class SatelliteServer {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.ex1 != null) {
+          oprot.writeFieldBegin(EX1_FIELD_DESC);
+          struct.ex1.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -10380,11 +11232,1150 @@ public class SatelliteServer {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, cancelDownload_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetEx1()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetEx1()) {
+          struct.ex1.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, cancelDownload_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.ex1 = new TInvalidTokenException();
+          struct.ex1.read(iprot);
+          struct.setEx1IsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getMachineDescription_args implements org.apache.thrift.TBase<getMachineDescription_args, getMachineDescription_args._Fields>, java.io.Serializable, Cloneable, Comparable<getMachineDescription_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getMachineDescription_args");
+
+    private static final org.apache.thrift.protocol.TField USER_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("userToken", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField IMAGE_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageVersionId", org.apache.thrift.protocol.TType.STRING, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getMachineDescription_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getMachineDescription_argsTupleSchemeFactory());
+    }
+
+    public String userToken; // required
+    public String imageVersionId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      USER_TOKEN((short)1, "userToken"),
+      IMAGE_VERSION_ID((short)2, "imageVersionId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // USER_TOKEN
+            return USER_TOKEN;
+          case 2: // IMAGE_VERSION_ID
+            return IMAGE_VERSION_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.USER_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("userToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "Token")));
+      tmpMap.put(_Fields.IMAGE_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("imageVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "UUID")));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getMachineDescription_args.class, metaDataMap);
+    }
+
+    public getMachineDescription_args() {
+    }
+
+    public getMachineDescription_args(
+      String userToken,
+      String imageVersionId)
+    {
+      this();
+      this.userToken = userToken;
+      this.imageVersionId = imageVersionId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getMachineDescription_args(getMachineDescription_args other) {
+      if (other.isSetUserToken()) {
+        this.userToken = other.userToken;
+      }
+      if (other.isSetImageVersionId()) {
+        this.imageVersionId = other.imageVersionId;
+      }
+    }
+
+    public getMachineDescription_args deepCopy() {
+      return new getMachineDescription_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.userToken = null;
+      this.imageVersionId = null;
+    }
+
+    public String getUserToken() {
+      return this.userToken;
+    }
+
+    public getMachineDescription_args setUserToken(String userToken) {
+      this.userToken = userToken;
+      return this;
+    }
+
+    public void unsetUserToken() {
+      this.userToken = null;
+    }
+
+    /** Returns true if field userToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserToken() {
+      return this.userToken != null;
+    }
+
+    public void setUserTokenIsSet(boolean value) {
+      if (!value) {
+        this.userToken = null;
+      }
+    }
+
+    public String getImageVersionId() {
+      return this.imageVersionId;
+    }
+
+    public getMachineDescription_args setImageVersionId(String imageVersionId) {
+      this.imageVersionId = imageVersionId;
+      return this;
+    }
+
+    public void unsetImageVersionId() {
+      this.imageVersionId = null;
+    }
+
+    /** Returns true if field imageVersionId is set (has been assigned a value) and false otherwise */
+    public boolean isSetImageVersionId() {
+      return this.imageVersionId != null;
+    }
+
+    public void setImageVersionIdIsSet(boolean value) {
+      if (!value) {
+        this.imageVersionId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case USER_TOKEN:
+        if (value == null) {
+          unsetUserToken();
+        } else {
+          setUserToken((String)value);
+        }
+        break;
+
+      case IMAGE_VERSION_ID:
+        if (value == null) {
+          unsetImageVersionId();
+        } else {
+          setImageVersionId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case USER_TOKEN:
+        return getUserToken();
+
+      case IMAGE_VERSION_ID:
+        return getImageVersionId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case USER_TOKEN:
+        return isSetUserToken();
+      case IMAGE_VERSION_ID:
+        return isSetImageVersionId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getMachineDescription_args)
+        return this.equals((getMachineDescription_args)that);
+      return false;
+    }
+
+    public boolean equals(getMachineDescription_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_userToken = true && this.isSetUserToken();
+      boolean that_present_userToken = true && that.isSetUserToken();
+      if (this_present_userToken || that_present_userToken) {
+        if (!(this_present_userToken && that_present_userToken))
+          return false;
+        if (!this.userToken.equals(that.userToken))
+          return false;
+      }
+
+      boolean this_present_imageVersionId = true && this.isSetImageVersionId();
+      boolean that_present_imageVersionId = true && that.isSetImageVersionId();
+      if (this_present_imageVersionId || that_present_imageVersionId) {
+        if (!(this_present_imageVersionId && that_present_imageVersionId))
+          return false;
+        if (!this.imageVersionId.equals(that.imageVersionId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getMachineDescription_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetUserToken()).compareTo(other.isSetUserToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userToken, other.userToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetImageVersionId()).compareTo(other.isSetImageVersionId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetImageVersionId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageVersionId, other.imageVersionId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getMachineDescription_args(");
+      boolean first = true;
+
+      sb.append("userToken:");
+      if (this.userToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("imageVersionId:");
+      if (this.imageVersionId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.imageVersionId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getMachineDescription_argsStandardSchemeFactory implements SchemeFactory {
+      public getMachineDescription_argsStandardScheme getScheme() {
+        return new getMachineDescription_argsStandardScheme();
+      }
+    }
+
+    private static class getMachineDescription_argsStandardScheme extends StandardScheme<getMachineDescription_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getMachineDescription_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // USER_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userToken = iprot.readString();
+                struct.setUserTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // IMAGE_VERSION_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.imageVersionId = iprot.readString();
+                struct.setImageVersionIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getMachineDescription_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.userToken != null) {
+          oprot.writeFieldBegin(USER_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.userToken);
+          oprot.writeFieldEnd();
+        }
+        if (struct.imageVersionId != null) {
+          oprot.writeFieldBegin(IMAGE_VERSION_ID_FIELD_DESC);
+          oprot.writeString(struct.imageVersionId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getMachineDescription_argsTupleSchemeFactory implements SchemeFactory {
+      public getMachineDescription_argsTupleScheme getScheme() {
+        return new getMachineDescription_argsTupleScheme();
+      }
+    }
+
+    private static class getMachineDescription_argsTupleScheme extends TupleScheme<getMachineDescription_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getMachineDescription_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetUserToken()) {
+          optionals.set(0);
+        }
+        if (struct.isSetImageVersionId()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetUserToken()) {
+          oprot.writeString(struct.userToken);
+        }
+        if (struct.isSetImageVersionId()) {
+          oprot.writeString(struct.imageVersionId);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getMachineDescription_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.userToken = iprot.readString();
+          struct.setUserTokenIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.imageVersionId = iprot.readString();
+          struct.setImageVersionIdIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getMachineDescription_result implements org.apache.thrift.TBase<getMachineDescription_result, getMachineDescription_result._Fields>, java.io.Serializable, Cloneable, Comparable<getMachineDescription_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getMachineDescription_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField FFFF_FIELD_DESC = new org.apache.thrift.protocol.TField("ffff", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField SDF_FIELD_DESC = new org.apache.thrift.protocol.TField("sdf", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getMachineDescription_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getMachineDescription_resultTupleSchemeFactory());
+    }
+
+    public ByteBuffer success; // required
+    public TAuthorizationException authError; // required
+    public TInternalServerError ffff; // required
+    public TNotFoundException sdf; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      AUTH_ERROR((short)1, "authError"),
+      FFFF((short)2, "ffff"),
+      SDF((short)3, "sdf");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // AUTH_ERROR
+            return AUTH_ERROR;
+          case 2: // FFFF
+            return FFFF;
+          case 3: // SDF
+            return SDF;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , true)));
+      tmpMap.put(_Fields.AUTH_ERROR, new org.apache.thrift.meta_data.FieldMetaData("authError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.FFFF, new org.apache.thrift.meta_data.FieldMetaData("ffff", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.SDF, new org.apache.thrift.meta_data.FieldMetaData("sdf", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getMachineDescription_result.class, metaDataMap);
+    }
+
+    public getMachineDescription_result() {
+    }
+
+    public getMachineDescription_result(
+      ByteBuffer success,
+      TAuthorizationException authError,
+      TInternalServerError ffff,
+      TNotFoundException sdf)
+    {
+      this();
+      this.success = success;
+      this.authError = authError;
+      this.ffff = ffff;
+      this.sdf = sdf;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getMachineDescription_result(getMachineDescription_result other) {
+      if (other.isSetSuccess()) {
+        this.success = org.apache.thrift.TBaseHelper.copyBinary(other.success);
+;
+      }
+      if (other.isSetAuthError()) {
+        this.authError = new TAuthorizationException(other.authError);
+      }
+      if (other.isSetFfff()) {
+        this.ffff = new TInternalServerError(other.ffff);
+      }
+      if (other.isSetSdf()) {
+        this.sdf = new TNotFoundException(other.sdf);
+      }
+    }
+
+    public getMachineDescription_result deepCopy() {
+      return new getMachineDescription_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.authError = null;
+      this.ffff = null;
+      this.sdf = null;
+    }
+
+    public byte[] getSuccess() {
+      setSuccess(org.apache.thrift.TBaseHelper.rightSize(success));
+      return success == null ? null : success.array();
+    }
+
+    public ByteBuffer bufferForSuccess() {
+      return success;
+    }
+
+    public getMachineDescription_result setSuccess(byte[] success) {
+      setSuccess(success == null ? (ByteBuffer)null : ByteBuffer.wrap(success));
+      return this;
+    }
+
+    public getMachineDescription_result setSuccess(ByteBuffer success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public TAuthorizationException getAuthError() {
+      return this.authError;
+    }
+
+    public getMachineDescription_result setAuthError(TAuthorizationException authError) {
+      this.authError = authError;
+      return this;
+    }
+
+    public void unsetAuthError() {
+      this.authError = null;
+    }
+
+    /** Returns true if field authError is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthError() {
+      return this.authError != null;
+    }
+
+    public void setAuthErrorIsSet(boolean value) {
+      if (!value) {
+        this.authError = null;
+      }
+    }
+
+    public TInternalServerError getFfff() {
+      return this.ffff;
+    }
+
+    public getMachineDescription_result setFfff(TInternalServerError ffff) {
+      this.ffff = ffff;
+      return this;
+    }
+
+    public void unsetFfff() {
+      this.ffff = null;
+    }
+
+    /** Returns true if field ffff is set (has been assigned a value) and false otherwise */
+    public boolean isSetFfff() {
+      return this.ffff != null;
+    }
+
+    public void setFfffIsSet(boolean value) {
+      if (!value) {
+        this.ffff = null;
+      }
+    }
+
+    public TNotFoundException getSdf() {
+      return this.sdf;
+    }
+
+    public getMachineDescription_result setSdf(TNotFoundException sdf) {
+      this.sdf = sdf;
+      return this;
+    }
+
+    public void unsetSdf() {
+      this.sdf = null;
+    }
+
+    /** Returns true if field sdf is set (has been assigned a value) and false otherwise */
+    public boolean isSetSdf() {
+      return this.sdf != null;
+    }
+
+    public void setSdfIsSet(boolean value) {
+      if (!value) {
+        this.sdf = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((ByteBuffer)value);
+        }
+        break;
+
+      case AUTH_ERROR:
+        if (value == null) {
+          unsetAuthError();
+        } else {
+          setAuthError((TAuthorizationException)value);
+        }
+        break;
+
+      case FFFF:
+        if (value == null) {
+          unsetFfff();
+        } else {
+          setFfff((TInternalServerError)value);
+        }
+        break;
+
+      case SDF:
+        if (value == null) {
+          unsetSdf();
+        } else {
+          setSdf((TNotFoundException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case AUTH_ERROR:
+        return getAuthError();
+
+      case FFFF:
+        return getFfff();
+
+      case SDF:
+        return getSdf();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case AUTH_ERROR:
+        return isSetAuthError();
+      case FFFF:
+        return isSetFfff();
+      case SDF:
+        return isSetSdf();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getMachineDescription_result)
+        return this.equals((getMachineDescription_result)that);
+      return false;
+    }
+
+    public boolean equals(getMachineDescription_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_authError = true && this.isSetAuthError();
+      boolean that_present_authError = true && that.isSetAuthError();
+      if (this_present_authError || that_present_authError) {
+        if (!(this_present_authError && that_present_authError))
+          return false;
+        if (!this.authError.equals(that.authError))
+          return false;
+      }
+
+      boolean this_present_ffff = true && this.isSetFfff();
+      boolean that_present_ffff = true && that.isSetFfff();
+      if (this_present_ffff || that_present_ffff) {
+        if (!(this_present_ffff && that_present_ffff))
+          return false;
+        if (!this.ffff.equals(that.ffff))
+          return false;
+      }
+
+      boolean this_present_sdf = true && this.isSetSdf();
+      boolean that_present_sdf = true && that.isSetSdf();
+      if (this_present_sdf || that_present_sdf) {
+        if (!(this_present_sdf && that_present_sdf))
+          return false;
+        if (!this.sdf.equals(that.sdf))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getMachineDescription_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAuthError()).compareTo(other.isSetAuthError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authError, other.authError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetFfff()).compareTo(other.isSetFfff());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetFfff()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ffff, other.ffff);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetSdf()).compareTo(other.isSetSdf());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSdf()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sdf, other.sdf);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getMachineDescription_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        org.apache.thrift.TBaseHelper.toString(this.success, sb);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("authError:");
+      if (this.authError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ffff:");
+      if (this.ffff == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ffff);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("sdf:");
+      if (this.sdf == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.sdf);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getMachineDescription_resultStandardSchemeFactory implements SchemeFactory {
+      public getMachineDescription_resultStandardScheme getScheme() {
+        return new getMachineDescription_resultStandardScheme();
+      }
+    }
+
+    private static class getMachineDescription_resultStandardScheme extends StandardScheme<getMachineDescription_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getMachineDescription_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readBinary();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // AUTH_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authError = new TAuthorizationException();
+                struct.authError.read(iprot);
+                struct.setAuthErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // FFFF
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ffff = new TInternalServerError();
+                struct.ffff.read(iprot);
+                struct.setFfffIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // SDF
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.sdf = new TNotFoundException();
+                struct.sdf.read(iprot);
+                struct.setSdfIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getMachineDescription_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBinary(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.authError != null) {
+          oprot.writeFieldBegin(AUTH_ERROR_FIELD_DESC);
+          struct.authError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ffff != null) {
+          oprot.writeFieldBegin(FFFF_FIELD_DESC);
+          struct.ffff.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.sdf != null) {
+          oprot.writeFieldBegin(SDF_FIELD_DESC);
+          struct.sdf.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getMachineDescription_resultTupleSchemeFactory implements SchemeFactory {
+      public getMachineDescription_resultTupleScheme getScheme() {
+        return new getMachineDescription_resultTupleScheme();
+      }
+    }
+
+    private static class getMachineDescription_resultTupleScheme extends TupleScheme<getMachineDescription_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getMachineDescription_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetAuthError()) {
+          optionals.set(1);
+        }
+        if (struct.isSetFfff()) {
+          optionals.set(2);
+        }
+        if (struct.isSetSdf()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeBinary(struct.success);
+        }
+        if (struct.isSetAuthError()) {
+          struct.authError.write(oprot);
+        }
+        if (struct.isSetFfff()) {
+          struct.ffff.write(oprot);
+        }
+        if (struct.isSetSdf()) {
+          struct.sdf.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getMachineDescription_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBinary();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.authError = new TAuthorizationException();
+          struct.authError.read(iprot);
+          struct.setAuthErrorIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ffff = new TInternalServerError();
+          struct.ffff.read(iprot);
+          struct.setFfffIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.sdf = new TNotFoundException();
+          struct.sdf.read(iprot);
+          struct.setSdfIsSet(true);
+        }
       }
     }
 
