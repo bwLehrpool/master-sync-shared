@@ -26,36 +26,27 @@ public class VmwareMetaData extends VmMetaData
 {
 
 	private static final Logger LOGGER = Logger.getLogger( VmwareMetaData.class );
-	
+
 	private static final Virtualizer virtualizer = new Virtualizer( "vmware", "VMware" );
 
-	private static class Device
-	{
-		public boolean present = false;
-		public String deviceType = null;
-		public String filename = null;
+	private static final Pattern hddKey = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d):?(\\d)?\\.(.*)", Pattern.CASE_INSENSITIVE );
 
-		@Override
-		public String toString()
-		{
-			return filename + " is " + deviceType + " (present: " + present + ")";
-		}
-	}
+	// Lowercase list of allowed settings for upload (as regex)
+	private static final Pattern[] whitelist;
 
-	private static class Controller
-	{
-		public boolean present = true; // Seems to be implicit, seen at least for IDE...
-		public String virtualDev = null;
-		Map<String, Device> devices = new HashMap<>();
-
-		@Override
-		public String toString()
-		{
-			return virtualDev + " is (present: " + present + "): " + devices.toString();
+	// Init static members
+	static {
+		String[] list = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci\\.",
+				"mks\\.", "virtualhw\\.", "^sound\\.", "\\.pcislotnumber$", "^pcibridge", "\\.virtualdev$" };
+		whitelist = new Pattern[ list.length ];
+		for ( int i = 0; i < list.length; ++i ) {
+			whitelist[i] = Pattern.compile( list[i] );
 		}
 	}
 
 	private final Map<String, Controller> disks = new HashMap<>();
+
+	private final StringBuilder cleanedConfig = new StringBuilder( 200 );
 
 	public VmwareMetaData( List<OperatingSystem> osList, File file ) throws IOException
 	{
@@ -106,6 +97,9 @@ public class VmwareMetaData extends VmMetaData
 	private void loadVmx( InputStream is, Charset cs ) throws IOException
 	{
 		LOGGER.info( "Loading VMX with charset " + cs.name() );
+		// Prepare filtered vmx
+		addFiltered( ".encoding", "UTF-8" );
+		// Read line-by-line
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader( new InputStreamReader( is, cs ) );
@@ -141,17 +135,38 @@ public class VmwareMetaData extends VmMetaData
 				hdds.add( new HardDisk( controller.virtualDev, bus, device.filename ) );
 			}
 		}
+		// Add HDD to cleaned vmx
+		if ( !hdds.isEmpty() ) {
+			HardDisk hdd = hdds.get( 0 );
+			addFiltered( "#SLX_HDD_BUS", hdd.bus.toString() );
+			if ( hdd.chipsetDriver != null ) {
+				addFiltered( "#SLX_HDD_CHIP", hdd.chipsetDriver );
+			}
+		}
 	}
 
-	private static final Pattern hddKey = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d):(\\d)\\.(.*)", Pattern.CASE_INSENSITIVE );
+	private void addFiltered( String key, String value )
+	{
+		cleanedConfig.append( key ).append( " = \"" ).append( value ).append( "\"\n" );
+	}
 
 	private void handleLoadEntry( KeyValuePair entry )
 	{
-		if ( entry.key.equalsIgnoreCase( "guestOS" ) ) {
+		String lowerKey = entry.key.toLowerCase();
+		// Cleaned vmx construction
+		for ( Pattern exp : whitelist ) {
+			if ( exp.matcher( lowerKey ).find() ) {
+				addFiltered( entry.key, entry.value );
+				break;
+			}
+		}
+		//
+		// Dig Usable meta data
+		if ( lowerKey.equals( "guestos" ) ) {
 			setOs( "vmware", entry.value );
 			return;
 		}
-		if ( entry.key.equalsIgnoreCase( "displayName" ) ) {
+		if ( lowerKey.equals( "displayname" ) ) {
 			displayName = entry.value;
 			return;
 		}
@@ -224,14 +239,22 @@ public class VmwareMetaData extends VmMetaData
 			return null;
 		return new KeyValuePair(
 				matcher.group( 1 ), matcher.group( 2 ) );
+				
 	}
 
 	@Override
 	public ByteBuffer getFilteredDefinition()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return ByteBuffer.wrap( cleanedConfig.toString().getBytes( StandardCharsets.UTF_8 ) );
 	}
+
+	@Override
+	public Virtualizer getVirtualizer()
+	{
+		return virtualizer;
+	}
+
+	// ###############################
 
 	private static class KeyValuePair
 	{
@@ -245,10 +268,86 @@ public class VmwareMetaData extends VmMetaData
 		}
 	}
 
-	@Override
-	public Virtualizer getVirtualizer()
+	private static class ConfigEntry
 	{
-		return virtualizer;
+		private String value;
+		private boolean forFiltered;
+		private boolean forGenerated;
+
+		public ConfigEntry( String value )
+		{
+			this.value = value;
+		}
+
+		public ConfigEntry filtered( boolean set )
+		{
+			this.forFiltered = set;
+			return this;
+		}
+
+		public ConfigEntry generated( boolean set )
+		{
+			this.forGenerated = set;
+			return this;
+		}
+
+	}
+
+	private static class ConfigEntries
+	{
+		private Map<String, ConfigEntry> entries = new HashMap<>();
+
+		public ConfigEntry set( String key, String value )
+		{
+			return entries.put( key, new ConfigEntry( value ) );
+		}
+
+		public ConfigEntry set( KeyValuePair entry )
+		{
+			return set( entry.key, entry.value );
+		}
+
+		public String get( boolean filteredRequired, boolean generatedRequired )
+		{
+			StringBuilder sb = new StringBuilder( 300 );
+			for ( Entry<String, ConfigEntry> entry : entries.entrySet() ) {
+				ConfigEntry value = entry.getValue();
+				if ( ( !filteredRequired || value.forFiltered ) &&
+						( !generatedRequired || value.forGenerated ) ) {
+					sb.append( entry.getKey() );
+					sb.append( " = \"" );
+					sb.append( entry.getValue() );
+					sb.append( "\"\n" );
+				}
+			}
+			return sb.toString();
+		}
+	}
+
+	private static class Device
+	{
+		public boolean present = false;
+		public String deviceType = null;
+		public String filename = null;
+
+		@Override
+		public String toString()
+		{
+			return filename + " is " + deviceType + " (present: " + present + ")";
+		}
+	}
+
+	private static class Controller
+	{
+		public boolean present = true; // Seems to be implicit, seen at least for IDE...
+		public String virtualDev = null;
+		Map<String, Device> devices = new HashMap<>();
+
+		@Override
+		public String toString()
+		{
+			return virtualDev + " is (present: " + present + "): " + devices.toString();
+		}
 	}
 
 }
