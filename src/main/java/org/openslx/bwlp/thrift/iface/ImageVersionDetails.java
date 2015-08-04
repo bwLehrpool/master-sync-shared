@@ -40,7 +40,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
   private static final org.apache.thrift.protocol.TField EXPIRE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("expireTime", org.apache.thrift.protocol.TType.I64, (short)3);
   private static final org.apache.thrift.protocol.TField FILE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSize", org.apache.thrift.protocol.TType.I64, (short)4);
   private static final org.apache.thrift.protocol.TField UPLOADER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("uploaderId", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField IS_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("isEnabled", org.apache.thrift.protocol.TType.BOOL, (short)6);
   private static final org.apache.thrift.protocol.TField IS_RESTRICTED_FIELD_DESC = new org.apache.thrift.protocol.TField("isRestricted", org.apache.thrift.protocol.TType.BOOL, (short)7);
   private static final org.apache.thrift.protocol.TField IS_VALID_FIELD_DESC = new org.apache.thrift.protocol.TField("isValid", org.apache.thrift.protocol.TType.BOOL, (short)8);
   private static final org.apache.thrift.protocol.TField IS_PROCESSED_FIELD_DESC = new org.apache.thrift.protocol.TField("isProcessed", org.apache.thrift.protocol.TType.BOOL, (short)9);
@@ -57,7 +56,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
   public long expireTime; // required
   public long fileSize; // required
   public String uploaderId; // required
-  public boolean isEnabled; // required
   public boolean isRestricted; // required
   public boolean isValid; // required
   public boolean isProcessed; // required
@@ -70,7 +68,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     EXPIRE_TIME((short)3, "expireTime"),
     FILE_SIZE((short)4, "fileSize"),
     UPLOADER_ID((short)5, "uploaderId"),
-    IS_ENABLED((short)6, "isEnabled"),
     IS_RESTRICTED((short)7, "isRestricted"),
     IS_VALID((short)8, "isValid"),
     IS_PROCESSED((short)9, "isProcessed"),
@@ -99,8 +96,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
           return FILE_SIZE;
         case 5: // UPLOADER_ID
           return UPLOADER_ID;
-        case 6: // IS_ENABLED
-          return IS_ENABLED;
         case 7: // IS_RESTRICTED
           return IS_RESTRICTED;
         case 8: // IS_VALID
@@ -152,10 +147,9 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
   private static final int __CREATETIME_ISSET_ID = 0;
   private static final int __EXPIRETIME_ISSET_ID = 1;
   private static final int __FILESIZE_ISSET_ID = 2;
-  private static final int __ISENABLED_ISSET_ID = 3;
-  private static final int __ISRESTRICTED_ISSET_ID = 4;
-  private static final int __ISVALID_ISSET_ID = 5;
-  private static final int __ISPROCESSED_ISSET_ID = 6;
+  private static final int __ISRESTRICTED_ISSET_ID = 3;
+  private static final int __ISVALID_ISSET_ID = 4;
+  private static final int __ISPROCESSED_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -170,8 +164,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.UPLOADER_ID, new org.apache.thrift.meta_data.FieldMetaData("uploaderId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
-    tmpMap.put(_Fields.IS_ENABLED, new org.apache.thrift.meta_data.FieldMetaData("isEnabled", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.IS_RESTRICTED, new org.apache.thrift.meta_data.FieldMetaData("isRestricted", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.IS_VALID, new org.apache.thrift.meta_data.FieldMetaData("isValid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -194,7 +186,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     long expireTime,
     long fileSize,
     String uploaderId,
-    boolean isEnabled,
     boolean isRestricted,
     boolean isValid,
     boolean isProcessed,
@@ -209,8 +200,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     this.fileSize = fileSize;
     setFileSizeIsSet(true);
     this.uploaderId = uploaderId;
-    this.isEnabled = isEnabled;
-    setIsEnabledIsSet(true);
     this.isRestricted = isRestricted;
     setIsRestrictedIsSet(true);
     this.isValid = isValid;
@@ -234,7 +223,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     if (other.isSetUploaderId()) {
       this.uploaderId = other.uploaderId;
     }
-    this.isEnabled = other.isEnabled;
     this.isRestricted = other.isRestricted;
     this.isValid = other.isValid;
     this.isProcessed = other.isProcessed;
@@ -258,8 +246,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     setFileSizeIsSet(false);
     this.fileSize = 0;
     this.uploaderId = null;
-    setIsEnabledIsSet(false);
-    this.isEnabled = false;
     setIsRestrictedIsSet(false);
     this.isRestricted = false;
     setIsValidIsSet(false);
@@ -384,29 +370,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     if (!value) {
       this.uploaderId = null;
     }
-  }
-
-  public boolean isIsEnabled() {
-    return this.isEnabled;
-  }
-
-  public ImageVersionDetails setIsEnabled(boolean isEnabled) {
-    this.isEnabled = isEnabled;
-    setIsEnabledIsSet(true);
-    return this;
-  }
-
-  public void unsetIsEnabled() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISENABLED_ISSET_ID);
-  }
-
-  /** Returns true if field isEnabled is set (has been assigned a value) and false otherwise */
-  public boolean isSetIsEnabled() {
-    return EncodingUtils.testBit(__isset_bitfield, __ISENABLED_ISSET_ID);
-  }
-
-  public void setIsEnabledIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISENABLED_ISSET_ID, value);
   }
 
   public boolean isIsRestricted() {
@@ -559,14 +522,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       }
       break;
 
-    case IS_ENABLED:
-      if (value == null) {
-        unsetIsEnabled();
-      } else {
-        setIsEnabled((Boolean)value);
-      }
-      break;
-
     case IS_RESTRICTED:
       if (value == null) {
         unsetIsRestricted();
@@ -619,9 +574,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     case UPLOADER_ID:
       return getUploaderId();
 
-    case IS_ENABLED:
-      return Boolean.valueOf(isIsEnabled());
-
     case IS_RESTRICTED:
       return Boolean.valueOf(isIsRestricted());
 
@@ -655,8 +607,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       return isSetFileSize();
     case UPLOADER_ID:
       return isSetUploaderId();
-    case IS_ENABLED:
-      return isSetIsEnabled();
     case IS_RESTRICTED:
       return isSetIsRestricted();
     case IS_VALID:
@@ -724,15 +674,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       if (!(this_present_uploaderId && that_present_uploaderId))
         return false;
       if (!this.uploaderId.equals(that.uploaderId))
-        return false;
-    }
-
-    boolean this_present_isEnabled = true;
-    boolean that_present_isEnabled = true;
-    if (this_present_isEnabled || that_present_isEnabled) {
-      if (!(this_present_isEnabled && that_present_isEnabled))
-        return false;
-      if (this.isEnabled != that.isEnabled)
         return false;
     }
 
@@ -838,16 +779,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetIsEnabled()).compareTo(other.isSetIsEnabled());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIsEnabled()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isEnabled, other.isEnabled);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetIsRestricted()).compareTo(other.isSetIsRestricted());
     if (lastComparison != 0) {
       return lastComparison;
@@ -934,10 +865,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     } else {
       sb.append(this.uploaderId);
     }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("isEnabled:");
-    sb.append(this.isEnabled);
     first = false;
     if (!first) sb.append(", ");
     sb.append("isRestricted:");
@@ -1044,14 +971,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // IS_ENABLED
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.isEnabled = iprot.readBool();
-              struct.setIsEnabledIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           case 7: // IS_RESTRICTED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isRestricted = iprot.readBool();
@@ -1128,9 +1047,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
         oprot.writeString(struct.uploaderId);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(IS_ENABLED_FIELD_DESC);
-      oprot.writeBool(struct.isEnabled);
-      oprot.writeFieldEnd();
       oprot.writeFieldBegin(IS_RESTRICTED_FIELD_DESC);
       oprot.writeBool(struct.isRestricted);
       oprot.writeFieldEnd();
@@ -1185,22 +1101,19 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       if (struct.isSetUploaderId()) {
         optionals.set(4);
       }
-      if (struct.isSetIsEnabled()) {
+      if (struct.isSetIsRestricted()) {
         optionals.set(5);
       }
-      if (struct.isSetIsRestricted()) {
+      if (struct.isSetIsValid()) {
         optionals.set(6);
       }
-      if (struct.isSetIsValid()) {
+      if (struct.isSetIsProcessed()) {
         optionals.set(7);
       }
-      if (struct.isSetIsProcessed()) {
+      if (struct.isSetSoftware()) {
         optionals.set(8);
       }
-      if (struct.isSetSoftware()) {
-        optionals.set(9);
-      }
-      oprot.writeBitSet(optionals, 10);
+      oprot.writeBitSet(optionals, 9);
       if (struct.isSetVersionId()) {
         oprot.writeString(struct.versionId);
       }
@@ -1215,9 +1128,6 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
       }
       if (struct.isSetUploaderId()) {
         oprot.writeString(struct.uploaderId);
-      }
-      if (struct.isSetIsEnabled()) {
-        oprot.writeBool(struct.isEnabled);
       }
       if (struct.isSetIsRestricted()) {
         oprot.writeBool(struct.isRestricted);
@@ -1242,7 +1152,7 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ImageVersionDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(10);
+      BitSet incoming = iprot.readBitSet(9);
       if (incoming.get(0)) {
         struct.versionId = iprot.readString();
         struct.setVersionIdIsSet(true);
@@ -1264,22 +1174,18 @@ public class ImageVersionDetails implements org.apache.thrift.TBase<ImageVersion
         struct.setUploaderIdIsSet(true);
       }
       if (incoming.get(5)) {
-        struct.isEnabled = iprot.readBool();
-        struct.setIsEnabledIsSet(true);
-      }
-      if (incoming.get(6)) {
         struct.isRestricted = iprot.readBool();
         struct.setIsRestrictedIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(6)) {
         struct.isValid = iprot.readBool();
         struct.setIsValidIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(7)) {
         struct.isProcessed = iprot.readBool();
         struct.setIsProcessedIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(8)) {
         {
           org.apache.thrift.protocol.TList _list55 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.software = new ArrayList<String>(_list55.size);

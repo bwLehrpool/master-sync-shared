@@ -36,7 +36,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ImageDetailsRead");
 
   private static final org.apache.thrift.protocol.TField IMAGE_BASE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageBaseId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField CURRENT_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("currentVersionId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField LATEST_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("latestVersionId", org.apache.thrift.protocol.TType.STRING, (short)17);
   private static final org.apache.thrift.protocol.TField VERSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("versions", org.apache.thrift.protocol.TType.LIST, (short)3);
   private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)4);
@@ -60,7 +59,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   }
 
   public String imageBaseId; // required
-  public String currentVersionId; // required
   public String latestVersionId; // required
   public List<ImageVersionDetails> versions; // required
   public String imageName; // required
@@ -84,7 +82,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     IMAGE_BASE_ID((short)1, "imageBaseId"),
-    CURRENT_VERSION_ID((short)2, "currentVersionId"),
     LATEST_VERSION_ID((short)17, "latestVersionId"),
     VERSIONS((short)3, "versions"),
     IMAGE_NAME((short)4, "imageName"),
@@ -120,8 +117,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       switch(fieldId) {
         case 1: // IMAGE_BASE_ID
           return IMAGE_BASE_ID;
-        case 2: // CURRENT_VERSION_ID
-          return CURRENT_VERSION_ID;
         case 17: // LATEST_VERSION_ID
           return LATEST_VERSION_ID;
         case 3: // VERSIONS
@@ -203,8 +198,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.IMAGE_BASE_ID, new org.apache.thrift.meta_data.FieldMetaData("imageBaseId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
-    tmpMap.put(_Fields.CURRENT_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("currentVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.LATEST_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("latestVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.VERSIONS, new org.apache.thrift.meta_data.FieldMetaData("versions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -246,7 +239,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
 
   public ImageDetailsRead(
     String imageBaseId,
-    String currentVersionId,
     String latestVersionId,
     List<ImageVersionDetails> versions,
     String imageName,
@@ -264,7 +256,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   {
     this();
     this.imageBaseId = imageBaseId;
-    this.currentVersionId = currentVersionId;
     this.latestVersionId = latestVersionId;
     this.versions = versions;
     this.imageName = imageName;
@@ -292,9 +283,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     __isset_bitfield = other.__isset_bitfield;
     if (other.isSetImageBaseId()) {
       this.imageBaseId = other.imageBaseId;
-    }
-    if (other.isSetCurrentVersionId()) {
-      this.currentVersionId = other.currentVersionId;
     }
     if (other.isSetLatestVersionId()) {
       this.latestVersionId = other.latestVersionId;
@@ -347,7 +335,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   @Override
   public void clear() {
     this.imageBaseId = null;
-    this.currentVersionId = null;
     this.latestVersionId = null;
     this.versions = null;
     this.imageName = null;
@@ -390,30 +377,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   public void setImageBaseIdIsSet(boolean value) {
     if (!value) {
       this.imageBaseId = null;
-    }
-  }
-
-  public String getCurrentVersionId() {
-    return this.currentVersionId;
-  }
-
-  public ImageDetailsRead setCurrentVersionId(String currentVersionId) {
-    this.currentVersionId = currentVersionId;
-    return this;
-  }
-
-  public void unsetCurrentVersionId() {
-    this.currentVersionId = null;
-  }
-
-  /** Returns true if field currentVersionId is set (has been assigned a value) and false otherwise */
-  public boolean isSetCurrentVersionId() {
-    return this.currentVersionId != null;
-  }
-
-  public void setCurrentVersionIdIsSet(boolean value) {
-    if (!value) {
-      this.currentVersionId = null;
     }
   }
 
@@ -821,14 +784,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       }
       break;
 
-    case CURRENT_VERSION_ID:
-      if (value == null) {
-        unsetCurrentVersionId();
-      } else {
-        setCurrentVersionId((String)value);
-      }
-      break;
-
     case LATEST_VERSION_ID:
       if (value == null) {
         unsetLatestVersionId();
@@ -957,9 +912,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     case IMAGE_BASE_ID:
       return getImageBaseId();
 
-    case CURRENT_VERSION_ID:
-      return getCurrentVersionId();
-
     case LATEST_VERSION_ID:
       return getLatestVersionId();
 
@@ -1018,8 +970,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     switch (field) {
     case IMAGE_BASE_ID:
       return isSetImageBaseId();
-    case CURRENT_VERSION_ID:
-      return isSetCurrentVersionId();
     case LATEST_VERSION_ID:
       return isSetLatestVersionId();
     case VERSIONS:
@@ -1073,15 +1023,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (!(this_present_imageBaseId && that_present_imageBaseId))
         return false;
       if (!this.imageBaseId.equals(that.imageBaseId))
-        return false;
-    }
-
-    boolean this_present_currentVersionId = true && this.isSetCurrentVersionId();
-    boolean that_present_currentVersionId = true && that.isSetCurrentVersionId();
-    if (this_present_currentVersionId || that_present_currentVersionId) {
-      if (!(this_present_currentVersionId && that_present_currentVersionId))
-        return false;
-      if (!this.currentVersionId.equals(that.currentVersionId))
         return false;
     }
 
@@ -1242,16 +1183,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     }
     if (isSetImageBaseId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageBaseId, other.imageBaseId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetCurrentVersionId()).compareTo(other.isSetCurrentVersionId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetCurrentVersionId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.currentVersionId, other.currentVersionId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1434,14 +1365,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("currentVersionId:");
-    if (this.currentVersionId == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.currentVersionId);
-    }
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("latestVersionId:");
     if (this.latestVersionId == null) {
       sb.append("null");
@@ -1602,14 +1525,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.imageBaseId = iprot.readString();
               struct.setImageBaseIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // CURRENT_VERSION_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.currentVersionId = iprot.readString();
-              struct.setCurrentVersionIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1777,11 +1692,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         oprot.writeString(struct.imageBaseId);
         oprot.writeFieldEnd();
       }
-      if (struct.currentVersionId != null) {
-        oprot.writeFieldBegin(CURRENT_VERSION_ID_FIELD_DESC);
-        oprot.writeString(struct.currentVersionId);
-        oprot.writeFieldEnd();
-      }
       if (struct.versions != null) {
         oprot.writeFieldBegin(VERSIONS_FIELD_DESC);
         {
@@ -1886,60 +1796,54 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (struct.isSetImageBaseId()) {
         optionals.set(0);
       }
-      if (struct.isSetCurrentVersionId()) {
+      if (struct.isSetLatestVersionId()) {
         optionals.set(1);
       }
-      if (struct.isSetLatestVersionId()) {
+      if (struct.isSetVersions()) {
         optionals.set(2);
       }
-      if (struct.isSetVersions()) {
+      if (struct.isSetImageName()) {
         optionals.set(3);
       }
-      if (struct.isSetImageName()) {
+      if (struct.isSetDescription()) {
         optionals.set(4);
       }
-      if (struct.isSetDescription()) {
+      if (struct.isSetTags()) {
         optionals.set(5);
       }
-      if (struct.isSetTags()) {
+      if (struct.isSetOsId()) {
         optionals.set(6);
       }
-      if (struct.isSetOsId()) {
+      if (struct.isSetVirtId()) {
         optionals.set(7);
       }
-      if (struct.isSetVirtId()) {
+      if (struct.isSetCreateTime()) {
         optionals.set(8);
       }
-      if (struct.isSetCreateTime()) {
+      if (struct.isSetUpdateTime()) {
         optionals.set(9);
       }
-      if (struct.isSetUpdateTime()) {
+      if (struct.isSetOwnerId()) {
         optionals.set(10);
       }
-      if (struct.isSetOwnerId()) {
+      if (struct.isSetUpdaterId()) {
         optionals.set(11);
       }
-      if (struct.isSetUpdaterId()) {
+      if (struct.isSetShareMode()) {
         optionals.set(12);
       }
-      if (struct.isSetShareMode()) {
+      if (struct.isSetIsTemplate()) {
         optionals.set(13);
       }
-      if (struct.isSetIsTemplate()) {
+      if (struct.isSetDefaultPermissions()) {
         optionals.set(14);
       }
-      if (struct.isSetDefaultPermissions()) {
+      if (struct.isSetUserPermissions()) {
         optionals.set(15);
       }
-      if (struct.isSetUserPermissions()) {
-        optionals.set(16);
-      }
-      oprot.writeBitSet(optionals, 17);
+      oprot.writeBitSet(optionals, 16);
       if (struct.isSetImageBaseId()) {
         oprot.writeString(struct.imageBaseId);
-      }
-      if (struct.isSetCurrentVersionId()) {
-        oprot.writeString(struct.currentVersionId);
       }
       if (struct.isSetLatestVersionId()) {
         oprot.writeString(struct.latestVersionId);
@@ -2003,20 +1907,16 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ImageDetailsRead struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(17);
+      BitSet incoming = iprot.readBitSet(16);
       if (incoming.get(0)) {
         struct.imageBaseId = iprot.readString();
         struct.setImageBaseIdIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.currentVersionId = iprot.readString();
-        struct.setCurrentVersionIdIsSet(true);
-      }
-      if (incoming.get(2)) {
         struct.latestVersionId = iprot.readString();
         struct.setLatestVersionIdIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(2)) {
         {
           org.apache.thrift.protocol.TList _list68 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.versions = new ArrayList<ImageVersionDetails>(_list68.size);
@@ -2030,15 +1930,15 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         }
         struct.setVersionsIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(3)) {
         struct.imageName = iprot.readString();
         struct.setImageNameIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(4)) {
         struct.description = iprot.readString();
         struct.setDescriptionIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(5)) {
         {
           org.apache.thrift.protocol.TList _list71 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.tags = new ArrayList<String>(_list71.size);
@@ -2051,44 +1951,44 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         }
         struct.setTagsIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(6)) {
         struct.osId = iprot.readI32();
         struct.setOsIdIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(7)) {
         struct.virtId = iprot.readString();
         struct.setVirtIdIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(8)) {
         struct.createTime = iprot.readI64();
         struct.setCreateTimeIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(9)) {
         struct.updateTime = iprot.readI64();
         struct.setUpdateTimeIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(10)) {
         struct.ownerId = iprot.readString();
         struct.setOwnerIdIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(11)) {
         struct.updaterId = iprot.readString();
         struct.setUpdaterIdIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(12)) {
         struct.shareMode = ShareMode.findByValue(iprot.readI32());
         struct.setShareModeIsSet(true);
       }
-      if (incoming.get(14)) {
+      if (incoming.get(13)) {
         struct.isTemplate = iprot.readBool();
         struct.setIsTemplateIsSet(true);
       }
-      if (incoming.get(15)) {
+      if (incoming.get(14)) {
         struct.defaultPermissions = new ImagePermissions();
         struct.defaultPermissions.read(iprot);
         struct.setDefaultPermissionsIsSet(true);
       }
-      if (incoming.get(16)) {
+      if (incoming.get(15)) {
         struct.userPermissions = new ImagePermissions();
         struct.userPermissions.read(iprot);
         struct.setUserPermissionsIsSet(true);

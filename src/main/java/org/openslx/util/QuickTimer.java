@@ -17,7 +17,7 @@ public class QuickTimer {
 	
 	private static final Logger LOGGER = Logger.getLogger(QuickTimer.class);
 
-	private static final Timer timer = new Timer("QuickTimer");
+	private static final Timer timer = new Timer("QuickTimer", true);
 
 	public static void scheduleAtFixedDelay(Task task, long delay, long period) {
 		timer.schedule(task, delay, period);

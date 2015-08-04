@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWrite, ImageVersionWrite._Fields>, java.io.Serializable, Cloneable, Comparable<ImageVersionWrite> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ImageVersionWrite");
 
-  private static final org.apache.thrift.protocol.TField IS_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("isEnabled", org.apache.thrift.protocol.TType.BOOL, (short)1);
   private static final org.apache.thrift.protocol.TField IS_RESTRICTED_FIELD_DESC = new org.apache.thrift.protocol.TField("isRestricted", org.apache.thrift.protocol.TType.BOOL, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -44,12 +43,10 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
     schemes.put(TupleScheme.class, new ImageVersionWriteTupleSchemeFactory());
   }
 
-  public boolean isEnabled; // required
   public boolean isRestricted; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    IS_ENABLED((short)1, "isEnabled"),
     IS_RESTRICTED((short)2, "isRestricted");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -65,8 +62,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // IS_ENABLED
-          return IS_ENABLED;
         case 2: // IS_RESTRICTED
           return IS_RESTRICTED;
         default:
@@ -109,14 +104,11 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
   }
 
   // isset id assignments
-  private static final int __ISENABLED_ISSET_ID = 0;
-  private static final int __ISRESTRICTED_ISSET_ID = 1;
+  private static final int __ISRESTRICTED_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.IS_ENABLED, new org.apache.thrift.meta_data.FieldMetaData("isEnabled", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.IS_RESTRICTED, new org.apache.thrift.meta_data.FieldMetaData("isRestricted", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -127,12 +119,9 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
   }
 
   public ImageVersionWrite(
-    boolean isEnabled,
     boolean isRestricted)
   {
     this();
-    this.isEnabled = isEnabled;
-    setIsEnabledIsSet(true);
     this.isRestricted = isRestricted;
     setIsRestrictedIsSet(true);
   }
@@ -142,7 +131,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
    */
   public ImageVersionWrite(ImageVersionWrite other) {
     __isset_bitfield = other.__isset_bitfield;
-    this.isEnabled = other.isEnabled;
     this.isRestricted = other.isRestricted;
   }
 
@@ -152,33 +140,8 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
 
   @Override
   public void clear() {
-    setIsEnabledIsSet(false);
-    this.isEnabled = false;
     setIsRestrictedIsSet(false);
     this.isRestricted = false;
-  }
-
-  public boolean isIsEnabled() {
-    return this.isEnabled;
-  }
-
-  public ImageVersionWrite setIsEnabled(boolean isEnabled) {
-    this.isEnabled = isEnabled;
-    setIsEnabledIsSet(true);
-    return this;
-  }
-
-  public void unsetIsEnabled() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISENABLED_ISSET_ID);
-  }
-
-  /** Returns true if field isEnabled is set (has been assigned a value) and false otherwise */
-  public boolean isSetIsEnabled() {
-    return EncodingUtils.testBit(__isset_bitfield, __ISENABLED_ISSET_ID);
-  }
-
-  public void setIsEnabledIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISENABLED_ISSET_ID, value);
   }
 
   public boolean isIsRestricted() {
@@ -206,14 +169,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case IS_ENABLED:
-      if (value == null) {
-        unsetIsEnabled();
-      } else {
-        setIsEnabled((Boolean)value);
-      }
-      break;
-
     case IS_RESTRICTED:
       if (value == null) {
         unsetIsRestricted();
@@ -227,9 +182,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case IS_ENABLED:
-      return Boolean.valueOf(isIsEnabled());
-
     case IS_RESTRICTED:
       return Boolean.valueOf(isIsRestricted());
 
@@ -244,8 +196,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
     }
 
     switch (field) {
-    case IS_ENABLED:
-      return isSetIsEnabled();
     case IS_RESTRICTED:
       return isSetIsRestricted();
     }
@@ -264,15 +214,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
   public boolean equals(ImageVersionWrite that) {
     if (that == null)
       return false;
-
-    boolean this_present_isEnabled = true;
-    boolean that_present_isEnabled = true;
-    if (this_present_isEnabled || that_present_isEnabled) {
-      if (!(this_present_isEnabled && that_present_isEnabled))
-        return false;
-      if (this.isEnabled != that.isEnabled)
-        return false;
-    }
 
     boolean this_present_isRestricted = true;
     boolean that_present_isRestricted = true;
@@ -299,16 +240,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetIsEnabled()).compareTo(other.isSetIsEnabled());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIsEnabled()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isEnabled, other.isEnabled);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetIsRestricted()).compareTo(other.isSetIsRestricted());
     if (lastComparison != 0) {
       return lastComparison;
@@ -339,10 +270,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
     StringBuilder sb = new StringBuilder("ImageVersionWrite(");
     boolean first = true;
 
-    sb.append("isEnabled:");
-    sb.append(this.isEnabled);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("isRestricted:");
     sb.append(this.isRestricted);
     first = false;
@@ -391,14 +318,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
           break;
         }
         switch (schemeField.id) {
-          case 1: // IS_ENABLED
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.isEnabled = iprot.readBool();
-              struct.setIsEnabledIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           case 2: // IS_RESTRICTED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isRestricted = iprot.readBool();
@@ -422,9 +341,6 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(IS_ENABLED_FIELD_DESC);
-      oprot.writeBool(struct.isEnabled);
-      oprot.writeFieldEnd();
       oprot.writeFieldBegin(IS_RESTRICTED_FIELD_DESC);
       oprot.writeBool(struct.isRestricted);
       oprot.writeFieldEnd();
@@ -446,16 +362,10 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
     public void write(org.apache.thrift.protocol.TProtocol prot, ImageVersionWrite struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetIsEnabled()) {
+      if (struct.isSetIsRestricted()) {
         optionals.set(0);
       }
-      if (struct.isSetIsRestricted()) {
-        optionals.set(1);
-      }
-      oprot.writeBitSet(optionals, 2);
-      if (struct.isSetIsEnabled()) {
-        oprot.writeBool(struct.isEnabled);
-      }
+      oprot.writeBitSet(optionals, 1);
       if (struct.isSetIsRestricted()) {
         oprot.writeBool(struct.isRestricted);
       }
@@ -464,12 +374,8 @@ public class ImageVersionWrite implements org.apache.thrift.TBase<ImageVersionWr
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ImageVersionWrite struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
-        struct.isEnabled = iprot.readBool();
-        struct.setIsEnabledIsSet(true);
-      }
-      if (incoming.get(1)) {
         struct.isRestricted = iprot.readBool();
         struct.setIsRestrictedIsSet(true);
       }

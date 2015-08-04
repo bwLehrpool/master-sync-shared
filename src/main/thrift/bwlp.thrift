@@ -154,13 +154,11 @@ struct ImageBaseWrite {
 }
 
 struct ImageVersionWrite {
-	1: bool isEnabled,
 	2: bool isRestricted,
 }
 
 struct ImageSummaryRead {
 	1: UUID imageBaseId,
-	2: UUID currentVersionId,
 	3: UUID latestVersionId,
 	4: string imageName,
 	5: i32 osId,
@@ -186,7 +184,6 @@ struct ImageVersionDetails {
 	3: UnixTimestamp expireTime,
 	4: i64 fileSize,
 	5: UUID uploaderId,
-	6: bool isEnabled,
 	7: bool isRestricted,
 	8: bool isValid,
 	9: bool isProcessed,
@@ -195,7 +192,6 @@ struct ImageVersionDetails {
 
 struct ImageDetailsRead {
 	1: UUID imageBaseId,
-	2: UUID currentVersionId,
 	17: UUID latestVersionId,
 	3: list<ImageVersionDetails> versions,
 	4: string imageName,
