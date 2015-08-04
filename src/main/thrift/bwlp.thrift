@@ -303,6 +303,19 @@ struct TransferStatus {
 	2: TransferState state,
 }
 
+struct SatelliteConfig {
+	// Get number of items returned per page (for calls that have a page parameter)
+	1: i32 pageSize,
+	// Which permissions to pre-select when creating a new image
+	2: ImagePermissions defaultImagePermissions,
+	// Which permissions to pre-select when creating a new lecture
+	3: LecturePermissions defaultLecturePermissions,
+	// Maximum number of days the expiration date of an image may be set in the future
+	4: i32 maxImageValidityDays,
+	// Maximum number of days the expiration date of a lecture may be set in the future
+	5: i32 maxLectureValidityDays,
+}
+
 // ############ EXCEPTION ######################
 
 exception TTransferRejectedException {
@@ -334,8 +347,8 @@ service SatelliteServer {
 	// Get server (thrift interface) version
 	int getVersion(),
 	
-	// Get number of items returned per page (for calls that have a page parameter)
-	i32 getPageSize(),
+	// Get configuration parameters of this satellite server
+	SatelliteConfig getConfiguration(),
 	
 	/*
 	 * File transfer related
@@ -357,9 +370,17 @@ service SatelliteServer {
 
 	binary getMachineDescription(1: Token userToken, 2: UUID imageVersionId)
 		throws (1:TAuthorizationException authError, 2:TInternalServerError ffff, 3:TNotFoundException sdf),
+		
+	/*
+	 * Auth/Session
+	 */
 	
-	// Authentication
+	// Authentication check (deprecated, superseded by whoami)
 	void isAuthenticated(1: Token userToken)
+		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
+		
+	// Query own user information (for validation or session resume)
+	UserInfo whoami(1: Token userToken)
 		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
 
 	void invalidateSession(1: Token userToken),
