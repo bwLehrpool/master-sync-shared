@@ -127,6 +127,7 @@ public abstract class Transfer
 	{
 		try {
 			outStream.writeShort( 0 );
+			outStream.flush();
 		} catch ( SocketTimeoutException e ) {
 			log.error( "Error sending end of meta - socket timeout" );
 			return false;

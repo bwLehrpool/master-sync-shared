@@ -151,6 +151,10 @@ public class Downloader extends Transfer
 			}
 			sendDone();
 			sendEndOfMeta();
+			try {
+				transferSocket.shutdownOutput();
+			} catch ( IOException e ) {
+			}
 		} finally {
 			this.close( null );
 		}

@@ -72,6 +72,12 @@ struct UserInfo {
 	6: optional Role role,
 }
 
+struct WhoamiInfo {
+	1: UserInfo user,
+	2: bool isSuperUser,
+	3: bool canListImages,
+}
+
 struct Organization {
 	1: string organizationId,
 	2: string displayName,
@@ -380,7 +386,7 @@ service SatelliteServer {
 		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
 		
 	// Query own user information (for validation or session resume)
-	UserInfo whoami(1: Token userToken)
+	WhoamiInfo whoami(1: Token userToken)
 		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
 
 	void invalidateSession(1: Token userToken),

@@ -54,7 +54,7 @@ public class SatelliteServer {
 
     public void isAuthenticated(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
 
-    public UserInfo whoami(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
+    public WhoamiInfo whoami(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
 
     public void invalidateSession(String userToken) throws org.apache.thrift.TException;
 
@@ -440,7 +440,7 @@ public class SatelliteServer {
       return;
     }
 
-    public UserInfo whoami(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public WhoamiInfo whoami(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
     {
       send_whoami(userToken);
       return recv_whoami();
@@ -453,7 +453,7 @@ public class SatelliteServer {
       sendBase("whoami", args);
     }
 
-    public UserInfo recv_whoami() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public WhoamiInfo recv_whoami() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
     {
       whoami_result result = new whoami_result();
       receiveBase(result, "whoami");
@@ -1464,7 +1464,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public UserInfo getResult() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException {
+      public WhoamiInfo getResult() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -3720,7 +3720,7 @@ public class SatelliteServer {
       }
     }
 
-    public static class whoami<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, whoami_args, UserInfo> {
+    public static class whoami<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, whoami_args, WhoamiInfo> {
       public whoami() {
         super("whoami");
       }
@@ -3729,10 +3729,10 @@ public class SatelliteServer {
         return new whoami_args();
       }
 
-      public AsyncMethodCallback<UserInfo> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<WhoamiInfo> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<UserInfo>() { 
-          public void onComplete(UserInfo o) {
+        return new AsyncMethodCallback<WhoamiInfo>() { 
+          public void onComplete(WhoamiInfo o) {
             whoami_result result = new whoami_result();
             result.success = o;
             try {
@@ -3777,7 +3777,7 @@ public class SatelliteServer {
         return false;
       }
 
-      public void start(I iface, whoami_args args, org.apache.thrift.async.AsyncMethodCallback<UserInfo> resultHandler) throws TException {
+      public void start(I iface, whoami_args args, org.apache.thrift.async.AsyncMethodCallback<WhoamiInfo> resultHandler) throws TException {
         iface.whoami(args.userToken,resultHandler);
       }
     }
@@ -13718,7 +13718,7 @@ public class SatelliteServer {
       schemes.put(TupleScheme.class, new whoami_resultTupleSchemeFactory());
     }
 
-    public UserInfo success; // required
+    public WhoamiInfo success; // required
     public TAuthorizationException authError; // required
     public TInternalServerError serverError; // required
 
@@ -13791,7 +13791,7 @@ public class SatelliteServer {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, UserInfo.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WhoamiInfo.class)));
       tmpMap.put(_Fields.AUTH_ERROR, new org.apache.thrift.meta_data.FieldMetaData("authError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -13804,7 +13804,7 @@ public class SatelliteServer {
     }
 
     public whoami_result(
-      UserInfo success,
+      WhoamiInfo success,
       TAuthorizationException authError,
       TInternalServerError serverError)
     {
@@ -13819,7 +13819,7 @@ public class SatelliteServer {
      */
     public whoami_result(whoami_result other) {
       if (other.isSetSuccess()) {
-        this.success = new UserInfo(other.success);
+        this.success = new WhoamiInfo(other.success);
       }
       if (other.isSetAuthError()) {
         this.authError = new TAuthorizationException(other.authError);
@@ -13840,11 +13840,11 @@ public class SatelliteServer {
       this.serverError = null;
     }
 
-    public UserInfo getSuccess() {
+    public WhoamiInfo getSuccess() {
       return this.success;
     }
 
-    public whoami_result setSuccess(UserInfo success) {
+    public whoami_result setSuccess(WhoamiInfo success) {
       this.success = success;
       return this;
     }
@@ -13918,7 +13918,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((UserInfo)value);
+          setSuccess((WhoamiInfo)value);
         }
         break;
 
@@ -14150,7 +14150,7 @@ public class SatelliteServer {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new UserInfo();
+                struct.success = new WhoamiInfo();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -14249,7 +14249,7 @@ public class SatelliteServer {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
-          struct.success = new UserInfo();
+          struct.success = new WhoamiInfo();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
