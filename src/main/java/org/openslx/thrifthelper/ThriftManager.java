@@ -11,6 +11,7 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.openslx.bwlp.thrift.iface.MasterServer;
 import org.openslx.bwlp.thrift.iface.SatelliteServer;
+import org.openslx.bwlp.thrift.iface.SatelliteServer.Client;
 import org.openslx.thrifthelper.ThriftHandler.EventCallback;
 
 public class ThriftManager
@@ -63,23 +64,7 @@ public class ThriftManager
 								LOGGER.error( "Satellite ip adress was not set prior to getting the sat client. Use setSatelliteAddress(<addr>)." );
 								return null;
 							}
-							// ok lets do it
-							TTransport transport = new TFramedTransport(
-									new TSocket(
-											SATELLITE_IP, SATELLITE_PORT, SATELLITE_TIMEOUT ) );
-							try {
-								transport.open();
-							} catch ( TTransportException e ) {
-								LOGGER.error( "Could not open transport to thrift's server with IP: " + SATELLITE_IP );
-								transport.close();
-								return null;
-							}
-							final TProtocol protocol = new TBinaryProtocol(
-									transport );
-							// now we are ready to create the client, according to ClientType!
-							LOGGER.info( "Satellite '" + SATELLITE_IP + "' reachable. Client initialised." );
-							return new SatelliteServer.Client(
-									protocol );
+							return getNewSatClient( SATELLITE_IP );
 						}
 
 						@Override
@@ -120,8 +105,7 @@ public class ThriftManager
 							final TProtocol protocol = new TBinaryProtocol(
 									transport );
 							// now we are ready to create the client, according to ClientType!
-							return new MasterServer.Client(
-									protocol );
+							return new MasterServer.Client( protocol );
 
 						}
 
@@ -208,4 +192,23 @@ public class ThriftManager
 			errorCallback = cb;
 		}
 	}
+
+	public static Client getNewSatClient( String satelliteIp )
+	{
+		// ok lets do it
+		TTransport transport = new TFramedTransport(
+				new TSocket( satelliteIp, SATELLITE_PORT, SATELLITE_TIMEOUT ) );
+		try {
+			transport.open();
+		} catch ( TTransportException e ) {
+			LOGGER.error( "Could not open transport to thrift's server with IP: " + SATELLITE_IP );
+			transport.close();
+			return null;
+		}
+		final TProtocol protocol = new TBinaryProtocol( transport );
+		// now we are ready to create the client, according to ClientType!
+		LOGGER.info( "Satellite '" + satelliteIp + "' reachable. Client initialised." );
+		return new SatelliteServer.Client( protocol );
+	}
+
 }

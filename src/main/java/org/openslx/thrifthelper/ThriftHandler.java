@@ -3,7 +3,9 @@ package org.openslx.thrifthelper;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +25,7 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 		public boolean error( int failCount, String method, Throwable t );
 	}
 
-	private final ThreadLocal<T> clients = new ThreadLocal<T>();
+	private final Deque<T> pool = new ArrayDeque<>();
 	private final EventCallback<T> callback;
 
 	public ThriftHandler( final Class<T> clazz, EventCallback<T> cb )
@@ -59,7 +61,7 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 		// first find the thrift methods
 		if ( !thriftMethods.contains( method.getName() ) ) {
 			try {
-				return method.invoke( getClient( false ), args );
+				return method.invoke( getClient(), args );
 			} catch ( InvocationTargetException e ) {
 				Throwable cause = e.getCause();
 				if ( cause == null ) {
@@ -69,45 +71,62 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 			}
 		}
 
-		T client = getClient( false );
-		Throwable cause = null;
-		for ( int i = 1;; i++ ) {
-			if ( client == null ) {
-				LOGGER.debug( "Transport error - re-initialising ..." );
-				client = getClient( true );
-			}
-			if ( client != null ) {
-				try {
-					return method.invoke( client, args );
-				} catch ( InvocationTargetException e ) {
-					cause = e.getCause();
-					if ( cause != null && ! ( cause instanceof TTransportException ) )
-						throw cause;
-					client = null;
-					if ( cause == null )
-						cause = e;
+		T client = getClient();
+		try {
+			Throwable cause = null;
+			for ( int i = 1;; i++ ) {
+				if ( client == null ) {
+					LOGGER.debug( "Transport error - re-initialising ..." );
+					client = getClient();
+				}
+				if ( client != null ) {
+					try {
+						return method.invoke( client, args );
+					} catch ( InvocationTargetException e ) {
+						cause = e.getCause();
+						if ( cause != null && ! ( cause instanceof TTransportException ) ) {
+							throw cause;
+						}
+						client = null;
+						if ( cause == null )
+							cause = e;
+					}
+				}
+				// Call the error callback. As long as true is returned, keep retrying
+				if ( !callback.error( i, method.getName(), cause ) ) {
+					break;
 				}
 			}
-			// Call the error callback. As long as true is returned, keep retrying
-			if ( !callback.error( i, method.getName(), cause ) ) {
-				break;
-			}
-		}
 
-		// Uh oh
-		if ( cause != null )
-			throw cause;
-		throw new TTransportException( "Could not connect" );
+			// Uh oh
+			if ( cause != null )
+				throw cause;
+			throw new TTransportException( "Could not connect" );
+		} finally {
+			returnClient( client );
+		}
 	}
 
-	private T getClient( boolean forceNew )
+	private T getClient()
 	{
-		T client = clients.get();
-		if ( client != null && !forceNew ) {
-			return client;
+		T client;
+		synchronized ( pool ) {
+			client = pool.poll();
+			if ( client != null )
+				return client;
 		}
-		client = callback.getNewClient();
-		clients.set( client );
-		return client;
+		// Pool is closed, create new client
+		LOGGER.debug( "Creating new thrift client" );
+		return callback.getNewClient();
 	}
+
+	private void returnClient( T client )
+	{
+		if ( client == null )
+			return;
+		synchronized ( pool ) {
+			pool.push( client );
+		}
+	}
+
 }
