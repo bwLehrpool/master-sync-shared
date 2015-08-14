@@ -32,22 +32,33 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TNotFoundException extends TException implements org.apache.thrift.TBase<TNotFoundException, TNotFoundException._Fields>, java.io.Serializable, Cloneable, Comparable<TNotFoundException> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TNotFoundException");
+public class TInvalidDateParam extends TException implements org.apache.thrift.TBase<TInvalidDateParam, TInvalidDateParam._Fields>, java.io.Serializable, Cloneable, Comparable<TInvalidDateParam> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TInvalidDateParam");
 
-  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("number", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TNotFoundExceptionStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TNotFoundExceptionTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TInvalidDateParamStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TInvalidDateParamTupleSchemeFactory());
   }
 
+  /**
+   * 
+   * @see DateParamError
+   */
+  public DateParamError number; // required
   public String message; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    MESSAGE((short)1, "message");
+    /**
+     * 
+     * @see DateParamError
+     */
+    NUMBER((short)1, "number"),
+    MESSAGE((short)2, "message");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -62,7 +73,9 @@ public class TNotFoundException extends TException implements org.apache.thrift.
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // MESSAGE
+        case 1: // NUMBER
+          return NUMBER;
+        case 2: // MESSAGE
           return MESSAGE;
         default:
           return null;
@@ -107,45 +120,85 @@ public class TNotFoundException extends TException implements org.apache.thrift.
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.NUMBER, new org.apache.thrift.meta_data.FieldMetaData("number", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DateParamError.class)));
     tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TNotFoundException.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TInvalidDateParam.class, metaDataMap);
   }
 
-  public TNotFoundException() {
+  public TInvalidDateParam() {
   }
 
-  public TNotFoundException(
+  public TInvalidDateParam(
+    DateParamError number,
     String message)
   {
     this();
+    this.number = number;
     this.message = message;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TNotFoundException(TNotFoundException other) {
+  public TInvalidDateParam(TInvalidDateParam other) {
+    if (other.isSetNumber()) {
+      this.number = other.number;
+    }
     if (other.isSetMessage()) {
       this.message = other.message;
     }
   }
 
-  public TNotFoundException deepCopy() {
-    return new TNotFoundException(this);
+  public TInvalidDateParam deepCopy() {
+    return new TInvalidDateParam(this);
   }
 
   @Override
   public void clear() {
+    this.number = null;
     this.message = null;
+  }
+
+  /**
+   * 
+   * @see DateParamError
+   */
+  public DateParamError getNumber() {
+    return this.number;
+  }
+
+  /**
+   * 
+   * @see DateParamError
+   */
+  public TInvalidDateParam setNumber(DateParamError number) {
+    this.number = number;
+    return this;
+  }
+
+  public void unsetNumber() {
+    this.number = null;
+  }
+
+  /** Returns true if field number is set (has been assigned a value) and false otherwise */
+  public boolean isSetNumber() {
+    return this.number != null;
+  }
+
+  public void setNumberIsSet(boolean value) {
+    if (!value) {
+      this.number = null;
+    }
   }
 
   public String getMessage() {
     return this.message;
   }
 
-  public TNotFoundException setMessage(String message) {
+  public TInvalidDateParam setMessage(String message) {
     this.message = message;
     return this;
   }
@@ -167,6 +220,14 @@ public class TNotFoundException extends TException implements org.apache.thrift.
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
+    case NUMBER:
+      if (value == null) {
+        unsetNumber();
+      } else {
+        setNumber((DateParamError)value);
+      }
+      break;
+
     case MESSAGE:
       if (value == null) {
         unsetMessage();
@@ -180,6 +241,9 @@ public class TNotFoundException extends TException implements org.apache.thrift.
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
+    case NUMBER:
+      return getNumber();
+
     case MESSAGE:
       return getMessage();
 
@@ -194,6 +258,8 @@ public class TNotFoundException extends TException implements org.apache.thrift.
     }
 
     switch (field) {
+    case NUMBER:
+      return isSetNumber();
     case MESSAGE:
       return isSetMessage();
     }
@@ -204,14 +270,23 @@ public class TNotFoundException extends TException implements org.apache.thrift.
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TNotFoundException)
-      return this.equals((TNotFoundException)that);
+    if (that instanceof TInvalidDateParam)
+      return this.equals((TInvalidDateParam)that);
     return false;
   }
 
-  public boolean equals(TNotFoundException that) {
+  public boolean equals(TInvalidDateParam that) {
     if (that == null)
       return false;
+
+    boolean this_present_number = true && this.isSetNumber();
+    boolean that_present_number = true && that.isSetNumber();
+    if (this_present_number || that_present_number) {
+      if (!(this_present_number && that_present_number))
+        return false;
+      if (!this.number.equals(that.number))
+        return false;
+    }
 
     boolean this_present_message = true && this.isSetMessage();
     boolean that_present_message = true && that.isSetMessage();
@@ -231,13 +306,23 @@ public class TNotFoundException extends TException implements org.apache.thrift.
   }
 
   @Override
-  public int compareTo(TNotFoundException other) {
+  public int compareTo(TInvalidDateParam other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
+    lastComparison = Boolean.valueOf(isSetNumber()).compareTo(other.isSetNumber());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetNumber()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.number, other.number);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetMessage()).compareTo(other.isSetMessage());
     if (lastComparison != 0) {
       return lastComparison;
@@ -265,9 +350,17 @@ public class TNotFoundException extends TException implements org.apache.thrift.
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TNotFoundException(");
+    StringBuilder sb = new StringBuilder("TInvalidDateParam(");
     boolean first = true;
 
+    sb.append("number:");
+    if (this.number == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.number);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("message:");
     if (this.message == null) {
       sb.append("null");
@@ -300,15 +393,15 @@ public class TNotFoundException extends TException implements org.apache.thrift.
     }
   }
 
-  private static class TNotFoundExceptionStandardSchemeFactory implements SchemeFactory {
-    public TNotFoundExceptionStandardScheme getScheme() {
-      return new TNotFoundExceptionStandardScheme();
+  private static class TInvalidDateParamStandardSchemeFactory implements SchemeFactory {
+    public TInvalidDateParamStandardScheme getScheme() {
+      return new TInvalidDateParamStandardScheme();
     }
   }
 
-  private static class TNotFoundExceptionStandardScheme extends StandardScheme<TNotFoundException> {
+  private static class TInvalidDateParamStandardScheme extends StandardScheme<TInvalidDateParam> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TNotFoundException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TInvalidDateParam struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -318,7 +411,15 @@ public class TNotFoundException extends TException implements org.apache.thrift.
           break;
         }
         switch (schemeField.id) {
-          case 1: // MESSAGE
+          case 1: // NUMBER
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.number = DateParamError.findByValue(iprot.readI32());
+              struct.setNumberIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // MESSAGE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.message = iprot.readString();
               struct.setMessageIsSet(true);
@@ -337,10 +438,15 @@ public class TNotFoundException extends TException implements org.apache.thrift.
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TNotFoundException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TInvalidDateParam struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.number != null) {
+        oprot.writeFieldBegin(NUMBER_FIELD_DESC);
+        oprot.writeI32(struct.number.getValue());
+        oprot.writeFieldEnd();
+      }
       if (struct.message != null) {
         oprot.writeFieldBegin(MESSAGE_FIELD_DESC);
         oprot.writeString(struct.message);
@@ -352,32 +458,42 @@ public class TNotFoundException extends TException implements org.apache.thrift.
 
   }
 
-  private static class TNotFoundExceptionTupleSchemeFactory implements SchemeFactory {
-    public TNotFoundExceptionTupleScheme getScheme() {
-      return new TNotFoundExceptionTupleScheme();
+  private static class TInvalidDateParamTupleSchemeFactory implements SchemeFactory {
+    public TInvalidDateParamTupleScheme getScheme() {
+      return new TInvalidDateParamTupleScheme();
     }
   }
 
-  private static class TNotFoundExceptionTupleScheme extends TupleScheme<TNotFoundException> {
+  private static class TInvalidDateParamTupleScheme extends TupleScheme<TInvalidDateParam> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TNotFoundException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TInvalidDateParam struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetMessage()) {
+      if (struct.isSetNumber()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetMessage()) {
+        optionals.set(1);
+      }
+      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetNumber()) {
+        oprot.writeI32(struct.number.getValue());
+      }
       if (struct.isSetMessage()) {
         oprot.writeString(struct.message);
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TNotFoundException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TInvalidDateParam struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
+        struct.number = DateParamError.findByValue(iprot.readI32());
+        struct.setNumberIsSet(true);
+      }
+      if (incoming.get(1)) {
         struct.message = iprot.readString();
         struct.setMessageIsSet(true);
       }

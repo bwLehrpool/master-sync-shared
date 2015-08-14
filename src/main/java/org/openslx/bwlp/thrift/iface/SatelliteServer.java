@@ -84,9 +84,11 @@ public class SatelliteServer {
 
     public void setImageOwner(String userToken, String imageBaseId, String newOwnerId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
 
-    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
+    public void setImageVersionExpiry(String userToken, String imageBaseId, long expireTime) throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException;
 
-    public void updateLecture(String userToken, String lectureId, LectureWrite lecture) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException;
+
+    public void updateLecture(String userToken, String lectureId, LectureWrite lecture) throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException;
 
     public List<LectureSummary> getLectureList(String userToken, int page) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
 
@@ -151,6 +153,8 @@ public class SatelliteServer {
     public void getImagePermissions(String userToken, String imageBaseId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void setImageOwner(String userToken, String imageBaseId, String newOwnerId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void setImageVersionExpiry(String userToken, String imageBaseId, long expireTime, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void createLecture(String userToken, LectureWrite lecture, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -875,7 +879,41 @@ public class SatelliteServer {
       return;
     }
 
-    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public void setImageVersionExpiry(String userToken, String imageBaseId, long expireTime) throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
+    {
+      send_setImageVersionExpiry(userToken, imageBaseId, expireTime);
+      recv_setImageVersionExpiry();
+    }
+
+    public void send_setImageVersionExpiry(String userToken, String imageBaseId, long expireTime) throws org.apache.thrift.TException
+    {
+      setImageVersionExpiry_args args = new setImageVersionExpiry_args();
+      args.setUserToken(userToken);
+      args.setImageBaseId(imageBaseId);
+      args.setExpireTime(expireTime);
+      sendBase("setImageVersionExpiry", args);
+    }
+
+    public void recv_setImageVersionExpiry() throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
+    {
+      setImageVersionExpiry_result result = new setImageVersionExpiry_result();
+      receiveBase(result, "setImageVersionExpiry");
+      if (result.authError != null) {
+        throw result.authError;
+      }
+      if (result.notFound != null) {
+        throw result.notFound;
+      }
+      if (result.serverError != null) {
+        throw result.serverError;
+      }
+      if (result.dateError != null) {
+        throw result.dateError;
+      }
+      return;
+    }
+
+    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
     {
       send_createLecture(userToken, lecture);
       return recv_createLecture();
@@ -889,7 +927,7 @@ public class SatelliteServer {
       sendBase("createLecture", args);
     }
 
-    public String recv_createLecture() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public String recv_createLecture() throws TAuthorizationException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
     {
       createLecture_result result = new createLecture_result();
       receiveBase(result, "createLecture");
@@ -902,10 +940,13 @@ public class SatelliteServer {
       if (result.serverError != null) {
         throw result.serverError;
       }
+      if (result.dateError != null) {
+        throw result.dateError;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createLecture failed: unknown result");
     }
 
-    public void updateLecture(String userToken, String lectureId, LectureWrite lecture) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void updateLecture(String userToken, String lectureId, LectureWrite lecture) throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
     {
       send_updateLecture(userToken, lectureId, lecture);
       recv_updateLecture();
@@ -920,7 +961,7 @@ public class SatelliteServer {
       sendBase("updateLecture", args);
     }
 
-    public void recv_updateLecture() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void recv_updateLecture() throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
     {
       updateLecture_result result = new updateLecture_result();
       receiveBase(result, "updateLecture");
@@ -932,6 +973,9 @@ public class SatelliteServer {
       }
       if (result.serverError != null) {
         throw result.serverError;
+      }
+      if (result.dateError != null) {
+        throw result.dateError;
       }
       return;
     }
@@ -1958,6 +2002,44 @@ public class SatelliteServer {
       }
     }
 
+    public void setImageVersionExpiry(String userToken, String imageBaseId, long expireTime, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      setImageVersionExpiry_call method_call = new setImageVersionExpiry_call(userToken, imageBaseId, expireTime, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class setImageVersionExpiry_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String userToken;
+      private String imageBaseId;
+      private long expireTime;
+      public setImageVersionExpiry_call(String userToken, String imageBaseId, long expireTime, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.userToken = userToken;
+        this.imageBaseId = imageBaseId;
+        this.expireTime = expireTime;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("setImageVersionExpiry", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        setImageVersionExpiry_args args = new setImageVersionExpiry_args();
+        args.setUserToken(userToken);
+        args.setImageBaseId(imageBaseId);
+        args.setExpireTime(expireTime);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        (new Client(prot)).recv_setImageVersionExpiry();
+      }
+    }
+
     public void createLecture(String userToken, LectureWrite lecture, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       createLecture_call method_call = new createLecture_call(userToken, lecture, resultHandler, this, ___protocolFactory, ___transport);
@@ -1983,7 +2065,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException {
+      public String getResult() throws TAuthorizationException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2021,7 +2103,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2284,6 +2366,7 @@ public class SatelliteServer {
       processMap.put("writeImagePermissions", new writeImagePermissions());
       processMap.put("getImagePermissions", new getImagePermissions());
       processMap.put("setImageOwner", new setImageOwner());
+      processMap.put("setImageVersionExpiry", new setImageVersionExpiry());
       processMap.put("createLecture", new createLecture());
       processMap.put("updateLecture", new updateLecture());
       processMap.put("getLectureList", new getLectureList());
@@ -2908,6 +2991,36 @@ public class SatelliteServer {
       }
     }
 
+    public static class setImageVersionExpiry<I extends Iface> extends org.apache.thrift.ProcessFunction<I, setImageVersionExpiry_args> {
+      public setImageVersionExpiry() {
+        super("setImageVersionExpiry");
+      }
+
+      public setImageVersionExpiry_args getEmptyArgsInstance() {
+        return new setImageVersionExpiry_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public setImageVersionExpiry_result getResult(I iface, setImageVersionExpiry_args args) throws org.apache.thrift.TException {
+        setImageVersionExpiry_result result = new setImageVersionExpiry_result();
+        try {
+          iface.setImageVersionExpiry(args.userToken, args.imageBaseId, args.expireTime);
+        } catch (TAuthorizationException authError) {
+          result.authError = authError;
+        } catch (TNotFoundException notFound) {
+          result.notFound = notFound;
+        } catch (TInternalServerError serverError) {
+          result.serverError = serverError;
+        } catch (TInvalidDateParam dateError) {
+          result.dateError = dateError;
+        }
+        return result;
+      }
+    }
+
     public static class createLecture<I extends Iface> extends org.apache.thrift.ProcessFunction<I, createLecture_args> {
       public createLecture() {
         super("createLecture");
@@ -2929,6 +3042,8 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TInternalServerError serverError) {
           result.serverError = serverError;
+        } catch (TInvalidDateParam dateError) {
+          result.dateError = dateError;
         }
         return result;
       }
@@ -2957,6 +3072,8 @@ public class SatelliteServer {
           result.notFound = notFound;
         } catch (TInternalServerError serverError) {
           result.serverError = serverError;
+        } catch (TInvalidDateParam dateError) {
+          result.dateError = dateError;
         }
         return result;
       }
@@ -3165,6 +3282,7 @@ public class SatelliteServer {
       processMap.put("writeImagePermissions", new writeImagePermissions());
       processMap.put("getImagePermissions", new getImagePermissions());
       processMap.put("setImageOwner", new setImageOwner());
+      processMap.put("setImageVersionExpiry", new setImageVersionExpiry());
       processMap.put("createLecture", new createLecture());
       processMap.put("updateLecture", new updateLecture());
       processMap.put("getLectureList", new getLectureList());
@@ -4650,6 +4768,77 @@ public class SatelliteServer {
       }
     }
 
+    public static class setImageVersionExpiry<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, setImageVersionExpiry_args, Void> {
+      public setImageVersionExpiry() {
+        super("setImageVersionExpiry");
+      }
+
+      public setImageVersionExpiry_args getEmptyArgsInstance() {
+        return new setImageVersionExpiry_args();
+      }
+
+      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Void>() { 
+          public void onComplete(Void o) {
+            setImageVersionExpiry_result result = new setImageVersionExpiry_result();
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            setImageVersionExpiry_result result = new setImageVersionExpiry_result();
+            if (e instanceof TAuthorizationException) {
+                        result.authError = (TAuthorizationException) e;
+                        result.setAuthErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TNotFoundException) {
+                        result.notFound = (TNotFoundException) e;
+                        result.setNotFoundIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInternalServerError) {
+                        result.serverError = (TInternalServerError) e;
+                        result.setServerErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInvalidDateParam) {
+                        result.dateError = (TInvalidDateParam) e;
+                        result.setDateErrorIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, setImageVersionExpiry_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+        iface.setImageVersionExpiry(args.userToken, args.imageBaseId, args.expireTime,resultHandler);
+      }
+    }
+
     public static class createLecture<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, createLecture_args, String> {
       public createLecture() {
         super("createLecture");
@@ -4685,6 +4874,11 @@ public class SatelliteServer {
             else             if (e instanceof TInternalServerError) {
                         result.serverError = (TInternalServerError) e;
                         result.setServerErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInvalidDateParam) {
+                        result.dateError = (TInvalidDateParam) e;
+                        result.setDateErrorIsSet(true);
                         msg = result;
             }
              else 
@@ -4751,6 +4945,11 @@ public class SatelliteServer {
             else             if (e instanceof TInternalServerError) {
                         result.serverError = (TInternalServerError) e;
                         result.setServerErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInvalidDateParam) {
+                        result.dateError = (TInvalidDateParam) e;
+                        result.setDateErrorIsSet(true);
                         msg = result;
             }
              else 
@@ -28268,6 +28467,1220 @@ public class SatelliteServer {
 
   }
 
+  public static class setImageVersionExpiry_args implements org.apache.thrift.TBase<setImageVersionExpiry_args, setImageVersionExpiry_args._Fields>, java.io.Serializable, Cloneable, Comparable<setImageVersionExpiry_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("setImageVersionExpiry_args");
+
+    private static final org.apache.thrift.protocol.TField USER_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("userToken", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField IMAGE_BASE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageBaseId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField EXPIRE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("expireTime", org.apache.thrift.protocol.TType.I64, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new setImageVersionExpiry_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new setImageVersionExpiry_argsTupleSchemeFactory());
+    }
+
+    public String userToken; // required
+    public String imageBaseId; // required
+    public long expireTime; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      USER_TOKEN((short)1, "userToken"),
+      IMAGE_BASE_ID((short)2, "imageBaseId"),
+      EXPIRE_TIME((short)3, "expireTime");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // USER_TOKEN
+            return USER_TOKEN;
+          case 2: // IMAGE_BASE_ID
+            return IMAGE_BASE_ID;
+          case 3: // EXPIRE_TIME
+            return EXPIRE_TIME;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __EXPIRETIME_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.USER_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("userToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "Token")));
+      tmpMap.put(_Fields.IMAGE_BASE_ID, new org.apache.thrift.meta_data.FieldMetaData("imageBaseId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "UUID")));
+      tmpMap.put(_Fields.EXPIRE_TIME, new org.apache.thrift.meta_data.FieldMetaData("expireTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64          , "UnixTimestamp")));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(setImageVersionExpiry_args.class, metaDataMap);
+    }
+
+    public setImageVersionExpiry_args() {
+    }
+
+    public setImageVersionExpiry_args(
+      String userToken,
+      String imageBaseId,
+      long expireTime)
+    {
+      this();
+      this.userToken = userToken;
+      this.imageBaseId = imageBaseId;
+      this.expireTime = expireTime;
+      setExpireTimeIsSet(true);
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public setImageVersionExpiry_args(setImageVersionExpiry_args other) {
+      __isset_bitfield = other.__isset_bitfield;
+      if (other.isSetUserToken()) {
+        this.userToken = other.userToken;
+      }
+      if (other.isSetImageBaseId()) {
+        this.imageBaseId = other.imageBaseId;
+      }
+      this.expireTime = other.expireTime;
+    }
+
+    public setImageVersionExpiry_args deepCopy() {
+      return new setImageVersionExpiry_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.userToken = null;
+      this.imageBaseId = null;
+      setExpireTimeIsSet(false);
+      this.expireTime = 0;
+    }
+
+    public String getUserToken() {
+      return this.userToken;
+    }
+
+    public setImageVersionExpiry_args setUserToken(String userToken) {
+      this.userToken = userToken;
+      return this;
+    }
+
+    public void unsetUserToken() {
+      this.userToken = null;
+    }
+
+    /** Returns true if field userToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserToken() {
+      return this.userToken != null;
+    }
+
+    public void setUserTokenIsSet(boolean value) {
+      if (!value) {
+        this.userToken = null;
+      }
+    }
+
+    public String getImageBaseId() {
+      return this.imageBaseId;
+    }
+
+    public setImageVersionExpiry_args setImageBaseId(String imageBaseId) {
+      this.imageBaseId = imageBaseId;
+      return this;
+    }
+
+    public void unsetImageBaseId() {
+      this.imageBaseId = null;
+    }
+
+    /** Returns true if field imageBaseId is set (has been assigned a value) and false otherwise */
+    public boolean isSetImageBaseId() {
+      return this.imageBaseId != null;
+    }
+
+    public void setImageBaseIdIsSet(boolean value) {
+      if (!value) {
+        this.imageBaseId = null;
+      }
+    }
+
+    public long getExpireTime() {
+      return this.expireTime;
+    }
+
+    public setImageVersionExpiry_args setExpireTime(long expireTime) {
+      this.expireTime = expireTime;
+      setExpireTimeIsSet(true);
+      return this;
+    }
+
+    public void unsetExpireTime() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __EXPIRETIME_ISSET_ID);
+    }
+
+    /** Returns true if field expireTime is set (has been assigned a value) and false otherwise */
+    public boolean isSetExpireTime() {
+      return EncodingUtils.testBit(__isset_bitfield, __EXPIRETIME_ISSET_ID);
+    }
+
+    public void setExpireTimeIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __EXPIRETIME_ISSET_ID, value);
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case USER_TOKEN:
+        if (value == null) {
+          unsetUserToken();
+        } else {
+          setUserToken((String)value);
+        }
+        break;
+
+      case IMAGE_BASE_ID:
+        if (value == null) {
+          unsetImageBaseId();
+        } else {
+          setImageBaseId((String)value);
+        }
+        break;
+
+      case EXPIRE_TIME:
+        if (value == null) {
+          unsetExpireTime();
+        } else {
+          setExpireTime((Long)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case USER_TOKEN:
+        return getUserToken();
+
+      case IMAGE_BASE_ID:
+        return getImageBaseId();
+
+      case EXPIRE_TIME:
+        return Long.valueOf(getExpireTime());
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case USER_TOKEN:
+        return isSetUserToken();
+      case IMAGE_BASE_ID:
+        return isSetImageBaseId();
+      case EXPIRE_TIME:
+        return isSetExpireTime();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof setImageVersionExpiry_args)
+        return this.equals((setImageVersionExpiry_args)that);
+      return false;
+    }
+
+    public boolean equals(setImageVersionExpiry_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_userToken = true && this.isSetUserToken();
+      boolean that_present_userToken = true && that.isSetUserToken();
+      if (this_present_userToken || that_present_userToken) {
+        if (!(this_present_userToken && that_present_userToken))
+          return false;
+        if (!this.userToken.equals(that.userToken))
+          return false;
+      }
+
+      boolean this_present_imageBaseId = true && this.isSetImageBaseId();
+      boolean that_present_imageBaseId = true && that.isSetImageBaseId();
+      if (this_present_imageBaseId || that_present_imageBaseId) {
+        if (!(this_present_imageBaseId && that_present_imageBaseId))
+          return false;
+        if (!this.imageBaseId.equals(that.imageBaseId))
+          return false;
+      }
+
+      boolean this_present_expireTime = true;
+      boolean that_present_expireTime = true;
+      if (this_present_expireTime || that_present_expireTime) {
+        if (!(this_present_expireTime && that_present_expireTime))
+          return false;
+        if (this.expireTime != that.expireTime)
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(setImageVersionExpiry_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetUserToken()).compareTo(other.isSetUserToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userToken, other.userToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetImageBaseId()).compareTo(other.isSetImageBaseId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetImageBaseId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageBaseId, other.imageBaseId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetExpireTime()).compareTo(other.isSetExpireTime());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetExpireTime()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.expireTime, other.expireTime);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("setImageVersionExpiry_args(");
+      boolean first = true;
+
+      sb.append("userToken:");
+      if (this.userToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("imageBaseId:");
+      if (this.imageBaseId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.imageBaseId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("expireTime:");
+      sb.append(this.expireTime);
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class setImageVersionExpiry_argsStandardSchemeFactory implements SchemeFactory {
+      public setImageVersionExpiry_argsStandardScheme getScheme() {
+        return new setImageVersionExpiry_argsStandardScheme();
+      }
+    }
+
+    private static class setImageVersionExpiry_argsStandardScheme extends StandardScheme<setImageVersionExpiry_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, setImageVersionExpiry_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // USER_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userToken = iprot.readString();
+                struct.setUserTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // IMAGE_BASE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.imageBaseId = iprot.readString();
+                struct.setImageBaseIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // EXPIRE_TIME
+              if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+                struct.expireTime = iprot.readI64();
+                struct.setExpireTimeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, setImageVersionExpiry_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.userToken != null) {
+          oprot.writeFieldBegin(USER_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.userToken);
+          oprot.writeFieldEnd();
+        }
+        if (struct.imageBaseId != null) {
+          oprot.writeFieldBegin(IMAGE_BASE_ID_FIELD_DESC);
+          oprot.writeString(struct.imageBaseId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldBegin(EXPIRE_TIME_FIELD_DESC);
+        oprot.writeI64(struct.expireTime);
+        oprot.writeFieldEnd();
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class setImageVersionExpiry_argsTupleSchemeFactory implements SchemeFactory {
+      public setImageVersionExpiry_argsTupleScheme getScheme() {
+        return new setImageVersionExpiry_argsTupleScheme();
+      }
+    }
+
+    private static class setImageVersionExpiry_argsTupleScheme extends TupleScheme<setImageVersionExpiry_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, setImageVersionExpiry_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetUserToken()) {
+          optionals.set(0);
+        }
+        if (struct.isSetImageBaseId()) {
+          optionals.set(1);
+        }
+        if (struct.isSetExpireTime()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetUserToken()) {
+          oprot.writeString(struct.userToken);
+        }
+        if (struct.isSetImageBaseId()) {
+          oprot.writeString(struct.imageBaseId);
+        }
+        if (struct.isSetExpireTime()) {
+          oprot.writeI64(struct.expireTime);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, setImageVersionExpiry_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.userToken = iprot.readString();
+          struct.setUserTokenIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.imageBaseId = iprot.readString();
+          struct.setImageBaseIdIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.expireTime = iprot.readI64();
+          struct.setExpireTimeIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class setImageVersionExpiry_result implements org.apache.thrift.TBase<setImageVersionExpiry_result, setImageVersionExpiry_result._Fields>, java.io.Serializable, Cloneable, Comparable<setImageVersionExpiry_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("setImageVersionExpiry_result");
+
+    private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField NOT_FOUND_FIELD_DESC = new org.apache.thrift.protocol.TField("notFound", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField DATE_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("dateError", org.apache.thrift.protocol.TType.STRUCT, (short)4);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new setImageVersionExpiry_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new setImageVersionExpiry_resultTupleSchemeFactory());
+    }
+
+    public TAuthorizationException authError; // required
+    public TNotFoundException notFound; // required
+    public TInternalServerError serverError; // required
+    public TInvalidDateParam dateError; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      AUTH_ERROR((short)1, "authError"),
+      NOT_FOUND((short)2, "notFound"),
+      SERVER_ERROR((short)3, "serverError"),
+      DATE_ERROR((short)4, "dateError");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // AUTH_ERROR
+            return AUTH_ERROR;
+          case 2: // NOT_FOUND
+            return NOT_FOUND;
+          case 3: // SERVER_ERROR
+            return SERVER_ERROR;
+          case 4: // DATE_ERROR
+            return DATE_ERROR;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTH_ERROR, new org.apache.thrift.meta_data.FieldMetaData("authError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.NOT_FOUND, new org.apache.thrift.meta_data.FieldMetaData("notFound", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.DATE_ERROR, new org.apache.thrift.meta_data.FieldMetaData("dateError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(setImageVersionExpiry_result.class, metaDataMap);
+    }
+
+    public setImageVersionExpiry_result() {
+    }
+
+    public setImageVersionExpiry_result(
+      TAuthorizationException authError,
+      TNotFoundException notFound,
+      TInternalServerError serverError,
+      TInvalidDateParam dateError)
+    {
+      this();
+      this.authError = authError;
+      this.notFound = notFound;
+      this.serverError = serverError;
+      this.dateError = dateError;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public setImageVersionExpiry_result(setImageVersionExpiry_result other) {
+      if (other.isSetAuthError()) {
+        this.authError = new TAuthorizationException(other.authError);
+      }
+      if (other.isSetNotFound()) {
+        this.notFound = new TNotFoundException(other.notFound);
+      }
+      if (other.isSetServerError()) {
+        this.serverError = new TInternalServerError(other.serverError);
+      }
+      if (other.isSetDateError()) {
+        this.dateError = new TInvalidDateParam(other.dateError);
+      }
+    }
+
+    public setImageVersionExpiry_result deepCopy() {
+      return new setImageVersionExpiry_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.authError = null;
+      this.notFound = null;
+      this.serverError = null;
+      this.dateError = null;
+    }
+
+    public TAuthorizationException getAuthError() {
+      return this.authError;
+    }
+
+    public setImageVersionExpiry_result setAuthError(TAuthorizationException authError) {
+      this.authError = authError;
+      return this;
+    }
+
+    public void unsetAuthError() {
+      this.authError = null;
+    }
+
+    /** Returns true if field authError is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthError() {
+      return this.authError != null;
+    }
+
+    public void setAuthErrorIsSet(boolean value) {
+      if (!value) {
+        this.authError = null;
+      }
+    }
+
+    public TNotFoundException getNotFound() {
+      return this.notFound;
+    }
+
+    public setImageVersionExpiry_result setNotFound(TNotFoundException notFound) {
+      this.notFound = notFound;
+      return this;
+    }
+
+    public void unsetNotFound() {
+      this.notFound = null;
+    }
+
+    /** Returns true if field notFound is set (has been assigned a value) and false otherwise */
+    public boolean isSetNotFound() {
+      return this.notFound != null;
+    }
+
+    public void setNotFoundIsSet(boolean value) {
+      if (!value) {
+        this.notFound = null;
+      }
+    }
+
+    public TInternalServerError getServerError() {
+      return this.serverError;
+    }
+
+    public setImageVersionExpiry_result setServerError(TInternalServerError serverError) {
+      this.serverError = serverError;
+      return this;
+    }
+
+    public void unsetServerError() {
+      this.serverError = null;
+    }
+
+    /** Returns true if field serverError is set (has been assigned a value) and false otherwise */
+    public boolean isSetServerError() {
+      return this.serverError != null;
+    }
+
+    public void setServerErrorIsSet(boolean value) {
+      if (!value) {
+        this.serverError = null;
+      }
+    }
+
+    public TInvalidDateParam getDateError() {
+      return this.dateError;
+    }
+
+    public setImageVersionExpiry_result setDateError(TInvalidDateParam dateError) {
+      this.dateError = dateError;
+      return this;
+    }
+
+    public void unsetDateError() {
+      this.dateError = null;
+    }
+
+    /** Returns true if field dateError is set (has been assigned a value) and false otherwise */
+    public boolean isSetDateError() {
+      return this.dateError != null;
+    }
+
+    public void setDateErrorIsSet(boolean value) {
+      if (!value) {
+        this.dateError = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case AUTH_ERROR:
+        if (value == null) {
+          unsetAuthError();
+        } else {
+          setAuthError((TAuthorizationException)value);
+        }
+        break;
+
+      case NOT_FOUND:
+        if (value == null) {
+          unsetNotFound();
+        } else {
+          setNotFound((TNotFoundException)value);
+        }
+        break;
+
+      case SERVER_ERROR:
+        if (value == null) {
+          unsetServerError();
+        } else {
+          setServerError((TInternalServerError)value);
+        }
+        break;
+
+      case DATE_ERROR:
+        if (value == null) {
+          unsetDateError();
+        } else {
+          setDateError((TInvalidDateParam)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case AUTH_ERROR:
+        return getAuthError();
+
+      case NOT_FOUND:
+        return getNotFound();
+
+      case SERVER_ERROR:
+        return getServerError();
+
+      case DATE_ERROR:
+        return getDateError();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case AUTH_ERROR:
+        return isSetAuthError();
+      case NOT_FOUND:
+        return isSetNotFound();
+      case SERVER_ERROR:
+        return isSetServerError();
+      case DATE_ERROR:
+        return isSetDateError();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof setImageVersionExpiry_result)
+        return this.equals((setImageVersionExpiry_result)that);
+      return false;
+    }
+
+    public boolean equals(setImageVersionExpiry_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_authError = true && this.isSetAuthError();
+      boolean that_present_authError = true && that.isSetAuthError();
+      if (this_present_authError || that_present_authError) {
+        if (!(this_present_authError && that_present_authError))
+          return false;
+        if (!this.authError.equals(that.authError))
+          return false;
+      }
+
+      boolean this_present_notFound = true && this.isSetNotFound();
+      boolean that_present_notFound = true && that.isSetNotFound();
+      if (this_present_notFound || that_present_notFound) {
+        if (!(this_present_notFound && that_present_notFound))
+          return false;
+        if (!this.notFound.equals(that.notFound))
+          return false;
+      }
+
+      boolean this_present_serverError = true && this.isSetServerError();
+      boolean that_present_serverError = true && that.isSetServerError();
+      if (this_present_serverError || that_present_serverError) {
+        if (!(this_present_serverError && that_present_serverError))
+          return false;
+        if (!this.serverError.equals(that.serverError))
+          return false;
+      }
+
+      boolean this_present_dateError = true && this.isSetDateError();
+      boolean that_present_dateError = true && that.isSetDateError();
+      if (this_present_dateError || that_present_dateError) {
+        if (!(this_present_dateError && that_present_dateError))
+          return false;
+        if (!this.dateError.equals(that.dateError))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(setImageVersionExpiry_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAuthError()).compareTo(other.isSetAuthError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authError, other.authError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetNotFound()).compareTo(other.isSetNotFound());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetNotFound()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.notFound, other.notFound);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetServerError()).compareTo(other.isSetServerError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetServerError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverError, other.serverError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetDateError()).compareTo(other.isSetDateError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDateError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dateError, other.dateError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("setImageVersionExpiry_result(");
+      boolean first = true;
+
+      sb.append("authError:");
+      if (this.authError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("notFound:");
+      if (this.notFound == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.notFound);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("serverError:");
+      if (this.serverError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.serverError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dateError:");
+      if (this.dateError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dateError);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class setImageVersionExpiry_resultStandardSchemeFactory implements SchemeFactory {
+      public setImageVersionExpiry_resultStandardScheme getScheme() {
+        return new setImageVersionExpiry_resultStandardScheme();
+      }
+    }
+
+    private static class setImageVersionExpiry_resultStandardScheme extends StandardScheme<setImageVersionExpiry_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, setImageVersionExpiry_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // AUTH_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authError = new TAuthorizationException();
+                struct.authError.read(iprot);
+                struct.setAuthErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // NOT_FOUND
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.notFound = new TNotFoundException();
+                struct.notFound.read(iprot);
+                struct.setNotFoundIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // SERVER_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.serverError = new TInternalServerError();
+                struct.serverError.read(iprot);
+                struct.setServerErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 4: // DATE_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.dateError = new TInvalidDateParam();
+                struct.dateError.read(iprot);
+                struct.setDateErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, setImageVersionExpiry_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authError != null) {
+          oprot.writeFieldBegin(AUTH_ERROR_FIELD_DESC);
+          struct.authError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.notFound != null) {
+          oprot.writeFieldBegin(NOT_FOUND_FIELD_DESC);
+          struct.notFound.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.serverError != null) {
+          oprot.writeFieldBegin(SERVER_ERROR_FIELD_DESC);
+          struct.serverError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.dateError != null) {
+          oprot.writeFieldBegin(DATE_ERROR_FIELD_DESC);
+          struct.dateError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class setImageVersionExpiry_resultTupleSchemeFactory implements SchemeFactory {
+      public setImageVersionExpiry_resultTupleScheme getScheme() {
+        return new setImageVersionExpiry_resultTupleScheme();
+      }
+    }
+
+    private static class setImageVersionExpiry_resultTupleScheme extends TupleScheme<setImageVersionExpiry_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, setImageVersionExpiry_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetAuthError()) {
+          optionals.set(0);
+        }
+        if (struct.isSetNotFound()) {
+          optionals.set(1);
+        }
+        if (struct.isSetServerError()) {
+          optionals.set(2);
+        }
+        if (struct.isSetDateError()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetAuthError()) {
+          struct.authError.write(oprot);
+        }
+        if (struct.isSetNotFound()) {
+          struct.notFound.write(oprot);
+        }
+        if (struct.isSetServerError()) {
+          struct.serverError.write(oprot);
+        }
+        if (struct.isSetDateError()) {
+          struct.dateError.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, setImageVersionExpiry_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.authError = new TAuthorizationException();
+          struct.authError.read(iprot);
+          struct.setAuthErrorIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.notFound = new TNotFoundException();
+          struct.notFound.read(iprot);
+          struct.setNotFoundIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.serverError = new TInternalServerError();
+          struct.serverError.read(iprot);
+          struct.setServerErrorIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.dateError = new TInvalidDateParam();
+          struct.dateError.read(iprot);
+          struct.setDateErrorIsSet(true);
+        }
+      }
+    }
+
+  }
+
   public static class createLecture_args implements org.apache.thrift.TBase<createLecture_args, createLecture_args._Fields>, java.io.Serializable, Cloneable, Comparable<createLecture_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("createLecture_args");
 
@@ -28733,6 +30146,7 @@ public class SatelliteServer {
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField DATE_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("dateError", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -28743,12 +30157,14 @@ public class SatelliteServer {
     public String success; // required
     public TAuthorizationException authError; // required
     public TInternalServerError serverError; // required
+    public TInvalidDateParam dateError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
       AUTH_ERROR((short)1, "authError"),
-      SERVER_ERROR((short)2, "serverError");
+      SERVER_ERROR((short)2, "serverError"),
+      DATE_ERROR((short)3, "dateError");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -28769,6 +30185,8 @@ public class SatelliteServer {
             return AUTH_ERROR;
           case 2: // SERVER_ERROR
             return SERVER_ERROR;
+          case 3: // DATE_ERROR
+            return DATE_ERROR;
           default:
             return null;
         }
@@ -28818,6 +30236,8 @@ public class SatelliteServer {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.DATE_ERROR, new org.apache.thrift.meta_data.FieldMetaData("dateError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createLecture_result.class, metaDataMap);
     }
@@ -28828,12 +30248,14 @@ public class SatelliteServer {
     public createLecture_result(
       String success,
       TAuthorizationException authError,
-      TInternalServerError serverError)
+      TInternalServerError serverError,
+      TInvalidDateParam dateError)
     {
       this();
       this.success = success;
       this.authError = authError;
       this.serverError = serverError;
+      this.dateError = dateError;
     }
 
     /**
@@ -28849,6 +30271,9 @@ public class SatelliteServer {
       if (other.isSetServerError()) {
         this.serverError = new TInternalServerError(other.serverError);
       }
+      if (other.isSetDateError()) {
+        this.dateError = new TInvalidDateParam(other.dateError);
+      }
     }
 
     public createLecture_result deepCopy() {
@@ -28860,6 +30285,7 @@ public class SatelliteServer {
       this.success = null;
       this.authError = null;
       this.serverError = null;
+      this.dateError = null;
     }
 
     public String getSuccess() {
@@ -28934,6 +30360,30 @@ public class SatelliteServer {
       }
     }
 
+    public TInvalidDateParam getDateError() {
+      return this.dateError;
+    }
+
+    public createLecture_result setDateError(TInvalidDateParam dateError) {
+      this.dateError = dateError;
+      return this;
+    }
+
+    public void unsetDateError() {
+      this.dateError = null;
+    }
+
+    /** Returns true if field dateError is set (has been assigned a value) and false otherwise */
+    public boolean isSetDateError() {
+      return this.dateError != null;
+    }
+
+    public void setDateErrorIsSet(boolean value) {
+      if (!value) {
+        this.dateError = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -28960,6 +30410,14 @@ public class SatelliteServer {
         }
         break;
 
+      case DATE_ERROR:
+        if (value == null) {
+          unsetDateError();
+        } else {
+          setDateError((TInvalidDateParam)value);
+        }
+        break;
+
       }
     }
 
@@ -28973,6 +30431,9 @@ public class SatelliteServer {
 
       case SERVER_ERROR:
         return getServerError();
+
+      case DATE_ERROR:
+        return getDateError();
 
       }
       throw new IllegalStateException();
@@ -28991,6 +30452,8 @@ public class SatelliteServer {
         return isSetAuthError();
       case SERVER_ERROR:
         return isSetServerError();
+      case DATE_ERROR:
+        return isSetDateError();
       }
       throw new IllegalStateException();
     }
@@ -29032,6 +30495,15 @@ public class SatelliteServer {
         if (!(this_present_serverError && that_present_serverError))
           return false;
         if (!this.serverError.equals(that.serverError))
+          return false;
+      }
+
+      boolean this_present_dateError = true && this.isSetDateError();
+      boolean that_present_dateError = true && that.isSetDateError();
+      if (this_present_dateError || that_present_dateError) {
+        if (!(this_present_dateError && that_present_dateError))
+          return false;
+        if (!this.dateError.equals(that.dateError))
           return false;
       }
 
@@ -29081,6 +30553,16 @@ public class SatelliteServer {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetDateError()).compareTo(other.isSetDateError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDateError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dateError, other.dateError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -29122,6 +30604,14 @@ public class SatelliteServer {
         sb.append("null");
       } else {
         sb.append(this.serverError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dateError:");
+      if (this.dateError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dateError);
       }
       first = false;
       sb.append(")");
@@ -29193,6 +30683,15 @@ public class SatelliteServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // DATE_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.dateError = new TInvalidDateParam();
+                struct.dateError.read(iprot);
+                struct.setDateErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -29223,6 +30722,11 @@ public class SatelliteServer {
           struct.serverError.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.dateError != null) {
+          oprot.writeFieldBegin(DATE_ERROR_FIELD_DESC);
+          struct.dateError.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -29250,7 +30754,10 @@ public class SatelliteServer {
         if (struct.isSetServerError()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetDateError()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
         }
@@ -29260,12 +30767,15 @@ public class SatelliteServer {
         if (struct.isSetServerError()) {
           struct.serverError.write(oprot);
         }
+        if (struct.isSetDateError()) {
+          struct.dateError.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, createLecture_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
@@ -29279,6 +30789,11 @@ public class SatelliteServer {
           struct.serverError = new TInternalServerError();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.dateError = new TInvalidDateParam();
+          struct.dateError.read(iprot);
+          struct.setDateErrorIsSet(true);
         }
       }
     }
@@ -29850,6 +31365,7 @@ public class SatelliteServer {
     private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField NOT_FOUND_FIELD_DESC = new org.apache.thrift.protocol.TField("notFound", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField DATE_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("dateError", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -29860,12 +31376,14 @@ public class SatelliteServer {
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
     public TInternalServerError serverError; // required
+    public TInvalidDateParam dateError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTH_ERROR((short)1, "authError"),
       NOT_FOUND((short)2, "notFound"),
-      SERVER_ERROR((short)3, "serverError");
+      SERVER_ERROR((short)3, "serverError"),
+      DATE_ERROR((short)4, "dateError");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -29886,6 +31404,8 @@ public class SatelliteServer {
             return NOT_FOUND;
           case 3: // SERVER_ERROR
             return SERVER_ERROR;
+          case 4: // DATE_ERROR
+            return DATE_ERROR;
           default:
             return null;
         }
@@ -29935,6 +31455,8 @@ public class SatelliteServer {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.DATE_ERROR, new org.apache.thrift.meta_data.FieldMetaData("dateError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateLecture_result.class, metaDataMap);
     }
@@ -29945,12 +31467,14 @@ public class SatelliteServer {
     public updateLecture_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInternalServerError serverError,
+      TInvalidDateParam dateError)
     {
       this();
       this.authError = authError;
       this.notFound = notFound;
       this.serverError = serverError;
+      this.dateError = dateError;
     }
 
     /**
@@ -29966,6 +31490,9 @@ public class SatelliteServer {
       if (other.isSetServerError()) {
         this.serverError = new TInternalServerError(other.serverError);
       }
+      if (other.isSetDateError()) {
+        this.dateError = new TInvalidDateParam(other.dateError);
+      }
     }
 
     public updateLecture_result deepCopy() {
@@ -29977,6 +31504,7 @@ public class SatelliteServer {
       this.authError = null;
       this.notFound = null;
       this.serverError = null;
+      this.dateError = null;
     }
 
     public TAuthorizationException getAuthError() {
@@ -30051,6 +31579,30 @@ public class SatelliteServer {
       }
     }
 
+    public TInvalidDateParam getDateError() {
+      return this.dateError;
+    }
+
+    public updateLecture_result setDateError(TInvalidDateParam dateError) {
+      this.dateError = dateError;
+      return this;
+    }
+
+    public void unsetDateError() {
+      this.dateError = null;
+    }
+
+    /** Returns true if field dateError is set (has been assigned a value) and false otherwise */
+    public boolean isSetDateError() {
+      return this.dateError != null;
+    }
+
+    public void setDateErrorIsSet(boolean value) {
+      if (!value) {
+        this.dateError = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case AUTH_ERROR:
@@ -30077,6 +31629,14 @@ public class SatelliteServer {
         }
         break;
 
+      case DATE_ERROR:
+        if (value == null) {
+          unsetDateError();
+        } else {
+          setDateError((TInvalidDateParam)value);
+        }
+        break;
+
       }
     }
 
@@ -30090,6 +31650,9 @@ public class SatelliteServer {
 
       case SERVER_ERROR:
         return getServerError();
+
+      case DATE_ERROR:
+        return getDateError();
 
       }
       throw new IllegalStateException();
@@ -30108,6 +31671,8 @@ public class SatelliteServer {
         return isSetNotFound();
       case SERVER_ERROR:
         return isSetServerError();
+      case DATE_ERROR:
+        return isSetDateError();
       }
       throw new IllegalStateException();
     }
@@ -30149,6 +31714,15 @@ public class SatelliteServer {
         if (!(this_present_serverError && that_present_serverError))
           return false;
         if (!this.serverError.equals(that.serverError))
+          return false;
+      }
+
+      boolean this_present_dateError = true && this.isSetDateError();
+      boolean that_present_dateError = true && that.isSetDateError();
+      if (this_present_dateError || that_present_dateError) {
+        if (!(this_present_dateError && that_present_dateError))
+          return false;
+        if (!this.dateError.equals(that.dateError))
           return false;
       }
 
@@ -30198,6 +31772,16 @@ public class SatelliteServer {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetDateError()).compareTo(other.isSetDateError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDateError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dateError, other.dateError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -30239,6 +31823,14 @@ public class SatelliteServer {
         sb.append("null");
       } else {
         sb.append(this.serverError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dateError:");
+      if (this.dateError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dateError);
       }
       first = false;
       sb.append(")");
@@ -30311,6 +31903,15 @@ public class SatelliteServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 4: // DATE_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.dateError = new TInvalidDateParam();
+                struct.dateError.read(iprot);
+                struct.setDateErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -30341,6 +31942,11 @@ public class SatelliteServer {
           struct.serverError.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.dateError != null) {
+          oprot.writeFieldBegin(DATE_ERROR_FIELD_DESC);
+          struct.dateError.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -30368,7 +31974,10 @@ public class SatelliteServer {
         if (struct.isSetServerError()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetDateError()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetAuthError()) {
           struct.authError.write(oprot);
         }
@@ -30378,12 +31987,15 @@ public class SatelliteServer {
         if (struct.isSetServerError()) {
           struct.serverError.write(oprot);
         }
+        if (struct.isSetDateError()) {
+          struct.dateError.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, updateLecture_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.authError = new TAuthorizationException();
           struct.authError.read(iprot);
@@ -30398,6 +32010,11 @@ public class SatelliteServer {
           struct.serverError = new TInternalServerError();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.dateError = new TInvalidDateParam();
+          struct.dateError.read(iprot);
+          struct.setDateErrorIsSet(true);
         }
       }
     }

@@ -61,6 +61,12 @@ enum TransferState {
 	ERROR
 }
 
+enum DateParamError {
+	TOO_LOW,
+	TOO_HIGH,
+	NEGATIVE_RANGE
+}
+
 // ############## STRUCT ###############
 
 struct UserInfo {
@@ -171,11 +177,12 @@ struct ImageSummaryRead {
 	6: string virtId,
 	7: UnixTimestamp createTime,
 	8: UnixTimestamp updateTime,
+	20: UnixTimestamp uploadTime, // Time when the latest version was uploaded
 	9: UnixTimestamp expireTime,
 	10: UUID ownerId,
-	11: UUID uploaderId,
+	11: UUID uploaderId, // Uploader of the latest version
 	12: ShareMode shareMode,
-	13: i64 fileSize,
+	13: i64 fileSize, // Size of the latest version
 	14: bool isRestricted,
 	15: bool isValid,
 	16: bool isProcessed,
@@ -264,7 +271,8 @@ struct LectureRead {
 	1: UUID lectureId,
 	2: string lectureName,
 	3: string description,
-	4: ImageSummaryRead image,
+	23: string imageVersionId,
+	24: string imageBaseId,
 	5: bool autoUpdate,
 	6: bool isEnabled,
 	7: UnixTimestamp startTime,
@@ -337,9 +345,15 @@ exception TInvalidTokenException {
 }
 
 exception TNotFoundException {
+	1: string message
 }
 
 exception TInternalServerError {
+}
+
+exception TInvalidDateParam {
+	1: DateParamError number,
+	2: string message,
 }
 
 exception TImageDataException {
@@ -431,16 +445,19 @@ service SatelliteServer {
 	// Set new owner of image
 	void setImageOwner(1: Token userToken, 2: UUID imageBaseId 3: UUID newOwnerId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+	// Set image version valid and change expiry date (super user action)
+	void setImageVersionExpiry(1: Token userToken, 2: UUID imageBaseId 3: UnixTimestamp expireTime)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError, 4:TInvalidDateParam dateError),
 	
 	/*
 	 * Lecture related
 	 */
 	// Create new lecture
     UUID createLecture(1: Token userToken, 2: LectureWrite lecture)
-		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError, 3:TInvalidDateParam dateError),
 	// Update existing lecture
     void updateLecture(1: Token userToken, 2: UUID lectureId, 3: LectureWrite lecture)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError, 4:TInvalidDateParam dateError),
 	// Get list of all lectures
     list<LectureSummary> getLectureList(1: Token userToken, 2: i32 page)
 		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),

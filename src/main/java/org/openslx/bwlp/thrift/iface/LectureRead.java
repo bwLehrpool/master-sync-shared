@@ -38,7 +38,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   private static final org.apache.thrift.protocol.TField LECTURE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("lectureId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField LECTURE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("lectureName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField IMAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("image", org.apache.thrift.protocol.TType.STRUCT, (short)4);
+  private static final org.apache.thrift.protocol.TField IMAGE_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageVersionId", org.apache.thrift.protocol.TType.STRING, (short)23);
+  private static final org.apache.thrift.protocol.TField IMAGE_BASE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageBaseId", org.apache.thrift.protocol.TType.STRING, (short)24);
   private static final org.apache.thrift.protocol.TField AUTO_UPDATE_FIELD_DESC = new org.apache.thrift.protocol.TField("autoUpdate", org.apache.thrift.protocol.TType.BOOL, (short)5);
   private static final org.apache.thrift.protocol.TField IS_ENABLED_FIELD_DESC = new org.apache.thrift.protocol.TField("isEnabled", org.apache.thrift.protocol.TType.BOOL, (short)6);
   private static final org.apache.thrift.protocol.TField START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("startTime", org.apache.thrift.protocol.TType.I64, (short)7);
@@ -67,7 +68,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   public String lectureId; // required
   public String lectureName; // required
   public String description; // required
-  public ImageSummaryRead image; // required
+  public String imageVersionId; // required
+  public String imageBaseId; // required
   public boolean autoUpdate; // required
   public boolean isEnabled; // required
   public long startTime; // required
@@ -92,7 +94,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     LECTURE_ID((short)1, "lectureId"),
     LECTURE_NAME((short)2, "lectureName"),
     DESCRIPTION((short)3, "description"),
-    IMAGE((short)4, "image"),
+    IMAGE_VERSION_ID((short)23, "imageVersionId"),
+    IMAGE_BASE_ID((short)24, "imageBaseId"),
     AUTO_UPDATE((short)5, "autoUpdate"),
     IS_ENABLED((short)6, "isEnabled"),
     START_TIME((short)7, "startTime"),
@@ -131,8 +134,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
           return LECTURE_NAME;
         case 3: // DESCRIPTION
           return DESCRIPTION;
-        case 4: // IMAGE
-          return IMAGE;
+        case 23: // IMAGE_VERSION_ID
+          return IMAGE_VERSION_ID;
+        case 24: // IMAGE_BASE_ID
+          return IMAGE_BASE_ID;
         case 5: // AUTO_UPDATE
           return AUTO_UPDATE;
         case 6: // IS_ENABLED
@@ -230,8 +235,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.IMAGE, new org.apache.thrift.meta_data.FieldMetaData("image", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ImageSummaryRead.class)));
+    tmpMap.put(_Fields.IMAGE_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("imageVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.IMAGE_BASE_ID, new org.apache.thrift.meta_data.FieldMetaData("imageBaseId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.AUTO_UPDATE, new org.apache.thrift.meta_data.FieldMetaData("autoUpdate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.IS_ENABLED, new org.apache.thrift.meta_data.FieldMetaData("isEnabled", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -282,7 +289,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     String lectureId,
     String lectureName,
     String description,
-    ImageSummaryRead image,
+    String imageVersionId,
+    String imageBaseId,
     boolean autoUpdate,
     boolean isEnabled,
     long startTime,
@@ -305,7 +313,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     this.lectureId = lectureId;
     this.lectureName = lectureName;
     this.description = description;
-    this.image = image;
+    this.imageVersionId = imageVersionId;
+    this.imageBaseId = imageBaseId;
     this.autoUpdate = autoUpdate;
     setAutoUpdateIsSet(true);
     this.isEnabled = isEnabled;
@@ -349,8 +358,11 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     if (other.isSetDescription()) {
       this.description = other.description;
     }
-    if (other.isSetImage()) {
-      this.image = new ImageSummaryRead(other.image);
+    if (other.isSetImageVersionId()) {
+      this.imageVersionId = other.imageVersionId;
+    }
+    if (other.isSetImageBaseId()) {
+      this.imageBaseId = other.imageBaseId;
     }
     this.autoUpdate = other.autoUpdate;
     this.isEnabled = other.isEnabled;
@@ -403,7 +415,8 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     this.lectureId = null;
     this.lectureName = null;
     this.description = null;
-    this.image = null;
+    this.imageVersionId = null;
+    this.imageBaseId = null;
     setAutoUpdateIsSet(false);
     this.autoUpdate = false;
     setIsEnabledIsSet(false);
@@ -506,27 +519,51 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     }
   }
 
-  public ImageSummaryRead getImage() {
-    return this.image;
+  public String getImageVersionId() {
+    return this.imageVersionId;
   }
 
-  public LectureRead setImage(ImageSummaryRead image) {
-    this.image = image;
+  public LectureRead setImageVersionId(String imageVersionId) {
+    this.imageVersionId = imageVersionId;
     return this;
   }
 
-  public void unsetImage() {
-    this.image = null;
+  public void unsetImageVersionId() {
+    this.imageVersionId = null;
   }
 
-  /** Returns true if field image is set (has been assigned a value) and false otherwise */
-  public boolean isSetImage() {
-    return this.image != null;
+  /** Returns true if field imageVersionId is set (has been assigned a value) and false otherwise */
+  public boolean isSetImageVersionId() {
+    return this.imageVersionId != null;
   }
 
-  public void setImageIsSet(boolean value) {
+  public void setImageVersionIdIsSet(boolean value) {
     if (!value) {
-      this.image = null;
+      this.imageVersionId = null;
+    }
+  }
+
+  public String getImageBaseId() {
+    return this.imageBaseId;
+  }
+
+  public LectureRead setImageBaseId(String imageBaseId) {
+    this.imageBaseId = imageBaseId;
+    return this;
+  }
+
+  public void unsetImageBaseId() {
+    this.imageBaseId = null;
+  }
+
+  /** Returns true if field imageBaseId is set (has been assigned a value) and false otherwise */
+  public boolean isSetImageBaseId() {
+    return this.imageBaseId != null;
+  }
+
+  public void setImageBaseIdIsSet(boolean value) {
+    if (!value) {
+      this.imageBaseId = null;
     }
   }
 
@@ -1023,11 +1060,19 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       }
       break;
 
-    case IMAGE:
+    case IMAGE_VERSION_ID:
       if (value == null) {
-        unsetImage();
+        unsetImageVersionId();
       } else {
-        setImage((ImageSummaryRead)value);
+        setImageVersionId((String)value);
+      }
+      break;
+
+    case IMAGE_BASE_ID:
+      if (value == null) {
+        unsetImageBaseId();
+      } else {
+        setImageBaseId((String)value);
       }
       break;
 
@@ -1189,8 +1234,11 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     case DESCRIPTION:
       return getDescription();
 
-    case IMAGE:
-      return getImage();
+    case IMAGE_VERSION_ID:
+      return getImageVersionId();
+
+    case IMAGE_BASE_ID:
+      return getImageBaseId();
 
     case AUTO_UPDATE:
       return Boolean.valueOf(isAutoUpdate());
@@ -1263,8 +1311,10 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       return isSetLectureName();
     case DESCRIPTION:
       return isSetDescription();
-    case IMAGE:
-      return isSetImage();
+    case IMAGE_VERSION_ID:
+      return isSetImageVersionId();
+    case IMAGE_BASE_ID:
+      return isSetImageBaseId();
     case AUTO_UPDATE:
       return isSetAutoUpdate();
     case IS_ENABLED:
@@ -1345,12 +1395,21 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         return false;
     }
 
-    boolean this_present_image = true && this.isSetImage();
-    boolean that_present_image = true && that.isSetImage();
-    if (this_present_image || that_present_image) {
-      if (!(this_present_image && that_present_image))
+    boolean this_present_imageVersionId = true && this.isSetImageVersionId();
+    boolean that_present_imageVersionId = true && that.isSetImageVersionId();
+    if (this_present_imageVersionId || that_present_imageVersionId) {
+      if (!(this_present_imageVersionId && that_present_imageVersionId))
         return false;
-      if (!this.image.equals(that.image))
+      if (!this.imageVersionId.equals(that.imageVersionId))
+        return false;
+    }
+
+    boolean this_present_imageBaseId = true && this.isSetImageBaseId();
+    boolean that_present_imageBaseId = true && that.isSetImageBaseId();
+    if (this_present_imageBaseId || that_present_imageBaseId) {
+      if (!(this_present_imageBaseId && that_present_imageBaseId))
+        return false;
+      if (!this.imageBaseId.equals(that.imageBaseId))
         return false;
     }
 
@@ -1562,12 +1621,22 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetImage()).compareTo(other.isSetImage());
+    lastComparison = Boolean.valueOf(isSetImageVersionId()).compareTo(other.isSetImageVersionId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetImage()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.image, other.image);
+    if (isSetImageVersionId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageVersionId, other.imageVersionId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetImageBaseId()).compareTo(other.isSetImageBaseId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetImageBaseId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageBaseId, other.imageBaseId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1796,11 +1865,19 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("image:");
-    if (this.image == null) {
+    sb.append("imageVersionId:");
+    if (this.imageVersionId == null) {
       sb.append("null");
     } else {
-      sb.append(this.image);
+      sb.append(this.imageVersionId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("imageBaseId:");
+    if (this.imageBaseId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.imageBaseId);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -1916,9 +1993,6 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
     // check for sub-struct validity
-    if (image != null) {
-      image.validate();
-    }
     if (defaultPermissions != null) {
       defaultPermissions.validate();
     }
@@ -1987,11 +2061,18 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // IMAGE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.image = new ImageSummaryRead();
-              struct.image.read(iprot);
-              struct.setImageIsSet(true);
+          case 23: // IMAGE_VERSION_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.imageVersionId = iprot.readString();
+              struct.setImageVersionIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 24: // IMAGE_BASE_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.imageBaseId = iprot.readString();
+              struct.setImageBaseIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -2203,11 +2284,6 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         oprot.writeString(struct.description);
         oprot.writeFieldEnd();
       }
-      if (struct.image != null) {
-        oprot.writeFieldBegin(IMAGE_FIELD_DESC);
-        struct.image.write(oprot);
-        oprot.writeFieldEnd();
-      }
       oprot.writeFieldBegin(AUTO_UPDATE_FIELD_DESC);
       oprot.writeBool(struct.autoUpdate);
       oprot.writeFieldEnd();
@@ -2301,6 +2377,16 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
           oprot.writeFieldEnd();
         }
       }
+      if (struct.imageVersionId != null) {
+        oprot.writeFieldBegin(IMAGE_VERSION_ID_FIELD_DESC);
+        oprot.writeString(struct.imageVersionId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.imageBaseId != null) {
+        oprot.writeFieldBegin(IMAGE_BASE_ID_FIELD_DESC);
+        oprot.writeString(struct.imageBaseId);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2328,64 +2414,67 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (struct.isSetDescription()) {
         optionals.set(2);
       }
-      if (struct.isSetImage()) {
+      if (struct.isSetImageVersionId()) {
         optionals.set(3);
       }
-      if (struct.isSetAutoUpdate()) {
+      if (struct.isSetImageBaseId()) {
         optionals.set(4);
       }
-      if (struct.isSetIsEnabled()) {
+      if (struct.isSetAutoUpdate()) {
         optionals.set(5);
       }
-      if (struct.isSetStartTime()) {
+      if (struct.isSetIsEnabled()) {
         optionals.set(6);
       }
-      if (struct.isSetEndTime()) {
+      if (struct.isSetStartTime()) {
         optionals.set(7);
       }
-      if (struct.isSetLastUsed()) {
+      if (struct.isSetEndTime()) {
         optionals.set(8);
       }
-      if (struct.isSetUseCount()) {
+      if (struct.isSetLastUsed()) {
         optionals.set(9);
       }
-      if (struct.isSetCreateTime()) {
+      if (struct.isSetUseCount()) {
         optionals.set(10);
       }
-      if (struct.isSetUpdateTime()) {
+      if (struct.isSetCreateTime()) {
         optionals.set(11);
       }
-      if (struct.isSetOwnerId()) {
+      if (struct.isSetUpdateTime()) {
         optionals.set(12);
       }
-      if (struct.isSetUpdaterId()) {
+      if (struct.isSetOwnerId()) {
         optionals.set(13);
       }
-      if (struct.isSetRunscript()) {
+      if (struct.isSetUpdaterId()) {
         optionals.set(14);
       }
-      if (struct.isSetNics()) {
+      if (struct.isSetRunscript()) {
         optionals.set(15);
       }
-      if (struct.isSetAllowedUsers()) {
+      if (struct.isSetNics()) {
         optionals.set(16);
       }
-      if (struct.isSetNetworkExceptions()) {
+      if (struct.isSetAllowedUsers()) {
         optionals.set(17);
       }
-      if (struct.isSetIsExam()) {
+      if (struct.isSetNetworkExceptions()) {
         optionals.set(18);
       }
-      if (struct.isSetHasInternetAccess()) {
+      if (struct.isSetIsExam()) {
         optionals.set(19);
       }
-      if (struct.isSetDefaultPermissions()) {
+      if (struct.isSetHasInternetAccess()) {
         optionals.set(20);
       }
-      if (struct.isSetUserPermissions()) {
+      if (struct.isSetDefaultPermissions()) {
         optionals.set(21);
       }
-      oprot.writeBitSet(optionals, 22);
+      if (struct.isSetUserPermissions()) {
+        optionals.set(22);
+      }
+      oprot.writeBitSet(optionals, 23);
       if (struct.isSetLectureId()) {
         oprot.writeString(struct.lectureId);
       }
@@ -2395,8 +2484,11 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
       if (struct.isSetDescription()) {
         oprot.writeString(struct.description);
       }
-      if (struct.isSetImage()) {
-        struct.image.write(oprot);
+      if (struct.isSetImageVersionId()) {
+        oprot.writeString(struct.imageVersionId);
+      }
+      if (struct.isSetImageBaseId()) {
+        oprot.writeString(struct.imageBaseId);
       }
       if (struct.isSetAutoUpdate()) {
         oprot.writeBool(struct.autoUpdate);
@@ -2475,7 +2567,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, LectureRead struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(22);
+      BitSet incoming = iprot.readBitSet(23);
       if (incoming.get(0)) {
         struct.lectureId = iprot.readString();
         struct.setLectureIdIsSet(true);
@@ -2489,55 +2581,58 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         struct.setDescriptionIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.image = new ImageSummaryRead();
-        struct.image.read(iprot);
-        struct.setImageIsSet(true);
+        struct.imageVersionId = iprot.readString();
+        struct.setImageVersionIdIsSet(true);
       }
       if (incoming.get(4)) {
+        struct.imageBaseId = iprot.readString();
+        struct.setImageBaseIdIsSet(true);
+      }
+      if (incoming.get(5)) {
         struct.autoUpdate = iprot.readBool();
         struct.setAutoUpdateIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         struct.isEnabled = iprot.readBool();
         struct.setIsEnabledIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(7)) {
         struct.startTime = iprot.readI64();
         struct.setStartTimeIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(8)) {
         struct.endTime = iprot.readI64();
         struct.setEndTimeIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(9)) {
         struct.lastUsed = iprot.readI64();
         struct.setLastUsedIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(10)) {
         struct.useCount = iprot.readI32();
         struct.setUseCountIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(11)) {
         struct.createTime = iprot.readI64();
         struct.setCreateTimeIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(12)) {
         struct.updateTime = iprot.readI64();
         struct.setUpdateTimeIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(13)) {
         struct.ownerId = iprot.readString();
         struct.setOwnerIdIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(14)) {
         struct.updaterId = iprot.readString();
         struct.setUpdaterIdIsSet(true);
       }
-      if (incoming.get(14)) {
+      if (incoming.get(15)) {
         struct.runscript = iprot.readString();
         struct.setRunscriptIsSet(true);
       }
-      if (incoming.get(15)) {
+      if (incoming.get(16)) {
         {
           org.apache.thrift.protocol.TList _list121 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.nics = new ArrayList<String>(_list121.size);
@@ -2550,7 +2645,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         }
         struct.setNicsIsSet(true);
       }
-      if (incoming.get(16)) {
+      if (incoming.get(17)) {
         {
           org.apache.thrift.protocol.TList _list124 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.allowedUsers = new ArrayList<String>(_list124.size);
@@ -2563,7 +2658,7 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         }
         struct.setAllowedUsersIsSet(true);
       }
-      if (incoming.get(17)) {
+      if (incoming.get(18)) {
         {
           org.apache.thrift.protocol.TList _list127 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.networkExceptions = new ArrayList<NetRule>(_list127.size);
@@ -2577,20 +2672,20 @@ public class LectureRead implements org.apache.thrift.TBase<LectureRead, Lecture
         }
         struct.setNetworkExceptionsIsSet(true);
       }
-      if (incoming.get(18)) {
+      if (incoming.get(19)) {
         struct.isExam = iprot.readBool();
         struct.setIsExamIsSet(true);
       }
-      if (incoming.get(19)) {
+      if (incoming.get(20)) {
         struct.hasInternetAccess = iprot.readBool();
         struct.setHasInternetAccessIsSet(true);
       }
-      if (incoming.get(20)) {
+      if (incoming.get(21)) {
         struct.defaultPermissions = new LecturePermissions();
         struct.defaultPermissions.read(iprot);
         struct.setDefaultPermissionsIsSet(true);
       }
-      if (incoming.get(21)) {
+      if (incoming.get(22)) {
         struct.userPermissions = new LecturePermissions();
         struct.userPermissions.read(iprot);
         struct.setUserPermissionsIsSet(true);
