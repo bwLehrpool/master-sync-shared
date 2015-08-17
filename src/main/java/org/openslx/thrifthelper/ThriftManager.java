@@ -1,6 +1,11 @@
 package org.openslx.thrifthelper;
 
+import java.io.IOException;
 import java.lang.reflect.Proxy;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.log4j.Logger;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -11,8 +16,8 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.openslx.bwlp.thrift.iface.MasterServer;
 import org.openslx.bwlp.thrift.iface.SatelliteServer;
-import org.openslx.bwlp.thrift.iface.SatelliteServer.Client;
 import org.openslx.thrifthelper.ThriftHandler.EventCallback;
+import org.openslx.util.Util;
 
 public class ThriftManager
 {
@@ -87,27 +92,7 @@ public class ThriftManager
 						@Override
 						public MasterServer.Client getNewClient()
 						{
-							// first check if we have a sat ip
-							if ( MASTERSERVER_ADDRESS == null ) {
-								LOGGER.error( "Master server adress was not set prior to getting the client. Use setMasterServerAddress(<addr>)." );
-								return null;
-							}
-							// ok lets do it
-							TTransport transport =
-									new TFramedTransport(
-											new TSocket(
-													MASTERSERVER_ADDRESS, MASTERSERVER_PORT, MASTERSERVER_TIMEOUT ) );
-							try {
-								transport.open();
-							} catch ( TTransportException e ) {
-								LOGGER.error( "Could not open transport to thrift's server with IP: " + MASTERSERVER_ADDRESS );
-								transport.close();
-								return null;
-							}
-							final TProtocol protocol = new TBinaryProtocol(
-									transport );
-							// now we are ready to create the client, according to ClientType!
-							return new MasterServer.Client( protocol );
+							return getNewMasterClient();
 
 						}
 
@@ -208,22 +193,61 @@ public class ThriftManager
 		}
 	}
 
-	public static Client getNewSatClient( String satelliteIp )
+	public static SatelliteServer.Client getNewSatClient( String satelliteIp )
 	{
-		// ok lets do it
-		TTransport transport = new TFramedTransport(
-				new TSocket( satelliteIp, SATELLITE_PORT, SATELLITE_TIMEOUT ) );
+		TTransport transport = null;
 		try {
-			transport.open();
+			transport = newTransport( null, SATELLITE_IP, SATELLITE_PORT, SATELLITE_TIMEOUT );
 		} catch ( TTransportException e ) {
-			LOGGER.error( "Could not open transport to thrift's server with IP: " + SATELLITE_IP );
-			transport.close();
+			LOGGER.error( "Could not open transport to thrift's server with IP: " + satelliteIp );
 			return null;
 		}
 		final TProtocol protocol = new TBinaryProtocol( transport );
 		// now we are ready to create the client, according to ClientType!
 		LOGGER.info( "Satellite '" + satelliteIp + "' reachable. Client initialised." );
 		return new SatelliteServer.Client( protocol );
+	}
+	
+	public static MasterServer.Client getNewMasterClient() {
+		// first check if we have a sat ip
+		if ( MASTERSERVER_ADDRESS == null ) {
+			LOGGER.error( "Master server adress was not set prior to getting the client. Use setMasterServerAddress(<addr>)." );
+			return null;
+		}
+		
+		TTransport transport;
+		try {
+			transport = newTransport( null, MASTERSERVER_ADDRESS, MASTERSERVER_PORT, MASTERSERVER_TIMEOUT );
+		} catch ( TTransportException e ) {
+			LOGGER.error( "Could not open transport to thrift's server with IP: " + MASTERSERVER_ADDRESS );
+			return null;
+		}
+		final TProtocol protocol = new TBinaryProtocol(
+				transport );
+		// now we are ready to create the client, according to ClientType!
+		return new MasterServer.Client( protocol );
+	}
+	
+	private static TTransport newTransport( SSLContext ctx, String host, int port, int timeout ) throws TTransportException {
+		TSocket tsock;
+		if (ctx == null) {
+			tsock = new TSocket( host, port, timeout );
+			tsock.open();
+		} else {
+			Socket socket = null;
+			try {
+				socket = ctx.getSocketFactory().createSocket();
+				socket.setSoTimeout(timeout);
+				socket.connect( new InetSocketAddress( host, port ), timeout );
+			} catch (IOException e) {
+				if ( socket != null ) {
+					Util.safeClose( socket );
+				}
+				throw new TTransportException();
+			}
+			tsock = new TSocket( socket );
+		}
+		return new TFramedTransport( tsock );
 	}
 
 }
