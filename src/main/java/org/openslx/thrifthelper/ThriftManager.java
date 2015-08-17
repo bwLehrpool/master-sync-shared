@@ -32,7 +32,9 @@ public class ThriftManager
 		public boolean thriftError( int failCount, String method, Throwable t );
 	}
 
-	private static ErrorCallback errorCallback = null;
+	private static ErrorCallback masterErrorCallback = null;
+	
+	private static ErrorCallback satelliteErrorCallback = null;
 
 	/**
 	 * Private members for master connection information
@@ -70,7 +72,7 @@ public class ThriftManager
 						@Override
 						public boolean error( int failCount, String method, Throwable t )
 						{
-							return errorCallback != null && errorCallback.thriftError( failCount, method, t );
+							return satelliteErrorCallback != null && satelliteErrorCallback.thriftError( failCount, method, t );
 						}
 					} ) );
 
@@ -113,7 +115,7 @@ public class ThriftManager
 						public boolean error( int failCount, String method, Throwable t )
 						{
 							synchronized ( LOGGER ) {
-								return errorCallback != null && errorCallback.thriftError( failCount, method, t );
+								return masterErrorCallback != null && masterErrorCallback.thriftError( failCount, method, t );
 							}
 						}
 					} ) );
@@ -182,14 +184,27 @@ public class ThriftManager
 
 	/**
 	 * Set the callback class for errors that occur on one of the
-	 * thrift connections.
+	 * thrift connections to the master server.
 	 * 
 	 * @param cb
 	 */
-	public static void setErrorCallback( ErrorCallback cb )
+	public static void setMasterErrorCallback( ErrorCallback cb )
 	{
 		synchronized ( LOGGER ) {
-			errorCallback = cb;
+			masterErrorCallback = cb;
+		}
+	}
+
+	/**
+	 * Set the callback class for errors that occur on one of the
+	 * thrift connections to the satellite server.
+	 * 
+	 * @param cb
+	 */
+	public static void setSatelliteErrorCallback( ErrorCallback cb )
+	{
+		synchronized ( LOGGER ) {
+			satelliteErrorCallback = cb;
 		}
 	}
 

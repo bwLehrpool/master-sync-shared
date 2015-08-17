@@ -11,9 +11,10 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.apache.thrift.TException;
+import org.apache.thrift.TServiceClient;
 import org.apache.thrift.transport.TTransportException;
 
-class ThriftHandler<T extends Object> implements InvocationHandler
+class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 {
 
 	private final static Logger LOGGER = Logger.getLogger( ThriftHandler.class );
@@ -26,33 +27,30 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 	}
 
 	private final Deque<T> pool = new ArrayDeque<>();
+
 	private final EventCallback<T> callback;
+
+	private final Set<String> thriftMethods;
 
 	public ThriftHandler( final Class<T> clazz, EventCallback<T> cb )
 	{
 		callback = cb;
-		thriftMethods = Collections.unmodifiableSet( new HashSet<String>() {
-			private static final long serialVersionUID = 8983506538154055231L;
-			{
-				Method[] methods = clazz.getMethods();
-				for ( int i = 0; i < methods.length; i++ ) {
-					boolean thrift = false;
-					Class<?>[] type = methods[i].getExceptionTypes();
-					for ( int e = 0; e < type.length; e++ ) {
-						if ( TException.class.isAssignableFrom( type[e] ) )
-							thrift = true;
-
-					}
-					String name = methods[i].getName();
-					if ( thrift && !name.startsWith( "send_" ) && !name.startsWith( "recv_" ) ) {
-						add( name );
-					}
-				}
+		Set<String> tmpset = new HashSet<String>();
+		Method[] methods = clazz.getMethods();
+		for ( int i = 0; i < methods.length; i++ ) {
+			boolean thrift = false;
+			Class<?>[] type = methods[i].getExceptionTypes();
+			for ( int e = 0; e < type.length; e++ ) {
+				if ( TException.class.isAssignableFrom( type[e] ) )
+					thrift = true;
 			}
-		} );
+			String name = methods[i].getName();
+			if ( thrift && !name.startsWith( "send_" ) && !name.startsWith( "recv_" ) ) {
+				tmpset.add( name );
+			}
+		}
+		thriftMethods = Collections.unmodifiableSet( tmpset );
 	}
-
-	private final Set<String> thriftMethods;
 
 	@Override
 	public Object invoke( Object tproxy, Method method, Object[] args ) throws Throwable
@@ -87,6 +85,7 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 						if ( cause != null && ! ( cause instanceof TTransportException ) ) {
 							throw cause;
 						}
+						freeClient(client);
 						client = null;
 						if ( cause == null )
 							cause = e;
@@ -105,6 +104,18 @@ class ThriftHandler<T extends Object> implements InvocationHandler
 		} finally {
 			returnClient( client );
 		}
+	}
+
+	private void freeClient(T client) {
+		try {
+			client.getInputProtocol().getTransport().close();
+		} catch (Exception e) {
+		}
+		try {
+			client.getOutputProtocol().getTransport().close();
+		} catch (Exception e) {
+		}
+		
 	}
 
 	private T getClient()
