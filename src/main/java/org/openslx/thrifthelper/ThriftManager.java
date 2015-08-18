@@ -197,7 +197,7 @@ public class ThriftManager
 	{
 		TTransport transport = null;
 		try {
-			transport = newTransport( null, SATELLITE_IP, SATELLITE_PORT, SATELLITE_TIMEOUT );
+			transport = newTransport( null, satelliteIp, SATELLITE_PORT, SATELLITE_TIMEOUT );
 		} catch ( TTransportException e ) {
 			LOGGER.error( "Could not open transport to thrift's server with IP: " + satelliteIp );
 			return null;
