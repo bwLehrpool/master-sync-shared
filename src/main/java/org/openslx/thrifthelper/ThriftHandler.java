@@ -13,27 +13,29 @@ import org.apache.log4j.Logger;
 import org.apache.thrift.TException;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.transport.TTransportException;
+import org.openslx.thrifthelper.ThriftManager.ErrorCallback;
 
 class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 {
 
 	private final static Logger LOGGER = Logger.getLogger( ThriftHandler.class );
 
-	public interface EventCallback<T>
+	protected interface WantClientCallback<T>
 	{
 		public T getNewClient();
-
-		public boolean error( int failCount, String method, Throwable t );
 	}
 
 	private final Deque<T> pool = new ArrayDeque<>();
 
-	private final EventCallback<T> callback;
+	private final WantClientCallback<? extends T> callback;
+
+	private final ErrorCallback errorCallback;
 
 	private final Set<String> thriftMethods;
 
-	public ThriftHandler( final Class<T> clazz, EventCallback<T> cb )
+	public ThriftHandler( final Class<? extends T> clazz, WantClientCallback<? extends T> cb, ErrorCallback errCb )
 	{
+		errorCallback = errCb;
 		callback = cb;
 		Set<String> tmpset = new HashSet<String>();
 		Method[] methods = clazz.getMethods();
@@ -85,14 +87,14 @@ class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 						if ( cause != null && ! ( cause instanceof TTransportException ) ) {
 							throw cause;
 						}
-						freeClient(client);
+						freeClient( client );
 						client = null;
 						if ( cause == null )
 							cause = e;
 					}
 				}
 				// Call the error callback. As long as true is returned, keep retrying
-				if ( !callback.error( i, method.getName(), cause ) ) {
+				if ( !errorCallback.thriftError( i, method.getName(), cause ) ) {
 					break;
 				}
 			}
@@ -106,16 +108,17 @@ class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 		}
 	}
 
-	private void freeClient(T client) {
+	private void freeClient( T client )
+	{
 		try {
 			client.getInputProtocol().getTransport().close();
-		} catch (Exception e) {
+		} catch ( Exception e ) {
 		}
 		try {
 			client.getOutputProtocol().getTransport().close();
-		} catch (Exception e) {
+		} catch ( Exception e ) {
 		}
-		
+
 	}
 
 	private T getClient()

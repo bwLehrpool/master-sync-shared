@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class TTransferRejectedException extends TException implements org.apache.thrift.TBase<TTransferRejectedException, TTransferRejectedException._Fields>, java.io.Serializable, Cloneable, Comparable<TTransferRejectedException> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TTransferRejectedException");
 
-  private static final org.apache.thrift.protocol.TField REASON_FIELD_DESC = new org.apache.thrift.protocol.TField("reason", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -43,11 +43,11 @@ public class TTransferRejectedException extends TException implements org.apache
     schemes.put(TupleScheme.class, new TTransferRejectedExceptionTupleSchemeFactory());
   }
 
-  public String reason; // required
+  public String message; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    REASON((short)1, "reason");
+    MESSAGE((short)1, "message");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -62,8 +62,8 @@ public class TTransferRejectedException extends TException implements org.apache
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // REASON
-          return REASON;
+        case 1: // MESSAGE
+          return MESSAGE;
         default:
           return null;
       }
@@ -107,7 +107,7 @@ public class TTransferRejectedException extends TException implements org.apache
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.REASON, new org.apache.thrift.meta_data.FieldMetaData("reason", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TTransferRejectedException.class, metaDataMap);
@@ -117,18 +117,18 @@ public class TTransferRejectedException extends TException implements org.apache
   }
 
   public TTransferRejectedException(
-    String reason)
+    String message)
   {
     this();
-    this.reason = reason;
+    this.message = message;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public TTransferRejectedException(TTransferRejectedException other) {
-    if (other.isSetReason()) {
-      this.reason = other.reason;
+    if (other.isSetMessage()) {
+      this.message = other.message;
     }
   }
 
@@ -138,40 +138,40 @@ public class TTransferRejectedException extends TException implements org.apache
 
   @Override
   public void clear() {
-    this.reason = null;
+    this.message = null;
   }
 
-  public String getReason() {
-    return this.reason;
+  public String getMessage() {
+    return this.message;
   }
 
-  public TTransferRejectedException setReason(String reason) {
-    this.reason = reason;
+  public TTransferRejectedException setMessage(String message) {
+    this.message = message;
     return this;
   }
 
-  public void unsetReason() {
-    this.reason = null;
+  public void unsetMessage() {
+    this.message = null;
   }
 
-  /** Returns true if field reason is set (has been assigned a value) and false otherwise */
-  public boolean isSetReason() {
-    return this.reason != null;
+  /** Returns true if field message is set (has been assigned a value) and false otherwise */
+  public boolean isSetMessage() {
+    return this.message != null;
   }
 
-  public void setReasonIsSet(boolean value) {
+  public void setMessageIsSet(boolean value) {
     if (!value) {
-      this.reason = null;
+      this.message = null;
     }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case REASON:
+    case MESSAGE:
       if (value == null) {
-        unsetReason();
+        unsetMessage();
       } else {
-        setReason((String)value);
+        setMessage((String)value);
       }
       break;
 
@@ -180,8 +180,8 @@ public class TTransferRejectedException extends TException implements org.apache
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case REASON:
-      return getReason();
+    case MESSAGE:
+      return getMessage();
 
     }
     throw new IllegalStateException();
@@ -194,8 +194,8 @@ public class TTransferRejectedException extends TException implements org.apache
     }
 
     switch (field) {
-    case REASON:
-      return isSetReason();
+    case MESSAGE:
+      return isSetMessage();
     }
     throw new IllegalStateException();
   }
@@ -213,12 +213,12 @@ public class TTransferRejectedException extends TException implements org.apache
     if (that == null)
       return false;
 
-    boolean this_present_reason = true && this.isSetReason();
-    boolean that_present_reason = true && that.isSetReason();
-    if (this_present_reason || that_present_reason) {
-      if (!(this_present_reason && that_present_reason))
+    boolean this_present_message = true && this.isSetMessage();
+    boolean that_present_message = true && that.isSetMessage();
+    if (this_present_message || that_present_message) {
+      if (!(this_present_message && that_present_message))
         return false;
-      if (!this.reason.equals(that.reason))
+      if (!this.message.equals(that.message))
         return false;
     }
 
@@ -238,12 +238,12 @@ public class TTransferRejectedException extends TException implements org.apache
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetReason()).compareTo(other.isSetReason());
+    lastComparison = Boolean.valueOf(isSetMessage()).compareTo(other.isSetMessage());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetReason()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reason, other.reason);
+    if (isSetMessage()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.message, other.message);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -268,11 +268,11 @@ public class TTransferRejectedException extends TException implements org.apache
     StringBuilder sb = new StringBuilder("TTransferRejectedException(");
     boolean first = true;
 
-    sb.append("reason:");
-    if (this.reason == null) {
+    sb.append("message:");
+    if (this.message == null) {
       sb.append("null");
     } else {
-      sb.append(this.reason);
+      sb.append(this.message);
     }
     first = false;
     sb.append(")");
@@ -318,10 +318,10 @@ public class TTransferRejectedException extends TException implements org.apache
           break;
         }
         switch (schemeField.id) {
-          case 1: // REASON
+          case 1: // MESSAGE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.reason = iprot.readString();
-              struct.setReasonIsSet(true);
+              struct.message = iprot.readString();
+              struct.setMessageIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -341,9 +341,9 @@ public class TTransferRejectedException extends TException implements org.apache
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.reason != null) {
-        oprot.writeFieldBegin(REASON_FIELD_DESC);
-        oprot.writeString(struct.reason);
+      if (struct.message != null) {
+        oprot.writeFieldBegin(MESSAGE_FIELD_DESC);
+        oprot.writeString(struct.message);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -364,12 +364,12 @@ public class TTransferRejectedException extends TException implements org.apache
     public void write(org.apache.thrift.protocol.TProtocol prot, TTransferRejectedException struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetReason()) {
+      if (struct.isSetMessage()) {
         optionals.set(0);
       }
       oprot.writeBitSet(optionals, 1);
-      if (struct.isSetReason()) {
-        oprot.writeString(struct.reason);
+      if (struct.isSetMessage()) {
+        oprot.writeString(struct.message);
       }
     }
 
@@ -378,8 +378,8 @@ public class TTransferRejectedException extends TException implements org.apache
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
-        struct.reason = iprot.readString();
-        struct.setReasonIsSet(true);
+        struct.message = iprot.readString();
+        struct.setMessageIsSet(true);
       }
     }
   }

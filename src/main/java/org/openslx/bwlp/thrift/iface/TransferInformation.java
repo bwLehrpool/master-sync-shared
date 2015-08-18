@@ -38,6 +38,8 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
   private static final org.apache.thrift.protocol.TField TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("token", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField PLAIN_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("plainPort", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField SSL_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("sslPort", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField BLOCK_HASHES_FIELD_DESC = new org.apache.thrift.protocol.TField("blockHashes", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField MACHINE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("machineDescription", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -48,12 +50,16 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
   public String token; // required
   public int plainPort; // required
   public int sslPort; // required
+  public List<ByteBuffer> blockHashes; // optional
+  public String machineDescription; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     TOKEN((short)1, "token"),
     PLAIN_PORT((short)2, "plainPort"),
-    SSL_PORT((short)3, "sslPort");
+    SSL_PORT((short)3, "sslPort"),
+    BLOCK_HASHES((short)4, "blockHashes"),
+    MACHINE_DESCRIPTION((short)5, "machineDescription");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -74,6 +80,10 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
           return PLAIN_PORT;
         case 3: // SSL_PORT
           return SSL_PORT;
+        case 4: // BLOCK_HASHES
+          return BLOCK_HASHES;
+        case 5: // MACHINE_DESCRIPTION
+          return MACHINE_DESCRIPTION;
         default:
           return null;
       }
@@ -117,6 +127,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
   private static final int __PLAINPORT_ISSET_ID = 0;
   private static final int __SSLPORT_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.BLOCK_HASHES,_Fields.MACHINE_DESCRIPTION};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -126,6 +137,11 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.SSL_PORT, new org.apache.thrift.meta_data.FieldMetaData("sslPort", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.BLOCK_HASHES, new org.apache.thrift.meta_data.FieldMetaData("blockHashes", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING            , true))));
+    tmpMap.put(_Fields.MACHINE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("machineDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TransferInformation.class, metaDataMap);
   }
@@ -156,6 +172,13 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
     }
     this.plainPort = other.plainPort;
     this.sslPort = other.sslPort;
+    if (other.isSetBlockHashes()) {
+      List<ByteBuffer> __this__blockHashes = new ArrayList<ByteBuffer>(other.blockHashes);
+      this.blockHashes = __this__blockHashes;
+    }
+    if (other.isSetMachineDescription()) {
+      this.machineDescription = other.machineDescription;
+    }
   }
 
   public TransferInformation deepCopy() {
@@ -169,6 +192,8 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
     this.plainPort = 0;
     setSslPortIsSet(false);
     this.sslPort = 0;
+    this.blockHashes = null;
+    this.machineDescription = null;
   }
 
   public String getToken() {
@@ -241,6 +266,69 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SSLPORT_ISSET_ID, value);
   }
 
+  public int getBlockHashesSize() {
+    return (this.blockHashes == null) ? 0 : this.blockHashes.size();
+  }
+
+  public java.util.Iterator<ByteBuffer> getBlockHashesIterator() {
+    return (this.blockHashes == null) ? null : this.blockHashes.iterator();
+  }
+
+  public void addToBlockHashes(ByteBuffer elem) {
+    if (this.blockHashes == null) {
+      this.blockHashes = new ArrayList<ByteBuffer>();
+    }
+    this.blockHashes.add(elem);
+  }
+
+  public List<ByteBuffer> getBlockHashes() {
+    return this.blockHashes;
+  }
+
+  public TransferInformation setBlockHashes(List<ByteBuffer> blockHashes) {
+    this.blockHashes = blockHashes;
+    return this;
+  }
+
+  public void unsetBlockHashes() {
+    this.blockHashes = null;
+  }
+
+  /** Returns true if field blockHashes is set (has been assigned a value) and false otherwise */
+  public boolean isSetBlockHashes() {
+    return this.blockHashes != null;
+  }
+
+  public void setBlockHashesIsSet(boolean value) {
+    if (!value) {
+      this.blockHashes = null;
+    }
+  }
+
+  public String getMachineDescription() {
+    return this.machineDescription;
+  }
+
+  public TransferInformation setMachineDescription(String machineDescription) {
+    this.machineDescription = machineDescription;
+    return this;
+  }
+
+  public void unsetMachineDescription() {
+    this.machineDescription = null;
+  }
+
+  /** Returns true if field machineDescription is set (has been assigned a value) and false otherwise */
+  public boolean isSetMachineDescription() {
+    return this.machineDescription != null;
+  }
+
+  public void setMachineDescriptionIsSet(boolean value) {
+    if (!value) {
+      this.machineDescription = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TOKEN:
@@ -267,6 +355,22 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       }
       break;
 
+    case BLOCK_HASHES:
+      if (value == null) {
+        unsetBlockHashes();
+      } else {
+        setBlockHashes((List<ByteBuffer>)value);
+      }
+      break;
+
+    case MACHINE_DESCRIPTION:
+      if (value == null) {
+        unsetMachineDescription();
+      } else {
+        setMachineDescription((String)value);
+      }
+      break;
+
     }
   }
 
@@ -280,6 +384,12 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
 
     case SSL_PORT:
       return Integer.valueOf(getSslPort());
+
+    case BLOCK_HASHES:
+      return getBlockHashes();
+
+    case MACHINE_DESCRIPTION:
+      return getMachineDescription();
 
     }
     throw new IllegalStateException();
@@ -298,6 +408,10 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       return isSetPlainPort();
     case SSL_PORT:
       return isSetSslPort();
+    case BLOCK_HASHES:
+      return isSetBlockHashes();
+    case MACHINE_DESCRIPTION:
+      return isSetMachineDescription();
     }
     throw new IllegalStateException();
   }
@@ -339,6 +453,24 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       if (!(this_present_sslPort && that_present_sslPort))
         return false;
       if (this.sslPort != that.sslPort)
+        return false;
+    }
+
+    boolean this_present_blockHashes = true && this.isSetBlockHashes();
+    boolean that_present_blockHashes = true && that.isSetBlockHashes();
+    if (this_present_blockHashes || that_present_blockHashes) {
+      if (!(this_present_blockHashes && that_present_blockHashes))
+        return false;
+      if (!this.blockHashes.equals(that.blockHashes))
+        return false;
+    }
+
+    boolean this_present_machineDescription = true && this.isSetMachineDescription();
+    boolean that_present_machineDescription = true && that.isSetMachineDescription();
+    if (this_present_machineDescription || that_present_machineDescription) {
+      if (!(this_present_machineDescription && that_present_machineDescription))
+        return false;
+      if (!this.machineDescription.equals(that.machineDescription))
         return false;
     }
 
@@ -388,6 +520,26 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetBlockHashes()).compareTo(other.isSetBlockHashes());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetBlockHashes()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.blockHashes, other.blockHashes);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetMachineDescription()).compareTo(other.isSetMachineDescription());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMachineDescription()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.machineDescription, other.machineDescription);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -423,6 +575,26 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
     sb.append("sslPort:");
     sb.append(this.sslPort);
     first = false;
+    if (isSetBlockHashes()) {
+      if (!first) sb.append(", ");
+      sb.append("blockHashes:");
+      if (this.blockHashes == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.blockHashes);
+      }
+      first = false;
+    }
+    if (isSetMachineDescription()) {
+      if (!first) sb.append(", ");
+      sb.append("machineDescription:");
+      if (this.machineDescription == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.machineDescription);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -492,6 +664,32 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // BLOCK_HASHES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list130 = iprot.readListBegin();
+                struct.blockHashes = new ArrayList<ByteBuffer>(_list130.size);
+                for (int _i131 = 0; _i131 < _list130.size; ++_i131)
+                {
+                  ByteBuffer _elem132;
+                  _elem132 = iprot.readBinary();
+                  struct.blockHashes.add(_elem132);
+                }
+                iprot.readListEnd();
+              }
+              struct.setBlockHashesIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // MACHINE_DESCRIPTION
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.machineDescription = iprot.readString();
+              struct.setMachineDescriptionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -518,6 +716,27 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       oprot.writeFieldBegin(SSL_PORT_FIELD_DESC);
       oprot.writeI32(struct.sslPort);
       oprot.writeFieldEnd();
+      if (struct.blockHashes != null) {
+        if (struct.isSetBlockHashes()) {
+          oprot.writeFieldBegin(BLOCK_HASHES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.blockHashes.size()));
+            for (ByteBuffer _iter133 : struct.blockHashes)
+            {
+              oprot.writeBinary(_iter133);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.machineDescription != null) {
+        if (struct.isSetMachineDescription()) {
+          oprot.writeFieldBegin(MACHINE_DESCRIPTION_FIELD_DESC);
+          oprot.writeString(struct.machineDescription);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -545,7 +764,13 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       if (struct.isSetSslPort()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetBlockHashes()) {
+        optionals.set(3);
+      }
+      if (struct.isSetMachineDescription()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetToken()) {
         oprot.writeString(struct.token);
       }
@@ -555,12 +780,24 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       if (struct.isSetSslPort()) {
         oprot.writeI32(struct.sslPort);
       }
+      if (struct.isSetBlockHashes()) {
+        {
+          oprot.writeI32(struct.blockHashes.size());
+          for (ByteBuffer _iter134 : struct.blockHashes)
+          {
+            oprot.writeBinary(_iter134);
+          }
+        }
+      }
+      if (struct.isSetMachineDescription()) {
+        oprot.writeString(struct.machineDescription);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, TransferInformation struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.token = iprot.readString();
         struct.setTokenIsSet(true);
@@ -572,6 +809,23 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       if (incoming.get(2)) {
         struct.sslPort = iprot.readI32();
         struct.setSslPortIsSet(true);
+      }
+      if (incoming.get(3)) {
+        {
+          org.apache.thrift.protocol.TList _list135 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.blockHashes = new ArrayList<ByteBuffer>(_list135.size);
+          for (int _i136 = 0; _i136 < _list135.size; ++_i136)
+          {
+            ByteBuffer _elem137;
+            _elem137 = iprot.readBinary();
+            struct.blockHashes.add(_elem137);
+          }
+        }
+        struct.setBlockHashesIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.machineDescription = iprot.readString();
+        struct.setMachineDescriptionIsSet(true);
       }
     }
   }

@@ -7227,13 +7227,13 @@ public class SatelliteServer {
             case 4: // BLOCK_HASHES
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list130 = iprot.readListBegin();
-                  struct.blockHashes = new ArrayList<ByteBuffer>(_list130.size);
-                  for (int _i131 = 0; _i131 < _list130.size; ++_i131)
+                  org.apache.thrift.protocol.TList _list138 = iprot.readListBegin();
+                  struct.blockHashes = new ArrayList<ByteBuffer>(_list138.size);
+                  for (int _i139 = 0; _i139 < _list138.size; ++_i139)
                   {
-                    ByteBuffer _elem132;
-                    _elem132 = iprot.readBinary();
-                    struct.blockHashes.add(_elem132);
+                    ByteBuffer _elem140;
+                    _elem140 = iprot.readBinary();
+                    struct.blockHashes.add(_elem140);
                   }
                   iprot.readListEnd();
                 }
@@ -7282,9 +7282,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(BLOCK_HASHES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.blockHashes.size()));
-            for (ByteBuffer _iter133 : struct.blockHashes)
+            for (ByteBuffer _iter141 : struct.blockHashes)
             {
-              oprot.writeBinary(_iter133);
+              oprot.writeBinary(_iter141);
             }
             oprot.writeListEnd();
           }
@@ -7341,9 +7341,9 @@ public class SatelliteServer {
         if (struct.isSetBlockHashes()) {
           {
             oprot.writeI32(struct.blockHashes.size());
-            for (ByteBuffer _iter134 : struct.blockHashes)
+            for (ByteBuffer _iter142 : struct.blockHashes)
             {
-              oprot.writeBinary(_iter134);
+              oprot.writeBinary(_iter142);
             }
           }
         }
@@ -7370,13 +7370,13 @@ public class SatelliteServer {
         }
         if (incoming.get(3)) {
           {
-            org.apache.thrift.protocol.TList _list135 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.blockHashes = new ArrayList<ByteBuffer>(_list135.size);
-            for (int _i136 = 0; _i136 < _list135.size; ++_i136)
+            org.apache.thrift.protocol.TList _list143 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.blockHashes = new ArrayList<ByteBuffer>(_list143.size);
+            for (int _i144 = 0; _i144 < _list143.size; ++_i144)
             {
-              ByteBuffer _elem137;
-              _elem137 = iprot.readBinary();
-              struct.blockHashes.add(_elem137);
+              ByteBuffer _elem145;
+              _elem145 = iprot.readBinary();
+              struct.blockHashes.add(_elem145);
             }
           }
           struct.setBlockHashesIsSet(true);
@@ -15982,14 +15982,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list138 = iprot.readListBegin();
-                  struct.success = new ArrayList<UserInfo>(_list138.size);
-                  for (int _i139 = 0; _i139 < _list138.size; ++_i139)
+                  org.apache.thrift.protocol.TList _list146 = iprot.readListBegin();
+                  struct.success = new ArrayList<UserInfo>(_list146.size);
+                  for (int _i147 = 0; _i147 < _list146.size; ++_i147)
                   {
-                    UserInfo _elem140;
-                    _elem140 = new UserInfo();
-                    _elem140.read(iprot);
-                    struct.success.add(_elem140);
+                    UserInfo _elem148;
+                    _elem148 = new UserInfo();
+                    _elem148.read(iprot);
+                    struct.success.add(_elem148);
                   }
                   iprot.readListEnd();
                 }
@@ -16035,9 +16035,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (UserInfo _iter141 : struct.success)
+            for (UserInfo _iter149 : struct.success)
             {
-              _iter141.write(oprot);
+              _iter149.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -16084,9 +16084,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (UserInfo _iter142 : struct.success)
+            for (UserInfo _iter150 : struct.success)
             {
-              _iter142.write(oprot);
+              _iter150.write(oprot);
             }
           }
         }
@@ -16104,14 +16104,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list143 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<UserInfo>(_list143.size);
-            for (int _i144 = 0; _i144 < _list143.size; ++_i144)
+            org.apache.thrift.protocol.TList _list151 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<UserInfo>(_list151.size);
+            for (int _i152 = 0; _i152 < _list151.size; ++_i152)
             {
-              UserInfo _elem145;
-              _elem145 = new UserInfo();
-              _elem145.read(iprot);
-              struct.success.add(_elem145);
+              UserInfo _elem153;
+              _elem153 = new UserInfo();
+              _elem153.read(iprot);
+              struct.success.add(_elem153);
             }
           }
           struct.setSuccessIsSet(true);
@@ -16686,14 +16686,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list146 = iprot.readListBegin();
-                  struct.success = new ArrayList<OperatingSystem>(_list146.size);
-                  for (int _i147 = 0; _i147 < _list146.size; ++_i147)
+                  org.apache.thrift.protocol.TList _list154 = iprot.readListBegin();
+                  struct.success = new ArrayList<OperatingSystem>(_list154.size);
+                  for (int _i155 = 0; _i155 < _list154.size; ++_i155)
                   {
-                    OperatingSystem _elem148;
-                    _elem148 = new OperatingSystem();
-                    _elem148.read(iprot);
-                    struct.success.add(_elem148);
+                    OperatingSystem _elem156;
+                    _elem156 = new OperatingSystem();
+                    _elem156.read(iprot);
+                    struct.success.add(_elem156);
                   }
                   iprot.readListEnd();
                 }
@@ -16721,9 +16721,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (OperatingSystem _iter149 : struct.success)
+            for (OperatingSystem _iter157 : struct.success)
             {
-              _iter149.write(oprot);
+              _iter157.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -16754,9 +16754,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (OperatingSystem _iter150 : struct.success)
+            for (OperatingSystem _iter158 : struct.success)
             {
-              _iter150.write(oprot);
+              _iter158.write(oprot);
             }
           }
         }
@@ -16768,14 +16768,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list151 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<OperatingSystem>(_list151.size);
-            for (int _i152 = 0; _i152 < _list151.size; ++_i152)
+            org.apache.thrift.protocol.TList _list159 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<OperatingSystem>(_list159.size);
+            for (int _i160 = 0; _i160 < _list159.size; ++_i160)
             {
-              OperatingSystem _elem153;
-              _elem153 = new OperatingSystem();
-              _elem153.read(iprot);
-              struct.success.add(_elem153);
+              OperatingSystem _elem161;
+              _elem161 = new OperatingSystem();
+              _elem161.read(iprot);
+              struct.success.add(_elem161);
             }
           }
           struct.setSuccessIsSet(true);
@@ -17340,14 +17340,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list154 = iprot.readListBegin();
-                  struct.success = new ArrayList<Virtualizer>(_list154.size);
-                  for (int _i155 = 0; _i155 < _list154.size; ++_i155)
+                  org.apache.thrift.protocol.TList _list162 = iprot.readListBegin();
+                  struct.success = new ArrayList<Virtualizer>(_list162.size);
+                  for (int _i163 = 0; _i163 < _list162.size; ++_i163)
                   {
-                    Virtualizer _elem156;
-                    _elem156 = new Virtualizer();
-                    _elem156.read(iprot);
-                    struct.success.add(_elem156);
+                    Virtualizer _elem164;
+                    _elem164 = new Virtualizer();
+                    _elem164.read(iprot);
+                    struct.success.add(_elem164);
                   }
                   iprot.readListEnd();
                 }
@@ -17375,9 +17375,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Virtualizer _iter157 : struct.success)
+            for (Virtualizer _iter165 : struct.success)
             {
-              _iter157.write(oprot);
+              _iter165.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -17408,9 +17408,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Virtualizer _iter158 : struct.success)
+            for (Virtualizer _iter166 : struct.success)
             {
-              _iter158.write(oprot);
+              _iter166.write(oprot);
             }
           }
         }
@@ -17422,14 +17422,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list159 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Virtualizer>(_list159.size);
-            for (int _i160 = 0; _i160 < _list159.size; ++_i160)
+            org.apache.thrift.protocol.TList _list167 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Virtualizer>(_list167.size);
+            for (int _i168 = 0; _i168 < _list167.size; ++_i168)
             {
-              Virtualizer _elem161;
-              _elem161 = new Virtualizer();
-              _elem161.read(iprot);
-              struct.success.add(_elem161);
+              Virtualizer _elem169;
+              _elem169 = new Virtualizer();
+              _elem169.read(iprot);
+              struct.success.add(_elem169);
             }
           }
           struct.setSuccessIsSet(true);
@@ -17994,14 +17994,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list162 = iprot.readListBegin();
-                  struct.success = new ArrayList<Organization>(_list162.size);
-                  for (int _i163 = 0; _i163 < _list162.size; ++_i163)
+                  org.apache.thrift.protocol.TList _list170 = iprot.readListBegin();
+                  struct.success = new ArrayList<Organization>(_list170.size);
+                  for (int _i171 = 0; _i171 < _list170.size; ++_i171)
                   {
-                    Organization _elem164;
-                    _elem164 = new Organization();
-                    _elem164.read(iprot);
-                    struct.success.add(_elem164);
+                    Organization _elem172;
+                    _elem172 = new Organization();
+                    _elem172.read(iprot);
+                    struct.success.add(_elem172);
                   }
                   iprot.readListEnd();
                 }
@@ -18029,9 +18029,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Organization _iter165 : struct.success)
+            for (Organization _iter173 : struct.success)
             {
-              _iter165.write(oprot);
+              _iter173.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -18062,9 +18062,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Organization _iter166 : struct.success)
+            for (Organization _iter174 : struct.success)
             {
-              _iter166.write(oprot);
+              _iter174.write(oprot);
             }
           }
         }
@@ -18076,14 +18076,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list167 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Organization>(_list167.size);
-            for (int _i168 = 0; _i168 < _list167.size; ++_i168)
+            org.apache.thrift.protocol.TList _list175 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Organization>(_list175.size);
+            for (int _i176 = 0; _i176 < _list175.size; ++_i176)
             {
-              Organization _elem169;
-              _elem169 = new Organization();
-              _elem169.read(iprot);
-              struct.success.add(_elem169);
+              Organization _elem177;
+              _elem177 = new Organization();
+              _elem177.read(iprot);
+              struct.success.add(_elem177);
             }
           }
           struct.setSuccessIsSet(true);
@@ -18561,13 +18561,13 @@ public class SatelliteServer {
             case 2: // TAG_SEARCH
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list170 = iprot.readListBegin();
-                  struct.tagSearch = new ArrayList<String>(_list170.size);
-                  for (int _i171 = 0; _i171 < _list170.size; ++_i171)
+                  org.apache.thrift.protocol.TList _list178 = iprot.readListBegin();
+                  struct.tagSearch = new ArrayList<String>(_list178.size);
+                  for (int _i179 = 0; _i179 < _list178.size; ++_i179)
                   {
-                    String _elem172;
-                    _elem172 = iprot.readString();
-                    struct.tagSearch.add(_elem172);
+                    String _elem180;
+                    _elem180 = iprot.readString();
+                    struct.tagSearch.add(_elem180);
                   }
                   iprot.readListEnd();
                 }
@@ -18608,9 +18608,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(TAG_SEARCH_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.tagSearch.size()));
-            for (String _iter173 : struct.tagSearch)
+            for (String _iter181 : struct.tagSearch)
             {
-              oprot.writeString(_iter173);
+              oprot.writeString(_iter181);
             }
             oprot.writeListEnd();
           }
@@ -18653,9 +18653,9 @@ public class SatelliteServer {
         if (struct.isSetTagSearch()) {
           {
             oprot.writeI32(struct.tagSearch.size());
-            for (String _iter174 : struct.tagSearch)
+            for (String _iter182 : struct.tagSearch)
             {
-              oprot.writeString(_iter174);
+              oprot.writeString(_iter182);
             }
           }
         }
@@ -18674,13 +18674,13 @@ public class SatelliteServer {
         }
         if (incoming.get(1)) {
           {
-            org.apache.thrift.protocol.TList _list175 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.tagSearch = new ArrayList<String>(_list175.size);
-            for (int _i176 = 0; _i176 < _list175.size; ++_i176)
+            org.apache.thrift.protocol.TList _list183 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.tagSearch = new ArrayList<String>(_list183.size);
+            for (int _i184 = 0; _i184 < _list183.size; ++_i184)
             {
-              String _elem177;
-              _elem177 = iprot.readString();
-              struct.tagSearch.add(_elem177);
+              String _elem185;
+              _elem185 = iprot.readString();
+              struct.tagSearch.add(_elem185);
             }
           }
           struct.setTagSearchIsSet(true);
@@ -19157,14 +19157,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list178 = iprot.readListBegin();
-                  struct.success = new ArrayList<ImageSummaryRead>(_list178.size);
-                  for (int _i179 = 0; _i179 < _list178.size; ++_i179)
+                  org.apache.thrift.protocol.TList _list186 = iprot.readListBegin();
+                  struct.success = new ArrayList<ImageSummaryRead>(_list186.size);
+                  for (int _i187 = 0; _i187 < _list186.size; ++_i187)
                   {
-                    ImageSummaryRead _elem180;
-                    _elem180 = new ImageSummaryRead();
-                    _elem180.read(iprot);
-                    struct.success.add(_elem180);
+                    ImageSummaryRead _elem188;
+                    _elem188 = new ImageSummaryRead();
+                    _elem188.read(iprot);
+                    struct.success.add(_elem188);
                   }
                   iprot.readListEnd();
                 }
@@ -19210,9 +19210,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (ImageSummaryRead _iter181 : struct.success)
+            for (ImageSummaryRead _iter189 : struct.success)
             {
-              _iter181.write(oprot);
+              _iter189.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -19259,9 +19259,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (ImageSummaryRead _iter182 : struct.success)
+            for (ImageSummaryRead _iter190 : struct.success)
             {
-              _iter182.write(oprot);
+              _iter190.write(oprot);
             }
           }
         }
@@ -19279,14 +19279,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list183 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<ImageSummaryRead>(_list183.size);
-            for (int _i184 = 0; _i184 < _list183.size; ++_i184)
+            org.apache.thrift.protocol.TList _list191 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<ImageSummaryRead>(_list191.size);
+            for (int _i192 = 0; _i192 < _list191.size; ++_i192)
             {
-              ImageSummaryRead _elem185;
-              _elem185 = new ImageSummaryRead();
-              _elem185.read(iprot);
-              struct.success.add(_elem185);
+              ImageSummaryRead _elem193;
+              _elem193 = new ImageSummaryRead();
+              _elem193.read(iprot);
+              struct.success.add(_elem193);
             }
           }
           struct.setSuccessIsSet(true);
@@ -25479,16 +25479,16 @@ public class SatelliteServer {
             case 3: // PERMISSIONS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map186 = iprot.readMapBegin();
-                  struct.permissions = new HashMap<String,ImagePermissions>(2*_map186.size);
-                  for (int _i187 = 0; _i187 < _map186.size; ++_i187)
+                  org.apache.thrift.protocol.TMap _map194 = iprot.readMapBegin();
+                  struct.permissions = new HashMap<String,ImagePermissions>(2*_map194.size);
+                  for (int _i195 = 0; _i195 < _map194.size; ++_i195)
                   {
-                    String _key188;
-                    ImagePermissions _val189;
-                    _key188 = iprot.readString();
-                    _val189 = new ImagePermissions();
-                    _val189.read(iprot);
-                    struct.permissions.put(_key188, _val189);
+                    String _key196;
+                    ImagePermissions _val197;
+                    _key196 = iprot.readString();
+                    _val197 = new ImagePermissions();
+                    _val197.read(iprot);
+                    struct.permissions.put(_key196, _val197);
                   }
                   iprot.readMapEnd();
                 }
@@ -25526,10 +25526,10 @@ public class SatelliteServer {
           oprot.writeFieldBegin(PERMISSIONS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.permissions.size()));
-            for (Map.Entry<String, ImagePermissions> _iter190 : struct.permissions.entrySet())
+            for (Map.Entry<String, ImagePermissions> _iter198 : struct.permissions.entrySet())
             {
-              oprot.writeString(_iter190.getKey());
-              _iter190.getValue().write(oprot);
+              oprot.writeString(_iter198.getKey());
+              _iter198.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -25572,10 +25572,10 @@ public class SatelliteServer {
         if (struct.isSetPermissions()) {
           {
             oprot.writeI32(struct.permissions.size());
-            for (Map.Entry<String, ImagePermissions> _iter191 : struct.permissions.entrySet())
+            for (Map.Entry<String, ImagePermissions> _iter199 : struct.permissions.entrySet())
             {
-              oprot.writeString(_iter191.getKey());
-              _iter191.getValue().write(oprot);
+              oprot.writeString(_iter199.getKey());
+              _iter199.getValue().write(oprot);
             }
           }
         }
@@ -25595,16 +25595,16 @@ public class SatelliteServer {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TMap _map192 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.permissions = new HashMap<String,ImagePermissions>(2*_map192.size);
-            for (int _i193 = 0; _i193 < _map192.size; ++_i193)
+            org.apache.thrift.protocol.TMap _map200 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.permissions = new HashMap<String,ImagePermissions>(2*_map200.size);
+            for (int _i201 = 0; _i201 < _map200.size; ++_i201)
             {
-              String _key194;
-              ImagePermissions _val195;
-              _key194 = iprot.readString();
-              _val195 = new ImagePermissions();
-              _val195.read(iprot);
-              struct.permissions.put(_key194, _val195);
+              String _key202;
+              ImagePermissions _val203;
+              _key202 = iprot.readString();
+              _val203 = new ImagePermissions();
+              _val203.read(iprot);
+              struct.permissions.put(_key202, _val203);
             }
           }
           struct.setPermissionsIsSet(true);
@@ -27173,16 +27173,16 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map196 = iprot.readMapBegin();
-                  struct.success = new HashMap<String,ImagePermissions>(2*_map196.size);
-                  for (int _i197 = 0; _i197 < _map196.size; ++_i197)
+                  org.apache.thrift.protocol.TMap _map204 = iprot.readMapBegin();
+                  struct.success = new HashMap<String,ImagePermissions>(2*_map204.size);
+                  for (int _i205 = 0; _i205 < _map204.size; ++_i205)
                   {
-                    String _key198;
-                    ImagePermissions _val199;
-                    _key198 = iprot.readString();
-                    _val199 = new ImagePermissions();
-                    _val199.read(iprot);
-                    struct.success.put(_key198, _val199);
+                    String _key206;
+                    ImagePermissions _val207;
+                    _key206 = iprot.readString();
+                    _val207 = new ImagePermissions();
+                    _val207.read(iprot);
+                    struct.success.put(_key206, _val207);
                   }
                   iprot.readMapEnd();
                 }
@@ -27237,10 +27237,10 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Map.Entry<String, ImagePermissions> _iter200 : struct.success.entrySet())
+            for (Map.Entry<String, ImagePermissions> _iter208 : struct.success.entrySet())
             {
-              oprot.writeString(_iter200.getKey());
-              _iter200.getValue().write(oprot);
+              oprot.writeString(_iter208.getKey());
+              _iter208.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -27295,10 +27295,10 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<String, ImagePermissions> _iter201 : struct.success.entrySet())
+            for (Map.Entry<String, ImagePermissions> _iter209 : struct.success.entrySet())
             {
-              oprot.writeString(_iter201.getKey());
-              _iter201.getValue().write(oprot);
+              oprot.writeString(_iter209.getKey());
+              _iter209.getValue().write(oprot);
             }
           }
         }
@@ -27319,16 +27319,16 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map202 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new HashMap<String,ImagePermissions>(2*_map202.size);
-            for (int _i203 = 0; _i203 < _map202.size; ++_i203)
+            org.apache.thrift.protocol.TMap _map210 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new HashMap<String,ImagePermissions>(2*_map210.size);
+            for (int _i211 = 0; _i211 < _map210.size; ++_i211)
             {
-              String _key204;
-              ImagePermissions _val205;
-              _key204 = iprot.readString();
-              _val205 = new ImagePermissions();
-              _val205.read(iprot);
-              struct.success.put(_key204, _val205);
+              String _key212;
+              ImagePermissions _val213;
+              _key212 = iprot.readString();
+              _val213 = new ImagePermissions();
+              _val213.read(iprot);
+              struct.success.put(_key212, _val213);
             }
           }
           struct.setSuccessIsSet(true);
@@ -32936,14 +32936,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list206 = iprot.readListBegin();
-                  struct.success = new ArrayList<LectureSummary>(_list206.size);
-                  for (int _i207 = 0; _i207 < _list206.size; ++_i207)
+                  org.apache.thrift.protocol.TList _list214 = iprot.readListBegin();
+                  struct.success = new ArrayList<LectureSummary>(_list214.size);
+                  for (int _i215 = 0; _i215 < _list214.size; ++_i215)
                   {
-                    LectureSummary _elem208;
-                    _elem208 = new LectureSummary();
-                    _elem208.read(iprot);
-                    struct.success.add(_elem208);
+                    LectureSummary _elem216;
+                    _elem216 = new LectureSummary();
+                    _elem216.read(iprot);
+                    struct.success.add(_elem216);
                   }
                   iprot.readListEnd();
                 }
@@ -32989,9 +32989,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (LectureSummary _iter209 : struct.success)
+            for (LectureSummary _iter217 : struct.success)
             {
-              _iter209.write(oprot);
+              _iter217.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -33038,9 +33038,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (LectureSummary _iter210 : struct.success)
+            for (LectureSummary _iter218 : struct.success)
             {
-              _iter210.write(oprot);
+              _iter218.write(oprot);
             }
           }
         }
@@ -33058,14 +33058,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list211 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<LectureSummary>(_list211.size);
-            for (int _i212 = 0; _i212 < _list211.size; ++_i212)
+            org.apache.thrift.protocol.TList _list219 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<LectureSummary>(_list219.size);
+            for (int _i220 = 0; _i220 < _list219.size; ++_i220)
             {
-              LectureSummary _elem213;
-              _elem213 = new LectureSummary();
-              _elem213.read(iprot);
-              struct.success.add(_elem213);
+              LectureSummary _elem221;
+              _elem221 = new LectureSummary();
+              _elem221.read(iprot);
+              struct.success.add(_elem221);
             }
           }
           struct.setSuccessIsSet(true);
@@ -35702,16 +35702,16 @@ public class SatelliteServer {
             case 3: // PERMISSIONS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map214 = iprot.readMapBegin();
-                  struct.permissions = new HashMap<String,LecturePermissions>(2*_map214.size);
-                  for (int _i215 = 0; _i215 < _map214.size; ++_i215)
+                  org.apache.thrift.protocol.TMap _map222 = iprot.readMapBegin();
+                  struct.permissions = new HashMap<String,LecturePermissions>(2*_map222.size);
+                  for (int _i223 = 0; _i223 < _map222.size; ++_i223)
                   {
-                    String _key216;
-                    LecturePermissions _val217;
-                    _key216 = iprot.readString();
-                    _val217 = new LecturePermissions();
-                    _val217.read(iprot);
-                    struct.permissions.put(_key216, _val217);
+                    String _key224;
+                    LecturePermissions _val225;
+                    _key224 = iprot.readString();
+                    _val225 = new LecturePermissions();
+                    _val225.read(iprot);
+                    struct.permissions.put(_key224, _val225);
                   }
                   iprot.readMapEnd();
                 }
@@ -35749,10 +35749,10 @@ public class SatelliteServer {
           oprot.writeFieldBegin(PERMISSIONS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.permissions.size()));
-            for (Map.Entry<String, LecturePermissions> _iter218 : struct.permissions.entrySet())
+            for (Map.Entry<String, LecturePermissions> _iter226 : struct.permissions.entrySet())
             {
-              oprot.writeString(_iter218.getKey());
-              _iter218.getValue().write(oprot);
+              oprot.writeString(_iter226.getKey());
+              _iter226.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -35795,10 +35795,10 @@ public class SatelliteServer {
         if (struct.isSetPermissions()) {
           {
             oprot.writeI32(struct.permissions.size());
-            for (Map.Entry<String, LecturePermissions> _iter219 : struct.permissions.entrySet())
+            for (Map.Entry<String, LecturePermissions> _iter227 : struct.permissions.entrySet())
             {
-              oprot.writeString(_iter219.getKey());
-              _iter219.getValue().write(oprot);
+              oprot.writeString(_iter227.getKey());
+              _iter227.getValue().write(oprot);
             }
           }
         }
@@ -35818,16 +35818,16 @@ public class SatelliteServer {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TMap _map220 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.permissions = new HashMap<String,LecturePermissions>(2*_map220.size);
-            for (int _i221 = 0; _i221 < _map220.size; ++_i221)
+            org.apache.thrift.protocol.TMap _map228 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.permissions = new HashMap<String,LecturePermissions>(2*_map228.size);
+            for (int _i229 = 0; _i229 < _map228.size; ++_i229)
             {
-              String _key222;
-              LecturePermissions _val223;
-              _key222 = iprot.readString();
-              _val223 = new LecturePermissions();
-              _val223.read(iprot);
-              struct.permissions.put(_key222, _val223);
+              String _key230;
+              LecturePermissions _val231;
+              _key230 = iprot.readString();
+              _val231 = new LecturePermissions();
+              _val231.read(iprot);
+              struct.permissions.put(_key230, _val231);
             }
           }
           struct.setPermissionsIsSet(true);
@@ -37396,16 +37396,16 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map224 = iprot.readMapBegin();
-                  struct.success = new HashMap<String,LecturePermissions>(2*_map224.size);
-                  for (int _i225 = 0; _i225 < _map224.size; ++_i225)
+                  org.apache.thrift.protocol.TMap _map232 = iprot.readMapBegin();
+                  struct.success = new HashMap<String,LecturePermissions>(2*_map232.size);
+                  for (int _i233 = 0; _i233 < _map232.size; ++_i233)
                   {
-                    String _key226;
-                    LecturePermissions _val227;
-                    _key226 = iprot.readString();
-                    _val227 = new LecturePermissions();
-                    _val227.read(iprot);
-                    struct.success.put(_key226, _val227);
+                    String _key234;
+                    LecturePermissions _val235;
+                    _key234 = iprot.readString();
+                    _val235 = new LecturePermissions();
+                    _val235.read(iprot);
+                    struct.success.put(_key234, _val235);
                   }
                   iprot.readMapEnd();
                 }
@@ -37460,10 +37460,10 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Map.Entry<String, LecturePermissions> _iter228 : struct.success.entrySet())
+            for (Map.Entry<String, LecturePermissions> _iter236 : struct.success.entrySet())
             {
-              oprot.writeString(_iter228.getKey());
-              _iter228.getValue().write(oprot);
+              oprot.writeString(_iter236.getKey());
+              _iter236.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -37518,10 +37518,10 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<String, LecturePermissions> _iter229 : struct.success.entrySet())
+            for (Map.Entry<String, LecturePermissions> _iter237 : struct.success.entrySet())
             {
-              oprot.writeString(_iter229.getKey());
-              _iter229.getValue().write(oprot);
+              oprot.writeString(_iter237.getKey());
+              _iter237.getValue().write(oprot);
             }
           }
         }
@@ -37542,16 +37542,16 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map230 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new HashMap<String,LecturePermissions>(2*_map230.size);
-            for (int _i231 = 0; _i231 < _map230.size; ++_i231)
+            org.apache.thrift.protocol.TMap _map238 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new HashMap<String,LecturePermissions>(2*_map238.size);
+            for (int _i239 = 0; _i239 < _map238.size; ++_i239)
             {
-              String _key232;
-              LecturePermissions _val233;
-              _key232 = iprot.readString();
-              _val233 = new LecturePermissions();
-              _val233.read(iprot);
-              struct.success.put(_key232, _val233);
+              String _key240;
+              LecturePermissions _val241;
+              _key240 = iprot.readString();
+              _val241 = new LecturePermissions();
+              _val241.read(iprot);
+              struct.success.put(_key240, _val241);
             }
           }
           struct.setSuccessIsSet(true);

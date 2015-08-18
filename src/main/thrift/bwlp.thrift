@@ -93,7 +93,8 @@ struct Organization {
 
 struct Satellite {
 	1: list<string> addressList,
-	2: string displayName
+	2: string displayName,
+	3: binary certSha256
 }
 
 // Old session information for clients logging in via "test-account"
@@ -308,6 +309,8 @@ struct TransferInformation {
 	1: string token,
 	2: i32 plainPort,
 	3: i32 sslPort,
+	4: optional list<binary> blockHashes, // Only if transfer is a download (and list is known)
+	5: optional string machineDescription, // Only if transfer is a download
 }
 
 // Used to tell status of an upload. The blockStatus is one byte per 16MB block,
@@ -333,7 +336,7 @@ struct SatelliteConfig {
 // ############ EXCEPTION ######################
 
 exception TTransferRejectedException {
-	1: string reason,
+	1: string message,
 }
 
 exception TAuthorizationException {

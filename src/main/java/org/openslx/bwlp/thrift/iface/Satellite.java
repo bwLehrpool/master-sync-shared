@@ -37,6 +37,7 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
 
   private static final org.apache.thrift.protocol.TField ADDRESS_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("addressList", org.apache.thrift.protocol.TType.LIST, (short)1);
   private static final org.apache.thrift.protocol.TField DISPLAY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("displayName", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField CERT_SHA256_FIELD_DESC = new org.apache.thrift.protocol.TField("certSha256", org.apache.thrift.protocol.TType.STRING, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -46,11 +47,13 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
 
   public List<String> addressList; // required
   public String displayName; // required
+  public ByteBuffer certSha256; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ADDRESS_LIST((short)1, "addressList"),
-    DISPLAY_NAME((short)2, "displayName");
+    DISPLAY_NAME((short)2, "displayName"),
+    CERT_SHA256((short)3, "certSha256");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -69,6 +72,8 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
           return ADDRESS_LIST;
         case 2: // DISPLAY_NAME
           return DISPLAY_NAME;
+        case 3: // CERT_SHA256
+          return CERT_SHA256;
         default:
           return null;
       }
@@ -117,6 +122,8 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.DISPLAY_NAME, new org.apache.thrift.meta_data.FieldMetaData("displayName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.CERT_SHA256, new org.apache.thrift.meta_data.FieldMetaData("certSha256", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Satellite.class, metaDataMap);
   }
@@ -126,11 +133,13 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
 
   public Satellite(
     List<String> addressList,
-    String displayName)
+    String displayName,
+    ByteBuffer certSha256)
   {
     this();
     this.addressList = addressList;
     this.displayName = displayName;
+    this.certSha256 = certSha256;
   }
 
   /**
@@ -144,6 +153,10 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
     if (other.isSetDisplayName()) {
       this.displayName = other.displayName;
     }
+    if (other.isSetCertSha256()) {
+      this.certSha256 = org.apache.thrift.TBaseHelper.copyBinary(other.certSha256);
+;
+    }
   }
 
   public Satellite deepCopy() {
@@ -154,6 +167,7 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
   public void clear() {
     this.addressList = null;
     this.displayName = null;
+    this.certSha256 = null;
   }
 
   public int getAddressListSize() {
@@ -219,6 +233,40 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
     }
   }
 
+  public byte[] getCertSha256() {
+    setCertSha256(org.apache.thrift.TBaseHelper.rightSize(certSha256));
+    return certSha256 == null ? null : certSha256.array();
+  }
+
+  public ByteBuffer bufferForCertSha256() {
+    return certSha256;
+  }
+
+  public Satellite setCertSha256(byte[] certSha256) {
+    setCertSha256(certSha256 == null ? (ByteBuffer)null : ByteBuffer.wrap(certSha256));
+    return this;
+  }
+
+  public Satellite setCertSha256(ByteBuffer certSha256) {
+    this.certSha256 = certSha256;
+    return this;
+  }
+
+  public void unsetCertSha256() {
+    this.certSha256 = null;
+  }
+
+  /** Returns true if field certSha256 is set (has been assigned a value) and false otherwise */
+  public boolean isSetCertSha256() {
+    return this.certSha256 != null;
+  }
+
+  public void setCertSha256IsSet(boolean value) {
+    if (!value) {
+      this.certSha256 = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ADDRESS_LIST:
@@ -237,6 +285,14 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
       }
       break;
 
+    case CERT_SHA256:
+      if (value == null) {
+        unsetCertSha256();
+      } else {
+        setCertSha256((ByteBuffer)value);
+      }
+      break;
+
     }
   }
 
@@ -247,6 +303,9 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
 
     case DISPLAY_NAME:
       return getDisplayName();
+
+    case CERT_SHA256:
+      return getCertSha256();
 
     }
     throw new IllegalStateException();
@@ -263,6 +322,8 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
       return isSetAddressList();
     case DISPLAY_NAME:
       return isSetDisplayName();
+    case CERT_SHA256:
+      return isSetCertSha256();
     }
     throw new IllegalStateException();
   }
@@ -295,6 +356,15 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
       if (!(this_present_displayName && that_present_displayName))
         return false;
       if (!this.displayName.equals(that.displayName))
+        return false;
+    }
+
+    boolean this_present_certSha256 = true && this.isSetCertSha256();
+    boolean that_present_certSha256 = true && that.isSetCertSha256();
+    if (this_present_certSha256 || that_present_certSha256) {
+      if (!(this_present_certSha256 && that_present_certSha256))
+        return false;
+      if (!this.certSha256.equals(that.certSha256))
         return false;
     }
 
@@ -334,6 +404,16 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetCertSha256()).compareTo(other.isSetCertSha256());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCertSha256()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.certSha256, other.certSha256);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -367,6 +447,14 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
       sb.append("null");
     } else {
       sb.append(this.displayName);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("certSha256:");
+    if (this.certSha256 == null) {
+      sb.append("null");
+    } else {
+      org.apache.thrift.TBaseHelper.toString(this.certSha256, sb);
     }
     first = false;
     sb.append(")");
@@ -438,6 +526,14 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 3: // CERT_SHA256
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.certSha256 = iprot.readBinary();
+              struct.setCertSha256IsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -470,6 +566,11 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
         oprot.writeString(struct.displayName);
         oprot.writeFieldEnd();
       }
+      if (struct.certSha256 != null) {
+        oprot.writeFieldBegin(CERT_SHA256_FIELD_DESC);
+        oprot.writeBinary(struct.certSha256);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -494,7 +595,10 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
       if (struct.isSetDisplayName()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetCertSha256()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetAddressList()) {
         {
           oprot.writeI32(struct.addressList.size());
@@ -507,12 +611,15 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
       if (struct.isSetDisplayName()) {
         oprot.writeString(struct.displayName);
       }
+      if (struct.isSetCertSha256()) {
+        oprot.writeBinary(struct.certSha256);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Satellite struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         {
           org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -529,6 +636,10 @@ public class Satellite implements org.apache.thrift.TBase<Satellite, Satellite._
       if (incoming.get(1)) {
         struct.displayName = iprot.readString();
         struct.setDisplayNameIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.certSha256 = iprot.readBinary();
+        struct.setCertSha256IsSet(true);
       }
     }
   }
