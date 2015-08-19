@@ -1,6 +1,5 @@
 package org.openslx.filetransfer.util;
 
-import java.security.InvalidParameterException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -67,10 +66,9 @@ public class HashChecker
 
 	public void queue( FileChunk chunk, byte[] data, HashCheckCallback callback ) throws InterruptedException
 	{
-		if ( chunk.sha1sum == null )
+		byte[] sha1Sum = chunk.getSha1Sum();
+		if ( sha1Sum == null )
 			throw new NullPointerException( "Chunk has no sha1 hash" );
-		if ( chunk.sha1sum.length != 20 )
-			throw new InvalidParameterException( "Given chunk sha1 is not 20 bytes but " + chunk.sha1sum.length );
 		HashTask task = new HashTask( data, chunk, callback );
 		synchronized ( threads ) {
 			if ( invalid ) {
@@ -129,7 +127,7 @@ public class HashChecker
 				// Calculate digest
 				md.update( task.data, 0, task.chunk.range.getLength() );
 				byte[] digest = md.digest();
-				HashResult result = Arrays.equals( digest, task.chunk.sha1sum ) ? HashResult.VALID : HashResult.INVALID;
+				HashResult result = Arrays.equals( digest, task.chunk.getSha1Sum() ) ? HashResult.VALID : HashResult.INVALID;
 				execCallback( task, result );
 				if ( extraThread && queue.isEmpty() ) {
 					LOGGER.info( "Stopping additional hash checker" );
@@ -157,6 +155,7 @@ public class HashChecker
 			this.data = data;
 			this.chunk = chunk;
 			this.callback = callback;
+			chunk.setStatus( ChunkStatus.HASHING );
 		}
 	}
 

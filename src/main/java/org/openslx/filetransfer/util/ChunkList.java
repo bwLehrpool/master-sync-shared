@@ -2,6 +2,7 @@ package org.openslx.filetransfer.util;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,6 +12,11 @@ public class ChunkList
 {
 
 	private static final Logger LOGGER = Logger.getLogger( ChunkList.class );
+
+	/**
+	 * Here we keep a list of all chunks in the proper order, in case we quickly need to access one
+	 */
+	private final List<FileChunk> allChunks;
 
 	/**
 	 * Chunks that are missing from the file
@@ -29,10 +35,31 @@ public class ChunkList
 
 	// Do we need to keep valid chunks, or chunks that failed too many times?
 
-	public ChunkList( long fileSize, List<ByteBuffer> sha1Sums )
+	public ChunkList( long fileSize, List<byte[]> sha1Sums )
 	{
 		FileChunk.createChunkList( missingChunks, fileSize, sha1Sums );
 		statusArray = ByteBuffer.allocate( missingChunks.size() );
+		allChunks = new ArrayList<>( missingChunks );
+	}
+
+	/**
+	 * Update the sha1sums of all chunks. This is meant to be used if you passed an incomplete list
+	 * before (with null elements), so you don't have to has hthe whole file before starting the
+	 * upload, but periodically update it while thie upload is running.
+	 * 
+	 * @param sha1Sums list of sums
+	 */
+	public synchronized void updateSha1Sums( List<byte[]> sha1Sums )
+	{
+		int index = 0;
+		for ( byte[] sum : sha1Sums ) {
+			if ( index >= allChunks.size() )
+				break;
+			if ( sum == null )
+				continue;
+			allChunks.get( index ).setSha1Sum( sum );
+			index++;
+		}
 	}
 
 	/**
@@ -61,15 +88,8 @@ public class ChunkList
 	public synchronized ByteBuffer getStatusArray()
 	{
 		byte[] array = statusArray.array();
-		//Arrays.fill(array, (byte)0);
-		for ( FileChunk c : missingChunks ) {
-			array[c.getChunkIndex()] = 1;
-		}
-		for ( FileChunk c : pendingChunks ) {
-			array[c.getChunkIndex()] = 2;
-		}
-		for ( FileChunk c : completeChunks ) {
-			array[c.getChunkIndex()] = 0;
+		for ( int i = 0; i < array.length; ++i ) {
+			array[i] = allChunks.get( i ).getStatus().val;
 		}
 		return statusArray;
 	}
@@ -85,6 +105,24 @@ public class ChunkList
 	}
 
 	/**
+	 * Get a chunk that is marked complete, has a sha1 hash, but has not been hash-checked yet.
+	 * 
+	 * @return chunk
+	 */
+	public synchronized FileChunk getUnhashedComplete()
+	{
+		for ( Iterator<FileChunk> it = completeChunks.iterator(); it.hasNext(); ) {
+			FileChunk chunk = it.next();
+			if ( chunk.sha1sum != null && chunk.status == ChunkStatus.HASHING ) {
+				it.remove();
+				pendingChunks.add( chunk );
+				return chunk;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Mark a chunk currently transferring as successfully transfered.
 	 * 
 	 * @param c The chunk in question
@@ -96,6 +134,7 @@ public class ChunkList
 					+ ", but chunk is not marked as currently transferring!" );
 			return;
 		}
+		c.setStatus( ChunkStatus.COMPETE );
 		completeChunks.add( c );
 		this.notifyAll();
 	}
@@ -116,6 +155,7 @@ public class ChunkList
 			return -1;
 		}
 		// Add as first element so it will be re-transmitted immediately
+		c.setStatus( ChunkStatus.MISSING );
 		missingChunks.add( 0, c );
 		this.notifyAll();
 		return c.incFailed();
