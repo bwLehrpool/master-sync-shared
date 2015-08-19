@@ -1,6 +1,5 @@
 package org.openslx.filetransfer.util;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -84,7 +83,7 @@ public class FileChunk
 		return (int) ( ( fileSize + CHUNK_SIZE - 1 ) / CHUNK_SIZE );
 	}
 
-	public static void createChunkList( Collection<FileChunk> list, long fileSize, List<byte[]> sha1Sums )
+	public static void createChunkList( List<FileChunk> list, long fileSize, List<byte[]> sha1Sums )
 	{
 		if ( fileSize < 0 )
 			throw new IllegalArgumentException( "fileSize cannot be negative" );
@@ -106,5 +105,10 @@ public class FileChunk
 			list.add( new FileChunk( offset, end, hash ) );
 			offset = end;
 		}
+	}
+
+	public int getFailCount()
+	{
+		return failCount;
 	}
 }

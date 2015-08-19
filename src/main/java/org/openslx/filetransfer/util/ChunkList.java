@@ -73,11 +73,12 @@ public class ChunkList
 		if ( missingChunks.isEmpty() && pendingChunks.isEmpty() )
 			return null;
 		if ( missingChunks.isEmpty() ) {
-			this.wait( 3000 );
+			this.wait( 6000 );
 			if ( missingChunks.isEmpty() )
 				return null;
 		}
 		FileChunk c = missingChunks.remove( 0 );
+		c.setStatus( ChunkStatus.UPLOADING );
 		pendingChunks.add( c );
 		return c;
 	}
@@ -130,7 +131,7 @@ public class ChunkList
 	public synchronized void markSuccessful( FileChunk c )
 	{
 		if ( !pendingChunks.remove( c ) ) {
-			LOGGER.warn( "Inconsistent state: markTransferred called for Chunk " + c.toString()
+			LOGGER.warn( "Inconsistent state: markSuccessful called for Chunk " + c.toString()
 					+ ", but chunk is not marked as currently transferring!" );
 			return;
 		}
@@ -161,9 +162,76 @@ public class ChunkList
 		return c.incFailed();
 	}
 
+	/**
+	 * Check if all blocks in this list are marked as successfully transfered. If a complete chunk is
+	 * marked as "hashing", or if there are some complete chunks without a sha1sum and some with a
+	 * sha1sum, the transfer is considered incomplete.
+	 * 
+	 * @return true iff transfer is complete
+	 */
 	public synchronized boolean isComplete()
 	{
-		return missingChunks.isEmpty() && pendingChunks.isEmpty();
+		if ( !missingChunks.isEmpty() || !pendingChunks.isEmpty() )
+			return false;
+		boolean sawWithHash = false;
+		for ( FileChunk chunk : completeChunks ) {
+			if ( chunk.status == ChunkStatus.HASHING )
+				return false;
+			if ( chunk.sha1sum != null ) {
+				sawWithHash = true;
+			} else if ( chunk.sha1sum == null && sawWithHash ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public synchronized String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append( '{' );
+		for ( FileChunk chunk : allChunks ) {
+			sb.append( '[' );
+			sb.append( chunk.getChunkIndex() );
+			if ( chunk.getSha1Sum() != null )
+				sb.append( '+' );
+			////
+			switch ( chunk.status ) {
+			case COMPETE:
+				sb.append( 'C' );
+				break;
+			case COPYING:
+				sb.append( '>' );
+				break;
+			case HASHING:
+				sb.append( 'H' );
+				break;
+			case MISSING:
+				sb.append( 'M' );
+				break;
+			case QUEUED_FOR_COPY:
+				sb.append( 'Q' );
+				break;
+			case UPLOADING:
+				sb.append( 'P' );
+				break;
+			default:
+				sb.append( '?' );
+				break;
+
+			}
+			sb.append( '|' ); ////////////
+			if ( missingChunks.contains( chunk ) )
+				sb.append( 'M' );
+			if ( pendingChunks.contains( chunk ) )
+				sb.append( 'P' );
+			if ( completeChunks.contains( chunk ) )
+				sb.append( 'C' );
+			sb.append( ']' );
+		}
+		sb.append( '}' );
+		return sb.toString();
 	}
 
 }

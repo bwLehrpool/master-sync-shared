@@ -72,7 +72,6 @@ public abstract class Transfer
 	protected boolean sendRange( long startOffset, long endOffset )
 	{
 		try {
-			log.debug( "Sending range: " + startOffset + " to " + endOffset );
 			sendKeyValuePair( "RANGE", startOffset + ":" + endOffset );
 		} catch ( IOException e ) {
 			e.printStackTrace();
