@@ -132,7 +132,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.TOKEN, new org.apache.thrift.meta_data.FieldMetaData("token", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "Token")));
     tmpMap.put(_Fields.PLAIN_PORT, new org.apache.thrift.meta_data.FieldMetaData("plainPort", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.SSL_PORT, new org.apache.thrift.meta_data.FieldMetaData("sslPort", org.apache.thrift.TFieldRequirementType.DEFAULT, 

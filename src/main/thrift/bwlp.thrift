@@ -306,7 +306,7 @@ struct MasterSoftware {
 }
 
 struct TransferInformation {
-	1: string token,
+	1: Token token,
 	2: i32 plainPort,
 	3: i32 sslPort,
 	4: optional list<binary> blockHashes, // Only if transfer is a download (and list is known)
@@ -314,7 +314,7 @@ struct TransferInformation {
 }
 
 // Used to tell status of an upload. The blockStatus is one byte per 16MB block,
-// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying
+// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying, 5 = hashing
 struct TransferStatus {
 	1: binary blockStatus,
 	2: TransferState state,
@@ -379,6 +379,9 @@ service SatelliteServer {
 	TransferInformation requestImageVersionUpload(1: Token userToken, 2: UUID imageBaseId, 3: i64 fileSize, 4: list<binary> blockHashes, 5: binary machineDescription)
 		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError, 3:TInternalServerError ffff, 4:TNotFoundException sdf),
 
+	void updateBlockHashes(1: Token uploadToken, 2: list<binary> blockHashes)
+		throws (1:TInvalidTokenException ex1),
+
 	void cancelUpload(1: Token uploadToken)
 		throws (1:TInvalidTokenException ex1),
 
@@ -438,6 +441,9 @@ service SatelliteServer {
 	// Delete given image version. If the version is currently in use by a lecture, it will not be
 	// deleted and false is returned
 	void deleteImageVersion(1: Token userToken, 2: UUID imageVersionId)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+	// Delete image and all its versions
+	void deleteImageBase(1:Token userToken, 2:UUID imageBaseId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
 	// Write list of permissions for given image 
 	void writeImagePermissions(1: Token userToken, 2: UUID imageBaseId, 3: map<UUID, ImagePermissions> permissions)

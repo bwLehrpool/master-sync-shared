@@ -42,6 +42,8 @@ public class SatelliteServer {
 
     public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException;
 
+    public void updateBlockHashes(String uploadToken, List<ByteBuffer> blockHashes) throws TInvalidTokenException, org.apache.thrift.TException;
+
     public void cancelUpload(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException;
 
     public TransferStatus queryUploadStatus(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException;
@@ -78,6 +80,8 @@ public class SatelliteServer {
 
     public void deleteImageVersion(String userToken, String imageVersionId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
 
+    public void deleteImageBase(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+
     public void writeImagePermissions(String userToken, String imageBaseId, Map<String,ImagePermissions> permissions) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
 
     public Map<String,ImagePermissions> getImagePermissions(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
@@ -111,6 +115,8 @@ public class SatelliteServer {
     public void getConfiguration(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void updateBlockHashes(String uploadToken, List<ByteBuffer> blockHashes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void cancelUpload(String uploadToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -147,6 +153,8 @@ public class SatelliteServer {
     public void updateImageVersion(String userToken, String imageVersionId, ImageVersionWrite image, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void deleteImageVersion(String userToken, String imageVersionId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void deleteImageBase(String userToken, String imageBaseId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void writeImagePermissions(String userToken, String imageBaseId, Map<String,ImagePermissions> permissions, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -275,6 +283,30 @@ public class SatelliteServer {
         throw result.sdf;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "requestImageVersionUpload failed: unknown result");
+    }
+
+    public void updateBlockHashes(String uploadToken, List<ByteBuffer> blockHashes) throws TInvalidTokenException, org.apache.thrift.TException
+    {
+      send_updateBlockHashes(uploadToken, blockHashes);
+      recv_updateBlockHashes();
+    }
+
+    public void send_updateBlockHashes(String uploadToken, List<ByteBuffer> blockHashes) throws org.apache.thrift.TException
+    {
+      updateBlockHashes_args args = new updateBlockHashes_args();
+      args.setUploadToken(uploadToken);
+      args.setBlockHashes(blockHashes);
+      sendBase("updateBlockHashes", args);
+    }
+
+    public void recv_updateBlockHashes() throws TInvalidTokenException, org.apache.thrift.TException
+    {
+      updateBlockHashes_result result = new updateBlockHashes_result();
+      receiveBase(result, "updateBlockHashes");
+      if (result.ex1 != null) {
+        throw result.ex1;
+      }
+      return;
     }
 
     public void cancelUpload(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException
@@ -772,6 +804,36 @@ public class SatelliteServer {
     {
       deleteImageVersion_result result = new deleteImageVersion_result();
       receiveBase(result, "deleteImageVersion");
+      if (result.authError != null) {
+        throw result.authError;
+      }
+      if (result.notFound != null) {
+        throw result.notFound;
+      }
+      if (result.serverError != null) {
+        throw result.serverError;
+      }
+      return;
+    }
+
+    public void deleteImageBase(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    {
+      send_deleteImageBase(userToken, imageBaseId);
+      recv_deleteImageBase();
+    }
+
+    public void send_deleteImageBase(String userToken, String imageBaseId) throws org.apache.thrift.TException
+    {
+      deleteImageBase_args args = new deleteImageBase_args();
+      args.setUserToken(userToken);
+      args.setImageBaseId(imageBaseId);
+      sendBase("deleteImageBase", args);
+    }
+
+    public void recv_deleteImageBase() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    {
+      deleteImageBase_result result = new deleteImageBase_result();
+      receiveBase(result, "deleteImageBase");
       if (result.authError != null) {
         throw result.authError;
       }
@@ -1285,6 +1347,41 @@ public class SatelliteServer {
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
         return (new Client(prot)).recv_requestImageVersionUpload();
+      }
+    }
+
+    public void updateBlockHashes(String uploadToken, List<ByteBuffer> blockHashes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      updateBlockHashes_call method_call = new updateBlockHashes_call(uploadToken, blockHashes, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class updateBlockHashes_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String uploadToken;
+      private List<ByteBuffer> blockHashes;
+      public updateBlockHashes_call(String uploadToken, List<ByteBuffer> blockHashes, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.uploadToken = uploadToken;
+        this.blockHashes = blockHashes;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateBlockHashes", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        updateBlockHashes_args args = new updateBlockHashes_args();
+        args.setUploadToken(uploadToken);
+        args.setBlockHashes(blockHashes);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public void getResult() throws TInvalidTokenException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        (new Client(prot)).recv_updateBlockHashes();
       }
     }
 
@@ -1891,6 +1988,41 @@ public class SatelliteServer {
       }
     }
 
+    public void deleteImageBase(String userToken, String imageBaseId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      deleteImageBase_call method_call = new deleteImageBase_call(userToken, imageBaseId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class deleteImageBase_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String userToken;
+      private String imageBaseId;
+      public deleteImageBase_call(String userToken, String imageBaseId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.userToken = userToken;
+        this.imageBaseId = imageBaseId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("deleteImageBase", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        deleteImageBase_args args = new deleteImageBase_args();
+        args.setUserToken(userToken);
+        args.setImageBaseId(imageBaseId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        (new Client(prot)).recv_deleteImageBase();
+      }
+    }
+
     public void writeImagePermissions(String userToken, String imageBaseId, Map<String,ImagePermissions> permissions, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       writeImagePermissions_call method_call = new writeImagePermissions_call(userToken, imageBaseId, permissions, resultHandler, this, ___protocolFactory, ___transport);
@@ -2345,6 +2477,7 @@ public class SatelliteServer {
       processMap.put("getVersion", new getVersion());
       processMap.put("getConfiguration", new getConfiguration());
       processMap.put("requestImageVersionUpload", new requestImageVersionUpload());
+      processMap.put("updateBlockHashes", new updateBlockHashes());
       processMap.put("cancelUpload", new cancelUpload());
       processMap.put("queryUploadStatus", new queryUploadStatus());
       processMap.put("requestDownload", new requestDownload());
@@ -2363,6 +2496,7 @@ public class SatelliteServer {
       processMap.put("updateImageBase", new updateImageBase());
       processMap.put("updateImageVersion", new updateImageVersion());
       processMap.put("deleteImageVersion", new deleteImageVersion());
+      processMap.put("deleteImageBase", new deleteImageBase());
       processMap.put("writeImagePermissions", new writeImagePermissions());
       processMap.put("getImagePermissions", new getImagePermissions());
       processMap.put("setImageOwner", new setImageOwner());
@@ -2444,6 +2578,30 @@ public class SatelliteServer {
           result.ffff = ffff;
         } catch (TNotFoundException sdf) {
           result.sdf = sdf;
+        }
+        return result;
+      }
+    }
+
+    public static class updateBlockHashes<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateBlockHashes_args> {
+      public updateBlockHashes() {
+        super("updateBlockHashes");
+      }
+
+      public updateBlockHashes_args getEmptyArgsInstance() {
+        return new updateBlockHashes_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public updateBlockHashes_result getResult(I iface, updateBlockHashes_args args) throws org.apache.thrift.TException {
+        updateBlockHashes_result result = new updateBlockHashes_result();
+        try {
+          iface.updateBlockHashes(args.uploadToken, args.blockHashes);
+        } catch (TInvalidTokenException ex1) {
+          result.ex1 = ex1;
         }
         return result;
       }
@@ -2907,6 +3065,34 @@ public class SatelliteServer {
       }
     }
 
+    public static class deleteImageBase<I extends Iface> extends org.apache.thrift.ProcessFunction<I, deleteImageBase_args> {
+      public deleteImageBase() {
+        super("deleteImageBase");
+      }
+
+      public deleteImageBase_args getEmptyArgsInstance() {
+        return new deleteImageBase_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public deleteImageBase_result getResult(I iface, deleteImageBase_args args) throws org.apache.thrift.TException {
+        deleteImageBase_result result = new deleteImageBase_result();
+        try {
+          iface.deleteImageBase(args.userToken, args.imageBaseId);
+        } catch (TAuthorizationException authError) {
+          result.authError = authError;
+        } catch (TNotFoundException notFound) {
+          result.notFound = notFound;
+        } catch (TInternalServerError serverError) {
+          result.serverError = serverError;
+        }
+        return result;
+      }
+    }
+
     public static class writeImagePermissions<I extends Iface> extends org.apache.thrift.ProcessFunction<I, writeImagePermissions_args> {
       public writeImagePermissions() {
         super("writeImagePermissions");
@@ -3261,6 +3447,7 @@ public class SatelliteServer {
       processMap.put("getVersion", new getVersion());
       processMap.put("getConfiguration", new getConfiguration());
       processMap.put("requestImageVersionUpload", new requestImageVersionUpload());
+      processMap.put("updateBlockHashes", new updateBlockHashes());
       processMap.put("cancelUpload", new cancelUpload());
       processMap.put("queryUploadStatus", new queryUploadStatus());
       processMap.put("requestDownload", new requestDownload());
@@ -3279,6 +3466,7 @@ public class SatelliteServer {
       processMap.put("updateImageBase", new updateImageBase());
       processMap.put("updateImageVersion", new updateImageVersion());
       processMap.put("deleteImageVersion", new deleteImageVersion());
+      processMap.put("deleteImageBase", new deleteImageBase());
       processMap.put("writeImagePermissions", new writeImagePermissions());
       processMap.put("getImagePermissions", new getImagePermissions());
       processMap.put("setImageOwner", new setImageOwner());
@@ -3466,6 +3654,62 @@ public class SatelliteServer {
 
       public void start(I iface, requestImageVersionUpload_args args, org.apache.thrift.async.AsyncMethodCallback<TransferInformation> resultHandler) throws TException {
         iface.requestImageVersionUpload(args.userToken, args.imageBaseId, args.fileSize, args.blockHashes, args.machineDescription,resultHandler);
+      }
+    }
+
+    public static class updateBlockHashes<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateBlockHashes_args, Void> {
+      public updateBlockHashes() {
+        super("updateBlockHashes");
+      }
+
+      public updateBlockHashes_args getEmptyArgsInstance() {
+        return new updateBlockHashes_args();
+      }
+
+      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Void>() { 
+          public void onComplete(Void o) {
+            updateBlockHashes_result result = new updateBlockHashes_result();
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            updateBlockHashes_result result = new updateBlockHashes_result();
+            if (e instanceof TInvalidTokenException) {
+                        result.ex1 = (TInvalidTokenException) e;
+                        result.setEx1IsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, updateBlockHashes_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+        iface.updateBlockHashes(args.uploadToken, args.blockHashes,resultHandler);
       }
     }
 
@@ -4566,6 +4810,72 @@ public class SatelliteServer {
 
       public void start(I iface, deleteImageVersion_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
         iface.deleteImageVersion(args.userToken, args.imageVersionId,resultHandler);
+      }
+    }
+
+    public static class deleteImageBase<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, deleteImageBase_args, Void> {
+      public deleteImageBase() {
+        super("deleteImageBase");
+      }
+
+      public deleteImageBase_args getEmptyArgsInstance() {
+        return new deleteImageBase_args();
+      }
+
+      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Void>() { 
+          public void onComplete(Void o) {
+            deleteImageBase_result result = new deleteImageBase_result();
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            deleteImageBase_result result = new deleteImageBase_result();
+            if (e instanceof TAuthorizationException) {
+                        result.authError = (TAuthorizationException) e;
+                        result.setAuthErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TNotFoundException) {
+                        result.notFound = (TNotFoundException) e;
+                        result.setNotFoundIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInternalServerError) {
+                        result.serverError = (TInternalServerError) e;
+                        result.setServerErrorIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, deleteImageBase_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+        iface.deleteImageBase(args.userToken, args.imageBaseId,resultHandler);
       }
     }
 
@@ -8151,6 +8461,865 @@ public class SatelliteServer {
           struct.sdf = new TNotFoundException();
           struct.sdf.read(iprot);
           struct.setSdfIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class updateBlockHashes_args implements org.apache.thrift.TBase<updateBlockHashes_args, updateBlockHashes_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateBlockHashes_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateBlockHashes_args");
+
+    private static final org.apache.thrift.protocol.TField UPLOAD_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("uploadToken", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField BLOCK_HASHES_FIELD_DESC = new org.apache.thrift.protocol.TField("blockHashes", org.apache.thrift.protocol.TType.LIST, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateBlockHashes_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateBlockHashes_argsTupleSchemeFactory());
+    }
+
+    public String uploadToken; // required
+    public List<ByteBuffer> blockHashes; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      UPLOAD_TOKEN((short)1, "uploadToken"),
+      BLOCK_HASHES((short)2, "blockHashes");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // UPLOAD_TOKEN
+            return UPLOAD_TOKEN;
+          case 2: // BLOCK_HASHES
+            return BLOCK_HASHES;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.UPLOAD_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("uploadToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "Token")));
+      tmpMap.put(_Fields.BLOCK_HASHES, new org.apache.thrift.meta_data.FieldMetaData("blockHashes", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING              , true))));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateBlockHashes_args.class, metaDataMap);
+    }
+
+    public updateBlockHashes_args() {
+    }
+
+    public updateBlockHashes_args(
+      String uploadToken,
+      List<ByteBuffer> blockHashes)
+    {
+      this();
+      this.uploadToken = uploadToken;
+      this.blockHashes = blockHashes;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateBlockHashes_args(updateBlockHashes_args other) {
+      if (other.isSetUploadToken()) {
+        this.uploadToken = other.uploadToken;
+      }
+      if (other.isSetBlockHashes()) {
+        List<ByteBuffer> __this__blockHashes = new ArrayList<ByteBuffer>(other.blockHashes);
+        this.blockHashes = __this__blockHashes;
+      }
+    }
+
+    public updateBlockHashes_args deepCopy() {
+      return new updateBlockHashes_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.uploadToken = null;
+      this.blockHashes = null;
+    }
+
+    public String getUploadToken() {
+      return this.uploadToken;
+    }
+
+    public updateBlockHashes_args setUploadToken(String uploadToken) {
+      this.uploadToken = uploadToken;
+      return this;
+    }
+
+    public void unsetUploadToken() {
+      this.uploadToken = null;
+    }
+
+    /** Returns true if field uploadToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetUploadToken() {
+      return this.uploadToken != null;
+    }
+
+    public void setUploadTokenIsSet(boolean value) {
+      if (!value) {
+        this.uploadToken = null;
+      }
+    }
+
+    public int getBlockHashesSize() {
+      return (this.blockHashes == null) ? 0 : this.blockHashes.size();
+    }
+
+    public java.util.Iterator<ByteBuffer> getBlockHashesIterator() {
+      return (this.blockHashes == null) ? null : this.blockHashes.iterator();
+    }
+
+    public void addToBlockHashes(ByteBuffer elem) {
+      if (this.blockHashes == null) {
+        this.blockHashes = new ArrayList<ByteBuffer>();
+      }
+      this.blockHashes.add(elem);
+    }
+
+    public List<ByteBuffer> getBlockHashes() {
+      return this.blockHashes;
+    }
+
+    public updateBlockHashes_args setBlockHashes(List<ByteBuffer> blockHashes) {
+      this.blockHashes = blockHashes;
+      return this;
+    }
+
+    public void unsetBlockHashes() {
+      this.blockHashes = null;
+    }
+
+    /** Returns true if field blockHashes is set (has been assigned a value) and false otherwise */
+    public boolean isSetBlockHashes() {
+      return this.blockHashes != null;
+    }
+
+    public void setBlockHashesIsSet(boolean value) {
+      if (!value) {
+        this.blockHashes = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case UPLOAD_TOKEN:
+        if (value == null) {
+          unsetUploadToken();
+        } else {
+          setUploadToken((String)value);
+        }
+        break;
+
+      case BLOCK_HASHES:
+        if (value == null) {
+          unsetBlockHashes();
+        } else {
+          setBlockHashes((List<ByteBuffer>)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case UPLOAD_TOKEN:
+        return getUploadToken();
+
+      case BLOCK_HASHES:
+        return getBlockHashes();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case UPLOAD_TOKEN:
+        return isSetUploadToken();
+      case BLOCK_HASHES:
+        return isSetBlockHashes();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateBlockHashes_args)
+        return this.equals((updateBlockHashes_args)that);
+      return false;
+    }
+
+    public boolean equals(updateBlockHashes_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_uploadToken = true && this.isSetUploadToken();
+      boolean that_present_uploadToken = true && that.isSetUploadToken();
+      if (this_present_uploadToken || that_present_uploadToken) {
+        if (!(this_present_uploadToken && that_present_uploadToken))
+          return false;
+        if (!this.uploadToken.equals(that.uploadToken))
+          return false;
+      }
+
+      boolean this_present_blockHashes = true && this.isSetBlockHashes();
+      boolean that_present_blockHashes = true && that.isSetBlockHashes();
+      if (this_present_blockHashes || that_present_blockHashes) {
+        if (!(this_present_blockHashes && that_present_blockHashes))
+          return false;
+        if (!this.blockHashes.equals(that.blockHashes))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(updateBlockHashes_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetUploadToken()).compareTo(other.isSetUploadToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUploadToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.uploadToken, other.uploadToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetBlockHashes()).compareTo(other.isSetBlockHashes());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetBlockHashes()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.blockHashes, other.blockHashes);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateBlockHashes_args(");
+      boolean first = true;
+
+      sb.append("uploadToken:");
+      if (this.uploadToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.uploadToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("blockHashes:");
+      if (this.blockHashes == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.blockHashes);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateBlockHashes_argsStandardSchemeFactory implements SchemeFactory {
+      public updateBlockHashes_argsStandardScheme getScheme() {
+        return new updateBlockHashes_argsStandardScheme();
+      }
+    }
+
+    private static class updateBlockHashes_argsStandardScheme extends StandardScheme<updateBlockHashes_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateBlockHashes_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // UPLOAD_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.uploadToken = iprot.readString();
+                struct.setUploadTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // BLOCK_HASHES
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list146 = iprot.readListBegin();
+                  struct.blockHashes = new ArrayList<ByteBuffer>(_list146.size);
+                  for (int _i147 = 0; _i147 < _list146.size; ++_i147)
+                  {
+                    ByteBuffer _elem148;
+                    _elem148 = iprot.readBinary();
+                    struct.blockHashes.add(_elem148);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setBlockHashesIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateBlockHashes_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.uploadToken != null) {
+          oprot.writeFieldBegin(UPLOAD_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.uploadToken);
+          oprot.writeFieldEnd();
+        }
+        if (struct.blockHashes != null) {
+          oprot.writeFieldBegin(BLOCK_HASHES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.blockHashes.size()));
+            for (ByteBuffer _iter149 : struct.blockHashes)
+            {
+              oprot.writeBinary(_iter149);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateBlockHashes_argsTupleSchemeFactory implements SchemeFactory {
+      public updateBlockHashes_argsTupleScheme getScheme() {
+        return new updateBlockHashes_argsTupleScheme();
+      }
+    }
+
+    private static class updateBlockHashes_argsTupleScheme extends TupleScheme<updateBlockHashes_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateBlockHashes_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetUploadToken()) {
+          optionals.set(0);
+        }
+        if (struct.isSetBlockHashes()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetUploadToken()) {
+          oprot.writeString(struct.uploadToken);
+        }
+        if (struct.isSetBlockHashes()) {
+          {
+            oprot.writeI32(struct.blockHashes.size());
+            for (ByteBuffer _iter150 : struct.blockHashes)
+            {
+              oprot.writeBinary(_iter150);
+            }
+          }
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateBlockHashes_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.uploadToken = iprot.readString();
+          struct.setUploadTokenIsSet(true);
+        }
+        if (incoming.get(1)) {
+          {
+            org.apache.thrift.protocol.TList _list151 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.blockHashes = new ArrayList<ByteBuffer>(_list151.size);
+            for (int _i152 = 0; _i152 < _list151.size; ++_i152)
+            {
+              ByteBuffer _elem153;
+              _elem153 = iprot.readBinary();
+              struct.blockHashes.add(_elem153);
+            }
+          }
+          struct.setBlockHashesIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class updateBlockHashes_result implements org.apache.thrift.TBase<updateBlockHashes_result, updateBlockHashes_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateBlockHashes_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateBlockHashes_result");
+
+    private static final org.apache.thrift.protocol.TField EX1_FIELD_DESC = new org.apache.thrift.protocol.TField("ex1", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateBlockHashes_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateBlockHashes_resultTupleSchemeFactory());
+    }
+
+    public TInvalidTokenException ex1; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      EX1((short)1, "ex1");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // EX1
+            return EX1;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.EX1, new org.apache.thrift.meta_data.FieldMetaData("ex1", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateBlockHashes_result.class, metaDataMap);
+    }
+
+    public updateBlockHashes_result() {
+    }
+
+    public updateBlockHashes_result(
+      TInvalidTokenException ex1)
+    {
+      this();
+      this.ex1 = ex1;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateBlockHashes_result(updateBlockHashes_result other) {
+      if (other.isSetEx1()) {
+        this.ex1 = new TInvalidTokenException(other.ex1);
+      }
+    }
+
+    public updateBlockHashes_result deepCopy() {
+      return new updateBlockHashes_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.ex1 = null;
+    }
+
+    public TInvalidTokenException getEx1() {
+      return this.ex1;
+    }
+
+    public updateBlockHashes_result setEx1(TInvalidTokenException ex1) {
+      this.ex1 = ex1;
+      return this;
+    }
+
+    public void unsetEx1() {
+      this.ex1 = null;
+    }
+
+    /** Returns true if field ex1 is set (has been assigned a value) and false otherwise */
+    public boolean isSetEx1() {
+      return this.ex1 != null;
+    }
+
+    public void setEx1IsSet(boolean value) {
+      if (!value) {
+        this.ex1 = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case EX1:
+        if (value == null) {
+          unsetEx1();
+        } else {
+          setEx1((TInvalidTokenException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case EX1:
+        return getEx1();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case EX1:
+        return isSetEx1();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateBlockHashes_result)
+        return this.equals((updateBlockHashes_result)that);
+      return false;
+    }
+
+    public boolean equals(updateBlockHashes_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_ex1 = true && this.isSetEx1();
+      boolean that_present_ex1 = true && that.isSetEx1();
+      if (this_present_ex1 || that_present_ex1) {
+        if (!(this_present_ex1 && that_present_ex1))
+          return false;
+        if (!this.ex1.equals(that.ex1))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(updateBlockHashes_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetEx1()).compareTo(other.isSetEx1());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetEx1()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ex1, other.ex1);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateBlockHashes_result(");
+      boolean first = true;
+
+      sb.append("ex1:");
+      if (this.ex1 == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ex1);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateBlockHashes_resultStandardSchemeFactory implements SchemeFactory {
+      public updateBlockHashes_resultStandardScheme getScheme() {
+        return new updateBlockHashes_resultStandardScheme();
+      }
+    }
+
+    private static class updateBlockHashes_resultStandardScheme extends StandardScheme<updateBlockHashes_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateBlockHashes_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // EX1
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ex1 = new TInvalidTokenException();
+                struct.ex1.read(iprot);
+                struct.setEx1IsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateBlockHashes_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.ex1 != null) {
+          oprot.writeFieldBegin(EX1_FIELD_DESC);
+          struct.ex1.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateBlockHashes_resultTupleSchemeFactory implements SchemeFactory {
+      public updateBlockHashes_resultTupleScheme getScheme() {
+        return new updateBlockHashes_resultTupleScheme();
+      }
+    }
+
+    private static class updateBlockHashes_resultTupleScheme extends TupleScheme<updateBlockHashes_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateBlockHashes_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetEx1()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetEx1()) {
+          struct.ex1.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateBlockHashes_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.ex1 = new TInvalidTokenException();
+          struct.ex1.read(iprot);
+          struct.setEx1IsSet(true);
         }
       }
     }
@@ -15982,14 +17151,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list146 = iprot.readListBegin();
-                  struct.success = new ArrayList<UserInfo>(_list146.size);
-                  for (int _i147 = 0; _i147 < _list146.size; ++_i147)
+                  org.apache.thrift.protocol.TList _list154 = iprot.readListBegin();
+                  struct.success = new ArrayList<UserInfo>(_list154.size);
+                  for (int _i155 = 0; _i155 < _list154.size; ++_i155)
                   {
-                    UserInfo _elem148;
-                    _elem148 = new UserInfo();
-                    _elem148.read(iprot);
-                    struct.success.add(_elem148);
+                    UserInfo _elem156;
+                    _elem156 = new UserInfo();
+                    _elem156.read(iprot);
+                    struct.success.add(_elem156);
                   }
                   iprot.readListEnd();
                 }
@@ -16035,9 +17204,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (UserInfo _iter149 : struct.success)
+            for (UserInfo _iter157 : struct.success)
             {
-              _iter149.write(oprot);
+              _iter157.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -16084,9 +17253,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (UserInfo _iter150 : struct.success)
+            for (UserInfo _iter158 : struct.success)
             {
-              _iter150.write(oprot);
+              _iter158.write(oprot);
             }
           }
         }
@@ -16104,14 +17273,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list151 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<UserInfo>(_list151.size);
-            for (int _i152 = 0; _i152 < _list151.size; ++_i152)
+            org.apache.thrift.protocol.TList _list159 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<UserInfo>(_list159.size);
+            for (int _i160 = 0; _i160 < _list159.size; ++_i160)
             {
-              UserInfo _elem153;
-              _elem153 = new UserInfo();
-              _elem153.read(iprot);
-              struct.success.add(_elem153);
+              UserInfo _elem161;
+              _elem161 = new UserInfo();
+              _elem161.read(iprot);
+              struct.success.add(_elem161);
             }
           }
           struct.setSuccessIsSet(true);
@@ -16686,14 +17855,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list154 = iprot.readListBegin();
-                  struct.success = new ArrayList<OperatingSystem>(_list154.size);
-                  for (int _i155 = 0; _i155 < _list154.size; ++_i155)
+                  org.apache.thrift.protocol.TList _list162 = iprot.readListBegin();
+                  struct.success = new ArrayList<OperatingSystem>(_list162.size);
+                  for (int _i163 = 0; _i163 < _list162.size; ++_i163)
                   {
-                    OperatingSystem _elem156;
-                    _elem156 = new OperatingSystem();
-                    _elem156.read(iprot);
-                    struct.success.add(_elem156);
+                    OperatingSystem _elem164;
+                    _elem164 = new OperatingSystem();
+                    _elem164.read(iprot);
+                    struct.success.add(_elem164);
                   }
                   iprot.readListEnd();
                 }
@@ -16721,9 +17890,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (OperatingSystem _iter157 : struct.success)
+            for (OperatingSystem _iter165 : struct.success)
             {
-              _iter157.write(oprot);
+              _iter165.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -16754,9 +17923,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (OperatingSystem _iter158 : struct.success)
+            for (OperatingSystem _iter166 : struct.success)
             {
-              _iter158.write(oprot);
+              _iter166.write(oprot);
             }
           }
         }
@@ -16768,14 +17937,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list159 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<OperatingSystem>(_list159.size);
-            for (int _i160 = 0; _i160 < _list159.size; ++_i160)
+            org.apache.thrift.protocol.TList _list167 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<OperatingSystem>(_list167.size);
+            for (int _i168 = 0; _i168 < _list167.size; ++_i168)
             {
-              OperatingSystem _elem161;
-              _elem161 = new OperatingSystem();
-              _elem161.read(iprot);
-              struct.success.add(_elem161);
+              OperatingSystem _elem169;
+              _elem169 = new OperatingSystem();
+              _elem169.read(iprot);
+              struct.success.add(_elem169);
             }
           }
           struct.setSuccessIsSet(true);
@@ -17340,14 +18509,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list162 = iprot.readListBegin();
-                  struct.success = new ArrayList<Virtualizer>(_list162.size);
-                  for (int _i163 = 0; _i163 < _list162.size; ++_i163)
+                  org.apache.thrift.protocol.TList _list170 = iprot.readListBegin();
+                  struct.success = new ArrayList<Virtualizer>(_list170.size);
+                  for (int _i171 = 0; _i171 < _list170.size; ++_i171)
                   {
-                    Virtualizer _elem164;
-                    _elem164 = new Virtualizer();
-                    _elem164.read(iprot);
-                    struct.success.add(_elem164);
+                    Virtualizer _elem172;
+                    _elem172 = new Virtualizer();
+                    _elem172.read(iprot);
+                    struct.success.add(_elem172);
                   }
                   iprot.readListEnd();
                 }
@@ -17375,9 +18544,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Virtualizer _iter165 : struct.success)
+            for (Virtualizer _iter173 : struct.success)
             {
-              _iter165.write(oprot);
+              _iter173.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -17408,9 +18577,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Virtualizer _iter166 : struct.success)
+            for (Virtualizer _iter174 : struct.success)
             {
-              _iter166.write(oprot);
+              _iter174.write(oprot);
             }
           }
         }
@@ -17422,14 +18591,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list167 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Virtualizer>(_list167.size);
-            for (int _i168 = 0; _i168 < _list167.size; ++_i168)
+            org.apache.thrift.protocol.TList _list175 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Virtualizer>(_list175.size);
+            for (int _i176 = 0; _i176 < _list175.size; ++_i176)
             {
-              Virtualizer _elem169;
-              _elem169 = new Virtualizer();
-              _elem169.read(iprot);
-              struct.success.add(_elem169);
+              Virtualizer _elem177;
+              _elem177 = new Virtualizer();
+              _elem177.read(iprot);
+              struct.success.add(_elem177);
             }
           }
           struct.setSuccessIsSet(true);
@@ -17994,14 +19163,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list170 = iprot.readListBegin();
-                  struct.success = new ArrayList<Organization>(_list170.size);
-                  for (int _i171 = 0; _i171 < _list170.size; ++_i171)
+                  org.apache.thrift.protocol.TList _list178 = iprot.readListBegin();
+                  struct.success = new ArrayList<Organization>(_list178.size);
+                  for (int _i179 = 0; _i179 < _list178.size; ++_i179)
                   {
-                    Organization _elem172;
-                    _elem172 = new Organization();
-                    _elem172.read(iprot);
-                    struct.success.add(_elem172);
+                    Organization _elem180;
+                    _elem180 = new Organization();
+                    _elem180.read(iprot);
+                    struct.success.add(_elem180);
                   }
                   iprot.readListEnd();
                 }
@@ -18029,9 +19198,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Organization _iter173 : struct.success)
+            for (Organization _iter181 : struct.success)
             {
-              _iter173.write(oprot);
+              _iter181.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -18062,9 +19231,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Organization _iter174 : struct.success)
+            for (Organization _iter182 : struct.success)
             {
-              _iter174.write(oprot);
+              _iter182.write(oprot);
             }
           }
         }
@@ -18076,14 +19245,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list175 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Organization>(_list175.size);
-            for (int _i176 = 0; _i176 < _list175.size; ++_i176)
+            org.apache.thrift.protocol.TList _list183 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Organization>(_list183.size);
+            for (int _i184 = 0; _i184 < _list183.size; ++_i184)
             {
-              Organization _elem177;
-              _elem177 = new Organization();
-              _elem177.read(iprot);
-              struct.success.add(_elem177);
+              Organization _elem185;
+              _elem185 = new Organization();
+              _elem185.read(iprot);
+              struct.success.add(_elem185);
             }
           }
           struct.setSuccessIsSet(true);
@@ -18561,13 +19730,13 @@ public class SatelliteServer {
             case 2: // TAG_SEARCH
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list178 = iprot.readListBegin();
-                  struct.tagSearch = new ArrayList<String>(_list178.size);
-                  for (int _i179 = 0; _i179 < _list178.size; ++_i179)
+                  org.apache.thrift.protocol.TList _list186 = iprot.readListBegin();
+                  struct.tagSearch = new ArrayList<String>(_list186.size);
+                  for (int _i187 = 0; _i187 < _list186.size; ++_i187)
                   {
-                    String _elem180;
-                    _elem180 = iprot.readString();
-                    struct.tagSearch.add(_elem180);
+                    String _elem188;
+                    _elem188 = iprot.readString();
+                    struct.tagSearch.add(_elem188);
                   }
                   iprot.readListEnd();
                 }
@@ -18608,9 +19777,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(TAG_SEARCH_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.tagSearch.size()));
-            for (String _iter181 : struct.tagSearch)
+            for (String _iter189 : struct.tagSearch)
             {
-              oprot.writeString(_iter181);
+              oprot.writeString(_iter189);
             }
             oprot.writeListEnd();
           }
@@ -18653,9 +19822,9 @@ public class SatelliteServer {
         if (struct.isSetTagSearch()) {
           {
             oprot.writeI32(struct.tagSearch.size());
-            for (String _iter182 : struct.tagSearch)
+            for (String _iter190 : struct.tagSearch)
             {
-              oprot.writeString(_iter182);
+              oprot.writeString(_iter190);
             }
           }
         }
@@ -18674,13 +19843,13 @@ public class SatelliteServer {
         }
         if (incoming.get(1)) {
           {
-            org.apache.thrift.protocol.TList _list183 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.tagSearch = new ArrayList<String>(_list183.size);
-            for (int _i184 = 0; _i184 < _list183.size; ++_i184)
+            org.apache.thrift.protocol.TList _list191 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.tagSearch = new ArrayList<String>(_list191.size);
+            for (int _i192 = 0; _i192 < _list191.size; ++_i192)
             {
-              String _elem185;
-              _elem185 = iprot.readString();
-              struct.tagSearch.add(_elem185);
+              String _elem193;
+              _elem193 = iprot.readString();
+              struct.tagSearch.add(_elem193);
             }
           }
           struct.setTagSearchIsSet(true);
@@ -19157,14 +20326,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list186 = iprot.readListBegin();
-                  struct.success = new ArrayList<ImageSummaryRead>(_list186.size);
-                  for (int _i187 = 0; _i187 < _list186.size; ++_i187)
+                  org.apache.thrift.protocol.TList _list194 = iprot.readListBegin();
+                  struct.success = new ArrayList<ImageSummaryRead>(_list194.size);
+                  for (int _i195 = 0; _i195 < _list194.size; ++_i195)
                   {
-                    ImageSummaryRead _elem188;
-                    _elem188 = new ImageSummaryRead();
-                    _elem188.read(iprot);
-                    struct.success.add(_elem188);
+                    ImageSummaryRead _elem196;
+                    _elem196 = new ImageSummaryRead();
+                    _elem196.read(iprot);
+                    struct.success.add(_elem196);
                   }
                   iprot.readListEnd();
                 }
@@ -19210,9 +20379,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (ImageSummaryRead _iter189 : struct.success)
+            for (ImageSummaryRead _iter197 : struct.success)
             {
-              _iter189.write(oprot);
+              _iter197.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -19259,9 +20428,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (ImageSummaryRead _iter190 : struct.success)
+            for (ImageSummaryRead _iter198 : struct.success)
             {
-              _iter190.write(oprot);
+              _iter198.write(oprot);
             }
           }
         }
@@ -19279,14 +20448,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list191 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<ImageSummaryRead>(_list191.size);
-            for (int _i192 = 0; _i192 < _list191.size; ++_i192)
+            org.apache.thrift.protocol.TList _list199 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<ImageSummaryRead>(_list199.size);
+            for (int _i200 = 0; _i200 < _list199.size; ++_i200)
             {
-              ImageSummaryRead _elem193;
-              _elem193 = new ImageSummaryRead();
-              _elem193.read(iprot);
-              struct.success.add(_elem193);
+              ImageSummaryRead _elem201;
+              _elem201 = new ImageSummaryRead();
+              _elem201.read(iprot);
+              struct.success.add(_elem201);
             }
           }
           struct.setSuccessIsSet(true);
@@ -24995,6 +26164,1020 @@ public class SatelliteServer {
 
   }
 
+  public static class deleteImageBase_args implements org.apache.thrift.TBase<deleteImageBase_args, deleteImageBase_args._Fields>, java.io.Serializable, Cloneable, Comparable<deleteImageBase_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteImageBase_args");
+
+    private static final org.apache.thrift.protocol.TField USER_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("userToken", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField IMAGE_BASE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageBaseId", org.apache.thrift.protocol.TType.STRING, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new deleteImageBase_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new deleteImageBase_argsTupleSchemeFactory());
+    }
+
+    public String userToken; // required
+    public String imageBaseId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      USER_TOKEN((short)1, "userToken"),
+      IMAGE_BASE_ID((short)2, "imageBaseId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // USER_TOKEN
+            return USER_TOKEN;
+          case 2: // IMAGE_BASE_ID
+            return IMAGE_BASE_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.USER_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("userToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "Token")));
+      tmpMap.put(_Fields.IMAGE_BASE_ID, new org.apache.thrift.meta_data.FieldMetaData("imageBaseId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "UUID")));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteImageBase_args.class, metaDataMap);
+    }
+
+    public deleteImageBase_args() {
+    }
+
+    public deleteImageBase_args(
+      String userToken,
+      String imageBaseId)
+    {
+      this();
+      this.userToken = userToken;
+      this.imageBaseId = imageBaseId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public deleteImageBase_args(deleteImageBase_args other) {
+      if (other.isSetUserToken()) {
+        this.userToken = other.userToken;
+      }
+      if (other.isSetImageBaseId()) {
+        this.imageBaseId = other.imageBaseId;
+      }
+    }
+
+    public deleteImageBase_args deepCopy() {
+      return new deleteImageBase_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.userToken = null;
+      this.imageBaseId = null;
+    }
+
+    public String getUserToken() {
+      return this.userToken;
+    }
+
+    public deleteImageBase_args setUserToken(String userToken) {
+      this.userToken = userToken;
+      return this;
+    }
+
+    public void unsetUserToken() {
+      this.userToken = null;
+    }
+
+    /** Returns true if field userToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserToken() {
+      return this.userToken != null;
+    }
+
+    public void setUserTokenIsSet(boolean value) {
+      if (!value) {
+        this.userToken = null;
+      }
+    }
+
+    public String getImageBaseId() {
+      return this.imageBaseId;
+    }
+
+    public deleteImageBase_args setImageBaseId(String imageBaseId) {
+      this.imageBaseId = imageBaseId;
+      return this;
+    }
+
+    public void unsetImageBaseId() {
+      this.imageBaseId = null;
+    }
+
+    /** Returns true if field imageBaseId is set (has been assigned a value) and false otherwise */
+    public boolean isSetImageBaseId() {
+      return this.imageBaseId != null;
+    }
+
+    public void setImageBaseIdIsSet(boolean value) {
+      if (!value) {
+        this.imageBaseId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case USER_TOKEN:
+        if (value == null) {
+          unsetUserToken();
+        } else {
+          setUserToken((String)value);
+        }
+        break;
+
+      case IMAGE_BASE_ID:
+        if (value == null) {
+          unsetImageBaseId();
+        } else {
+          setImageBaseId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case USER_TOKEN:
+        return getUserToken();
+
+      case IMAGE_BASE_ID:
+        return getImageBaseId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case USER_TOKEN:
+        return isSetUserToken();
+      case IMAGE_BASE_ID:
+        return isSetImageBaseId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof deleteImageBase_args)
+        return this.equals((deleteImageBase_args)that);
+      return false;
+    }
+
+    public boolean equals(deleteImageBase_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_userToken = true && this.isSetUserToken();
+      boolean that_present_userToken = true && that.isSetUserToken();
+      if (this_present_userToken || that_present_userToken) {
+        if (!(this_present_userToken && that_present_userToken))
+          return false;
+        if (!this.userToken.equals(that.userToken))
+          return false;
+      }
+
+      boolean this_present_imageBaseId = true && this.isSetImageBaseId();
+      boolean that_present_imageBaseId = true && that.isSetImageBaseId();
+      if (this_present_imageBaseId || that_present_imageBaseId) {
+        if (!(this_present_imageBaseId && that_present_imageBaseId))
+          return false;
+        if (!this.imageBaseId.equals(that.imageBaseId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(deleteImageBase_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetUserToken()).compareTo(other.isSetUserToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userToken, other.userToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetImageBaseId()).compareTo(other.isSetImageBaseId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetImageBaseId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageBaseId, other.imageBaseId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("deleteImageBase_args(");
+      boolean first = true;
+
+      sb.append("userToken:");
+      if (this.userToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("imageBaseId:");
+      if (this.imageBaseId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.imageBaseId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class deleteImageBase_argsStandardSchemeFactory implements SchemeFactory {
+      public deleteImageBase_argsStandardScheme getScheme() {
+        return new deleteImageBase_argsStandardScheme();
+      }
+    }
+
+    private static class deleteImageBase_argsStandardScheme extends StandardScheme<deleteImageBase_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteImageBase_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // USER_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userToken = iprot.readString();
+                struct.setUserTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // IMAGE_BASE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.imageBaseId = iprot.readString();
+                struct.setImageBaseIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteImageBase_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.userToken != null) {
+          oprot.writeFieldBegin(USER_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.userToken);
+          oprot.writeFieldEnd();
+        }
+        if (struct.imageBaseId != null) {
+          oprot.writeFieldBegin(IMAGE_BASE_ID_FIELD_DESC);
+          oprot.writeString(struct.imageBaseId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class deleteImageBase_argsTupleSchemeFactory implements SchemeFactory {
+      public deleteImageBase_argsTupleScheme getScheme() {
+        return new deleteImageBase_argsTupleScheme();
+      }
+    }
+
+    private static class deleteImageBase_argsTupleScheme extends TupleScheme<deleteImageBase_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, deleteImageBase_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetUserToken()) {
+          optionals.set(0);
+        }
+        if (struct.isSetImageBaseId()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetUserToken()) {
+          oprot.writeString(struct.userToken);
+        }
+        if (struct.isSetImageBaseId()) {
+          oprot.writeString(struct.imageBaseId);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, deleteImageBase_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.userToken = iprot.readString();
+          struct.setUserTokenIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.imageBaseId = iprot.readString();
+          struct.setImageBaseIdIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class deleteImageBase_result implements org.apache.thrift.TBase<deleteImageBase_result, deleteImageBase_result._Fields>, java.io.Serializable, Cloneable, Comparable<deleteImageBase_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteImageBase_result");
+
+    private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField NOT_FOUND_FIELD_DESC = new org.apache.thrift.protocol.TField("notFound", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new deleteImageBase_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new deleteImageBase_resultTupleSchemeFactory());
+    }
+
+    public TAuthorizationException authError; // required
+    public TNotFoundException notFound; // required
+    public TInternalServerError serverError; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      AUTH_ERROR((short)1, "authError"),
+      NOT_FOUND((short)2, "notFound"),
+      SERVER_ERROR((short)3, "serverError");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // AUTH_ERROR
+            return AUTH_ERROR;
+          case 2: // NOT_FOUND
+            return NOT_FOUND;
+          case 3: // SERVER_ERROR
+            return SERVER_ERROR;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.AUTH_ERROR, new org.apache.thrift.meta_data.FieldMetaData("authError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.NOT_FOUND, new org.apache.thrift.meta_data.FieldMetaData("notFound", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteImageBase_result.class, metaDataMap);
+    }
+
+    public deleteImageBase_result() {
+    }
+
+    public deleteImageBase_result(
+      TAuthorizationException authError,
+      TNotFoundException notFound,
+      TInternalServerError serverError)
+    {
+      this();
+      this.authError = authError;
+      this.notFound = notFound;
+      this.serverError = serverError;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public deleteImageBase_result(deleteImageBase_result other) {
+      if (other.isSetAuthError()) {
+        this.authError = new TAuthorizationException(other.authError);
+      }
+      if (other.isSetNotFound()) {
+        this.notFound = new TNotFoundException(other.notFound);
+      }
+      if (other.isSetServerError()) {
+        this.serverError = new TInternalServerError(other.serverError);
+      }
+    }
+
+    public deleteImageBase_result deepCopy() {
+      return new deleteImageBase_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.authError = null;
+      this.notFound = null;
+      this.serverError = null;
+    }
+
+    public TAuthorizationException getAuthError() {
+      return this.authError;
+    }
+
+    public deleteImageBase_result setAuthError(TAuthorizationException authError) {
+      this.authError = authError;
+      return this;
+    }
+
+    public void unsetAuthError() {
+      this.authError = null;
+    }
+
+    /** Returns true if field authError is set (has been assigned a value) and false otherwise */
+    public boolean isSetAuthError() {
+      return this.authError != null;
+    }
+
+    public void setAuthErrorIsSet(boolean value) {
+      if (!value) {
+        this.authError = null;
+      }
+    }
+
+    public TNotFoundException getNotFound() {
+      return this.notFound;
+    }
+
+    public deleteImageBase_result setNotFound(TNotFoundException notFound) {
+      this.notFound = notFound;
+      return this;
+    }
+
+    public void unsetNotFound() {
+      this.notFound = null;
+    }
+
+    /** Returns true if field notFound is set (has been assigned a value) and false otherwise */
+    public boolean isSetNotFound() {
+      return this.notFound != null;
+    }
+
+    public void setNotFoundIsSet(boolean value) {
+      if (!value) {
+        this.notFound = null;
+      }
+    }
+
+    public TInternalServerError getServerError() {
+      return this.serverError;
+    }
+
+    public deleteImageBase_result setServerError(TInternalServerError serverError) {
+      this.serverError = serverError;
+      return this;
+    }
+
+    public void unsetServerError() {
+      this.serverError = null;
+    }
+
+    /** Returns true if field serverError is set (has been assigned a value) and false otherwise */
+    public boolean isSetServerError() {
+      return this.serverError != null;
+    }
+
+    public void setServerErrorIsSet(boolean value) {
+      if (!value) {
+        this.serverError = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case AUTH_ERROR:
+        if (value == null) {
+          unsetAuthError();
+        } else {
+          setAuthError((TAuthorizationException)value);
+        }
+        break;
+
+      case NOT_FOUND:
+        if (value == null) {
+          unsetNotFound();
+        } else {
+          setNotFound((TNotFoundException)value);
+        }
+        break;
+
+      case SERVER_ERROR:
+        if (value == null) {
+          unsetServerError();
+        } else {
+          setServerError((TInternalServerError)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case AUTH_ERROR:
+        return getAuthError();
+
+      case NOT_FOUND:
+        return getNotFound();
+
+      case SERVER_ERROR:
+        return getServerError();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case AUTH_ERROR:
+        return isSetAuthError();
+      case NOT_FOUND:
+        return isSetNotFound();
+      case SERVER_ERROR:
+        return isSetServerError();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof deleteImageBase_result)
+        return this.equals((deleteImageBase_result)that);
+      return false;
+    }
+
+    public boolean equals(deleteImageBase_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_authError = true && this.isSetAuthError();
+      boolean that_present_authError = true && that.isSetAuthError();
+      if (this_present_authError || that_present_authError) {
+        if (!(this_present_authError && that_present_authError))
+          return false;
+        if (!this.authError.equals(that.authError))
+          return false;
+      }
+
+      boolean this_present_notFound = true && this.isSetNotFound();
+      boolean that_present_notFound = true && that.isSetNotFound();
+      if (this_present_notFound || that_present_notFound) {
+        if (!(this_present_notFound && that_present_notFound))
+          return false;
+        if (!this.notFound.equals(that.notFound))
+          return false;
+      }
+
+      boolean this_present_serverError = true && this.isSetServerError();
+      boolean that_present_serverError = true && that.isSetServerError();
+      if (this_present_serverError || that_present_serverError) {
+        if (!(this_present_serverError && that_present_serverError))
+          return false;
+        if (!this.serverError.equals(that.serverError))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(deleteImageBase_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAuthError()).compareTo(other.isSetAuthError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAuthError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authError, other.authError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetNotFound()).compareTo(other.isSetNotFound());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetNotFound()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.notFound, other.notFound);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetServerError()).compareTo(other.isSetServerError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetServerError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverError, other.serverError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("deleteImageBase_result(");
+      boolean first = true;
+
+      sb.append("authError:");
+      if (this.authError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.authError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("notFound:");
+      if (this.notFound == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.notFound);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("serverError:");
+      if (this.serverError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.serverError);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class deleteImageBase_resultStandardSchemeFactory implements SchemeFactory {
+      public deleteImageBase_resultStandardScheme getScheme() {
+        return new deleteImageBase_resultStandardScheme();
+      }
+    }
+
+    private static class deleteImageBase_resultStandardScheme extends StandardScheme<deleteImageBase_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteImageBase_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // AUTH_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.authError = new TAuthorizationException();
+                struct.authError.read(iprot);
+                struct.setAuthErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // NOT_FOUND
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.notFound = new TNotFoundException();
+                struct.notFound.read(iprot);
+                struct.setNotFoundIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // SERVER_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.serverError = new TInternalServerError();
+                struct.serverError.read(iprot);
+                struct.setServerErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteImageBase_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.authError != null) {
+          oprot.writeFieldBegin(AUTH_ERROR_FIELD_DESC);
+          struct.authError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.notFound != null) {
+          oprot.writeFieldBegin(NOT_FOUND_FIELD_DESC);
+          struct.notFound.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.serverError != null) {
+          oprot.writeFieldBegin(SERVER_ERROR_FIELD_DESC);
+          struct.serverError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class deleteImageBase_resultTupleSchemeFactory implements SchemeFactory {
+      public deleteImageBase_resultTupleScheme getScheme() {
+        return new deleteImageBase_resultTupleScheme();
+      }
+    }
+
+    private static class deleteImageBase_resultTupleScheme extends TupleScheme<deleteImageBase_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, deleteImageBase_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetAuthError()) {
+          optionals.set(0);
+        }
+        if (struct.isSetNotFound()) {
+          optionals.set(1);
+        }
+        if (struct.isSetServerError()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetAuthError()) {
+          struct.authError.write(oprot);
+        }
+        if (struct.isSetNotFound()) {
+          struct.notFound.write(oprot);
+        }
+        if (struct.isSetServerError()) {
+          struct.serverError.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, deleteImageBase_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.authError = new TAuthorizationException();
+          struct.authError.read(iprot);
+          struct.setAuthErrorIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.notFound = new TNotFoundException();
+          struct.notFound.read(iprot);
+          struct.setNotFoundIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.serverError = new TInternalServerError();
+          struct.serverError.read(iprot);
+          struct.setServerErrorIsSet(true);
+        }
+      }
+    }
+
+  }
+
   public static class writeImagePermissions_args implements org.apache.thrift.TBase<writeImagePermissions_args, writeImagePermissions_args._Fields>, java.io.Serializable, Cloneable, Comparable<writeImagePermissions_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("writeImagePermissions_args");
 
@@ -25479,16 +27662,16 @@ public class SatelliteServer {
             case 3: // PERMISSIONS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map194 = iprot.readMapBegin();
-                  struct.permissions = new HashMap<String,ImagePermissions>(2*_map194.size);
-                  for (int _i195 = 0; _i195 < _map194.size; ++_i195)
+                  org.apache.thrift.protocol.TMap _map202 = iprot.readMapBegin();
+                  struct.permissions = new HashMap<String,ImagePermissions>(2*_map202.size);
+                  for (int _i203 = 0; _i203 < _map202.size; ++_i203)
                   {
-                    String _key196;
-                    ImagePermissions _val197;
-                    _key196 = iprot.readString();
-                    _val197 = new ImagePermissions();
-                    _val197.read(iprot);
-                    struct.permissions.put(_key196, _val197);
+                    String _key204;
+                    ImagePermissions _val205;
+                    _key204 = iprot.readString();
+                    _val205 = new ImagePermissions();
+                    _val205.read(iprot);
+                    struct.permissions.put(_key204, _val205);
                   }
                   iprot.readMapEnd();
                 }
@@ -25526,10 +27709,10 @@ public class SatelliteServer {
           oprot.writeFieldBegin(PERMISSIONS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.permissions.size()));
-            for (Map.Entry<String, ImagePermissions> _iter198 : struct.permissions.entrySet())
+            for (Map.Entry<String, ImagePermissions> _iter206 : struct.permissions.entrySet())
             {
-              oprot.writeString(_iter198.getKey());
-              _iter198.getValue().write(oprot);
+              oprot.writeString(_iter206.getKey());
+              _iter206.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -25572,10 +27755,10 @@ public class SatelliteServer {
         if (struct.isSetPermissions()) {
           {
             oprot.writeI32(struct.permissions.size());
-            for (Map.Entry<String, ImagePermissions> _iter199 : struct.permissions.entrySet())
+            for (Map.Entry<String, ImagePermissions> _iter207 : struct.permissions.entrySet())
             {
-              oprot.writeString(_iter199.getKey());
-              _iter199.getValue().write(oprot);
+              oprot.writeString(_iter207.getKey());
+              _iter207.getValue().write(oprot);
             }
           }
         }
@@ -25595,16 +27778,16 @@ public class SatelliteServer {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TMap _map200 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.permissions = new HashMap<String,ImagePermissions>(2*_map200.size);
-            for (int _i201 = 0; _i201 < _map200.size; ++_i201)
+            org.apache.thrift.protocol.TMap _map208 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.permissions = new HashMap<String,ImagePermissions>(2*_map208.size);
+            for (int _i209 = 0; _i209 < _map208.size; ++_i209)
             {
-              String _key202;
-              ImagePermissions _val203;
-              _key202 = iprot.readString();
-              _val203 = new ImagePermissions();
-              _val203.read(iprot);
-              struct.permissions.put(_key202, _val203);
+              String _key210;
+              ImagePermissions _val211;
+              _key210 = iprot.readString();
+              _val211 = new ImagePermissions();
+              _val211.read(iprot);
+              struct.permissions.put(_key210, _val211);
             }
           }
           struct.setPermissionsIsSet(true);
@@ -27173,16 +29356,16 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map204 = iprot.readMapBegin();
-                  struct.success = new HashMap<String,ImagePermissions>(2*_map204.size);
-                  for (int _i205 = 0; _i205 < _map204.size; ++_i205)
+                  org.apache.thrift.protocol.TMap _map212 = iprot.readMapBegin();
+                  struct.success = new HashMap<String,ImagePermissions>(2*_map212.size);
+                  for (int _i213 = 0; _i213 < _map212.size; ++_i213)
                   {
-                    String _key206;
-                    ImagePermissions _val207;
-                    _key206 = iprot.readString();
-                    _val207 = new ImagePermissions();
-                    _val207.read(iprot);
-                    struct.success.put(_key206, _val207);
+                    String _key214;
+                    ImagePermissions _val215;
+                    _key214 = iprot.readString();
+                    _val215 = new ImagePermissions();
+                    _val215.read(iprot);
+                    struct.success.put(_key214, _val215);
                   }
                   iprot.readMapEnd();
                 }
@@ -27237,10 +29420,10 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Map.Entry<String, ImagePermissions> _iter208 : struct.success.entrySet())
+            for (Map.Entry<String, ImagePermissions> _iter216 : struct.success.entrySet())
             {
-              oprot.writeString(_iter208.getKey());
-              _iter208.getValue().write(oprot);
+              oprot.writeString(_iter216.getKey());
+              _iter216.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -27295,10 +29478,10 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<String, ImagePermissions> _iter209 : struct.success.entrySet())
+            for (Map.Entry<String, ImagePermissions> _iter217 : struct.success.entrySet())
             {
-              oprot.writeString(_iter209.getKey());
-              _iter209.getValue().write(oprot);
+              oprot.writeString(_iter217.getKey());
+              _iter217.getValue().write(oprot);
             }
           }
         }
@@ -27319,16 +29502,16 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map210 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new HashMap<String,ImagePermissions>(2*_map210.size);
-            for (int _i211 = 0; _i211 < _map210.size; ++_i211)
+            org.apache.thrift.protocol.TMap _map218 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new HashMap<String,ImagePermissions>(2*_map218.size);
+            for (int _i219 = 0; _i219 < _map218.size; ++_i219)
             {
-              String _key212;
-              ImagePermissions _val213;
-              _key212 = iprot.readString();
-              _val213 = new ImagePermissions();
-              _val213.read(iprot);
-              struct.success.put(_key212, _val213);
+              String _key220;
+              ImagePermissions _val221;
+              _key220 = iprot.readString();
+              _val221 = new ImagePermissions();
+              _val221.read(iprot);
+              struct.success.put(_key220, _val221);
             }
           }
           struct.setSuccessIsSet(true);
@@ -32936,14 +35119,14 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list214 = iprot.readListBegin();
-                  struct.success = new ArrayList<LectureSummary>(_list214.size);
-                  for (int _i215 = 0; _i215 < _list214.size; ++_i215)
+                  org.apache.thrift.protocol.TList _list222 = iprot.readListBegin();
+                  struct.success = new ArrayList<LectureSummary>(_list222.size);
+                  for (int _i223 = 0; _i223 < _list222.size; ++_i223)
                   {
-                    LectureSummary _elem216;
-                    _elem216 = new LectureSummary();
-                    _elem216.read(iprot);
-                    struct.success.add(_elem216);
+                    LectureSummary _elem224;
+                    _elem224 = new LectureSummary();
+                    _elem224.read(iprot);
+                    struct.success.add(_elem224);
                   }
                   iprot.readListEnd();
                 }
@@ -32989,9 +35172,9 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (LectureSummary _iter217 : struct.success)
+            for (LectureSummary _iter225 : struct.success)
             {
-              _iter217.write(oprot);
+              _iter225.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -33038,9 +35221,9 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (LectureSummary _iter218 : struct.success)
+            for (LectureSummary _iter226 : struct.success)
             {
-              _iter218.write(oprot);
+              _iter226.write(oprot);
             }
           }
         }
@@ -33058,14 +35241,14 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list219 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<LectureSummary>(_list219.size);
-            for (int _i220 = 0; _i220 < _list219.size; ++_i220)
+            org.apache.thrift.protocol.TList _list227 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<LectureSummary>(_list227.size);
+            for (int _i228 = 0; _i228 < _list227.size; ++_i228)
             {
-              LectureSummary _elem221;
-              _elem221 = new LectureSummary();
-              _elem221.read(iprot);
-              struct.success.add(_elem221);
+              LectureSummary _elem229;
+              _elem229 = new LectureSummary();
+              _elem229.read(iprot);
+              struct.success.add(_elem229);
             }
           }
           struct.setSuccessIsSet(true);
@@ -35702,16 +37885,16 @@ public class SatelliteServer {
             case 3: // PERMISSIONS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map222 = iprot.readMapBegin();
-                  struct.permissions = new HashMap<String,LecturePermissions>(2*_map222.size);
-                  for (int _i223 = 0; _i223 < _map222.size; ++_i223)
+                  org.apache.thrift.protocol.TMap _map230 = iprot.readMapBegin();
+                  struct.permissions = new HashMap<String,LecturePermissions>(2*_map230.size);
+                  for (int _i231 = 0; _i231 < _map230.size; ++_i231)
                   {
-                    String _key224;
-                    LecturePermissions _val225;
-                    _key224 = iprot.readString();
-                    _val225 = new LecturePermissions();
-                    _val225.read(iprot);
-                    struct.permissions.put(_key224, _val225);
+                    String _key232;
+                    LecturePermissions _val233;
+                    _key232 = iprot.readString();
+                    _val233 = new LecturePermissions();
+                    _val233.read(iprot);
+                    struct.permissions.put(_key232, _val233);
                   }
                   iprot.readMapEnd();
                 }
@@ -35749,10 +37932,10 @@ public class SatelliteServer {
           oprot.writeFieldBegin(PERMISSIONS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.permissions.size()));
-            for (Map.Entry<String, LecturePermissions> _iter226 : struct.permissions.entrySet())
+            for (Map.Entry<String, LecturePermissions> _iter234 : struct.permissions.entrySet())
             {
-              oprot.writeString(_iter226.getKey());
-              _iter226.getValue().write(oprot);
+              oprot.writeString(_iter234.getKey());
+              _iter234.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -35795,10 +37978,10 @@ public class SatelliteServer {
         if (struct.isSetPermissions()) {
           {
             oprot.writeI32(struct.permissions.size());
-            for (Map.Entry<String, LecturePermissions> _iter227 : struct.permissions.entrySet())
+            for (Map.Entry<String, LecturePermissions> _iter235 : struct.permissions.entrySet())
             {
-              oprot.writeString(_iter227.getKey());
-              _iter227.getValue().write(oprot);
+              oprot.writeString(_iter235.getKey());
+              _iter235.getValue().write(oprot);
             }
           }
         }
@@ -35818,16 +38001,16 @@ public class SatelliteServer {
         }
         if (incoming.get(2)) {
           {
-            org.apache.thrift.protocol.TMap _map228 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.permissions = new HashMap<String,LecturePermissions>(2*_map228.size);
-            for (int _i229 = 0; _i229 < _map228.size; ++_i229)
+            org.apache.thrift.protocol.TMap _map236 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.permissions = new HashMap<String,LecturePermissions>(2*_map236.size);
+            for (int _i237 = 0; _i237 < _map236.size; ++_i237)
             {
-              String _key230;
-              LecturePermissions _val231;
-              _key230 = iprot.readString();
-              _val231 = new LecturePermissions();
-              _val231.read(iprot);
-              struct.permissions.put(_key230, _val231);
+              String _key238;
+              LecturePermissions _val239;
+              _key238 = iprot.readString();
+              _val239 = new LecturePermissions();
+              _val239.read(iprot);
+              struct.permissions.put(_key238, _val239);
             }
           }
           struct.setPermissionsIsSet(true);
@@ -37396,16 +39579,16 @@ public class SatelliteServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map232 = iprot.readMapBegin();
-                  struct.success = new HashMap<String,LecturePermissions>(2*_map232.size);
-                  for (int _i233 = 0; _i233 < _map232.size; ++_i233)
+                  org.apache.thrift.protocol.TMap _map240 = iprot.readMapBegin();
+                  struct.success = new HashMap<String,LecturePermissions>(2*_map240.size);
+                  for (int _i241 = 0; _i241 < _map240.size; ++_i241)
                   {
-                    String _key234;
-                    LecturePermissions _val235;
-                    _key234 = iprot.readString();
-                    _val235 = new LecturePermissions();
-                    _val235.read(iprot);
-                    struct.success.put(_key234, _val235);
+                    String _key242;
+                    LecturePermissions _val243;
+                    _key242 = iprot.readString();
+                    _val243 = new LecturePermissions();
+                    _val243.read(iprot);
+                    struct.success.put(_key242, _val243);
                   }
                   iprot.readMapEnd();
                 }
@@ -37460,10 +39643,10 @@ public class SatelliteServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Map.Entry<String, LecturePermissions> _iter236 : struct.success.entrySet())
+            for (Map.Entry<String, LecturePermissions> _iter244 : struct.success.entrySet())
             {
-              oprot.writeString(_iter236.getKey());
-              _iter236.getValue().write(oprot);
+              oprot.writeString(_iter244.getKey());
+              _iter244.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -37518,10 +39701,10 @@ public class SatelliteServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<String, LecturePermissions> _iter237 : struct.success.entrySet())
+            for (Map.Entry<String, LecturePermissions> _iter245 : struct.success.entrySet())
             {
-              oprot.writeString(_iter237.getKey());
-              _iter237.getValue().write(oprot);
+              oprot.writeString(_iter245.getKey());
+              _iter245.getValue().write(oprot);
             }
           }
         }
@@ -37542,16 +39725,16 @@ public class SatelliteServer {
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map238 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new HashMap<String,LecturePermissions>(2*_map238.size);
-            for (int _i239 = 0; _i239 < _map238.size; ++_i239)
+            org.apache.thrift.protocol.TMap _map246 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new HashMap<String,LecturePermissions>(2*_map246.size);
+            for (int _i247 = 0; _i247 < _map246.size; ++_i247)
             {
-              String _key240;
-              LecturePermissions _val241;
-              _key240 = iprot.readString();
-              _val241 = new LecturePermissions();
-              _val241.read(iprot);
-              struct.success.put(_key240, _val241);
+              String _key248;
+              LecturePermissions _val249;
+              _key248 = iprot.readString();
+              _val249 = new LecturePermissions();
+              _val249.read(iprot);
+              struct.success.put(_key248, _val249);
             }
           }
           struct.setSuccessIsSet(true);
