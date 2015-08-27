@@ -40,7 +40,7 @@ public class SatelliteServer {
 
     public SatelliteConfig getConfiguration() throws org.apache.thrift.TException;
 
-    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException;
+    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription) throws TTransferRejectedException, TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException;
 
     public void updateBlockHashes(String uploadToken, List<ByteBuffer> blockHashes) throws TInvalidTokenException, org.apache.thrift.TException;
 
@@ -48,19 +48,23 @@ public class SatelliteServer {
 
     public TransferStatus queryUploadStatus(String uploadToken) throws TInvalidTokenException, org.apache.thrift.TException;
 
-    public TransferInformation requestDownload(String userToken, String imageVersionId) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException;
+    public TransferInformation requestDownload(String userToken, String imageVersionId) throws TTransferRejectedException, TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException;
 
     public void cancelDownload(String downloadToken) throws TInvalidTokenException, org.apache.thrift.TException;
 
-    public ByteBuffer getMachineDescription(String userToken, String imageVersionId) throws TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException;
+    public ByteBuffer getMachineDescription(String userToken, String imageVersionId) throws TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException;
 
-    public void isAuthenticated(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
+    public void isAuthenticated(String userToken) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
 
-    public WhoamiInfo whoami(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
+    public WhoamiInfo whoami(String userToken) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
 
-    public void invalidateSession(String userToken) throws org.apache.thrift.TException;
+    public void invalidateSession(String userToken) throws TInvalidTokenException, org.apache.thrift.TException;
 
-    public List<UserInfo> getUserList(String userToken, int page) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
+    public List<UserInfo> getUserList(String userToken, int page) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
+
+    public SatelliteUserConfig getUserConfig(String userToken) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
+
+    public void setUserConfig(String userToken, SatelliteUserConfig config) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
 
     public List<OperatingSystem> getOperatingSystems() throws org.apache.thrift.TException;
 
@@ -68,43 +72,45 @@ public class SatelliteServer {
 
     public List<Organization> getAllOrganizations() throws org.apache.thrift.TException;
 
-    public List<ImageSummaryRead> getImageList(String userToken, List<String> tagSearch, int page) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
+    public SatelliteStatus getStatus() throws org.apache.thrift.TException;
 
-    public ImageDetailsRead getImageDetails(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public List<ImageSummaryRead> getImageList(String userToken, List<String> tagSearch, int page) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
 
-    public String createImage(String userToken, String imageName) throws TAuthorizationException, TImageDataException, TInternalServerError, org.apache.thrift.TException;
+    public ImageDetailsRead getImageDetails(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public void updateImageBase(String userToken, String imageBaseId, ImageBaseWrite image) throws TAuthorizationException, TNotFoundException, TImageDataException, TInternalServerError, org.apache.thrift.TException;
+    public String createImage(String userToken, String imageName) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
 
-    public void updateImageVersion(String userToken, String imageVersionId, ImageVersionWrite image) throws TAuthorizationException, TNotFoundException, TImageDataException, TInternalServerError, org.apache.thrift.TException;
+    public void updateImageBase(String userToken, String imageBaseId, ImageBaseWrite image) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public void deleteImageVersion(String userToken, String imageVersionId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public void updateImageVersion(String userToken, String imageVersionId, ImageVersionWrite image) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public void deleteImageBase(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public void deleteImageVersion(String userToken, String imageVersionId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public void writeImagePermissions(String userToken, String imageBaseId, Map<String,ImagePermissions> permissions) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public void deleteImageBase(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public Map<String,ImagePermissions> getImagePermissions(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public void writeImagePermissions(String userToken, String imageBaseId, Map<String,ImagePermissions> permissions) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public void setImageOwner(String userToken, String imageBaseId, String newOwnerId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public Map<String,ImagePermissions> getImagePermissions(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public void setImageVersionExpiry(String userToken, String imageBaseId, long expireTime) throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException;
+    public void setImageOwner(String userToken, String imageBaseId, String newOwnerId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException;
+    public void setImageVersionExpiry(String userToken, String imageBaseId, long expireTime) throws TAuthorizationException, TNotFoundException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException;
 
-    public void updateLecture(String userToken, String lectureId, LectureWrite lecture) throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException;
+    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException;
 
-    public List<LectureSummary> getLectureList(String userToken, int page) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException;
+    public void updateLecture(String userToken, String lectureId, LectureWrite lecture) throws TAuthorizationException, TNotFoundException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException;
 
-    public LectureRead getLectureDetails(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public List<LectureSummary> getLectureList(String userToken, int page) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
 
-    public void deleteLecture(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public LectureRead getLectureDetails(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public void writeLecturePermissions(String userToken, String lectureId, Map<String,LecturePermissions> permissions) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public void deleteLecture(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public Map<String,LecturePermissions> getLecturePermissions(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public void writeLecturePermissions(String userToken, String lectureId, Map<String,LecturePermissions> permissions) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public void setLectureOwner(String userToken, String lectureId, String newOwnerId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException;
+    public Map<String,LecturePermissions> getLecturePermissions(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
+
+    public void setLectureOwner(String userToken, String lectureId, String newOwnerId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
   }
 
@@ -136,11 +142,17 @@ public class SatelliteServer {
 
     public void getUserList(String userToken, int page, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
+    public void getUserConfig(String userToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void setUserConfig(String userToken, SatelliteUserConfig config, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
     public void getOperatingSystems(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getVirtualizers(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getAllOrganizations(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void getStatus(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getImageList(String userToken, List<String> tagSearch, int page, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -246,7 +258,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getConfiguration failed: unknown result");
     }
 
-    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
+    public TransferInformation requestImageVersionUpload(String userToken, String imageBaseId, long fileSize, List<ByteBuffer> blockHashes, ByteBuffer machineDescription) throws TTransferRejectedException, TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException
     {
       send_requestImageVersionUpload(userToken, imageBaseId, fileSize, blockHashes, machineDescription);
       return recv_requestImageVersionUpload();
@@ -263,7 +275,7 @@ public class SatelliteServer {
       sendBase("requestImageVersionUpload", args);
     }
 
-    public TransferInformation recv_requestImageVersionUpload() throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
+    public TransferInformation recv_requestImageVersionUpload() throws TTransferRejectedException, TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException
     {
       requestImageVersionUpload_result result = new requestImageVersionUpload_result();
       receiveBase(result, "requestImageVersionUpload");
@@ -358,7 +370,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "queryUploadStatus failed: unknown result");
     }
 
-    public TransferInformation requestDownload(String userToken, String imageVersionId) throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
+    public TransferInformation requestDownload(String userToken, String imageVersionId) throws TTransferRejectedException, TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException
     {
       send_requestDownload(userToken, imageVersionId);
       return recv_requestDownload();
@@ -372,7 +384,7 @@ public class SatelliteServer {
       sendBase("requestDownload", args);
     }
 
-    public TransferInformation recv_requestDownload() throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
+    public TransferInformation recv_requestDownload() throws TTransferRejectedException, TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException
     {
       requestDownload_result result = new requestDownload_result();
       receiveBase(result, "requestDownload");
@@ -417,7 +429,7 @@ public class SatelliteServer {
       return;
     }
 
-    public ByteBuffer getMachineDescription(String userToken, String imageVersionId) throws TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
+    public ByteBuffer getMachineDescription(String userToken, String imageVersionId) throws TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException
     {
       send_getMachineDescription(userToken, imageVersionId);
       return recv_getMachineDescription();
@@ -431,7 +443,7 @@ public class SatelliteServer {
       sendBase("getMachineDescription", args);
     }
 
-    public ByteBuffer recv_getMachineDescription() throws TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException
+    public ByteBuffer recv_getMachineDescription() throws TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException
     {
       getMachineDescription_result result = new getMachineDescription_result();
       receiveBase(result, "getMachineDescription");
@@ -450,7 +462,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getMachineDescription failed: unknown result");
     }
 
-    public void isAuthenticated(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public void isAuthenticated(String userToken) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       send_isAuthenticated(userToken);
       recv_isAuthenticated();
@@ -463,7 +475,7 @@ public class SatelliteServer {
       sendBase("isAuthenticated", args);
     }
 
-    public void recv_isAuthenticated() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public void recv_isAuthenticated() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       isAuthenticated_result result = new isAuthenticated_result();
       receiveBase(result, "isAuthenticated");
@@ -476,7 +488,7 @@ public class SatelliteServer {
       return;
     }
 
-    public WhoamiInfo whoami(String userToken) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public WhoamiInfo whoami(String userToken) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       send_whoami(userToken);
       return recv_whoami();
@@ -489,7 +501,7 @@ public class SatelliteServer {
       sendBase("whoami", args);
     }
 
-    public WhoamiInfo recv_whoami() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public WhoamiInfo recv_whoami() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       whoami_result result = new whoami_result();
       receiveBase(result, "whoami");
@@ -505,7 +517,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "whoami failed: unknown result");
     }
 
-    public void invalidateSession(String userToken) throws org.apache.thrift.TException
+    public void invalidateSession(String userToken) throws TInvalidTokenException, org.apache.thrift.TException
     {
       send_invalidateSession(userToken);
       recv_invalidateSession();
@@ -518,14 +530,17 @@ public class SatelliteServer {
       sendBase("invalidateSession", args);
     }
 
-    public void recv_invalidateSession() throws org.apache.thrift.TException
+    public void recv_invalidateSession() throws TInvalidTokenException, org.apache.thrift.TException
     {
       invalidateSession_result result = new invalidateSession_result();
       receiveBase(result, "invalidateSession");
+      if (result.ex != null) {
+        throw result.ex;
+      }
       return;
     }
 
-    public List<UserInfo> getUserList(String userToken, int page) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public List<UserInfo> getUserList(String userToken, int page) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       send_getUserList(userToken, page);
       return recv_getUserList();
@@ -539,7 +554,7 @@ public class SatelliteServer {
       sendBase("getUserList", args);
     }
 
-    public List<UserInfo> recv_getUserList() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public List<UserInfo> recv_getUserList() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       getUserList_result result = new getUserList_result();
       receiveBase(result, "getUserList");
@@ -553,6 +568,62 @@ public class SatelliteServer {
         throw result.serverError;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getUserList failed: unknown result");
+    }
+
+    public SatelliteUserConfig getUserConfig(String userToken) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
+    {
+      send_getUserConfig(userToken);
+      return recv_getUserConfig();
+    }
+
+    public void send_getUserConfig(String userToken) throws org.apache.thrift.TException
+    {
+      getUserConfig_args args = new getUserConfig_args();
+      args.setUserToken(userToken);
+      sendBase("getUserConfig", args);
+    }
+
+    public SatelliteUserConfig recv_getUserConfig() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
+    {
+      getUserConfig_result result = new getUserConfig_result();
+      receiveBase(result, "getUserConfig");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.failure != null) {
+        throw result.failure;
+      }
+      if (result.serverError != null) {
+        throw result.serverError;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getUserConfig failed: unknown result");
+    }
+
+    public void setUserConfig(String userToken, SatelliteUserConfig config) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
+    {
+      send_setUserConfig(userToken, config);
+      recv_setUserConfig();
+    }
+
+    public void send_setUserConfig(String userToken, SatelliteUserConfig config) throws org.apache.thrift.TException
+    {
+      setUserConfig_args args = new setUserConfig_args();
+      args.setUserToken(userToken);
+      args.setConfig(config);
+      sendBase("setUserConfig", args);
+    }
+
+    public void recv_setUserConfig() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
+    {
+      setUserConfig_result result = new setUserConfig_result();
+      receiveBase(result, "setUserConfig");
+      if (result.failure != null) {
+        throw result.failure;
+      }
+      if (result.serverError != null) {
+        throw result.serverError;
+      }
+      return;
     }
 
     public List<OperatingSystem> getOperatingSystems() throws org.apache.thrift.TException
@@ -621,7 +692,29 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllOrganizations failed: unknown result");
     }
 
-    public List<ImageSummaryRead> getImageList(String userToken, List<String> tagSearch, int page) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public SatelliteStatus getStatus() throws org.apache.thrift.TException
+    {
+      send_getStatus();
+      return recv_getStatus();
+    }
+
+    public void send_getStatus() throws org.apache.thrift.TException
+    {
+      getStatus_args args = new getStatus_args();
+      sendBase("getStatus", args);
+    }
+
+    public SatelliteStatus recv_getStatus() throws org.apache.thrift.TException
+    {
+      getStatus_result result = new getStatus_result();
+      receiveBase(result, "getStatus");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getStatus failed: unknown result");
+    }
+
+    public List<ImageSummaryRead> getImageList(String userToken, List<String> tagSearch, int page) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       send_getImageList(userToken, tagSearch, page);
       return recv_getImageList();
@@ -636,7 +729,7 @@ public class SatelliteServer {
       sendBase("getImageList", args);
     }
 
-    public List<ImageSummaryRead> recv_getImageList() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public List<ImageSummaryRead> recv_getImageList() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       getImageList_result result = new getImageList_result();
       receiveBase(result, "getImageList");
@@ -652,7 +745,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getImageList failed: unknown result");
     }
 
-    public ImageDetailsRead getImageDetails(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public ImageDetailsRead getImageDetails(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_getImageDetails(userToken, imageBaseId);
       return recv_getImageDetails();
@@ -666,7 +759,7 @@ public class SatelliteServer {
       sendBase("getImageDetails", args);
     }
 
-    public ImageDetailsRead recv_getImageDetails() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public ImageDetailsRead recv_getImageDetails() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       getImageDetails_result result = new getImageDetails_result();
       receiveBase(result, "getImageDetails");
@@ -685,7 +778,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getImageDetails failed: unknown result");
     }
 
-    public String createImage(String userToken, String imageName) throws TAuthorizationException, TImageDataException, TInternalServerError, org.apache.thrift.TException
+    public String createImage(String userToken, String imageName) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       send_createImage(userToken, imageName);
       return recv_createImage();
@@ -699,7 +792,7 @@ public class SatelliteServer {
       sendBase("createImage", args);
     }
 
-    public String recv_createImage() throws TAuthorizationException, TImageDataException, TInternalServerError, org.apache.thrift.TException
+    public String recv_createImage() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       createImage_result result = new createImage_result();
       receiveBase(result, "createImage");
@@ -709,16 +802,13 @@ public class SatelliteServer {
       if (result.authError != null) {
         throw result.authError;
       }
-      if (result.imgError != null) {
-        throw result.imgError;
-      }
-      if (result.serverError != null) {
-        throw result.serverError;
+      if (result.error != null) {
+        throw result.error;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createImage failed: unknown result");
     }
 
-    public void updateImageBase(String userToken, String imageBaseId, ImageBaseWrite image) throws TAuthorizationException, TNotFoundException, TImageDataException, TInternalServerError, org.apache.thrift.TException
+    public void updateImageBase(String userToken, String imageBaseId, ImageBaseWrite image) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_updateImageBase(userToken, imageBaseId, image);
       recv_updateImageBase();
@@ -733,7 +823,7 @@ public class SatelliteServer {
       sendBase("updateImageBase", args);
     }
 
-    public void recv_updateImageBase() throws TAuthorizationException, TNotFoundException, TImageDataException, TInternalServerError, org.apache.thrift.TException
+    public void recv_updateImageBase() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       updateImageBase_result result = new updateImageBase_result();
       receiveBase(result, "updateImageBase");
@@ -746,13 +836,10 @@ public class SatelliteServer {
       if (result.imgError != null) {
         throw result.imgError;
       }
-      if (result.serverError != null) {
-        throw result.serverError;
-      }
       return;
     }
 
-    public void updateImageVersion(String userToken, String imageVersionId, ImageVersionWrite image) throws TAuthorizationException, TNotFoundException, TImageDataException, TInternalServerError, org.apache.thrift.TException
+    public void updateImageVersion(String userToken, String imageVersionId, ImageVersionWrite image) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_updateImageVersion(userToken, imageVersionId, image);
       recv_updateImageVersion();
@@ -767,7 +854,7 @@ public class SatelliteServer {
       sendBase("updateImageVersion", args);
     }
 
-    public void recv_updateImageVersion() throws TAuthorizationException, TNotFoundException, TImageDataException, TInternalServerError, org.apache.thrift.TException
+    public void recv_updateImageVersion() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       updateImageVersion_result result = new updateImageVersion_result();
       receiveBase(result, "updateImageVersion");
@@ -780,13 +867,10 @@ public class SatelliteServer {
       if (result.imgError != null) {
         throw result.imgError;
       }
-      if (result.serverError != null) {
-        throw result.serverError;
-      }
       return;
     }
 
-    public void deleteImageVersion(String userToken, String imageVersionId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void deleteImageVersion(String userToken, String imageVersionId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_deleteImageVersion(userToken, imageVersionId);
       recv_deleteImageVersion();
@@ -800,7 +884,7 @@ public class SatelliteServer {
       sendBase("deleteImageVersion", args);
     }
 
-    public void recv_deleteImageVersion() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void recv_deleteImageVersion() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       deleteImageVersion_result result = new deleteImageVersion_result();
       receiveBase(result, "deleteImageVersion");
@@ -816,7 +900,7 @@ public class SatelliteServer {
       return;
     }
 
-    public void deleteImageBase(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void deleteImageBase(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_deleteImageBase(userToken, imageBaseId);
       recv_deleteImageBase();
@@ -830,7 +914,7 @@ public class SatelliteServer {
       sendBase("deleteImageBase", args);
     }
 
-    public void recv_deleteImageBase() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void recv_deleteImageBase() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       deleteImageBase_result result = new deleteImageBase_result();
       receiveBase(result, "deleteImageBase");
@@ -846,7 +930,7 @@ public class SatelliteServer {
       return;
     }
 
-    public void writeImagePermissions(String userToken, String imageBaseId, Map<String,ImagePermissions> permissions) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void writeImagePermissions(String userToken, String imageBaseId, Map<String,ImagePermissions> permissions) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_writeImagePermissions(userToken, imageBaseId, permissions);
       recv_writeImagePermissions();
@@ -861,7 +945,7 @@ public class SatelliteServer {
       sendBase("writeImagePermissions", args);
     }
 
-    public void recv_writeImagePermissions() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void recv_writeImagePermissions() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       writeImagePermissions_result result = new writeImagePermissions_result();
       receiveBase(result, "writeImagePermissions");
@@ -877,7 +961,7 @@ public class SatelliteServer {
       return;
     }
 
-    public Map<String,ImagePermissions> getImagePermissions(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public Map<String,ImagePermissions> getImagePermissions(String userToken, String imageBaseId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_getImagePermissions(userToken, imageBaseId);
       return recv_getImagePermissions();
@@ -891,7 +975,7 @@ public class SatelliteServer {
       sendBase("getImagePermissions", args);
     }
 
-    public Map<String,ImagePermissions> recv_getImagePermissions() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public Map<String,ImagePermissions> recv_getImagePermissions() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       getImagePermissions_result result = new getImagePermissions_result();
       receiveBase(result, "getImagePermissions");
@@ -910,7 +994,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getImagePermissions failed: unknown result");
     }
 
-    public void setImageOwner(String userToken, String imageBaseId, String newOwnerId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void setImageOwner(String userToken, String imageBaseId, String newOwnerId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_setImageOwner(userToken, imageBaseId, newOwnerId);
       recv_setImageOwner();
@@ -925,7 +1009,7 @@ public class SatelliteServer {
       sendBase("setImageOwner", args);
     }
 
-    public void recv_setImageOwner() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void recv_setImageOwner() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       setImageOwner_result result = new setImageOwner_result();
       receiveBase(result, "setImageOwner");
@@ -941,7 +1025,7 @@ public class SatelliteServer {
       return;
     }
 
-    public void setImageVersionExpiry(String userToken, String imageBaseId, long expireTime) throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
+    public void setImageVersionExpiry(String userToken, String imageBaseId, long expireTime) throws TAuthorizationException, TNotFoundException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException
     {
       send_setImageVersionExpiry(userToken, imageBaseId, expireTime);
       recv_setImageVersionExpiry();
@@ -956,7 +1040,7 @@ public class SatelliteServer {
       sendBase("setImageVersionExpiry", args);
     }
 
-    public void recv_setImageVersionExpiry() throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
+    public void recv_setImageVersionExpiry() throws TAuthorizationException, TNotFoundException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException
     {
       setImageVersionExpiry_result result = new setImageVersionExpiry_result();
       receiveBase(result, "setImageVersionExpiry");
@@ -975,7 +1059,7 @@ public class SatelliteServer {
       return;
     }
 
-    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
+    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException
     {
       send_createLecture(userToken, lecture);
       return recv_createLecture();
@@ -989,7 +1073,7 @@ public class SatelliteServer {
       sendBase("createLecture", args);
     }
 
-    public String recv_createLecture() throws TAuthorizationException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
+    public String recv_createLecture() throws TAuthorizationException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException
     {
       createLecture_result result = new createLecture_result();
       receiveBase(result, "createLecture");
@@ -1008,7 +1092,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createLecture failed: unknown result");
     }
 
-    public void updateLecture(String userToken, String lectureId, LectureWrite lecture) throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
+    public void updateLecture(String userToken, String lectureId, LectureWrite lecture) throws TAuthorizationException, TNotFoundException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException
     {
       send_updateLecture(userToken, lectureId, lecture);
       recv_updateLecture();
@@ -1023,7 +1107,7 @@ public class SatelliteServer {
       sendBase("updateLecture", args);
     }
 
-    public void recv_updateLecture() throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException
+    public void recv_updateLecture() throws TAuthorizationException, TNotFoundException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException
     {
       updateLecture_result result = new updateLecture_result();
       receiveBase(result, "updateLecture");
@@ -1042,7 +1126,7 @@ public class SatelliteServer {
       return;
     }
 
-    public List<LectureSummary> getLectureList(String userToken, int page) throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public List<LectureSummary> getLectureList(String userToken, int page) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       send_getLectureList(userToken, page);
       return recv_getLectureList();
@@ -1056,7 +1140,7 @@ public class SatelliteServer {
       sendBase("getLectureList", args);
     }
 
-    public List<LectureSummary> recv_getLectureList() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException
+    public List<LectureSummary> recv_getLectureList() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
       getLectureList_result result = new getLectureList_result();
       receiveBase(result, "getLectureList");
@@ -1072,7 +1156,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getLectureList failed: unknown result");
     }
 
-    public LectureRead getLectureDetails(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public LectureRead getLectureDetails(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_getLectureDetails(userToken, lectureId);
       return recv_getLectureDetails();
@@ -1086,7 +1170,7 @@ public class SatelliteServer {
       sendBase("getLectureDetails", args);
     }
 
-    public LectureRead recv_getLectureDetails() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public LectureRead recv_getLectureDetails() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       getLectureDetails_result result = new getLectureDetails_result();
       receiveBase(result, "getLectureDetails");
@@ -1105,7 +1189,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getLectureDetails failed: unknown result");
     }
 
-    public void deleteLecture(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void deleteLecture(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_deleteLecture(userToken, lectureId);
       recv_deleteLecture();
@@ -1119,7 +1203,7 @@ public class SatelliteServer {
       sendBase("deleteLecture", args);
     }
 
-    public void recv_deleteLecture() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void recv_deleteLecture() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       deleteLecture_result result = new deleteLecture_result();
       receiveBase(result, "deleteLecture");
@@ -1135,7 +1219,7 @@ public class SatelliteServer {
       return;
     }
 
-    public void writeLecturePermissions(String userToken, String lectureId, Map<String,LecturePermissions> permissions) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void writeLecturePermissions(String userToken, String lectureId, Map<String,LecturePermissions> permissions) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_writeLecturePermissions(userToken, lectureId, permissions);
       recv_writeLecturePermissions();
@@ -1150,7 +1234,7 @@ public class SatelliteServer {
       sendBase("writeLecturePermissions", args);
     }
 
-    public void recv_writeLecturePermissions() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void recv_writeLecturePermissions() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       writeLecturePermissions_result result = new writeLecturePermissions_result();
       receiveBase(result, "writeLecturePermissions");
@@ -1166,7 +1250,7 @@ public class SatelliteServer {
       return;
     }
 
-    public Map<String,LecturePermissions> getLecturePermissions(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public Map<String,LecturePermissions> getLecturePermissions(String userToken, String lectureId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_getLecturePermissions(userToken, lectureId);
       return recv_getLecturePermissions();
@@ -1180,7 +1264,7 @@ public class SatelliteServer {
       sendBase("getLecturePermissions", args);
     }
 
-    public Map<String,LecturePermissions> recv_getLecturePermissions() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public Map<String,LecturePermissions> recv_getLecturePermissions() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       getLecturePermissions_result result = new getLecturePermissions_result();
       receiveBase(result, "getLecturePermissions");
@@ -1199,7 +1283,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getLecturePermissions failed: unknown result");
     }
 
-    public void setLectureOwner(String userToken, String lectureId, String newOwnerId) throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void setLectureOwner(String userToken, String lectureId, String newOwnerId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       send_setLectureOwner(userToken, lectureId, newOwnerId);
       recv_setLectureOwner();
@@ -1214,7 +1298,7 @@ public class SatelliteServer {
       sendBase("setLectureOwner", args);
     }
 
-    public void recv_setLectureOwner() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException
+    public void recv_setLectureOwner() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException
     {
       setLectureOwner_result result = new setLectureOwner_result();
       receiveBase(result, "setLectureOwner");
@@ -1340,7 +1424,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public TransferInformation getResult() throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException {
+      public TransferInformation getResult() throws TTransferRejectedException, TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1474,7 +1558,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public TransferInformation getResult() throws TTransferRejectedException, TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException {
+      public TransferInformation getResult() throws TTransferRejectedException, TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1541,7 +1625,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public ByteBuffer getResult() throws TAuthorizationException, TInternalServerError, TNotFoundException, org.apache.thrift.TException {
+      public ByteBuffer getResult() throws TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1573,7 +1657,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1605,7 +1689,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public WhoamiInfo getResult() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException {
+      public WhoamiInfo getResult() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1637,7 +1721,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.thrift.TException {
+      public void getResult() throws TInvalidTokenException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1672,13 +1756,80 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public List<UserInfo> getResult() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException {
+      public List<UserInfo> getResult() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
         return (new Client(prot)).recv_getUserList();
+      }
+    }
+
+    public void getUserConfig(String userToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getUserConfig_call method_call = new getUserConfig_call(userToken, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getUserConfig_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String userToken;
+      public getUserConfig_call(String userToken, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.userToken = userToken;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getUserConfig", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getUserConfig_args args = new getUserConfig_args();
+        args.setUserToken(userToken);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public SatelliteUserConfig getResult() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getUserConfig();
+      }
+    }
+
+    public void setUserConfig(String userToken, SatelliteUserConfig config, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      setUserConfig_call method_call = new setUserConfig_call(userToken, config, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class setUserConfig_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String userToken;
+      private SatelliteUserConfig config;
+      public setUserConfig_call(String userToken, SatelliteUserConfig config, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.userToken = userToken;
+        this.config = config;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("setUserConfig", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        setUserConfig_args args = new setUserConfig_args();
+        args.setUserToken(userToken);
+        args.setConfig(config);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public void getResult() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        (new Client(prot)).recv_setUserConfig();
       }
     }
 
@@ -1769,6 +1920,35 @@ public class SatelliteServer {
       }
     }
 
+    public void getStatus(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getStatus_call method_call = new getStatus_call(resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getStatus_call extends org.apache.thrift.async.TAsyncMethodCall {
+      public getStatus_call(org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getStatus", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getStatus_args args = new getStatus_args();
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public SatelliteStatus getResult() throws org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getStatus();
+      }
+    }
+
     public void getImageList(String userToken, List<String> tagSearch, int page, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       getImageList_call method_call = new getImageList_call(userToken, tagSearch, page, resultHandler, this, ___protocolFactory, ___transport);
@@ -1797,7 +1977,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public List<ImageSummaryRead> getResult() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException {
+      public List<ImageSummaryRead> getResult() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1832,7 +2012,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public ImageDetailsRead getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public ImageDetailsRead getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1867,7 +2047,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws TAuthorizationException, TImageDataException, TInternalServerError, org.apache.thrift.TException {
+      public String getResult() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1905,7 +2085,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TImageDataException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1943,7 +2123,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TImageDataException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1978,7 +2158,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2013,7 +2193,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2051,7 +2231,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2086,7 +2266,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public Map<String,ImagePermissions> getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public Map<String,ImagePermissions> getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2124,7 +2304,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2162,7 +2342,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2197,7 +2377,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws TAuthorizationException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException {
+      public String getResult() throws TAuthorizationException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2235,7 +2415,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, TInvalidDateParam, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2270,7 +2450,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public List<LectureSummary> getResult() throws TAuthorizationException, TInternalServerError, org.apache.thrift.TException {
+      public List<LectureSummary> getResult() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2305,7 +2485,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public LectureRead getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public LectureRead getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2340,7 +2520,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2378,7 +2558,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2413,7 +2593,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public Map<String,LecturePermissions> getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public Map<String,LecturePermissions> getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2451,7 +2631,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws TAuthorizationException, TNotFoundException, TInternalServerError, org.apache.thrift.TException {
+      public void getResult() throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2487,9 +2667,12 @@ public class SatelliteServer {
       processMap.put("whoami", new whoami());
       processMap.put("invalidateSession", new invalidateSession());
       processMap.put("getUserList", new getUserList());
+      processMap.put("getUserConfig", new getUserConfig());
+      processMap.put("setUserConfig", new setUserConfig());
       processMap.put("getOperatingSystems", new getOperatingSystems());
       processMap.put("getVirtualizers", new getVirtualizers());
       processMap.put("getAllOrganizations", new getAllOrganizations());
+      processMap.put("getStatus", new getStatus());
       processMap.put("getImageList", new getImageList());
       processMap.put("getImageDetails", new getImageDetails());
       processMap.put("createImage", new createImage());
@@ -2574,7 +2757,7 @@ public class SatelliteServer {
           result.rejection = rejection;
         } catch (TAuthorizationException authError) {
           result.authError = authError;
-        } catch (TInternalServerError ffff) {
+        } catch (TInvocationException ffff) {
           result.ffff = ffff;
         } catch (TNotFoundException sdf) {
           result.sdf = sdf;
@@ -2676,7 +2859,7 @@ public class SatelliteServer {
           result.rejection = rejection;
         } catch (TAuthorizationException authError) {
           result.authError = authError;
-        } catch (TInternalServerError ffff) {
+        } catch (TInvocationException ffff) {
           result.ffff = ffff;
         } catch (TNotFoundException sdf) {
           result.sdf = sdf;
@@ -2728,7 +2911,7 @@ public class SatelliteServer {
           result.success = iface.getMachineDescription(args.userToken, args.imageVersionId);
         } catch (TAuthorizationException authError) {
           result.authError = authError;
-        } catch (TInternalServerError ffff) {
+        } catch (TInvocationException ffff) {
           result.ffff = ffff;
         } catch (TNotFoundException sdf) {
           result.sdf = sdf;
@@ -2756,7 +2939,7 @@ public class SatelliteServer {
           iface.isAuthenticated(args.userToken);
         } catch (TAuthorizationException authError) {
           result.authError = authError;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -2782,7 +2965,7 @@ public class SatelliteServer {
           result.success = iface.whoami(args.userToken);
         } catch (TAuthorizationException authError) {
           result.authError = authError;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -2804,7 +2987,11 @@ public class SatelliteServer {
 
       public invalidateSession_result getResult(I iface, invalidateSession_args args) throws org.apache.thrift.TException {
         invalidateSession_result result = new invalidateSession_result();
-        iface.invalidateSession(args.userToken);
+        try {
+          iface.invalidateSession(args.userToken);
+        } catch (TInvalidTokenException ex) {
+          result.ex = ex;
+        }
         return result;
       }
     }
@@ -2828,7 +3015,59 @@ public class SatelliteServer {
           result.success = iface.getUserList(args.userToken, args.page);
         } catch (TAuthorizationException failure) {
           result.failure = failure;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
+          result.serverError = serverError;
+        }
+        return result;
+      }
+    }
+
+    public static class getUserConfig<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getUserConfig_args> {
+      public getUserConfig() {
+        super("getUserConfig");
+      }
+
+      public getUserConfig_args getEmptyArgsInstance() {
+        return new getUserConfig_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getUserConfig_result getResult(I iface, getUserConfig_args args) throws org.apache.thrift.TException {
+        getUserConfig_result result = new getUserConfig_result();
+        try {
+          result.success = iface.getUserConfig(args.userToken);
+        } catch (TAuthorizationException failure) {
+          result.failure = failure;
+        } catch (TInvocationException serverError) {
+          result.serverError = serverError;
+        }
+        return result;
+      }
+    }
+
+    public static class setUserConfig<I extends Iface> extends org.apache.thrift.ProcessFunction<I, setUserConfig_args> {
+      public setUserConfig() {
+        super("setUserConfig");
+      }
+
+      public setUserConfig_args getEmptyArgsInstance() {
+        return new setUserConfig_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public setUserConfig_result getResult(I iface, setUserConfig_args args) throws org.apache.thrift.TException {
+        setUserConfig_result result = new setUserConfig_result();
+        try {
+          iface.setUserConfig(args.userToken, args.config);
+        } catch (TAuthorizationException failure) {
+          result.failure = failure;
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -2895,6 +3134,26 @@ public class SatelliteServer {
       }
     }
 
+    public static class getStatus<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getStatus_args> {
+      public getStatus() {
+        super("getStatus");
+      }
+
+      public getStatus_args getEmptyArgsInstance() {
+        return new getStatus_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getStatus_result getResult(I iface, getStatus_args args) throws org.apache.thrift.TException {
+        getStatus_result result = new getStatus_result();
+        result.success = iface.getStatus();
+        return result;
+      }
+    }
+
     public static class getImageList<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getImageList_args> {
       public getImageList() {
         super("getImageList");
@@ -2914,7 +3173,7 @@ public class SatelliteServer {
           result.success = iface.getImageList(args.userToken, args.tagSearch, args.page);
         } catch (TAuthorizationException authError) {
           result.authError = authError;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -2942,7 +3201,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -2968,10 +3227,8 @@ public class SatelliteServer {
           result.success = iface.createImage(args.userToken, args.imageName);
         } catch (TAuthorizationException authError) {
           result.authError = authError;
-        } catch (TImageDataException imgError) {
-          result.imgError = imgError;
-        } catch (TInternalServerError serverError) {
-          result.serverError = serverError;
+        } catch (TInvocationException error) {
+          result.error = error;
         }
         return result;
       }
@@ -2998,10 +3255,8 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TImageDataException imgError) {
+        } catch (TInvocationException imgError) {
           result.imgError = imgError;
-        } catch (TInternalServerError serverError) {
-          result.serverError = serverError;
         }
         return result;
       }
@@ -3028,10 +3283,8 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TImageDataException imgError) {
+        } catch (TInvocationException imgError) {
           result.imgError = imgError;
-        } catch (TInternalServerError serverError) {
-          result.serverError = serverError;
         }
         return result;
       }
@@ -3058,7 +3311,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3086,7 +3339,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3114,7 +3367,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3142,7 +3395,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3170,7 +3423,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3198,7 +3451,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         } catch (TInvalidDateParam dateError) {
           result.dateError = dateError;
@@ -3226,7 +3479,7 @@ public class SatelliteServer {
           result.success = iface.createLecture(args.userToken, args.lecture);
         } catch (TAuthorizationException authError) {
           result.authError = authError;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         } catch (TInvalidDateParam dateError) {
           result.dateError = dateError;
@@ -3256,7 +3509,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         } catch (TInvalidDateParam dateError) {
           result.dateError = dateError;
@@ -3284,7 +3537,7 @@ public class SatelliteServer {
           result.success = iface.getLectureList(args.userToken, args.page);
         } catch (TAuthorizationException authError) {
           result.authError = authError;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3312,7 +3565,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3340,7 +3593,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3368,7 +3621,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3396,7 +3649,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3424,7 +3677,7 @@ public class SatelliteServer {
           result.authError = authError;
         } catch (TNotFoundException notFound) {
           result.notFound = notFound;
-        } catch (TInternalServerError serverError) {
+        } catch (TInvocationException serverError) {
           result.serverError = serverError;
         }
         return result;
@@ -3457,9 +3710,12 @@ public class SatelliteServer {
       processMap.put("whoami", new whoami());
       processMap.put("invalidateSession", new invalidateSession());
       processMap.put("getUserList", new getUserList());
+      processMap.put("getUserConfig", new getUserConfig());
+      processMap.put("setUserConfig", new setUserConfig());
       processMap.put("getOperatingSystems", new getOperatingSystems());
       processMap.put("getVirtualizers", new getVirtualizers());
       processMap.put("getAllOrganizations", new getAllOrganizations());
+      processMap.put("getStatus", new getStatus());
       processMap.put("getImageList", new getImageList());
       processMap.put("getImageDetails", new getImageDetails());
       processMap.put("createImage", new createImage());
@@ -3622,8 +3878,8 @@ public class SatelliteServer {
                         result.setAuthErrorIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.ffff = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.ffff = (TInvocationException) e;
                         result.setFfffIsSet(true);
                         msg = result;
             }
@@ -3863,8 +4119,8 @@ public class SatelliteServer {
                         result.setAuthErrorIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.ffff = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.ffff = (TInvocationException) e;
                         result.setFfffIsSet(true);
                         msg = result;
             }
@@ -3986,8 +4242,8 @@ public class SatelliteServer {
                         result.setAuthErrorIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.ffff = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.ffff = (TInvocationException) e;
                         result.setFfffIsSet(true);
                         msg = result;
             }
@@ -4052,8 +4308,8 @@ public class SatelliteServer {
                         result.setAuthErrorIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -4114,8 +4370,8 @@ public class SatelliteServer {
                         result.setAuthErrorIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -4170,6 +4426,12 @@ public class SatelliteServer {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             invalidateSession_result result = new invalidateSession_result();
+            if (e instanceof TInvalidTokenException) {
+                        result.ex = (TInvalidTokenException) e;
+                        result.setExIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -4226,8 +4488,8 @@ public class SatelliteServer {
                         result.setFailureIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -4253,6 +4515,129 @@ public class SatelliteServer {
 
       public void start(I iface, getUserList_args args, org.apache.thrift.async.AsyncMethodCallback<List<UserInfo>> resultHandler) throws TException {
         iface.getUserList(args.userToken, args.page,resultHandler);
+      }
+    }
+
+    public static class getUserConfig<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getUserConfig_args, SatelliteUserConfig> {
+      public getUserConfig() {
+        super("getUserConfig");
+      }
+
+      public getUserConfig_args getEmptyArgsInstance() {
+        return new getUserConfig_args();
+      }
+
+      public AsyncMethodCallback<SatelliteUserConfig> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<SatelliteUserConfig>() { 
+          public void onComplete(SatelliteUserConfig o) {
+            getUserConfig_result result = new getUserConfig_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getUserConfig_result result = new getUserConfig_result();
+            if (e instanceof TAuthorizationException) {
+                        result.failure = (TAuthorizationException) e;
+                        result.setFailureIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
+                        result.setServerErrorIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getUserConfig_args args, org.apache.thrift.async.AsyncMethodCallback<SatelliteUserConfig> resultHandler) throws TException {
+        iface.getUserConfig(args.userToken,resultHandler);
+      }
+    }
+
+    public static class setUserConfig<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, setUserConfig_args, Void> {
+      public setUserConfig() {
+        super("setUserConfig");
+      }
+
+      public setUserConfig_args getEmptyArgsInstance() {
+        return new setUserConfig_args();
+      }
+
+      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Void>() { 
+          public void onComplete(Void o) {
+            setUserConfig_result result = new setUserConfig_result();
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            setUserConfig_result result = new setUserConfig_result();
+            if (e instanceof TAuthorizationException) {
+                        result.failure = (TAuthorizationException) e;
+                        result.setFailureIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
+                        result.setServerErrorIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, setUserConfig_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+        iface.setUserConfig(args.userToken, args.config,resultHandler);
       }
     }
 
@@ -4409,6 +4794,57 @@ public class SatelliteServer {
       }
     }
 
+    public static class getStatus<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getStatus_args, SatelliteStatus> {
+      public getStatus() {
+        super("getStatus");
+      }
+
+      public getStatus_args getEmptyArgsInstance() {
+        return new getStatus_args();
+      }
+
+      public AsyncMethodCallback<SatelliteStatus> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<SatelliteStatus>() { 
+          public void onComplete(SatelliteStatus o) {
+            getStatus_result result = new getStatus_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getStatus_result result = new getStatus_result();
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getStatus_args args, org.apache.thrift.async.AsyncMethodCallback<SatelliteStatus> resultHandler) throws TException {
+        iface.getStatus(resultHandler);
+      }
+    }
+
     public static class getImageList<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getImageList_args, List<ImageSummaryRead>> {
       public getImageList() {
         super("getImageList");
@@ -4441,8 +4877,8 @@ public class SatelliteServer {
                         result.setAuthErrorIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -4508,8 +4944,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -4570,14 +5006,9 @@ public class SatelliteServer {
                         result.setAuthErrorIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TImageDataException) {
-                        result.imgError = (TImageDataException) e;
-                        result.setImgErrorIsSet(true);
-                        msg = result;
-            }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
-                        result.setServerErrorIsSet(true);
+            else             if (e instanceof TInvocationException) {
+                        result.error = (TInvocationException) e;
+                        result.setErrorIsSet(true);
                         msg = result;
             }
              else 
@@ -4641,14 +5072,9 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TImageDataException) {
-                        result.imgError = (TImageDataException) e;
+            else             if (e instanceof TInvocationException) {
+                        result.imgError = (TInvocationException) e;
                         result.setImgErrorIsSet(true);
-                        msg = result;
-            }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
-                        result.setServerErrorIsSet(true);
                         msg = result;
             }
              else 
@@ -4712,14 +5138,9 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TImageDataException) {
-                        result.imgError = (TImageDataException) e;
+            else             if (e instanceof TInvocationException) {
+                        result.imgError = (TInvocationException) e;
                         result.setImgErrorIsSet(true);
-                        msg = result;
-            }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
-                        result.setServerErrorIsSet(true);
                         msg = result;
             }
              else 
@@ -4783,8 +5204,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -4849,8 +5270,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -4915,8 +5336,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -4982,8 +5403,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5048,8 +5469,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5114,8 +5535,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5181,8 +5602,8 @@ public class SatelliteServer {
                         result.setAuthErrorIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5252,8 +5673,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5319,8 +5740,8 @@ public class SatelliteServer {
                         result.setAuthErrorIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5386,8 +5807,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5452,8 +5873,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5518,8 +5939,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5585,8 +6006,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -5651,8 +6072,8 @@ public class SatelliteServer {
                         result.setNotFoundIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof TInternalServerError) {
-                        result.serverError = (TInternalServerError) e;
+            else             if (e instanceof TInvocationException) {
+                        result.serverError = (TInvocationException) e;
                         result.setServerErrorIsSet(true);
                         msg = result;
             }
@@ -7718,7 +8139,7 @@ public class SatelliteServer {
     public TransferInformation success; // required
     public TTransferRejectedException rejection; // required
     public TAuthorizationException authError; // required
-    public TInternalServerError ffff; // required
+    public TInvocationException ffff; // required
     public TNotFoundException sdf; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -7816,7 +8237,7 @@ public class SatelliteServer {
       TransferInformation success,
       TTransferRejectedException rejection,
       TAuthorizationException authError,
-      TInternalServerError ffff,
+      TInvocationException ffff,
       TNotFoundException sdf)
     {
       this();
@@ -7841,7 +8262,7 @@ public class SatelliteServer {
         this.authError = new TAuthorizationException(other.authError);
       }
       if (other.isSetFfff()) {
-        this.ffff = new TInternalServerError(other.ffff);
+        this.ffff = new TInvocationException(other.ffff);
       }
       if (other.isSetSdf()) {
         this.sdf = new TNotFoundException(other.sdf);
@@ -7933,11 +8354,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getFfff() {
+    public TInvocationException getFfff() {
       return this.ffff;
     }
 
-    public requestImageVersionUpload_result setFfff(TInternalServerError ffff) {
+    public requestImageVersionUpload_result setFfff(TInvocationException ffff) {
       this.ffff = ffff;
       return this;
     }
@@ -8011,7 +8432,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetFfff();
         } else {
-          setFfff((TInternalServerError)value);
+          setFfff((TInvocationException)value);
         }
         break;
 
@@ -8326,7 +8747,7 @@ public class SatelliteServer {
               break;
             case 3: // FFFF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ffff = new TInternalServerError();
+                struct.ffff = new TInvocationException();
                 struct.ffff.read(iprot);
                 struct.setFfffIsSet(true);
               } else { 
@@ -8453,7 +8874,7 @@ public class SatelliteServer {
           struct.setAuthErrorIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ffff = new TInternalServerError();
+          struct.ffff = new TInvocationException();
           struct.ffff.read(iprot);
           struct.setFfffIsSet(true);
         }
@@ -11323,7 +11744,7 @@ public class SatelliteServer {
     public TransferInformation success; // required
     public TTransferRejectedException rejection; // required
     public TAuthorizationException authError; // required
-    public TInternalServerError ffff; // required
+    public TInvocationException ffff; // required
     public TNotFoundException sdf; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -11421,7 +11842,7 @@ public class SatelliteServer {
       TransferInformation success,
       TTransferRejectedException rejection,
       TAuthorizationException authError,
-      TInternalServerError ffff,
+      TInvocationException ffff,
       TNotFoundException sdf)
     {
       this();
@@ -11446,7 +11867,7 @@ public class SatelliteServer {
         this.authError = new TAuthorizationException(other.authError);
       }
       if (other.isSetFfff()) {
-        this.ffff = new TInternalServerError(other.ffff);
+        this.ffff = new TInvocationException(other.ffff);
       }
       if (other.isSetSdf()) {
         this.sdf = new TNotFoundException(other.sdf);
@@ -11538,11 +11959,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getFfff() {
+    public TInvocationException getFfff() {
       return this.ffff;
     }
 
-    public requestDownload_result setFfff(TInternalServerError ffff) {
+    public requestDownload_result setFfff(TInvocationException ffff) {
       this.ffff = ffff;
       return this;
     }
@@ -11616,7 +12037,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetFfff();
         } else {
-          setFfff((TInternalServerError)value);
+          setFfff((TInvocationException)value);
         }
         break;
 
@@ -11931,7 +12352,7 @@ public class SatelliteServer {
               break;
             case 3: // FFFF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ffff = new TInternalServerError();
+                struct.ffff = new TInvocationException();
                 struct.ffff.read(iprot);
                 struct.setFfffIsSet(true);
               } else { 
@@ -12058,7 +12479,7 @@ public class SatelliteServer {
           struct.setAuthErrorIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ffff = new TInternalServerError();
+          struct.ffff = new TInvocationException();
           struct.ffff.read(iprot);
           struct.setFfffIsSet(true);
         }
@@ -13252,7 +13673,7 @@ public class SatelliteServer {
 
     public ByteBuffer success; // required
     public TAuthorizationException authError; // required
-    public TInternalServerError ffff; // required
+    public TInvocationException ffff; // required
     public TNotFoundException sdf; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -13344,7 +13765,7 @@ public class SatelliteServer {
     public getMachineDescription_result(
       ByteBuffer success,
       TAuthorizationException authError,
-      TInternalServerError ffff,
+      TInvocationException ffff,
       TNotFoundException sdf)
     {
       this();
@@ -13366,7 +13787,7 @@ public class SatelliteServer {
         this.authError = new TAuthorizationException(other.authError);
       }
       if (other.isSetFfff()) {
-        this.ffff = new TInternalServerError(other.ffff);
+        this.ffff = new TInvocationException(other.ffff);
       }
       if (other.isSetSdf()) {
         this.sdf = new TNotFoundException(other.sdf);
@@ -13443,11 +13864,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getFfff() {
+    public TInvocationException getFfff() {
       return this.ffff;
     }
 
-    public getMachineDescription_result setFfff(TInternalServerError ffff) {
+    public getMachineDescription_result setFfff(TInvocationException ffff) {
       this.ffff = ffff;
       return this;
     }
@@ -13513,7 +13934,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetFfff();
         } else {
-          setFfff((TInternalServerError)value);
+          setFfff((TInvocationException)value);
         }
         break;
 
@@ -13783,7 +14204,7 @@ public class SatelliteServer {
               break;
             case 2: // FFFF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ffff = new TInternalServerError();
+                struct.ffff = new TInvocationException();
                 struct.ffff.read(iprot);
                 struct.setFfffIsSet(true);
               } else { 
@@ -13893,7 +14314,7 @@ public class SatelliteServer {
           struct.setAuthErrorIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ffff = new TInternalServerError();
+          struct.ffff = new TInvocationException();
           struct.ffff.read(iprot);
           struct.setFfffIsSet(true);
         }
@@ -14274,7 +14695,7 @@ public class SatelliteServer {
     }
 
     public TAuthorizationException authError; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -14354,7 +14775,7 @@ public class SatelliteServer {
 
     public isAuthenticated_result(
       TAuthorizationException authError,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.authError = authError;
@@ -14369,7 +14790,7 @@ public class SatelliteServer {
         this.authError = new TAuthorizationException(other.authError);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -14407,11 +14828,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public isAuthenticated_result setServerError(TInternalServerError serverError) {
+    public isAuthenticated_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -14445,7 +14866,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -14635,7 +15056,7 @@ public class SatelliteServer {
               break;
             case 2: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -14710,7 +15131,7 @@ public class SatelliteServer {
           struct.setAuthErrorIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -15088,7 +15509,7 @@ public class SatelliteServer {
 
     public WhoamiInfo success; // required
     public TAuthorizationException authError; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -15174,7 +15595,7 @@ public class SatelliteServer {
     public whoami_result(
       WhoamiInfo success,
       TAuthorizationException authError,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.success = success;
@@ -15193,7 +15614,7 @@ public class SatelliteServer {
         this.authError = new TAuthorizationException(other.authError);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -15256,11 +15677,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public whoami_result setServerError(TInternalServerError serverError) {
+    public whoami_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -15302,7 +15723,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -15536,7 +15957,7 @@ public class SatelliteServer {
               break;
             case 2: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -15627,7 +16048,7 @@ public class SatelliteServer {
           struct.setAuthErrorIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -15993,6 +16414,7 @@ public class SatelliteServer {
   public static class invalidateSession_result implements org.apache.thrift.TBase<invalidateSession_result, invalidateSession_result._Fields>, java.io.Serializable, Cloneable, Comparable<invalidateSession_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("invalidateSession_result");
 
+    private static final org.apache.thrift.protocol.TField EX_FIELD_DESC = new org.apache.thrift.protocol.TField("ex", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -16000,10 +16422,11 @@ public class SatelliteServer {
       schemes.put(TupleScheme.class, new invalidateSession_resultTupleSchemeFactory());
     }
 
+    public TInvalidTokenException ex; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-;
+      EX((short)1, "ex");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -16018,6 +16441,8 @@ public class SatelliteServer {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 1: // EX
+            return EX;
           default:
             return null;
         }
@@ -16056,9 +16481,13 @@ public class SatelliteServer {
         return _fieldName;
       }
     }
+
+    // isset id assignments
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.EX, new org.apache.thrift.meta_data.FieldMetaData("ex", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(invalidateSession_result.class, metaDataMap);
     }
@@ -16066,10 +16495,20 @@ public class SatelliteServer {
     public invalidateSession_result() {
     }
 
+    public invalidateSession_result(
+      TInvalidTokenException ex)
+    {
+      this();
+      this.ex = ex;
+    }
+
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public invalidateSession_result(invalidateSession_result other) {
+      if (other.isSetEx()) {
+        this.ex = new TInvalidTokenException(other.ex);
+      }
     }
 
     public invalidateSession_result deepCopy() {
@@ -16078,15 +16517,51 @@ public class SatelliteServer {
 
     @Override
     public void clear() {
+      this.ex = null;
+    }
+
+    public TInvalidTokenException getEx() {
+      return this.ex;
+    }
+
+    public invalidateSession_result setEx(TInvalidTokenException ex) {
+      this.ex = ex;
+      return this;
+    }
+
+    public void unsetEx() {
+      this.ex = null;
+    }
+
+    /** Returns true if field ex is set (has been assigned a value) and false otherwise */
+    public boolean isSetEx() {
+      return this.ex != null;
+    }
+
+    public void setExIsSet(boolean value) {
+      if (!value) {
+        this.ex = null;
+      }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case EX:
+        if (value == null) {
+          unsetEx();
+        } else {
+          setEx((TInvalidTokenException)value);
+        }
+        break;
+
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case EX:
+        return getEx();
+
       }
       throw new IllegalStateException();
     }
@@ -16098,6 +16573,8 @@ public class SatelliteServer {
       }
 
       switch (field) {
+      case EX:
+        return isSetEx();
       }
       throw new IllegalStateException();
     }
@@ -16115,6 +16592,15 @@ public class SatelliteServer {
       if (that == null)
         return false;
 
+      boolean this_present_ex = true && this.isSetEx();
+      boolean that_present_ex = true && that.isSetEx();
+      if (this_present_ex || that_present_ex) {
+        if (!(this_present_ex && that_present_ex))
+          return false;
+        if (!this.ex.equals(that.ex))
+          return false;
+      }
+
       return true;
     }
 
@@ -16131,6 +16617,16 @@ public class SatelliteServer {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetEx()).compareTo(other.isSetEx());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetEx()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ex, other.ex);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -16151,6 +16647,13 @@ public class SatelliteServer {
       StringBuilder sb = new StringBuilder("invalidateSession_result(");
       boolean first = true;
 
+      sb.append("ex:");
+      if (this.ex == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ex);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -16194,6 +16697,15 @@ public class SatelliteServer {
             break;
           }
           switch (schemeField.id) {
+            case 1: // EX
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ex = new TInvalidTokenException();
+                struct.ex.read(iprot);
+                struct.setExIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -16209,6 +16721,11 @@ public class SatelliteServer {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.ex != null) {
+          oprot.writeFieldBegin(EX_FIELD_DESC);
+          struct.ex.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -16226,11 +16743,25 @@ public class SatelliteServer {
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, invalidateSession_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetEx()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetEx()) {
+          struct.ex.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, invalidateSession_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.ex = new TInvalidTokenException();
+          struct.ex.read(iprot);
+          struct.setExIsSet(true);
+        }
       }
     }
 
@@ -16703,7 +17234,7 @@ public class SatelliteServer {
 
     public List<UserInfo> success; // required
     public TAuthorizationException failure; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -16790,7 +17321,7 @@ public class SatelliteServer {
     public getUserList_result(
       List<UserInfo> success,
       TAuthorizationException failure,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.success = success;
@@ -16813,7 +17344,7 @@ public class SatelliteServer {
         this.failure = new TAuthorizationException(other.failure);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -16891,11 +17422,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public getUserList_result setServerError(TInternalServerError serverError) {
+    public getUserList_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -16937,7 +17468,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -17178,7 +17709,7 @@ public class SatelliteServer {
               break;
             case 2: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -17291,7 +17822,1841 @@ public class SatelliteServer {
           struct.setFailureIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
+          struct.serverError.read(iprot);
+          struct.setServerErrorIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getUserConfig_args implements org.apache.thrift.TBase<getUserConfig_args, getUserConfig_args._Fields>, java.io.Serializable, Cloneable, Comparable<getUserConfig_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getUserConfig_args");
+
+    private static final org.apache.thrift.protocol.TField USER_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("userToken", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getUserConfig_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getUserConfig_argsTupleSchemeFactory());
+    }
+
+    public String userToken; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      USER_TOKEN((short)1, "userToken");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // USER_TOKEN
+            return USER_TOKEN;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.USER_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("userToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "Token")));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getUserConfig_args.class, metaDataMap);
+    }
+
+    public getUserConfig_args() {
+    }
+
+    public getUserConfig_args(
+      String userToken)
+    {
+      this();
+      this.userToken = userToken;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getUserConfig_args(getUserConfig_args other) {
+      if (other.isSetUserToken()) {
+        this.userToken = other.userToken;
+      }
+    }
+
+    public getUserConfig_args deepCopy() {
+      return new getUserConfig_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.userToken = null;
+    }
+
+    public String getUserToken() {
+      return this.userToken;
+    }
+
+    public getUserConfig_args setUserToken(String userToken) {
+      this.userToken = userToken;
+      return this;
+    }
+
+    public void unsetUserToken() {
+      this.userToken = null;
+    }
+
+    /** Returns true if field userToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserToken() {
+      return this.userToken != null;
+    }
+
+    public void setUserTokenIsSet(boolean value) {
+      if (!value) {
+        this.userToken = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case USER_TOKEN:
+        if (value == null) {
+          unsetUserToken();
+        } else {
+          setUserToken((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case USER_TOKEN:
+        return getUserToken();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case USER_TOKEN:
+        return isSetUserToken();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getUserConfig_args)
+        return this.equals((getUserConfig_args)that);
+      return false;
+    }
+
+    public boolean equals(getUserConfig_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_userToken = true && this.isSetUserToken();
+      boolean that_present_userToken = true && that.isSetUserToken();
+      if (this_present_userToken || that_present_userToken) {
+        if (!(this_present_userToken && that_present_userToken))
+          return false;
+        if (!this.userToken.equals(that.userToken))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getUserConfig_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetUserToken()).compareTo(other.isSetUserToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userToken, other.userToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getUserConfig_args(");
+      boolean first = true;
+
+      sb.append("userToken:");
+      if (this.userToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userToken);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getUserConfig_argsStandardSchemeFactory implements SchemeFactory {
+      public getUserConfig_argsStandardScheme getScheme() {
+        return new getUserConfig_argsStandardScheme();
+      }
+    }
+
+    private static class getUserConfig_argsStandardScheme extends StandardScheme<getUserConfig_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getUserConfig_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // USER_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userToken = iprot.readString();
+                struct.setUserTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getUserConfig_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.userToken != null) {
+          oprot.writeFieldBegin(USER_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.userToken);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getUserConfig_argsTupleSchemeFactory implements SchemeFactory {
+      public getUserConfig_argsTupleScheme getScheme() {
+        return new getUserConfig_argsTupleScheme();
+      }
+    }
+
+    private static class getUserConfig_argsTupleScheme extends TupleScheme<getUserConfig_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getUserConfig_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetUserToken()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetUserToken()) {
+          oprot.writeString(struct.userToken);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getUserConfig_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.userToken = iprot.readString();
+          struct.setUserTokenIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getUserConfig_result implements org.apache.thrift.TBase<getUserConfig_result, getUserConfig_result._Fields>, java.io.Serializable, Cloneable, Comparable<getUserConfig_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getUserConfig_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField FAILURE_FIELD_DESC = new org.apache.thrift.protocol.TField("failure", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getUserConfig_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getUserConfig_resultTupleSchemeFactory());
+    }
+
+    public SatelliteUserConfig success; // required
+    public TAuthorizationException failure; // required
+    public TInvocationException serverError; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      FAILURE((short)1, "failure"),
+      SERVER_ERROR((short)2, "serverError");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // FAILURE
+            return FAILURE;
+          case 2: // SERVER_ERROR
+            return SERVER_ERROR;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, SatelliteUserConfig.class)));
+      tmpMap.put(_Fields.FAILURE, new org.apache.thrift.meta_data.FieldMetaData("failure", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getUserConfig_result.class, metaDataMap);
+    }
+
+    public getUserConfig_result() {
+    }
+
+    public getUserConfig_result(
+      SatelliteUserConfig success,
+      TAuthorizationException failure,
+      TInvocationException serverError)
+    {
+      this();
+      this.success = success;
+      this.failure = failure;
+      this.serverError = serverError;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getUserConfig_result(getUserConfig_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new SatelliteUserConfig(other.success);
+      }
+      if (other.isSetFailure()) {
+        this.failure = new TAuthorizationException(other.failure);
+      }
+      if (other.isSetServerError()) {
+        this.serverError = new TInvocationException(other.serverError);
+      }
+    }
+
+    public getUserConfig_result deepCopy() {
+      return new getUserConfig_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.failure = null;
+      this.serverError = null;
+    }
+
+    public SatelliteUserConfig getSuccess() {
+      return this.success;
+    }
+
+    public getUserConfig_result setSuccess(SatelliteUserConfig success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public TAuthorizationException getFailure() {
+      return this.failure;
+    }
+
+    public getUserConfig_result setFailure(TAuthorizationException failure) {
+      this.failure = failure;
+      return this;
+    }
+
+    public void unsetFailure() {
+      this.failure = null;
+    }
+
+    /** Returns true if field failure is set (has been assigned a value) and false otherwise */
+    public boolean isSetFailure() {
+      return this.failure != null;
+    }
+
+    public void setFailureIsSet(boolean value) {
+      if (!value) {
+        this.failure = null;
+      }
+    }
+
+    public TInvocationException getServerError() {
+      return this.serverError;
+    }
+
+    public getUserConfig_result setServerError(TInvocationException serverError) {
+      this.serverError = serverError;
+      return this;
+    }
+
+    public void unsetServerError() {
+      this.serverError = null;
+    }
+
+    /** Returns true if field serverError is set (has been assigned a value) and false otherwise */
+    public boolean isSetServerError() {
+      return this.serverError != null;
+    }
+
+    public void setServerErrorIsSet(boolean value) {
+      if (!value) {
+        this.serverError = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((SatelliteUserConfig)value);
+        }
+        break;
+
+      case FAILURE:
+        if (value == null) {
+          unsetFailure();
+        } else {
+          setFailure((TAuthorizationException)value);
+        }
+        break;
+
+      case SERVER_ERROR:
+        if (value == null) {
+          unsetServerError();
+        } else {
+          setServerError((TInvocationException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case FAILURE:
+        return getFailure();
+
+      case SERVER_ERROR:
+        return getServerError();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case FAILURE:
+        return isSetFailure();
+      case SERVER_ERROR:
+        return isSetServerError();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getUserConfig_result)
+        return this.equals((getUserConfig_result)that);
+      return false;
+    }
+
+    public boolean equals(getUserConfig_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_failure = true && this.isSetFailure();
+      boolean that_present_failure = true && that.isSetFailure();
+      if (this_present_failure || that_present_failure) {
+        if (!(this_present_failure && that_present_failure))
+          return false;
+        if (!this.failure.equals(that.failure))
+          return false;
+      }
+
+      boolean this_present_serverError = true && this.isSetServerError();
+      boolean that_present_serverError = true && that.isSetServerError();
+      if (this_present_serverError || that_present_serverError) {
+        if (!(this_present_serverError && that_present_serverError))
+          return false;
+        if (!this.serverError.equals(that.serverError))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getUserConfig_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetFailure()).compareTo(other.isSetFailure());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetFailure()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.failure, other.failure);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetServerError()).compareTo(other.isSetServerError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetServerError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverError, other.serverError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getUserConfig_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("failure:");
+      if (this.failure == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.failure);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("serverError:");
+      if (this.serverError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.serverError);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getUserConfig_resultStandardSchemeFactory implements SchemeFactory {
+      public getUserConfig_resultStandardScheme getScheme() {
+        return new getUserConfig_resultStandardScheme();
+      }
+    }
+
+    private static class getUserConfig_resultStandardScheme extends StandardScheme<getUserConfig_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getUserConfig_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new SatelliteUserConfig();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // FAILURE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.failure = new TAuthorizationException();
+                struct.failure.read(iprot);
+                struct.setFailureIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // SERVER_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.serverError = new TInvocationException();
+                struct.serverError.read(iprot);
+                struct.setServerErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getUserConfig_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.failure != null) {
+          oprot.writeFieldBegin(FAILURE_FIELD_DESC);
+          struct.failure.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.serverError != null) {
+          oprot.writeFieldBegin(SERVER_ERROR_FIELD_DESC);
+          struct.serverError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getUserConfig_resultTupleSchemeFactory implements SchemeFactory {
+      public getUserConfig_resultTupleScheme getScheme() {
+        return new getUserConfig_resultTupleScheme();
+      }
+    }
+
+    private static class getUserConfig_resultTupleScheme extends TupleScheme<getUserConfig_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getUserConfig_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetFailure()) {
+          optionals.set(1);
+        }
+        if (struct.isSetServerError()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetFailure()) {
+          struct.failure.write(oprot);
+        }
+        if (struct.isSetServerError()) {
+          struct.serverError.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getUserConfig_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.success = new SatelliteUserConfig();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.failure = new TAuthorizationException();
+          struct.failure.read(iprot);
+          struct.setFailureIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.serverError = new TInvocationException();
+          struct.serverError.read(iprot);
+          struct.setServerErrorIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class setUserConfig_args implements org.apache.thrift.TBase<setUserConfig_args, setUserConfig_args._Fields>, java.io.Serializable, Cloneable, Comparable<setUserConfig_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("setUserConfig_args");
+
+    private static final org.apache.thrift.protocol.TField USER_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("userToken", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField CONFIG_FIELD_DESC = new org.apache.thrift.protocol.TField("config", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new setUserConfig_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new setUserConfig_argsTupleSchemeFactory());
+    }
+
+    public String userToken; // required
+    public SatelliteUserConfig config; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      USER_TOKEN((short)1, "userToken"),
+      CONFIG((short)2, "config");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // USER_TOKEN
+            return USER_TOKEN;
+          case 2: // CONFIG
+            return CONFIG;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.USER_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("userToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "Token")));
+      tmpMap.put(_Fields.CONFIG, new org.apache.thrift.meta_data.FieldMetaData("config", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, SatelliteUserConfig.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(setUserConfig_args.class, metaDataMap);
+    }
+
+    public setUserConfig_args() {
+    }
+
+    public setUserConfig_args(
+      String userToken,
+      SatelliteUserConfig config)
+    {
+      this();
+      this.userToken = userToken;
+      this.config = config;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public setUserConfig_args(setUserConfig_args other) {
+      if (other.isSetUserToken()) {
+        this.userToken = other.userToken;
+      }
+      if (other.isSetConfig()) {
+        this.config = new SatelliteUserConfig(other.config);
+      }
+    }
+
+    public setUserConfig_args deepCopy() {
+      return new setUserConfig_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.userToken = null;
+      this.config = null;
+    }
+
+    public String getUserToken() {
+      return this.userToken;
+    }
+
+    public setUserConfig_args setUserToken(String userToken) {
+      this.userToken = userToken;
+      return this;
+    }
+
+    public void unsetUserToken() {
+      this.userToken = null;
+    }
+
+    /** Returns true if field userToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserToken() {
+      return this.userToken != null;
+    }
+
+    public void setUserTokenIsSet(boolean value) {
+      if (!value) {
+        this.userToken = null;
+      }
+    }
+
+    public SatelliteUserConfig getConfig() {
+      return this.config;
+    }
+
+    public setUserConfig_args setConfig(SatelliteUserConfig config) {
+      this.config = config;
+      return this;
+    }
+
+    public void unsetConfig() {
+      this.config = null;
+    }
+
+    /** Returns true if field config is set (has been assigned a value) and false otherwise */
+    public boolean isSetConfig() {
+      return this.config != null;
+    }
+
+    public void setConfigIsSet(boolean value) {
+      if (!value) {
+        this.config = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case USER_TOKEN:
+        if (value == null) {
+          unsetUserToken();
+        } else {
+          setUserToken((String)value);
+        }
+        break;
+
+      case CONFIG:
+        if (value == null) {
+          unsetConfig();
+        } else {
+          setConfig((SatelliteUserConfig)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case USER_TOKEN:
+        return getUserToken();
+
+      case CONFIG:
+        return getConfig();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case USER_TOKEN:
+        return isSetUserToken();
+      case CONFIG:
+        return isSetConfig();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof setUserConfig_args)
+        return this.equals((setUserConfig_args)that);
+      return false;
+    }
+
+    public boolean equals(setUserConfig_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_userToken = true && this.isSetUserToken();
+      boolean that_present_userToken = true && that.isSetUserToken();
+      if (this_present_userToken || that_present_userToken) {
+        if (!(this_present_userToken && that_present_userToken))
+          return false;
+        if (!this.userToken.equals(that.userToken))
+          return false;
+      }
+
+      boolean this_present_config = true && this.isSetConfig();
+      boolean that_present_config = true && that.isSetConfig();
+      if (this_present_config || that_present_config) {
+        if (!(this_present_config && that_present_config))
+          return false;
+        if (!this.config.equals(that.config))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(setUserConfig_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetUserToken()).compareTo(other.isSetUserToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userToken, other.userToken);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetConfig()).compareTo(other.isSetConfig());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetConfig()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.config, other.config);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("setUserConfig_args(");
+      boolean first = true;
+
+      sb.append("userToken:");
+      if (this.userToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userToken);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("config:");
+      if (this.config == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.config);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (config != null) {
+        config.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class setUserConfig_argsStandardSchemeFactory implements SchemeFactory {
+      public setUserConfig_argsStandardScheme getScheme() {
+        return new setUserConfig_argsStandardScheme();
+      }
+    }
+
+    private static class setUserConfig_argsStandardScheme extends StandardScheme<setUserConfig_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, setUserConfig_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // USER_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userToken = iprot.readString();
+                struct.setUserTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // CONFIG
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.config = new SatelliteUserConfig();
+                struct.config.read(iprot);
+                struct.setConfigIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, setUserConfig_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.userToken != null) {
+          oprot.writeFieldBegin(USER_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.userToken);
+          oprot.writeFieldEnd();
+        }
+        if (struct.config != null) {
+          oprot.writeFieldBegin(CONFIG_FIELD_DESC);
+          struct.config.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class setUserConfig_argsTupleSchemeFactory implements SchemeFactory {
+      public setUserConfig_argsTupleScheme getScheme() {
+        return new setUserConfig_argsTupleScheme();
+      }
+    }
+
+    private static class setUserConfig_argsTupleScheme extends TupleScheme<setUserConfig_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, setUserConfig_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetUserToken()) {
+          optionals.set(0);
+        }
+        if (struct.isSetConfig()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetUserToken()) {
+          oprot.writeString(struct.userToken);
+        }
+        if (struct.isSetConfig()) {
+          struct.config.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, setUserConfig_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.userToken = iprot.readString();
+          struct.setUserTokenIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.config = new SatelliteUserConfig();
+          struct.config.read(iprot);
+          struct.setConfigIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class setUserConfig_result implements org.apache.thrift.TBase<setUserConfig_result, setUserConfig_result._Fields>, java.io.Serializable, Cloneable, Comparable<setUserConfig_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("setUserConfig_result");
+
+    private static final org.apache.thrift.protocol.TField FAILURE_FIELD_DESC = new org.apache.thrift.protocol.TField("failure", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new setUserConfig_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new setUserConfig_resultTupleSchemeFactory());
+    }
+
+    public TAuthorizationException failure; // required
+    public TInvocationException serverError; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      FAILURE((short)1, "failure"),
+      SERVER_ERROR((short)2, "serverError");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // FAILURE
+            return FAILURE;
+          case 2: // SERVER_ERROR
+            return SERVER_ERROR;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.FAILURE, new org.apache.thrift.meta_data.FieldMetaData("failure", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(setUserConfig_result.class, metaDataMap);
+    }
+
+    public setUserConfig_result() {
+    }
+
+    public setUserConfig_result(
+      TAuthorizationException failure,
+      TInvocationException serverError)
+    {
+      this();
+      this.failure = failure;
+      this.serverError = serverError;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public setUserConfig_result(setUserConfig_result other) {
+      if (other.isSetFailure()) {
+        this.failure = new TAuthorizationException(other.failure);
+      }
+      if (other.isSetServerError()) {
+        this.serverError = new TInvocationException(other.serverError);
+      }
+    }
+
+    public setUserConfig_result deepCopy() {
+      return new setUserConfig_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.failure = null;
+      this.serverError = null;
+    }
+
+    public TAuthorizationException getFailure() {
+      return this.failure;
+    }
+
+    public setUserConfig_result setFailure(TAuthorizationException failure) {
+      this.failure = failure;
+      return this;
+    }
+
+    public void unsetFailure() {
+      this.failure = null;
+    }
+
+    /** Returns true if field failure is set (has been assigned a value) and false otherwise */
+    public boolean isSetFailure() {
+      return this.failure != null;
+    }
+
+    public void setFailureIsSet(boolean value) {
+      if (!value) {
+        this.failure = null;
+      }
+    }
+
+    public TInvocationException getServerError() {
+      return this.serverError;
+    }
+
+    public setUserConfig_result setServerError(TInvocationException serverError) {
+      this.serverError = serverError;
+      return this;
+    }
+
+    public void unsetServerError() {
+      this.serverError = null;
+    }
+
+    /** Returns true if field serverError is set (has been assigned a value) and false otherwise */
+    public boolean isSetServerError() {
+      return this.serverError != null;
+    }
+
+    public void setServerErrorIsSet(boolean value) {
+      if (!value) {
+        this.serverError = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case FAILURE:
+        if (value == null) {
+          unsetFailure();
+        } else {
+          setFailure((TAuthorizationException)value);
+        }
+        break;
+
+      case SERVER_ERROR:
+        if (value == null) {
+          unsetServerError();
+        } else {
+          setServerError((TInvocationException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case FAILURE:
+        return getFailure();
+
+      case SERVER_ERROR:
+        return getServerError();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case FAILURE:
+        return isSetFailure();
+      case SERVER_ERROR:
+        return isSetServerError();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof setUserConfig_result)
+        return this.equals((setUserConfig_result)that);
+      return false;
+    }
+
+    public boolean equals(setUserConfig_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_failure = true && this.isSetFailure();
+      boolean that_present_failure = true && that.isSetFailure();
+      if (this_present_failure || that_present_failure) {
+        if (!(this_present_failure && that_present_failure))
+          return false;
+        if (!this.failure.equals(that.failure))
+          return false;
+      }
+
+      boolean this_present_serverError = true && this.isSetServerError();
+      boolean that_present_serverError = true && that.isSetServerError();
+      if (this_present_serverError || that_present_serverError) {
+        if (!(this_present_serverError && that_present_serverError))
+          return false;
+        if (!this.serverError.equals(that.serverError))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(setUserConfig_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetFailure()).compareTo(other.isSetFailure());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetFailure()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.failure, other.failure);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetServerError()).compareTo(other.isSetServerError());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetServerError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverError, other.serverError);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("setUserConfig_result(");
+      boolean first = true;
+
+      sb.append("failure:");
+      if (this.failure == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.failure);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("serverError:");
+      if (this.serverError == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.serverError);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class setUserConfig_resultStandardSchemeFactory implements SchemeFactory {
+      public setUserConfig_resultStandardScheme getScheme() {
+        return new setUserConfig_resultStandardScheme();
+      }
+    }
+
+    private static class setUserConfig_resultStandardScheme extends StandardScheme<setUserConfig_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, setUserConfig_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // FAILURE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.failure = new TAuthorizationException();
+                struct.failure.read(iprot);
+                struct.setFailureIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // SERVER_ERROR
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.serverError = new TInvocationException();
+                struct.serverError.read(iprot);
+                struct.setServerErrorIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, setUserConfig_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.failure != null) {
+          oprot.writeFieldBegin(FAILURE_FIELD_DESC);
+          struct.failure.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.serverError != null) {
+          oprot.writeFieldBegin(SERVER_ERROR_FIELD_DESC);
+          struct.serverError.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class setUserConfig_resultTupleSchemeFactory implements SchemeFactory {
+      public setUserConfig_resultTupleScheme getScheme() {
+        return new setUserConfig_resultTupleScheme();
+      }
+    }
+
+    private static class setUserConfig_resultTupleScheme extends TupleScheme<setUserConfig_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, setUserConfig_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetFailure()) {
+          optionals.set(0);
+        }
+        if (struct.isSetServerError()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetFailure()) {
+          struct.failure.write(oprot);
+        }
+        if (struct.isSetServerError()) {
+          struct.serverError.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, setUserConfig_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.failure = new TAuthorizationException();
+          struct.failure.read(iprot);
+          struct.setFailureIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -19262,6 +21627,611 @@ public class SatelliteServer {
 
   }
 
+  public static class getStatus_args implements org.apache.thrift.TBase<getStatus_args, getStatus_args._Fields>, java.io.Serializable, Cloneable, Comparable<getStatus_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getStatus_args");
+
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getStatus_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getStatus_argsTupleSchemeFactory());
+    }
+
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+;
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getStatus_args.class, metaDataMap);
+    }
+
+    public getStatus_args() {
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getStatus_args(getStatus_args other) {
+    }
+
+    public getStatus_args deepCopy() {
+      return new getStatus_args(this);
+    }
+
+    @Override
+    public void clear() {
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getStatus_args)
+        return this.equals((getStatus_args)that);
+      return false;
+    }
+
+    public boolean equals(getStatus_args that) {
+      if (that == null)
+        return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getStatus_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getStatus_args(");
+      boolean first = true;
+
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getStatus_argsStandardSchemeFactory implements SchemeFactory {
+      public getStatus_argsStandardScheme getScheme() {
+        return new getStatus_argsStandardScheme();
+      }
+    }
+
+    private static class getStatus_argsStandardScheme extends StandardScheme<getStatus_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getStatus_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getStatus_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getStatus_argsTupleSchemeFactory implements SchemeFactory {
+      public getStatus_argsTupleScheme getScheme() {
+        return new getStatus_argsTupleScheme();
+      }
+    }
+
+    private static class getStatus_argsTupleScheme extends TupleScheme<getStatus_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getStatus_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getStatus_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+      }
+    }
+
+  }
+
+  public static class getStatus_result implements org.apache.thrift.TBase<getStatus_result, getStatus_result._Fields>, java.io.Serializable, Cloneable, Comparable<getStatus_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getStatus_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getStatus_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getStatus_resultTupleSchemeFactory());
+    }
+
+    public SatelliteStatus success; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, SatelliteStatus.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getStatus_result.class, metaDataMap);
+    }
+
+    public getStatus_result() {
+    }
+
+    public getStatus_result(
+      SatelliteStatus success)
+    {
+      this();
+      this.success = success;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getStatus_result(getStatus_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new SatelliteStatus(other.success);
+      }
+    }
+
+    public getStatus_result deepCopy() {
+      return new getStatus_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+    }
+
+    public SatelliteStatus getSuccess() {
+      return this.success;
+    }
+
+    public getStatus_result setSuccess(SatelliteStatus success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((SatelliteStatus)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getStatus_result)
+        return this.equals((getStatus_result)that);
+      return false;
+    }
+
+    public boolean equals(getStatus_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getStatus_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getStatus_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getStatus_resultStandardSchemeFactory implements SchemeFactory {
+      public getStatus_resultStandardScheme getScheme() {
+        return new getStatus_resultStandardScheme();
+      }
+    }
+
+    private static class getStatus_resultStandardScheme extends StandardScheme<getStatus_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getStatus_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new SatelliteStatus();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getStatus_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getStatus_resultTupleSchemeFactory implements SchemeFactory {
+      public getStatus_resultTupleScheme getScheme() {
+        return new getStatus_resultTupleScheme();
+      }
+    }
+
+    private static class getStatus_resultTupleScheme extends TupleScheme<getStatus_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getStatus_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getStatus_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          struct.success = new SatelliteStatus();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+      }
+    }
+
+  }
+
   public static class getImageList_args implements org.apache.thrift.TBase<getImageList_args, getImageList_args._Fields>, java.io.Serializable, Cloneable, Comparable<getImageList_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getImageList_args");
 
@@ -19878,7 +22848,7 @@ public class SatelliteServer {
 
     public List<ImageSummaryRead> success; // required
     public TAuthorizationException authError; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -19965,7 +22935,7 @@ public class SatelliteServer {
     public getImageList_result(
       List<ImageSummaryRead> success,
       TAuthorizationException authError,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.success = success;
@@ -19988,7 +22958,7 @@ public class SatelliteServer {
         this.authError = new TAuthorizationException(other.authError);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -20066,11 +23036,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public getImageList_result setServerError(TInternalServerError serverError) {
+    public getImageList_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -20112,7 +23082,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -20353,7 +23323,7 @@ public class SatelliteServer {
               break;
             case 2: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -20466,7 +23436,7 @@ public class SatelliteServer {
           struct.setAuthErrorIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -20946,7 +23916,7 @@ public class SatelliteServer {
     public ImageDetailsRead success; // required
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -21038,7 +24008,7 @@ public class SatelliteServer {
       ImageDetailsRead success,
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.success = success;
@@ -21061,7 +24031,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -21149,11 +24119,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public getImageDetails_result setServerError(TInternalServerError serverError) {
+    public getImageDetails_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -21203,7 +24173,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -21478,7 +24448,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -21585,7 +24555,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -22053,8 +25023,7 @@ public class SatelliteServer {
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-    private static final org.apache.thrift.protocol.TField IMG_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("imgError", org.apache.thrift.protocol.TType.STRUCT, (short)2);
-    private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("error", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -22064,15 +25033,13 @@ public class SatelliteServer {
 
     public String success; // required
     public TAuthorizationException authError; // required
-    public TImageDataException imgError; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException error; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
       AUTH_ERROR((short)1, "authError"),
-      IMG_ERROR((short)2, "imgError"),
-      SERVER_ERROR((short)3, "serverError");
+      ERROR((short)2, "error");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -22091,10 +25058,8 @@ public class SatelliteServer {
             return SUCCESS;
           case 1: // AUTH_ERROR
             return AUTH_ERROR;
-          case 2: // IMG_ERROR
-            return IMG_ERROR;
-          case 3: // SERVER_ERROR
-            return SERVER_ERROR;
+          case 2: // ERROR
+            return ERROR;
           default:
             return null;
         }
@@ -22142,9 +25107,7 @@ public class SatelliteServer {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "UUID")));
       tmpMap.put(_Fields.AUTH_ERROR, new org.apache.thrift.meta_data.FieldMetaData("authError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
-      tmpMap.put(_Fields.IMG_ERROR, new org.apache.thrift.meta_data.FieldMetaData("imgError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
-      tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.ERROR, new org.apache.thrift.meta_data.FieldMetaData("error", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createImage_result.class, metaDataMap);
@@ -22156,14 +25119,12 @@ public class SatelliteServer {
     public createImage_result(
       String success,
       TAuthorizationException authError,
-      TImageDataException imgError,
-      TInternalServerError serverError)
+      TInvocationException error)
     {
       this();
       this.success = success;
       this.authError = authError;
-      this.imgError = imgError;
-      this.serverError = serverError;
+      this.error = error;
     }
 
     /**
@@ -22176,11 +25137,8 @@ public class SatelliteServer {
       if (other.isSetAuthError()) {
         this.authError = new TAuthorizationException(other.authError);
       }
-      if (other.isSetImgError()) {
-        this.imgError = new TImageDataException(other.imgError);
-      }
-      if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+      if (other.isSetError()) {
+        this.error = new TInvocationException(other.error);
       }
     }
 
@@ -22192,8 +25150,7 @@ public class SatelliteServer {
     public void clear() {
       this.success = null;
       this.authError = null;
-      this.imgError = null;
-      this.serverError = null;
+      this.error = null;
     }
 
     public String getSuccess() {
@@ -22244,51 +25201,27 @@ public class SatelliteServer {
       }
     }
 
-    public TImageDataException getImgError() {
-      return this.imgError;
+    public TInvocationException getError() {
+      return this.error;
     }
 
-    public createImage_result setImgError(TImageDataException imgError) {
-      this.imgError = imgError;
+    public createImage_result setError(TInvocationException error) {
+      this.error = error;
       return this;
     }
 
-    public void unsetImgError() {
-      this.imgError = null;
+    public void unsetError() {
+      this.error = null;
     }
 
-    /** Returns true if field imgError is set (has been assigned a value) and false otherwise */
-    public boolean isSetImgError() {
-      return this.imgError != null;
+    /** Returns true if field error is set (has been assigned a value) and false otherwise */
+    public boolean isSetError() {
+      return this.error != null;
     }
 
-    public void setImgErrorIsSet(boolean value) {
+    public void setErrorIsSet(boolean value) {
       if (!value) {
-        this.imgError = null;
-      }
-    }
-
-    public TInternalServerError getServerError() {
-      return this.serverError;
-    }
-
-    public createImage_result setServerError(TInternalServerError serverError) {
-      this.serverError = serverError;
-      return this;
-    }
-
-    public void unsetServerError() {
-      this.serverError = null;
-    }
-
-    /** Returns true if field serverError is set (has been assigned a value) and false otherwise */
-    public boolean isSetServerError() {
-      return this.serverError != null;
-    }
-
-    public void setServerErrorIsSet(boolean value) {
-      if (!value) {
-        this.serverError = null;
+        this.error = null;
       }
     }
 
@@ -22310,19 +25243,11 @@ public class SatelliteServer {
         }
         break;
 
-      case IMG_ERROR:
+      case ERROR:
         if (value == null) {
-          unsetImgError();
+          unsetError();
         } else {
-          setImgError((TImageDataException)value);
-        }
-        break;
-
-      case SERVER_ERROR:
-        if (value == null) {
-          unsetServerError();
-        } else {
-          setServerError((TInternalServerError)value);
+          setError((TInvocationException)value);
         }
         break;
 
@@ -22337,11 +25262,8 @@ public class SatelliteServer {
       case AUTH_ERROR:
         return getAuthError();
 
-      case IMG_ERROR:
-        return getImgError();
-
-      case SERVER_ERROR:
-        return getServerError();
+      case ERROR:
+        return getError();
 
       }
       throw new IllegalStateException();
@@ -22358,10 +25280,8 @@ public class SatelliteServer {
         return isSetSuccess();
       case AUTH_ERROR:
         return isSetAuthError();
-      case IMG_ERROR:
-        return isSetImgError();
-      case SERVER_ERROR:
-        return isSetServerError();
+      case ERROR:
+        return isSetError();
       }
       throw new IllegalStateException();
     }
@@ -22397,21 +25317,12 @@ public class SatelliteServer {
           return false;
       }
 
-      boolean this_present_imgError = true && this.isSetImgError();
-      boolean that_present_imgError = true && that.isSetImgError();
-      if (this_present_imgError || that_present_imgError) {
-        if (!(this_present_imgError && that_present_imgError))
+      boolean this_present_error = true && this.isSetError();
+      boolean that_present_error = true && that.isSetError();
+      if (this_present_error || that_present_error) {
+        if (!(this_present_error && that_present_error))
           return false;
-        if (!this.imgError.equals(that.imgError))
-          return false;
-      }
-
-      boolean this_present_serverError = true && this.isSetServerError();
-      boolean that_present_serverError = true && that.isSetServerError();
-      if (this_present_serverError || that_present_serverError) {
-        if (!(this_present_serverError && that_present_serverError))
-          return false;
-        if (!this.serverError.equals(that.serverError))
+        if (!this.error.equals(that.error))
           return false;
       }
 
@@ -22451,22 +25362,12 @@ public class SatelliteServer {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetImgError()).compareTo(other.isSetImgError());
+      lastComparison = Boolean.valueOf(isSetError()).compareTo(other.isSetError());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetImgError()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imgError, other.imgError);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetServerError()).compareTo(other.isSetServerError());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetServerError()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverError, other.serverError);
+      if (isSetError()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.error, other.error);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -22507,19 +25408,11 @@ public class SatelliteServer {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("imgError:");
-      if (this.imgError == null) {
+      sb.append("error:");
+      if (this.error == null) {
         sb.append("null");
       } else {
-        sb.append(this.imgError);
-      }
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("serverError:");
-      if (this.serverError == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.serverError);
+        sb.append(this.error);
       }
       first = false;
       sb.append(")");
@@ -22582,20 +25475,11 @@ public class SatelliteServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // IMG_ERROR
+            case 2: // ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.imgError = new TImageDataException();
-                struct.imgError.read(iprot);
-                struct.setImgErrorIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 3: // SERVER_ERROR
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
-                struct.serverError.read(iprot);
-                struct.setServerErrorIsSet(true);
+                struct.error = new TInvocationException();
+                struct.error.read(iprot);
+                struct.setErrorIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -22625,14 +25509,9 @@ public class SatelliteServer {
           struct.authError.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.imgError != null) {
-          oprot.writeFieldBegin(IMG_ERROR_FIELD_DESC);
-          struct.imgError.write(oprot);
-          oprot.writeFieldEnd();
-        }
-        if (struct.serverError != null) {
-          oprot.writeFieldBegin(SERVER_ERROR_FIELD_DESC);
-          struct.serverError.write(oprot);
+        if (struct.error != null) {
+          oprot.writeFieldBegin(ERROR_FIELD_DESC);
+          struct.error.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -22659,31 +25538,25 @@ public class SatelliteServer {
         if (struct.isSetAuthError()) {
           optionals.set(1);
         }
-        if (struct.isSetImgError()) {
+        if (struct.isSetError()) {
           optionals.set(2);
         }
-        if (struct.isSetServerError()) {
-          optionals.set(3);
-        }
-        oprot.writeBitSet(optionals, 4);
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
         }
         if (struct.isSetAuthError()) {
           struct.authError.write(oprot);
         }
-        if (struct.isSetImgError()) {
-          struct.imgError.write(oprot);
-        }
-        if (struct.isSetServerError()) {
-          struct.serverError.write(oprot);
+        if (struct.isSetError()) {
+          struct.error.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, createImage_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
@@ -22694,14 +25567,9 @@ public class SatelliteServer {
           struct.setAuthErrorIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.imgError = new TImageDataException();
-          struct.imgError.read(iprot);
-          struct.setImgErrorIsSet(true);
-        }
-        if (incoming.get(3)) {
-          struct.serverError = new TInternalServerError();
-          struct.serverError.read(iprot);
-          struct.setServerErrorIsSet(true);
+          struct.error = new TInvocationException();
+          struct.error.read(iprot);
+          struct.setErrorIsSet(true);
         }
       }
     }
@@ -23273,7 +26141,6 @@ public class SatelliteServer {
     private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField NOT_FOUND_FIELD_DESC = new org.apache.thrift.protocol.TField("notFound", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField IMG_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("imgError", org.apache.thrift.protocol.TType.STRUCT, (short)3);
-    private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -23283,15 +26150,13 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TImageDataException imgError; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException imgError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTH_ERROR((short)1, "authError"),
       NOT_FOUND((short)2, "notFound"),
-      IMG_ERROR((short)3, "imgError"),
-      SERVER_ERROR((short)4, "serverError");
+      IMG_ERROR((short)3, "imgError");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -23312,8 +26177,6 @@ public class SatelliteServer {
             return NOT_FOUND;
           case 3: // IMG_ERROR
             return IMG_ERROR;
-          case 4: // SERVER_ERROR
-            return SERVER_ERROR;
           default:
             return null;
         }
@@ -23363,8 +26226,6 @@ public class SatelliteServer {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.IMG_ERROR, new org.apache.thrift.meta_data.FieldMetaData("imgError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
-      tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateImageBase_result.class, metaDataMap);
     }
@@ -23375,14 +26236,12 @@ public class SatelliteServer {
     public updateImageBase_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TImageDataException imgError,
-      TInternalServerError serverError)
+      TInvocationException imgError)
     {
       this();
       this.authError = authError;
       this.notFound = notFound;
       this.imgError = imgError;
-      this.serverError = serverError;
     }
 
     /**
@@ -23396,10 +26255,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetImgError()) {
-        this.imgError = new TImageDataException(other.imgError);
-      }
-      if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.imgError = new TInvocationException(other.imgError);
       }
     }
 
@@ -23412,7 +26268,6 @@ public class SatelliteServer {
       this.authError = null;
       this.notFound = null;
       this.imgError = null;
-      this.serverError = null;
     }
 
     public TAuthorizationException getAuthError() {
@@ -23463,11 +26318,11 @@ public class SatelliteServer {
       }
     }
 
-    public TImageDataException getImgError() {
+    public TInvocationException getImgError() {
       return this.imgError;
     }
 
-    public updateImageBase_result setImgError(TImageDataException imgError) {
+    public updateImageBase_result setImgError(TInvocationException imgError) {
       this.imgError = imgError;
       return this;
     }
@@ -23484,30 +26339,6 @@ public class SatelliteServer {
     public void setImgErrorIsSet(boolean value) {
       if (!value) {
         this.imgError = null;
-      }
-    }
-
-    public TInternalServerError getServerError() {
-      return this.serverError;
-    }
-
-    public updateImageBase_result setServerError(TInternalServerError serverError) {
-      this.serverError = serverError;
-      return this;
-    }
-
-    public void unsetServerError() {
-      this.serverError = null;
-    }
-
-    /** Returns true if field serverError is set (has been assigned a value) and false otherwise */
-    public boolean isSetServerError() {
-      return this.serverError != null;
-    }
-
-    public void setServerErrorIsSet(boolean value) {
-      if (!value) {
-        this.serverError = null;
       }
     }
 
@@ -23533,15 +26364,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetImgError();
         } else {
-          setImgError((TImageDataException)value);
-        }
-        break;
-
-      case SERVER_ERROR:
-        if (value == null) {
-          unsetServerError();
-        } else {
-          setServerError((TInternalServerError)value);
+          setImgError((TInvocationException)value);
         }
         break;
 
@@ -23558,9 +26381,6 @@ public class SatelliteServer {
 
       case IMG_ERROR:
         return getImgError();
-
-      case SERVER_ERROR:
-        return getServerError();
 
       }
       throw new IllegalStateException();
@@ -23579,8 +26399,6 @@ public class SatelliteServer {
         return isSetNotFound();
       case IMG_ERROR:
         return isSetImgError();
-      case SERVER_ERROR:
-        return isSetServerError();
       }
       throw new IllegalStateException();
     }
@@ -23622,15 +26440,6 @@ public class SatelliteServer {
         if (!(this_present_imgError && that_present_imgError))
           return false;
         if (!this.imgError.equals(that.imgError))
-          return false;
-      }
-
-      boolean this_present_serverError = true && this.isSetServerError();
-      boolean that_present_serverError = true && that.isSetServerError();
-      if (this_present_serverError || that_present_serverError) {
-        if (!(this_present_serverError && that_present_serverError))
-          return false;
-        if (!this.serverError.equals(that.serverError))
           return false;
       }
 
@@ -23680,16 +26489,6 @@ public class SatelliteServer {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetServerError()).compareTo(other.isSetServerError());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetServerError()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverError, other.serverError);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       return 0;
     }
 
@@ -23731,14 +26530,6 @@ public class SatelliteServer {
         sb.append("null");
       } else {
         sb.append(this.imgError);
-      }
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("serverError:");
-      if (this.serverError == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.serverError);
       }
       first = false;
       sb.append(")");
@@ -23804,18 +26595,9 @@ public class SatelliteServer {
               break;
             case 3: // IMG_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.imgError = new TImageDataException();
+                struct.imgError = new TInvocationException();
                 struct.imgError.read(iprot);
                 struct.setImgErrorIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 4: // SERVER_ERROR
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
-                struct.serverError.read(iprot);
-                struct.setServerErrorIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -23850,11 +26632,6 @@ public class SatelliteServer {
           struct.imgError.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.serverError != null) {
-          oprot.writeFieldBegin(SERVER_ERROR_FIELD_DESC);
-          struct.serverError.write(oprot);
-          oprot.writeFieldEnd();
-        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -23882,10 +26659,7 @@ public class SatelliteServer {
         if (struct.isSetImgError()) {
           optionals.set(2);
         }
-        if (struct.isSetServerError()) {
-          optionals.set(3);
-        }
-        oprot.writeBitSet(optionals, 4);
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetAuthError()) {
           struct.authError.write(oprot);
         }
@@ -23895,15 +26669,12 @@ public class SatelliteServer {
         if (struct.isSetImgError()) {
           struct.imgError.write(oprot);
         }
-        if (struct.isSetServerError()) {
-          struct.serverError.write(oprot);
-        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, updateImageBase_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.authError = new TAuthorizationException();
           struct.authError.read(iprot);
@@ -23915,14 +26686,9 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.imgError = new TImageDataException();
+          struct.imgError = new TInvocationException();
           struct.imgError.read(iprot);
           struct.setImgErrorIsSet(true);
-        }
-        if (incoming.get(3)) {
-          struct.serverError = new TInternalServerError();
-          struct.serverError.read(iprot);
-          struct.setServerErrorIsSet(true);
         }
       }
     }
@@ -24494,7 +27260,6 @@ public class SatelliteServer {
     private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField NOT_FOUND_FIELD_DESC = new org.apache.thrift.protocol.TField("notFound", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField IMG_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("imgError", org.apache.thrift.protocol.TType.STRUCT, (short)3);
-    private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -24504,15 +27269,13 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TImageDataException imgError; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException imgError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       AUTH_ERROR((short)1, "authError"),
       NOT_FOUND((short)2, "notFound"),
-      IMG_ERROR((short)3, "imgError"),
-      SERVER_ERROR((short)4, "serverError");
+      IMG_ERROR((short)3, "imgError");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -24533,8 +27296,6 @@ public class SatelliteServer {
             return NOT_FOUND;
           case 3: // IMG_ERROR
             return IMG_ERROR;
-          case 4: // SERVER_ERROR
-            return SERVER_ERROR;
           default:
             return null;
         }
@@ -24584,8 +27345,6 @@ public class SatelliteServer {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.IMG_ERROR, new org.apache.thrift.meta_data.FieldMetaData("imgError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
-      tmpMap.put(_Fields.SERVER_ERROR, new org.apache.thrift.meta_data.FieldMetaData("serverError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateImageVersion_result.class, metaDataMap);
     }
@@ -24596,14 +27355,12 @@ public class SatelliteServer {
     public updateImageVersion_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TImageDataException imgError,
-      TInternalServerError serverError)
+      TInvocationException imgError)
     {
       this();
       this.authError = authError;
       this.notFound = notFound;
       this.imgError = imgError;
-      this.serverError = serverError;
     }
 
     /**
@@ -24617,10 +27374,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetImgError()) {
-        this.imgError = new TImageDataException(other.imgError);
-      }
-      if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.imgError = new TInvocationException(other.imgError);
       }
     }
 
@@ -24633,7 +27387,6 @@ public class SatelliteServer {
       this.authError = null;
       this.notFound = null;
       this.imgError = null;
-      this.serverError = null;
     }
 
     public TAuthorizationException getAuthError() {
@@ -24684,11 +27437,11 @@ public class SatelliteServer {
       }
     }
 
-    public TImageDataException getImgError() {
+    public TInvocationException getImgError() {
       return this.imgError;
     }
 
-    public updateImageVersion_result setImgError(TImageDataException imgError) {
+    public updateImageVersion_result setImgError(TInvocationException imgError) {
       this.imgError = imgError;
       return this;
     }
@@ -24705,30 +27458,6 @@ public class SatelliteServer {
     public void setImgErrorIsSet(boolean value) {
       if (!value) {
         this.imgError = null;
-      }
-    }
-
-    public TInternalServerError getServerError() {
-      return this.serverError;
-    }
-
-    public updateImageVersion_result setServerError(TInternalServerError serverError) {
-      this.serverError = serverError;
-      return this;
-    }
-
-    public void unsetServerError() {
-      this.serverError = null;
-    }
-
-    /** Returns true if field serverError is set (has been assigned a value) and false otherwise */
-    public boolean isSetServerError() {
-      return this.serverError != null;
-    }
-
-    public void setServerErrorIsSet(boolean value) {
-      if (!value) {
-        this.serverError = null;
       }
     }
 
@@ -24754,15 +27483,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetImgError();
         } else {
-          setImgError((TImageDataException)value);
-        }
-        break;
-
-      case SERVER_ERROR:
-        if (value == null) {
-          unsetServerError();
-        } else {
-          setServerError((TInternalServerError)value);
+          setImgError((TInvocationException)value);
         }
         break;
 
@@ -24779,9 +27500,6 @@ public class SatelliteServer {
 
       case IMG_ERROR:
         return getImgError();
-
-      case SERVER_ERROR:
-        return getServerError();
 
       }
       throw new IllegalStateException();
@@ -24800,8 +27518,6 @@ public class SatelliteServer {
         return isSetNotFound();
       case IMG_ERROR:
         return isSetImgError();
-      case SERVER_ERROR:
-        return isSetServerError();
       }
       throw new IllegalStateException();
     }
@@ -24843,15 +27559,6 @@ public class SatelliteServer {
         if (!(this_present_imgError && that_present_imgError))
           return false;
         if (!this.imgError.equals(that.imgError))
-          return false;
-      }
-
-      boolean this_present_serverError = true && this.isSetServerError();
-      boolean that_present_serverError = true && that.isSetServerError();
-      if (this_present_serverError || that_present_serverError) {
-        if (!(this_present_serverError && that_present_serverError))
-          return false;
-        if (!this.serverError.equals(that.serverError))
           return false;
       }
 
@@ -24901,16 +27608,6 @@ public class SatelliteServer {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetServerError()).compareTo(other.isSetServerError());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetServerError()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.serverError, other.serverError);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       return 0;
     }
 
@@ -24952,14 +27649,6 @@ public class SatelliteServer {
         sb.append("null");
       } else {
         sb.append(this.imgError);
-      }
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("serverError:");
-      if (this.serverError == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.serverError);
       }
       first = false;
       sb.append(")");
@@ -25025,18 +27714,9 @@ public class SatelliteServer {
               break;
             case 3: // IMG_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.imgError = new TImageDataException();
+                struct.imgError = new TInvocationException();
                 struct.imgError.read(iprot);
                 struct.setImgErrorIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 4: // SERVER_ERROR
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
-                struct.serverError.read(iprot);
-                struct.setServerErrorIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -25071,11 +27751,6 @@ public class SatelliteServer {
           struct.imgError.write(oprot);
           oprot.writeFieldEnd();
         }
-        if (struct.serverError != null) {
-          oprot.writeFieldBegin(SERVER_ERROR_FIELD_DESC);
-          struct.serverError.write(oprot);
-          oprot.writeFieldEnd();
-        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -25103,10 +27778,7 @@ public class SatelliteServer {
         if (struct.isSetImgError()) {
           optionals.set(2);
         }
-        if (struct.isSetServerError()) {
-          optionals.set(3);
-        }
-        oprot.writeBitSet(optionals, 4);
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetAuthError()) {
           struct.authError.write(oprot);
         }
@@ -25116,15 +27788,12 @@ public class SatelliteServer {
         if (struct.isSetImgError()) {
           struct.imgError.write(oprot);
         }
-        if (struct.isSetServerError()) {
-          struct.serverError.write(oprot);
-        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, updateImageVersion_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.authError = new TAuthorizationException();
           struct.authError.read(iprot);
@@ -25136,14 +27805,9 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.imgError = new TImageDataException();
+          struct.imgError = new TInvocationException();
           struct.imgError.read(iprot);
           struct.setImgErrorIsSet(true);
-        }
-        if (incoming.get(3)) {
-          struct.serverError = new TInternalServerError();
-          struct.serverError.read(iprot);
-          struct.setServerErrorIsSet(true);
         }
       }
     }
@@ -25619,7 +28283,7 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -25705,7 +28369,7 @@ public class SatelliteServer {
     public deleteImageVersion_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.authError = authError;
@@ -25724,7 +28388,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -25787,11 +28451,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public deleteImageVersion_result setServerError(TInternalServerError serverError) {
+    public deleteImageVersion_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -25833,7 +28497,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -26064,7 +28728,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -26155,7 +28819,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -26633,7 +29297,7 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -26719,7 +29383,7 @@ public class SatelliteServer {
     public deleteImageBase_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.authError = authError;
@@ -26738,7 +29402,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -26801,11 +29465,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public deleteImageBase_result setServerError(TInternalServerError serverError) {
+    public deleteImageBase_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -26847,7 +29511,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -27078,7 +29742,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -27169,7 +29833,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -27812,7 +30476,7 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -27898,7 +30562,7 @@ public class SatelliteServer {
     public writeImagePermissions_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.authError = authError;
@@ -27917,7 +30581,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -27980,11 +30644,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public writeImagePermissions_result setServerError(TInternalServerError serverError) {
+    public writeImagePermissions_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -28026,7 +30690,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -28257,7 +30921,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -28348,7 +31012,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -28828,7 +31492,7 @@ public class SatelliteServer {
     public Map<String,ImagePermissions> success; // required
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -28922,7 +31586,7 @@ public class SatelliteServer {
       Map<String,ImagePermissions> success,
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.success = success;
@@ -28957,7 +31621,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -29056,11 +31720,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public getImagePermissions_result setServerError(TInternalServerError serverError) {
+    public getImagePermissions_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -29110,7 +31774,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -29394,7 +32058,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -29527,7 +32191,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -30105,7 +32769,7 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -30191,7 +32855,7 @@ public class SatelliteServer {
     public setImageOwner_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.authError = authError;
@@ -30210,7 +32874,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -30273,11 +32937,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public setImageOwner_result setServerError(TInternalServerError serverError) {
+    public setImageOwner_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -30319,7 +32983,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -30550,7 +33214,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -30641,7 +33305,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -31218,7 +33882,7 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
     public TInvalidDateParam dateError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -31310,7 +33974,7 @@ public class SatelliteServer {
     public setImageVersionExpiry_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError,
+      TInvocationException serverError,
       TInvalidDateParam dateError)
     {
       this();
@@ -31331,7 +33995,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
       if (other.isSetDateError()) {
         this.dateError = new TInvalidDateParam(other.dateError);
@@ -31398,11 +34062,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public setImageVersionExpiry_result setServerError(TInternalServerError serverError) {
+    public setImageVersionExpiry_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -31468,7 +34132,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -31739,7 +34403,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -31850,7 +34514,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -32339,7 +35003,7 @@ public class SatelliteServer {
 
     public String success; // required
     public TAuthorizationException authError; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
     public TInvalidDateParam dateError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -32431,7 +35095,7 @@ public class SatelliteServer {
     public createLecture_result(
       String success,
       TAuthorizationException authError,
-      TInternalServerError serverError,
+      TInvocationException serverError,
       TInvalidDateParam dateError)
     {
       this();
@@ -32452,7 +35116,7 @@ public class SatelliteServer {
         this.authError = new TAuthorizationException(other.authError);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
       if (other.isSetDateError()) {
         this.dateError = new TInvalidDateParam(other.dateError);
@@ -32519,11 +35183,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public createLecture_result setServerError(TInternalServerError serverError) {
+    public createLecture_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -32589,7 +35253,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -32859,7 +35523,7 @@ public class SatelliteServer {
               break;
             case 2: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -32969,7 +35633,7 @@ public class SatelliteServer {
           struct.setAuthErrorIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -33558,7 +36222,7 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
     public TInvalidDateParam dateError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -33650,7 +36314,7 @@ public class SatelliteServer {
     public updateLecture_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError,
+      TInvocationException serverError,
       TInvalidDateParam dateError)
     {
       this();
@@ -33671,7 +36335,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
       if (other.isSetDateError()) {
         this.dateError = new TInvalidDateParam(other.dateError);
@@ -33738,11 +36402,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public updateLecture_result setServerError(TInternalServerError serverError) {
+    public updateLecture_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -33808,7 +36472,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -34079,7 +36743,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -34190,7 +36854,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -34671,7 +37335,7 @@ public class SatelliteServer {
 
     public List<LectureSummary> success; // required
     public TAuthorizationException authError; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -34758,7 +37422,7 @@ public class SatelliteServer {
     public getLectureList_result(
       List<LectureSummary> success,
       TAuthorizationException authError,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.success = success;
@@ -34781,7 +37445,7 @@ public class SatelliteServer {
         this.authError = new TAuthorizationException(other.authError);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -34859,11 +37523,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public getLectureList_result setServerError(TInternalServerError serverError) {
+    public getLectureList_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -34905,7 +37569,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -35146,7 +37810,7 @@ public class SatelliteServer {
               break;
             case 2: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -35259,7 +37923,7 @@ public class SatelliteServer {
           struct.setAuthErrorIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -35739,7 +38403,7 @@ public class SatelliteServer {
     public LectureRead success; // required
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -35831,7 +38495,7 @@ public class SatelliteServer {
       LectureRead success,
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.success = success;
@@ -35854,7 +38518,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -35942,11 +38606,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public getLectureDetails_result setServerError(TInternalServerError serverError) {
+    public getLectureDetails_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -35996,7 +38660,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -36271,7 +38935,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -36378,7 +39042,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -36856,7 +39520,7 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -36942,7 +39606,7 @@ public class SatelliteServer {
     public deleteLecture_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.authError = authError;
@@ -36961,7 +39625,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -37024,11 +39688,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public deleteLecture_result setServerError(TInternalServerError serverError) {
+    public deleteLecture_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -37070,7 +39734,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -37301,7 +39965,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -37392,7 +40056,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -38035,7 +40699,7 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -38121,7 +40785,7 @@ public class SatelliteServer {
     public writeLecturePermissions_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.authError = authError;
@@ -38140,7 +40804,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -38203,11 +40867,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public writeLecturePermissions_result setServerError(TInternalServerError serverError) {
+    public writeLecturePermissions_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -38249,7 +40913,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -38480,7 +41144,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -38571,7 +41235,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -39051,7 +41715,7 @@ public class SatelliteServer {
     public Map<String,LecturePermissions> success; // required
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -39145,7 +41809,7 @@ public class SatelliteServer {
       Map<String,LecturePermissions> success,
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.success = success;
@@ -39180,7 +41844,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -39279,11 +41943,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public getLecturePermissions_result setServerError(TInternalServerError serverError) {
+    public getLecturePermissions_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -39333,7 +41997,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -39617,7 +42281,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -39750,7 +42414,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }
@@ -40328,7 +42992,7 @@ public class SatelliteServer {
 
     public TAuthorizationException authError; // required
     public TNotFoundException notFound; // required
-    public TInternalServerError serverError; // required
+    public TInvocationException serverError; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -40414,7 +43078,7 @@ public class SatelliteServer {
     public setLectureOwner_result(
       TAuthorizationException authError,
       TNotFoundException notFound,
-      TInternalServerError serverError)
+      TInvocationException serverError)
     {
       this();
       this.authError = authError;
@@ -40433,7 +43097,7 @@ public class SatelliteServer {
         this.notFound = new TNotFoundException(other.notFound);
       }
       if (other.isSetServerError()) {
-        this.serverError = new TInternalServerError(other.serverError);
+        this.serverError = new TInvocationException(other.serverError);
       }
     }
 
@@ -40496,11 +43160,11 @@ public class SatelliteServer {
       }
     }
 
-    public TInternalServerError getServerError() {
+    public TInvocationException getServerError() {
       return this.serverError;
     }
 
-    public setLectureOwner_result setServerError(TInternalServerError serverError) {
+    public setLectureOwner_result setServerError(TInvocationException serverError) {
       this.serverError = serverError;
       return this;
     }
@@ -40542,7 +43206,7 @@ public class SatelliteServer {
         if (value == null) {
           unsetServerError();
         } else {
-          setServerError((TInternalServerError)value);
+          setServerError((TInvocationException)value);
         }
         break;
 
@@ -40773,7 +43437,7 @@ public class SatelliteServer {
               break;
             case 3: // SERVER_ERROR
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.serverError = new TInternalServerError();
+                struct.serverError = new TInvocationException();
                 struct.serverError.read(iprot);
                 struct.setServerErrorIsSet(true);
               } else { 
@@ -40864,7 +43528,7 @@ public class SatelliteServer {
           struct.setNotFoundIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.serverError = new TInternalServerError();
+          struct.serverError = new TInvocationException();
           struct.serverError.read(iprot);
           struct.setServerErrorIsSet(true);
         }

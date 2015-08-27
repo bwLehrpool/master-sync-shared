@@ -31,10 +31,14 @@ enum AuthorizationError {
 	BANNED_NETWORK
 }
 
-enum ImageDataError {
+enum InvocationError {
+	MISSING_DATA,
 	INVALID_DATA,
 	UNKNOWN_IMAGE,
-	INVALID_SHARE_MODE
+	UNKNOWN_USER,
+	UNKNOWN_LECTURE,
+	INVALID_SHARE_MODE,
+	INTERNAL_SERVER_ERROR
 }
 
 enum ShareMode {
@@ -333,6 +337,16 @@ struct SatelliteConfig {
 	5: i32 maxLectureValidityDays,
 }
 
+struct SatelliteStatus {
+	1: i64 availableStorageBytes,
+	2: UnixTimestamp serverTime
+}
+
+// Settings a user can change on a satellite server
+struct SatelliteUserConfig {
+	1: bool emailNotifications,
+}
+
 // ############ EXCEPTION ######################
 
 exception TTransferRejectedException {
@@ -351,16 +365,13 @@ exception TNotFoundException {
 	1: string message
 }
 
-exception TInternalServerError {
-}
-
 exception TInvalidDateParam {
 	1: DateParamError number,
 	2: string message,
 }
 
-exception TImageDataException {
-	1: ImageDataError number,
+exception TInvocationException {
+	1: InvocationError number,
 	2: string message
 }
 
@@ -377,7 +388,7 @@ service SatelliteServer {
 	 * File transfer related
 	 */
 	TransferInformation requestImageVersionUpload(1: Token userToken, 2: UUID imageBaseId, 3: i64 fileSize, 4: list<binary> blockHashes, 5: binary machineDescription)
-		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError, 3:TInternalServerError ffff, 4:TNotFoundException sdf),
+		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError, 3:TInvocationException ffff, 4:TNotFoundException sdf),
 
 	void updateBlockHashes(1: Token uploadToken, 2: list<binary> blockHashes)
 		throws (1:TInvalidTokenException ex1),
@@ -389,13 +400,13 @@ service SatelliteServer {
 		throws (1:TInvalidTokenException ex1),
 
 	TransferInformation requestDownload(1: Token userToken, 2: UUID imageVersionId)
-		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError, 3:TInternalServerError ffff, 4:TNotFoundException sdf),
+		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError, 3:TInvocationException ffff, 4:TNotFoundException sdf),
 
 	void cancelDownload(1: string downloadToken)
 		throws (1:TInvalidTokenException ex1),
 
 	binary getMachineDescription(1: Token userToken, 2: UUID imageVersionId)
-		throws (1:TAuthorizationException authError, 2:TInternalServerError ffff, 3:TNotFoundException sdf),
+		throws (1:TAuthorizationException authError, 2:TInvocationException ffff, 3:TNotFoundException sdf),
 		
 	/*
 	 * Auth/Session
@@ -403,88 +414,100 @@ service SatelliteServer {
 	
 	// Authentication check (deprecated, superseded by whoami)
 	void isAuthenticated(1: Token userToken)
-		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TInvocationException serverError),
 		
 	// Query own user information (for validation or session resume)
 	WhoamiInfo whoami(1: Token userToken)
-		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TInvocationException serverError),
 
-	void invalidateSession(1: Token userToken),
+	void invalidateSession(1: Token userToken)
+		throws (1:TInvalidTokenException ex),
 	
 	// find a user in a given organization by a search term
 	list<UserInfo> getUserList(1:Token userToken, 2:i32 page)
-		throws (1:TAuthorizationException failure, 2:TInternalServerError serverError),
+		throws (1:TAuthorizationException failure, 2:TInvocationException serverError),
+		
+	SatelliteUserConfig getUserConfig(1:Token userToken)
+		throws (1:TAuthorizationException failure, 2:TInvocationException serverError),
 	
-	// Misc
+	void setUserConfig(1:Token userToken, 2:SatelliteUserConfig config)
+		throws (1:TAuthorizationException failure, 2:TInvocationException serverError),
+	
+	/*
+	 * Misc
+	 */
+	 
     list<OperatingSystem> getOperatingSystems(),
 	list<Virtualizer> getVirtualizers(),
     list<Organization> getAllOrganizations(),
+    
+    SatelliteStatus getStatus(),
 	
 	/*
 	 * Image related
 	 */
 	// Get image list. tagSearch can be null, which disables this type of filtering and returns all
     list<ImageSummaryRead> getImageList(1: Token userToken, 2: list<string> tagSearch, 3: i32 page)
-		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TInvocationException serverError),
 	// Query detailed information about an image
 	ImageDetailsRead getImageDetails(1: Token userToken, 2: UUID imageBaseId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Create a new image; the image will have no versions, so the user needs to upload one and set meta data later on
 	UUID createImage(1: Token userToken, 2: string imageName)
-		throws (1:TAuthorizationException authError, 2:TImageDataException imgError, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TInvocationException error),
 	// Update given image's base meta data
 	void updateImageBase(1: Token userToken, 2: UUID imageBaseId 3: ImageBaseWrite image)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TImageDataException imgError, 4:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException imgError),
 	// Update a certain image version's meta data
 	void updateImageVersion(1: Token userToken, 2: UUID imageVersionId 3: ImageVersionWrite image)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TImageDataException imgError, 4:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException imgError),
 	// Delete given image version. If the version is currently in use by a lecture, it will not be
 	// deleted and false is returned
 	void deleteImageVersion(1: Token userToken, 2: UUID imageVersionId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Delete image and all its versions
 	void deleteImageBase(1:Token userToken, 2:UUID imageBaseId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Write list of permissions for given image 
 	void writeImagePermissions(1: Token userToken, 2: UUID imageBaseId, 3: map<UUID, ImagePermissions> permissions)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Get all user-permissions for given image 
 	map<UUID, ImagePermissions> getImagePermissions(1: Token userToken, 2: UUID imageBaseId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Set new owner of image
 	void setImageOwner(1: Token userToken, 2: UUID imageBaseId 3: UUID newOwnerId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Set image version valid and change expiry date (super user action)
 	void setImageVersionExpiry(1: Token userToken, 2: UUID imageBaseId 3: UnixTimestamp expireTime)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError, 4:TInvalidDateParam dateError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError, 4:TInvalidDateParam dateError),
 	
 	/*
 	 * Lecture related
 	 */
 	// Create new lecture
     UUID createLecture(1: Token userToken, 2: LectureWrite lecture)
-		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError, 3:TInvalidDateParam dateError),
+		throws (1:TAuthorizationException authError, 2:TInvocationException serverError, 3:TInvalidDateParam dateError),
 	// Update existing lecture
     void updateLecture(1: Token userToken, 2: UUID lectureId, 3: LectureWrite lecture)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError, 4:TInvalidDateParam dateError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError, 4:TInvalidDateParam dateError),
 	// Get list of all lectures
     list<LectureSummary> getLectureList(1: Token userToken, 2: i32 page)
-		throws (1:TAuthorizationException authError, 2:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TInvocationException serverError),
 	// Get detailed lecture information
 	LectureRead getLectureDetails(1: Token userToken, 2: UUID lectureId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Delete given lecture
 	void deleteLecture(1: Token userToken, 2: UUID lectureId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Write list of permissions for given lecture
 	void writeLecturePermissions(1: Token userToken, 2: UUID lectureId, 3: map<UUID, LecturePermissions> permissions)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Get list of permissions for given lecture
 	map<UUID, LecturePermissions> getLecturePermissions(1: Token userToken, 2: UUID lectureId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 	// Set new owner of lecture
 	void setLectureOwner(1: Token userToken, 2: UUID lectureId 3: UUID newOwnerId)
-		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInternalServerError serverError),
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 }
 
 // Central master server
@@ -499,16 +522,19 @@ service MasterServer {
 
 	// Old style test-account login 
 	SessionData authenticate(1:string login, 2:string password)
-		throws (1:TAuthorizationException failure),
+		throws (1:TAuthorizationException failure, 2:TInvocationException error),
 	// New style test-account login 
 	ClientSessionData localAccountLogin(1:string login, 2:string password)
-		throws (1:TAuthorizationException failure),
+		throws (1:TAuthorizationException failure, 2:TInvocationException error),
 	// find a user in a given organization by a search term
 	list<UserInfo> findUser(1:Token sessionId, 2:string organizationId, 3:string searchTerm)
-		throws (1:TAuthorizationException failure),
+		throws (1:TAuthorizationException failure, 2:TInvocationException error),
 	// Get list of publicly available images
 	list<ImagePublishData> getPublicImages(1:Token sessionId, 2:i32 page)
-		throws (1:TAuthorizationException failure),
+		throws (1:TAuthorizationException failure, 2:TInvocationException error),
+	// Logout
+	void invalidateSession(1: Token sessionId)
+		throws (1:TInvalidTokenException ex),
 
 /*
  * Server (Satellite) calls
@@ -520,42 +546,44 @@ service MasterServer {
 	bool isServerAuthenticated(1:Token serverSessionId),
 	// Start authentication of server for given organization
 	binary startServerAuthentication(1:string organizationId)
-		throws (1: TAuthorizationException failure),
+		throws (1: TAuthorizationException failure, 2:TInvocationException error),
 	// Reply to master server authentication challenge
 	ServerSessionData serverAuthenticate(1:string organizationId, 2:binary challengeResponse)
-		throws (1:TAuthorizationException failure),
+		throws (1:TAuthorizationException failure, 2:TInvocationException errr),
 	// Request upload of an image to the master server
 	TransferInformation submitImage(1:Token serverSessionId, 2:ImagePublishData imageDescription, 3:list<binary> blockHashes)
-		throws (1:TAuthorizationException failure, 2: TImageDataException failure2, 3: TTransferRejectedException failure3),
+		throws (1:TAuthorizationException failure, 2: TInvocationException failure2, 3: TTransferRejectedException failure3),
 	// Request download of an image 
 	TransferInformation getImage(2:Token serverSessionId, 1:UUID imageVersionId)
-		throws (1:TAuthorizationException failure, 2: TImageDataException failure2),
+		throws (1:TAuthorizationException failure, 2:TInvocationException failure2),
 
-	bool registerSatellite(1:string organizationId, 2:string address, 3:string modulus, 4:string exponent),
+	bool registerSatellite(1:string organizationId, 2:string address, 3:string modulus, 4:string exponent)
+		throws (1:TInvocationException error),
 
-	bool updateSatelliteAddress(1:Token serverSessionId, 2:string address),
+	bool updateSatelliteAddress(1:Token serverSessionId, 2:string address)
+		throws (1:TAuthorizationException failure, 2:TInvocationException error),
 
 /*
  * Shared calls
  */
  	// Get list of known organizations with meta data 
 	list<Organization> getOrganizations()
-		throws (1:TInternalServerError serverError),
+		throws (1:TInvocationException serverError),
 
 	// List of known/defined operating systems
 	list<OperatingSystem> getOperatingSystems()
-		throws (1:TInternalServerError serverError),
+		throws (1:TInvocationException serverError),
 	
 	// List of known/defined virtualizers
 	list<Virtualizer> getVirtualizers()
-		throws (1:TInternalServerError serverError),
+		throws (1:TInvocationException serverError),
 	
 	// List of "official" tags, starting from specific date
 	list<MasterTag> getTags(1:UnixTimestamp startDate)
-		throws (1:TInternalServerError serverError),
+		throws (1:TInvocationException serverError),
 	
 	// List of "official" software, starting from specific date
 	list<MasterSoftware> getSoftware(1:UnixTimestamp startDate)
-		throws (1:TInternalServerError serverError),
+		throws (1:TInvocationException serverError),
 
 }

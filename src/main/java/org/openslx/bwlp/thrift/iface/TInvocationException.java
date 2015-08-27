@@ -32,30 +32,30 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TImageDataException extends TException implements org.apache.thrift.TBase<TImageDataException, TImageDataException._Fields>, java.io.Serializable, Cloneable, Comparable<TImageDataException> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TImageDataException");
+public class TInvocationException extends TException implements org.apache.thrift.TBase<TInvocationException, TInvocationException._Fields>, java.io.Serializable, Cloneable, Comparable<TInvocationException> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TInvocationException");
 
   private static final org.apache.thrift.protocol.TField NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("number", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new TImageDataExceptionStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new TImageDataExceptionTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TInvocationExceptionStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TInvocationExceptionTupleSchemeFactory());
   }
 
   /**
    * 
-   * @see ImageDataError
+   * @see InvocationError
    */
-  public ImageDataError number; // required
+  public InvocationError number; // required
   public String message; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     /**
      * 
-     * @see ImageDataError
+     * @see InvocationError
      */
     NUMBER((short)1, "number"),
     MESSAGE((short)2, "message");
@@ -121,18 +121,18 @@ public class TImageDataException extends TException implements org.apache.thrift
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.NUMBER, new org.apache.thrift.meta_data.FieldMetaData("number", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ImageDataError.class)));
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, InvocationError.class)));
     tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TImageDataException.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TInvocationException.class, metaDataMap);
   }
 
-  public TImageDataException() {
+  public TInvocationException() {
   }
 
-  public TImageDataException(
-    ImageDataError number,
+  public TInvocationException(
+    InvocationError number,
     String message)
   {
     this();
@@ -143,7 +143,7 @@ public class TImageDataException extends TException implements org.apache.thrift
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public TImageDataException(TImageDataException other) {
+  public TInvocationException(TInvocationException other) {
     if (other.isSetNumber()) {
       this.number = other.number;
     }
@@ -152,8 +152,8 @@ public class TImageDataException extends TException implements org.apache.thrift
     }
   }
 
-  public TImageDataException deepCopy() {
-    return new TImageDataException(this);
+  public TInvocationException deepCopy() {
+    return new TInvocationException(this);
   }
 
   @Override
@@ -164,17 +164,17 @@ public class TImageDataException extends TException implements org.apache.thrift
 
   /**
    * 
-   * @see ImageDataError
+   * @see InvocationError
    */
-  public ImageDataError getNumber() {
+  public InvocationError getNumber() {
     return this.number;
   }
 
   /**
    * 
-   * @see ImageDataError
+   * @see InvocationError
    */
-  public TImageDataException setNumber(ImageDataError number) {
+  public TInvocationException setNumber(InvocationError number) {
     this.number = number;
     return this;
   }
@@ -198,7 +198,7 @@ public class TImageDataException extends TException implements org.apache.thrift
     return this.message;
   }
 
-  public TImageDataException setMessage(String message) {
+  public TInvocationException setMessage(String message) {
     this.message = message;
     return this;
   }
@@ -224,7 +224,7 @@ public class TImageDataException extends TException implements org.apache.thrift
       if (value == null) {
         unsetNumber();
       } else {
-        setNumber((ImageDataError)value);
+        setNumber((InvocationError)value);
       }
       break;
 
@@ -270,12 +270,12 @@ public class TImageDataException extends TException implements org.apache.thrift
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof TImageDataException)
-      return this.equals((TImageDataException)that);
+    if (that instanceof TInvocationException)
+      return this.equals((TInvocationException)that);
     return false;
   }
 
-  public boolean equals(TImageDataException that) {
+  public boolean equals(TInvocationException that) {
     if (that == null)
       return false;
 
@@ -306,7 +306,7 @@ public class TImageDataException extends TException implements org.apache.thrift
   }
 
   @Override
-  public int compareTo(TImageDataException other) {
+  public int compareTo(TInvocationException other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -350,7 +350,7 @@ public class TImageDataException extends TException implements org.apache.thrift
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("TImageDataException(");
+    StringBuilder sb = new StringBuilder("TInvocationException(");
     boolean first = true;
 
     sb.append("number:");
@@ -393,15 +393,15 @@ public class TImageDataException extends TException implements org.apache.thrift
     }
   }
 
-  private static class TImageDataExceptionStandardSchemeFactory implements SchemeFactory {
-    public TImageDataExceptionStandardScheme getScheme() {
-      return new TImageDataExceptionStandardScheme();
+  private static class TInvocationExceptionStandardSchemeFactory implements SchemeFactory {
+    public TInvocationExceptionStandardScheme getScheme() {
+      return new TInvocationExceptionStandardScheme();
     }
   }
 
-  private static class TImageDataExceptionStandardScheme extends StandardScheme<TImageDataException> {
+  private static class TInvocationExceptionStandardScheme extends StandardScheme<TInvocationException> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, TImageDataException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TInvocationException struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -413,7 +413,7 @@ public class TImageDataException extends TException implements org.apache.thrift
         switch (schemeField.id) {
           case 1: // NUMBER
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.number = ImageDataError.findByValue(iprot.readI32());
+              struct.number = InvocationError.findByValue(iprot.readI32());
               struct.setNumberIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -438,7 +438,7 @@ public class TImageDataException extends TException implements org.apache.thrift
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, TImageDataException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TInvocationException struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -458,16 +458,16 @@ public class TImageDataException extends TException implements org.apache.thrift
 
   }
 
-  private static class TImageDataExceptionTupleSchemeFactory implements SchemeFactory {
-    public TImageDataExceptionTupleScheme getScheme() {
-      return new TImageDataExceptionTupleScheme();
+  private static class TInvocationExceptionTupleSchemeFactory implements SchemeFactory {
+    public TInvocationExceptionTupleScheme getScheme() {
+      return new TInvocationExceptionTupleScheme();
     }
   }
 
-  private static class TImageDataExceptionTupleScheme extends TupleScheme<TImageDataException> {
+  private static class TInvocationExceptionTupleScheme extends TupleScheme<TInvocationException> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, TImageDataException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TInvocationException struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
       if (struct.isSetNumber()) {
@@ -486,11 +486,11 @@ public class TImageDataException extends TException implements org.apache.thrift
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, TImageDataException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TInvocationException struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
-        struct.number = ImageDataError.findByValue(iprot.readI32());
+        struct.number = InvocationError.findByValue(iprot.readI32());
         struct.setNumberIsSet(true);
       }
       if (incoming.get(1)) {

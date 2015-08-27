@@ -11,14 +11,18 @@ import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-public enum ImageDataError implements org.apache.thrift.TEnum {
-  INVALID_DATA(0),
-  UNKNOWN_IMAGE(1),
-  INVALID_SHARE_MODE(2);
+public enum InvocationError implements org.apache.thrift.TEnum {
+  MISSING_DATA(0),
+  INVALID_DATA(1),
+  UNKNOWN_IMAGE(2),
+  UNKNOWN_USER(3),
+  UNKNOWN_LECTURE(4),
+  INVALID_SHARE_MODE(5),
+  INTERNAL_SERVER_ERROR(6);
 
   private final int value;
 
-  private ImageDataError(int value) {
+  private InvocationError(int value) {
     this.value = value;
   }
 
@@ -33,14 +37,22 @@ public enum ImageDataError implements org.apache.thrift.TEnum {
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static ImageDataError findByValue(int value) { 
+  public static InvocationError findByValue(int value) { 
     switch (value) {
       case 0:
-        return INVALID_DATA;
+        return MISSING_DATA;
       case 1:
-        return UNKNOWN_IMAGE;
+        return INVALID_DATA;
       case 2:
+        return UNKNOWN_IMAGE;
+      case 3:
+        return UNKNOWN_USER;
+      case 4:
+        return UNKNOWN_LECTURE;
+      case 5:
         return INVALID_SHARE_MODE;
+      case 6:
+        return INTERNAL_SERVER_ERROR;
       default:
         return null;
     }
