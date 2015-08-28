@@ -36,16 +36,17 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ImagePublishData");
 
   private static final org.apache.thrift.protocol.TField IMAGE_BASE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageBaseId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField CURRENT_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("currentVersionId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField IMAGE_VERSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("imageVersionId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField OS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("osId", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField VIRT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("virtId", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField BASE_CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("baseCreateTime", org.apache.thrift.protocol.TType.I64, (short)6);
-  private static final org.apache.thrift.protocol.TField VERSION_CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("versionCreateTime", org.apache.thrift.protocol.TType.I64, (short)7);
-  private static final org.apache.thrift.protocol.TField OWNER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("ownerId", org.apache.thrift.protocol.TType.STRING, (short)8);
-  private static final org.apache.thrift.protocol.TField UPLOADER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("uploaderId", org.apache.thrift.protocol.TType.STRING, (short)9);
-  private static final org.apache.thrift.protocol.TField FILE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSize", org.apache.thrift.protocol.TType.I64, (short)11);
-  private static final org.apache.thrift.protocol.TField IS_TEMPLATE_FIELD_DESC = new org.apache.thrift.protocol.TField("isTemplate", org.apache.thrift.protocol.TType.BOOL, (short)16);
+  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createTime", org.apache.thrift.protocol.TType.I64, (short)5);
+  private static final org.apache.thrift.protocol.TField USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("userId", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField FILE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSize", org.apache.thrift.protocol.TType.I64, (short)7);
+  private static final org.apache.thrift.protocol.TField SOFTWARE_FIELD_DESC = new org.apache.thrift.protocol.TField("software", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField TAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("tags", org.apache.thrift.protocol.TType.LIST, (short)9);
+  private static final org.apache.thrift.protocol.TField OS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("osId", org.apache.thrift.protocol.TType.I32, (short)10);
+  private static final org.apache.thrift.protocol.TField VIRT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("virtId", org.apache.thrift.protocol.TType.STRING, (short)11);
+  private static final org.apache.thrift.protocol.TField IS_TEMPLATE_FIELD_DESC = new org.apache.thrift.protocol.TField("isTemplate", org.apache.thrift.protocol.TType.BOOL, (short)12);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -54,30 +55,32 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
   }
 
   public String imageBaseId; // required
-  public String currentVersionId; // required
+  public String imageVersionId; // required
   public String imageName; // required
+  public String description; // required
+  public long createTime; // required
+  public String userId; // required
+  public long fileSize; // required
+  public List<String> software; // required
+  public List<String> tags; // required
   public int osId; // required
   public String virtId; // required
-  public long baseCreateTime; // required
-  public long versionCreateTime; // required
-  public String ownerId; // required
-  public String uploaderId; // required
-  public long fileSize; // required
   public boolean isTemplate; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     IMAGE_BASE_ID((short)1, "imageBaseId"),
-    CURRENT_VERSION_ID((short)2, "currentVersionId"),
+    IMAGE_VERSION_ID((short)2, "imageVersionId"),
     IMAGE_NAME((short)3, "imageName"),
-    OS_ID((short)4, "osId"),
-    VIRT_ID((short)5, "virtId"),
-    BASE_CREATE_TIME((short)6, "baseCreateTime"),
-    VERSION_CREATE_TIME((short)7, "versionCreateTime"),
-    OWNER_ID((short)8, "ownerId"),
-    UPLOADER_ID((short)9, "uploaderId"),
-    FILE_SIZE((short)11, "fileSize"),
-    IS_TEMPLATE((short)16, "isTemplate");
+    DESCRIPTION((short)4, "description"),
+    CREATE_TIME((short)5, "createTime"),
+    USER_ID((short)6, "userId"),
+    FILE_SIZE((short)7, "fileSize"),
+    SOFTWARE((short)8, "software"),
+    TAGS((short)9, "tags"),
+    OS_ID((short)10, "osId"),
+    VIRT_ID((short)11, "virtId"),
+    IS_TEMPLATE((short)12, "isTemplate");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -94,25 +97,27 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       switch(fieldId) {
         case 1: // IMAGE_BASE_ID
           return IMAGE_BASE_ID;
-        case 2: // CURRENT_VERSION_ID
-          return CURRENT_VERSION_ID;
+        case 2: // IMAGE_VERSION_ID
+          return IMAGE_VERSION_ID;
         case 3: // IMAGE_NAME
           return IMAGE_NAME;
-        case 4: // OS_ID
-          return OS_ID;
-        case 5: // VIRT_ID
-          return VIRT_ID;
-        case 6: // BASE_CREATE_TIME
-          return BASE_CREATE_TIME;
-        case 7: // VERSION_CREATE_TIME
-          return VERSION_CREATE_TIME;
-        case 8: // OWNER_ID
-          return OWNER_ID;
-        case 9: // UPLOADER_ID
-          return UPLOADER_ID;
-        case 11: // FILE_SIZE
+        case 4: // DESCRIPTION
+          return DESCRIPTION;
+        case 5: // CREATE_TIME
+          return CREATE_TIME;
+        case 6: // USER_ID
+          return USER_ID;
+        case 7: // FILE_SIZE
           return FILE_SIZE;
-        case 16: // IS_TEMPLATE
+        case 8: // SOFTWARE
+          return SOFTWARE;
+        case 9: // TAGS
+          return TAGS;
+        case 10: // OS_ID
+          return OS_ID;
+        case 11: // VIRT_ID
+          return VIRT_ID;
+        case 12: // IS_TEMPLATE
           return IS_TEMPLATE;
         default:
           return null;
@@ -154,35 +159,38 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
   }
 
   // isset id assignments
-  private static final int __OSID_ISSET_ID = 0;
-  private static final int __BASECREATETIME_ISSET_ID = 1;
-  private static final int __VERSIONCREATETIME_ISSET_ID = 2;
-  private static final int __FILESIZE_ISSET_ID = 3;
-  private static final int __ISTEMPLATE_ISSET_ID = 4;
+  private static final int __CREATETIME_ISSET_ID = 0;
+  private static final int __FILESIZE_ISSET_ID = 1;
+  private static final int __OSID_ISSET_ID = 2;
+  private static final int __ISTEMPLATE_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.IMAGE_BASE_ID, new org.apache.thrift.meta_data.FieldMetaData("imageBaseId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
-    tmpMap.put(_Fields.CURRENT_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("currentVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+    tmpMap.put(_Fields.IMAGE_VERSION_ID, new org.apache.thrift.meta_data.FieldMetaData("imageVersionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
     tmpMap.put(_Fields.IMAGE_NAME, new org.apache.thrift.meta_data.FieldMetaData("imageName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.CREATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("createTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
+    tmpMap.put(_Fields.USER_ID, new org.apache.thrift.meta_data.FieldMetaData("userId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
+    tmpMap.put(_Fields.FILE_SIZE, new org.apache.thrift.meta_data.FieldMetaData("fileSize", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.SOFTWARE, new org.apache.thrift.meta_data.FieldMetaData("software", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.TAGS, new org.apache.thrift.meta_data.FieldMetaData("tags", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.OS_ID, new org.apache.thrift.meta_data.FieldMetaData("osId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.VIRT_ID, new org.apache.thrift.meta_data.FieldMetaData("virtId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.BASE_CREATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("baseCreateTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
-    tmpMap.put(_Fields.VERSION_CREATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("versionCreateTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
-    tmpMap.put(_Fields.OWNER_ID, new org.apache.thrift.meta_data.FieldMetaData("ownerId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
-    tmpMap.put(_Fields.UPLOADER_ID, new org.apache.thrift.meta_data.FieldMetaData("uploaderId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
-    tmpMap.put(_Fields.FILE_SIZE, new org.apache.thrift.meta_data.FieldMetaData("fileSize", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.IS_TEMPLATE, new org.apache.thrift.meta_data.FieldMetaData("isTemplate", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -194,32 +202,33 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
 
   public ImagePublishData(
     String imageBaseId,
-    String currentVersionId,
+    String imageVersionId,
     String imageName,
+    String description,
+    long createTime,
+    String userId,
+    long fileSize,
+    List<String> software,
+    List<String> tags,
     int osId,
     String virtId,
-    long baseCreateTime,
-    long versionCreateTime,
-    String ownerId,
-    String uploaderId,
-    long fileSize,
     boolean isTemplate)
   {
     this();
     this.imageBaseId = imageBaseId;
-    this.currentVersionId = currentVersionId;
+    this.imageVersionId = imageVersionId;
     this.imageName = imageName;
+    this.description = description;
+    this.createTime = createTime;
+    setCreateTimeIsSet(true);
+    this.userId = userId;
+    this.fileSize = fileSize;
+    setFileSizeIsSet(true);
+    this.software = software;
+    this.tags = tags;
     this.osId = osId;
     setOsIdIsSet(true);
     this.virtId = virtId;
-    this.baseCreateTime = baseCreateTime;
-    setBaseCreateTimeIsSet(true);
-    this.versionCreateTime = versionCreateTime;
-    setVersionCreateTimeIsSet(true);
-    this.ownerId = ownerId;
-    this.uploaderId = uploaderId;
-    this.fileSize = fileSize;
-    setFileSizeIsSet(true);
     this.isTemplate = isTemplate;
     setIsTemplateIsSet(true);
   }
@@ -232,25 +241,32 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     if (other.isSetImageBaseId()) {
       this.imageBaseId = other.imageBaseId;
     }
-    if (other.isSetCurrentVersionId()) {
-      this.currentVersionId = other.currentVersionId;
+    if (other.isSetImageVersionId()) {
+      this.imageVersionId = other.imageVersionId;
     }
     if (other.isSetImageName()) {
       this.imageName = other.imageName;
+    }
+    if (other.isSetDescription()) {
+      this.description = other.description;
+    }
+    this.createTime = other.createTime;
+    if (other.isSetUserId()) {
+      this.userId = other.userId;
+    }
+    this.fileSize = other.fileSize;
+    if (other.isSetSoftware()) {
+      List<String> __this__software = new ArrayList<String>(other.software);
+      this.software = __this__software;
+    }
+    if (other.isSetTags()) {
+      List<String> __this__tags = new ArrayList<String>(other.tags);
+      this.tags = __this__tags;
     }
     this.osId = other.osId;
     if (other.isSetVirtId()) {
       this.virtId = other.virtId;
     }
-    this.baseCreateTime = other.baseCreateTime;
-    this.versionCreateTime = other.versionCreateTime;
-    if (other.isSetOwnerId()) {
-      this.ownerId = other.ownerId;
-    }
-    if (other.isSetUploaderId()) {
-      this.uploaderId = other.uploaderId;
-    }
-    this.fileSize = other.fileSize;
     this.isTemplate = other.isTemplate;
   }
 
@@ -261,19 +277,19 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
   @Override
   public void clear() {
     this.imageBaseId = null;
-    this.currentVersionId = null;
+    this.imageVersionId = null;
     this.imageName = null;
+    this.description = null;
+    setCreateTimeIsSet(false);
+    this.createTime = 0;
+    this.userId = null;
+    setFileSizeIsSet(false);
+    this.fileSize = 0;
+    this.software = null;
+    this.tags = null;
     setOsIdIsSet(false);
     this.osId = 0;
     this.virtId = null;
-    setBaseCreateTimeIsSet(false);
-    this.baseCreateTime = 0;
-    setVersionCreateTimeIsSet(false);
-    this.versionCreateTime = 0;
-    this.ownerId = null;
-    this.uploaderId = null;
-    setFileSizeIsSet(false);
-    this.fileSize = 0;
     setIsTemplateIsSet(false);
     this.isTemplate = false;
   }
@@ -302,27 +318,27 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     }
   }
 
-  public String getCurrentVersionId() {
-    return this.currentVersionId;
+  public String getImageVersionId() {
+    return this.imageVersionId;
   }
 
-  public ImagePublishData setCurrentVersionId(String currentVersionId) {
-    this.currentVersionId = currentVersionId;
+  public ImagePublishData setImageVersionId(String imageVersionId) {
+    this.imageVersionId = imageVersionId;
     return this;
   }
 
-  public void unsetCurrentVersionId() {
-    this.currentVersionId = null;
+  public void unsetImageVersionId() {
+    this.imageVersionId = null;
   }
 
-  /** Returns true if field currentVersionId is set (has been assigned a value) and false otherwise */
-  public boolean isSetCurrentVersionId() {
-    return this.currentVersionId != null;
+  /** Returns true if field imageVersionId is set (has been assigned a value) and false otherwise */
+  public boolean isSetImageVersionId() {
+    return this.imageVersionId != null;
   }
 
-  public void setCurrentVersionIdIsSet(boolean value) {
+  public void setImageVersionIdIsSet(boolean value) {
     if (!value) {
-      this.currentVersionId = null;
+      this.imageVersionId = null;
     }
   }
 
@@ -347,6 +363,178 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
   public void setImageNameIsSet(boolean value) {
     if (!value) {
       this.imageName = null;
+    }
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+
+  public ImagePublishData setDescription(String description) {
+    this.description = description;
+    return this;
+  }
+
+  public void unsetDescription() {
+    this.description = null;
+  }
+
+  /** Returns true if field description is set (has been assigned a value) and false otherwise */
+  public boolean isSetDescription() {
+    return this.description != null;
+  }
+
+  public void setDescriptionIsSet(boolean value) {
+    if (!value) {
+      this.description = null;
+    }
+  }
+
+  public long getCreateTime() {
+    return this.createTime;
+  }
+
+  public ImagePublishData setCreateTime(long createTime) {
+    this.createTime = createTime;
+    setCreateTimeIsSet(true);
+    return this;
+  }
+
+  public void unsetCreateTime() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CREATETIME_ISSET_ID);
+  }
+
+  /** Returns true if field createTime is set (has been assigned a value) and false otherwise */
+  public boolean isSetCreateTime() {
+    return EncodingUtils.testBit(__isset_bitfield, __CREATETIME_ISSET_ID);
+  }
+
+  public void setCreateTimeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CREATETIME_ISSET_ID, value);
+  }
+
+  public String getUserId() {
+    return this.userId;
+  }
+
+  public ImagePublishData setUserId(String userId) {
+    this.userId = userId;
+    return this;
+  }
+
+  public void unsetUserId() {
+    this.userId = null;
+  }
+
+  /** Returns true if field userId is set (has been assigned a value) and false otherwise */
+  public boolean isSetUserId() {
+    return this.userId != null;
+  }
+
+  public void setUserIdIsSet(boolean value) {
+    if (!value) {
+      this.userId = null;
+    }
+  }
+
+  public long getFileSize() {
+    return this.fileSize;
+  }
+
+  public ImagePublishData setFileSize(long fileSize) {
+    this.fileSize = fileSize;
+    setFileSizeIsSet(true);
+    return this;
+  }
+
+  public void unsetFileSize() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __FILESIZE_ISSET_ID);
+  }
+
+  /** Returns true if field fileSize is set (has been assigned a value) and false otherwise */
+  public boolean isSetFileSize() {
+    return EncodingUtils.testBit(__isset_bitfield, __FILESIZE_ISSET_ID);
+  }
+
+  public void setFileSizeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FILESIZE_ISSET_ID, value);
+  }
+
+  public int getSoftwareSize() {
+    return (this.software == null) ? 0 : this.software.size();
+  }
+
+  public java.util.Iterator<String> getSoftwareIterator() {
+    return (this.software == null) ? null : this.software.iterator();
+  }
+
+  public void addToSoftware(String elem) {
+    if (this.software == null) {
+      this.software = new ArrayList<String>();
+    }
+    this.software.add(elem);
+  }
+
+  public List<String> getSoftware() {
+    return this.software;
+  }
+
+  public ImagePublishData setSoftware(List<String> software) {
+    this.software = software;
+    return this;
+  }
+
+  public void unsetSoftware() {
+    this.software = null;
+  }
+
+  /** Returns true if field software is set (has been assigned a value) and false otherwise */
+  public boolean isSetSoftware() {
+    return this.software != null;
+  }
+
+  public void setSoftwareIsSet(boolean value) {
+    if (!value) {
+      this.software = null;
+    }
+  }
+
+  public int getTagsSize() {
+    return (this.tags == null) ? 0 : this.tags.size();
+  }
+
+  public java.util.Iterator<String> getTagsIterator() {
+    return (this.tags == null) ? null : this.tags.iterator();
+  }
+
+  public void addToTags(String elem) {
+    if (this.tags == null) {
+      this.tags = new ArrayList<String>();
+    }
+    this.tags.add(elem);
+  }
+
+  public List<String> getTags() {
+    return this.tags;
+  }
+
+  public ImagePublishData setTags(List<String> tags) {
+    this.tags = tags;
+    return this;
+  }
+
+  public void unsetTags() {
+    this.tags = null;
+  }
+
+  /** Returns true if field tags is set (has been assigned a value) and false otherwise */
+  public boolean isSetTags() {
+    return this.tags != null;
+  }
+
+  public void setTagsIsSet(boolean value) {
+    if (!value) {
+      this.tags = null;
     }
   }
 
@@ -397,123 +585,6 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     }
   }
 
-  public long getBaseCreateTime() {
-    return this.baseCreateTime;
-  }
-
-  public ImagePublishData setBaseCreateTime(long baseCreateTime) {
-    this.baseCreateTime = baseCreateTime;
-    setBaseCreateTimeIsSet(true);
-    return this;
-  }
-
-  public void unsetBaseCreateTime() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __BASECREATETIME_ISSET_ID);
-  }
-
-  /** Returns true if field baseCreateTime is set (has been assigned a value) and false otherwise */
-  public boolean isSetBaseCreateTime() {
-    return EncodingUtils.testBit(__isset_bitfield, __BASECREATETIME_ISSET_ID);
-  }
-
-  public void setBaseCreateTimeIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BASECREATETIME_ISSET_ID, value);
-  }
-
-  public long getVersionCreateTime() {
-    return this.versionCreateTime;
-  }
-
-  public ImagePublishData setVersionCreateTime(long versionCreateTime) {
-    this.versionCreateTime = versionCreateTime;
-    setVersionCreateTimeIsSet(true);
-    return this;
-  }
-
-  public void unsetVersionCreateTime() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __VERSIONCREATETIME_ISSET_ID);
-  }
-
-  /** Returns true if field versionCreateTime is set (has been assigned a value) and false otherwise */
-  public boolean isSetVersionCreateTime() {
-    return EncodingUtils.testBit(__isset_bitfield, __VERSIONCREATETIME_ISSET_ID);
-  }
-
-  public void setVersionCreateTimeIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __VERSIONCREATETIME_ISSET_ID, value);
-  }
-
-  public String getOwnerId() {
-    return this.ownerId;
-  }
-
-  public ImagePublishData setOwnerId(String ownerId) {
-    this.ownerId = ownerId;
-    return this;
-  }
-
-  public void unsetOwnerId() {
-    this.ownerId = null;
-  }
-
-  /** Returns true if field ownerId is set (has been assigned a value) and false otherwise */
-  public boolean isSetOwnerId() {
-    return this.ownerId != null;
-  }
-
-  public void setOwnerIdIsSet(boolean value) {
-    if (!value) {
-      this.ownerId = null;
-    }
-  }
-
-  public String getUploaderId() {
-    return this.uploaderId;
-  }
-
-  public ImagePublishData setUploaderId(String uploaderId) {
-    this.uploaderId = uploaderId;
-    return this;
-  }
-
-  public void unsetUploaderId() {
-    this.uploaderId = null;
-  }
-
-  /** Returns true if field uploaderId is set (has been assigned a value) and false otherwise */
-  public boolean isSetUploaderId() {
-    return this.uploaderId != null;
-  }
-
-  public void setUploaderIdIsSet(boolean value) {
-    if (!value) {
-      this.uploaderId = null;
-    }
-  }
-
-  public long getFileSize() {
-    return this.fileSize;
-  }
-
-  public ImagePublishData setFileSize(long fileSize) {
-    this.fileSize = fileSize;
-    setFileSizeIsSet(true);
-    return this;
-  }
-
-  public void unsetFileSize() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __FILESIZE_ISSET_ID);
-  }
-
-  /** Returns true if field fileSize is set (has been assigned a value) and false otherwise */
-  public boolean isSetFileSize() {
-    return EncodingUtils.testBit(__isset_bitfield, __FILESIZE_ISSET_ID);
-  }
-
-  public void setFileSizeIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FILESIZE_ISSET_ID, value);
-  }
-
   public boolean isIsTemplate() {
     return this.isTemplate;
   }
@@ -547,11 +618,11 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       }
       break;
 
-    case CURRENT_VERSION_ID:
+    case IMAGE_VERSION_ID:
       if (value == null) {
-        unsetCurrentVersionId();
+        unsetImageVersionId();
       } else {
-        setCurrentVersionId((String)value);
+        setImageVersionId((String)value);
       }
       break;
 
@@ -560,6 +631,54 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
         unsetImageName();
       } else {
         setImageName((String)value);
+      }
+      break;
+
+    case DESCRIPTION:
+      if (value == null) {
+        unsetDescription();
+      } else {
+        setDescription((String)value);
+      }
+      break;
+
+    case CREATE_TIME:
+      if (value == null) {
+        unsetCreateTime();
+      } else {
+        setCreateTime((Long)value);
+      }
+      break;
+
+    case USER_ID:
+      if (value == null) {
+        unsetUserId();
+      } else {
+        setUserId((String)value);
+      }
+      break;
+
+    case FILE_SIZE:
+      if (value == null) {
+        unsetFileSize();
+      } else {
+        setFileSize((Long)value);
+      }
+      break;
+
+    case SOFTWARE:
+      if (value == null) {
+        unsetSoftware();
+      } else {
+        setSoftware((List<String>)value);
+      }
+      break;
+
+    case TAGS:
+      if (value == null) {
+        unsetTags();
+      } else {
+        setTags((List<String>)value);
       }
       break;
 
@@ -579,46 +698,6 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       }
       break;
 
-    case BASE_CREATE_TIME:
-      if (value == null) {
-        unsetBaseCreateTime();
-      } else {
-        setBaseCreateTime((Long)value);
-      }
-      break;
-
-    case VERSION_CREATE_TIME:
-      if (value == null) {
-        unsetVersionCreateTime();
-      } else {
-        setVersionCreateTime((Long)value);
-      }
-      break;
-
-    case OWNER_ID:
-      if (value == null) {
-        unsetOwnerId();
-      } else {
-        setOwnerId((String)value);
-      }
-      break;
-
-    case UPLOADER_ID:
-      if (value == null) {
-        unsetUploaderId();
-      } else {
-        setUploaderId((String)value);
-      }
-      break;
-
-    case FILE_SIZE:
-      if (value == null) {
-        unsetFileSize();
-      } else {
-        setFileSize((Long)value);
-      }
-      break;
-
     case IS_TEMPLATE:
       if (value == null) {
         unsetIsTemplate();
@@ -635,32 +714,35 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     case IMAGE_BASE_ID:
       return getImageBaseId();
 
-    case CURRENT_VERSION_ID:
-      return getCurrentVersionId();
+    case IMAGE_VERSION_ID:
+      return getImageVersionId();
 
     case IMAGE_NAME:
       return getImageName();
+
+    case DESCRIPTION:
+      return getDescription();
+
+    case CREATE_TIME:
+      return Long.valueOf(getCreateTime());
+
+    case USER_ID:
+      return getUserId();
+
+    case FILE_SIZE:
+      return Long.valueOf(getFileSize());
+
+    case SOFTWARE:
+      return getSoftware();
+
+    case TAGS:
+      return getTags();
 
     case OS_ID:
       return Integer.valueOf(getOsId());
 
     case VIRT_ID:
       return getVirtId();
-
-    case BASE_CREATE_TIME:
-      return Long.valueOf(getBaseCreateTime());
-
-    case VERSION_CREATE_TIME:
-      return Long.valueOf(getVersionCreateTime());
-
-    case OWNER_ID:
-      return getOwnerId();
-
-    case UPLOADER_ID:
-      return getUploaderId();
-
-    case FILE_SIZE:
-      return Long.valueOf(getFileSize());
 
     case IS_TEMPLATE:
       return Boolean.valueOf(isIsTemplate());
@@ -678,24 +760,26 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     switch (field) {
     case IMAGE_BASE_ID:
       return isSetImageBaseId();
-    case CURRENT_VERSION_ID:
-      return isSetCurrentVersionId();
+    case IMAGE_VERSION_ID:
+      return isSetImageVersionId();
     case IMAGE_NAME:
       return isSetImageName();
+    case DESCRIPTION:
+      return isSetDescription();
+    case CREATE_TIME:
+      return isSetCreateTime();
+    case USER_ID:
+      return isSetUserId();
+    case FILE_SIZE:
+      return isSetFileSize();
+    case SOFTWARE:
+      return isSetSoftware();
+    case TAGS:
+      return isSetTags();
     case OS_ID:
       return isSetOsId();
     case VIRT_ID:
       return isSetVirtId();
-    case BASE_CREATE_TIME:
-      return isSetBaseCreateTime();
-    case VERSION_CREATE_TIME:
-      return isSetVersionCreateTime();
-    case OWNER_ID:
-      return isSetOwnerId();
-    case UPLOADER_ID:
-      return isSetUploaderId();
-    case FILE_SIZE:
-      return isSetFileSize();
     case IS_TEMPLATE:
       return isSetIsTemplate();
     }
@@ -724,12 +808,12 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
         return false;
     }
 
-    boolean this_present_currentVersionId = true && this.isSetCurrentVersionId();
-    boolean that_present_currentVersionId = true && that.isSetCurrentVersionId();
-    if (this_present_currentVersionId || that_present_currentVersionId) {
-      if (!(this_present_currentVersionId && that_present_currentVersionId))
+    boolean this_present_imageVersionId = true && this.isSetImageVersionId();
+    boolean that_present_imageVersionId = true && that.isSetImageVersionId();
+    if (this_present_imageVersionId || that_present_imageVersionId) {
+      if (!(this_present_imageVersionId && that_present_imageVersionId))
         return false;
-      if (!this.currentVersionId.equals(that.currentVersionId))
+      if (!this.imageVersionId.equals(that.imageVersionId))
         return false;
     }
 
@@ -739,6 +823,60 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       if (!(this_present_imageName && that_present_imageName))
         return false;
       if (!this.imageName.equals(that.imageName))
+        return false;
+    }
+
+    boolean this_present_description = true && this.isSetDescription();
+    boolean that_present_description = true && that.isSetDescription();
+    if (this_present_description || that_present_description) {
+      if (!(this_present_description && that_present_description))
+        return false;
+      if (!this.description.equals(that.description))
+        return false;
+    }
+
+    boolean this_present_createTime = true;
+    boolean that_present_createTime = true;
+    if (this_present_createTime || that_present_createTime) {
+      if (!(this_present_createTime && that_present_createTime))
+        return false;
+      if (this.createTime != that.createTime)
+        return false;
+    }
+
+    boolean this_present_userId = true && this.isSetUserId();
+    boolean that_present_userId = true && that.isSetUserId();
+    if (this_present_userId || that_present_userId) {
+      if (!(this_present_userId && that_present_userId))
+        return false;
+      if (!this.userId.equals(that.userId))
+        return false;
+    }
+
+    boolean this_present_fileSize = true;
+    boolean that_present_fileSize = true;
+    if (this_present_fileSize || that_present_fileSize) {
+      if (!(this_present_fileSize && that_present_fileSize))
+        return false;
+      if (this.fileSize != that.fileSize)
+        return false;
+    }
+
+    boolean this_present_software = true && this.isSetSoftware();
+    boolean that_present_software = true && that.isSetSoftware();
+    if (this_present_software || that_present_software) {
+      if (!(this_present_software && that_present_software))
+        return false;
+      if (!this.software.equals(that.software))
+        return false;
+    }
+
+    boolean this_present_tags = true && this.isSetTags();
+    boolean that_present_tags = true && that.isSetTags();
+    if (this_present_tags || that_present_tags) {
+      if (!(this_present_tags && that_present_tags))
+        return false;
+      if (!this.tags.equals(that.tags))
         return false;
     }
 
@@ -757,51 +895,6 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       if (!(this_present_virtId && that_present_virtId))
         return false;
       if (!this.virtId.equals(that.virtId))
-        return false;
-    }
-
-    boolean this_present_baseCreateTime = true;
-    boolean that_present_baseCreateTime = true;
-    if (this_present_baseCreateTime || that_present_baseCreateTime) {
-      if (!(this_present_baseCreateTime && that_present_baseCreateTime))
-        return false;
-      if (this.baseCreateTime != that.baseCreateTime)
-        return false;
-    }
-
-    boolean this_present_versionCreateTime = true;
-    boolean that_present_versionCreateTime = true;
-    if (this_present_versionCreateTime || that_present_versionCreateTime) {
-      if (!(this_present_versionCreateTime && that_present_versionCreateTime))
-        return false;
-      if (this.versionCreateTime != that.versionCreateTime)
-        return false;
-    }
-
-    boolean this_present_ownerId = true && this.isSetOwnerId();
-    boolean that_present_ownerId = true && that.isSetOwnerId();
-    if (this_present_ownerId || that_present_ownerId) {
-      if (!(this_present_ownerId && that_present_ownerId))
-        return false;
-      if (!this.ownerId.equals(that.ownerId))
-        return false;
-    }
-
-    boolean this_present_uploaderId = true && this.isSetUploaderId();
-    boolean that_present_uploaderId = true && that.isSetUploaderId();
-    if (this_present_uploaderId || that_present_uploaderId) {
-      if (!(this_present_uploaderId && that_present_uploaderId))
-        return false;
-      if (!this.uploaderId.equals(that.uploaderId))
-        return false;
-    }
-
-    boolean this_present_fileSize = true;
-    boolean that_present_fileSize = true;
-    if (this_present_fileSize || that_present_fileSize) {
-      if (!(this_present_fileSize && that_present_fileSize))
-        return false;
-      if (this.fileSize != that.fileSize)
         return false;
     }
 
@@ -840,12 +933,12 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetCurrentVersionId()).compareTo(other.isSetCurrentVersionId());
+    lastComparison = Boolean.valueOf(isSetImageVersionId()).compareTo(other.isSetImageVersionId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetCurrentVersionId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.currentVersionId, other.currentVersionId);
+    if (isSetImageVersionId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageVersionId, other.imageVersionId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -856,6 +949,66 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     }
     if (isSetImageName()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imageName, other.imageName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDescription()).compareTo(other.isSetDescription());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDescription()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.description, other.description);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetCreateTime()).compareTo(other.isSetCreateTime());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCreateTime()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.createTime, other.createTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetUserId()).compareTo(other.isSetUserId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUserId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userId, other.userId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetFileSize()).compareTo(other.isSetFileSize());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetFileSize()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fileSize, other.fileSize);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSoftware()).compareTo(other.isSetSoftware());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSoftware()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.software, other.software);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetTags()).compareTo(other.isSetTags());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetTags()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tags, other.tags);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -876,56 +1029,6 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     }
     if (isSetVirtId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.virtId, other.virtId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetBaseCreateTime()).compareTo(other.isSetBaseCreateTime());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetBaseCreateTime()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.baseCreateTime, other.baseCreateTime);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetVersionCreateTime()).compareTo(other.isSetVersionCreateTime());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetVersionCreateTime()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.versionCreateTime, other.versionCreateTime);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetOwnerId()).compareTo(other.isSetOwnerId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetOwnerId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ownerId, other.ownerId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetUploaderId()).compareTo(other.isSetUploaderId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetUploaderId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.uploaderId, other.uploaderId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetFileSize()).compareTo(other.isSetFileSize());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetFileSize()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fileSize, other.fileSize);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -968,11 +1071,11 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("currentVersionId:");
-    if (this.currentVersionId == null) {
+    sb.append("imageVersionId:");
+    if (this.imageVersionId == null) {
       sb.append("null");
     } else {
-      sb.append(this.currentVersionId);
+      sb.append(this.imageVersionId);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -981,6 +1084,46 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       sb.append("null");
     } else {
       sb.append(this.imageName);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("description:");
+    if (this.description == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.description);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("createTime:");
+    sb.append(this.createTime);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("userId:");
+    if (this.userId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.userId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("fileSize:");
+    sb.append(this.fileSize);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("software:");
+    if (this.software == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.software);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("tags:");
+    if (this.tags == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.tags);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -994,34 +1137,6 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     } else {
       sb.append(this.virtId);
     }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("baseCreateTime:");
-    sb.append(this.baseCreateTime);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("versionCreateTime:");
-    sb.append(this.versionCreateTime);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("ownerId:");
-    if (this.ownerId == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.ownerId);
-    }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("uploaderId:");
-    if (this.uploaderId == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.uploaderId);
-    }
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("fileSize:");
-    sb.append(this.fileSize);
     first = false;
     if (!first) sb.append(", ");
     sb.append("isTemplate:");
@@ -1080,10 +1195,10 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // CURRENT_VERSION_ID
+          case 2: // IMAGE_VERSION_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.currentVersionId = iprot.readString();
-              struct.setCurrentVersionIdIsSet(true);
+              struct.imageVersionId = iprot.readString();
+              struct.setImageVersionIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1096,55 +1211,31 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // OS_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.osId = iprot.readI32();
-              struct.setOsIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 5: // VIRT_ID
+          case 4: // DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.virtId = iprot.readString();
-              struct.setVirtIdIsSet(true);
+              struct.description = iprot.readString();
+              struct.setDescriptionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // BASE_CREATE_TIME
+          case 5: // CREATE_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-              struct.baseCreateTime = iprot.readI64();
-              struct.setBaseCreateTimeIsSet(true);
+              struct.createTime = iprot.readI64();
+              struct.setCreateTimeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // VERSION_CREATE_TIME
-            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-              struct.versionCreateTime = iprot.readI64();
-              struct.setVersionCreateTimeIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 8: // OWNER_ID
+          case 6: // USER_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.ownerId = iprot.readString();
-              struct.setOwnerIdIsSet(true);
+              struct.userId = iprot.readString();
+              struct.setUserIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // UPLOADER_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.uploaderId = iprot.readString();
-              struct.setUploaderIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 11: // FILE_SIZE
+          case 7: // FILE_SIZE
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.fileSize = iprot.readI64();
               struct.setFileSizeIsSet(true);
@@ -1152,7 +1243,59 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 16: // IS_TEMPLATE
+          case 8: // SOFTWARE
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list74 = iprot.readListBegin();
+                struct.software = new ArrayList<String>(_list74.size);
+                for (int _i75 = 0; _i75 < _list74.size; ++_i75)
+                {
+                  String _elem76;
+                  _elem76 = iprot.readString();
+                  struct.software.add(_elem76);
+                }
+                iprot.readListEnd();
+              }
+              struct.setSoftwareIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 9: // TAGS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list77 = iprot.readListBegin();
+                struct.tags = new ArrayList<String>(_list77.size);
+                for (int _i78 = 0; _i78 < _list77.size; ++_i78)
+                {
+                  String _elem79;
+                  _elem79 = iprot.readString();
+                  struct.tags.add(_elem79);
+                }
+                iprot.readListEnd();
+              }
+              struct.setTagsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 10: // OS_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.osId = iprot.readI32();
+              struct.setOsIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 11: // VIRT_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.virtId = iprot.readString();
+              struct.setVirtIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 12: // IS_TEMPLATE
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isTemplate = iprot.readBool();
               struct.setIsTemplateIsSet(true);
@@ -1180,14 +1323,54 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
         oprot.writeString(struct.imageBaseId);
         oprot.writeFieldEnd();
       }
-      if (struct.currentVersionId != null) {
-        oprot.writeFieldBegin(CURRENT_VERSION_ID_FIELD_DESC);
-        oprot.writeString(struct.currentVersionId);
+      if (struct.imageVersionId != null) {
+        oprot.writeFieldBegin(IMAGE_VERSION_ID_FIELD_DESC);
+        oprot.writeString(struct.imageVersionId);
         oprot.writeFieldEnd();
       }
       if (struct.imageName != null) {
         oprot.writeFieldBegin(IMAGE_NAME_FIELD_DESC);
         oprot.writeString(struct.imageName);
+        oprot.writeFieldEnd();
+      }
+      if (struct.description != null) {
+        oprot.writeFieldBegin(DESCRIPTION_FIELD_DESC);
+        oprot.writeString(struct.description);
+        oprot.writeFieldEnd();
+      }
+      oprot.writeFieldBegin(CREATE_TIME_FIELD_DESC);
+      oprot.writeI64(struct.createTime);
+      oprot.writeFieldEnd();
+      if (struct.userId != null) {
+        oprot.writeFieldBegin(USER_ID_FIELD_DESC);
+        oprot.writeString(struct.userId);
+        oprot.writeFieldEnd();
+      }
+      oprot.writeFieldBegin(FILE_SIZE_FIELD_DESC);
+      oprot.writeI64(struct.fileSize);
+      oprot.writeFieldEnd();
+      if (struct.software != null) {
+        oprot.writeFieldBegin(SOFTWARE_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.software.size()));
+          for (String _iter80 : struct.software)
+          {
+            oprot.writeString(_iter80);
+          }
+          oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
+      if (struct.tags != null) {
+        oprot.writeFieldBegin(TAGS_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.tags.size()));
+          for (String _iter81 : struct.tags)
+          {
+            oprot.writeString(_iter81);
+          }
+          oprot.writeListEnd();
+        }
         oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(OS_ID_FIELD_DESC);
@@ -1198,25 +1381,6 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
         oprot.writeString(struct.virtId);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(BASE_CREATE_TIME_FIELD_DESC);
-      oprot.writeI64(struct.baseCreateTime);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(VERSION_CREATE_TIME_FIELD_DESC);
-      oprot.writeI64(struct.versionCreateTime);
-      oprot.writeFieldEnd();
-      if (struct.ownerId != null) {
-        oprot.writeFieldBegin(OWNER_ID_FIELD_DESC);
-        oprot.writeString(struct.ownerId);
-        oprot.writeFieldEnd();
-      }
-      if (struct.uploaderId != null) {
-        oprot.writeFieldBegin(UPLOADER_ID_FIELD_DESC);
-        oprot.writeString(struct.uploaderId);
-        oprot.writeFieldEnd();
-      }
-      oprot.writeFieldBegin(FILE_SIZE_FIELD_DESC);
-      oprot.writeI64(struct.fileSize);
-      oprot.writeFieldEnd();
       oprot.writeFieldBegin(IS_TEMPLATE_FIELD_DESC);
       oprot.writeBool(struct.isTemplate);
       oprot.writeFieldEnd();
@@ -1241,66 +1405,84 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       if (struct.isSetImageBaseId()) {
         optionals.set(0);
       }
-      if (struct.isSetCurrentVersionId()) {
+      if (struct.isSetImageVersionId()) {
         optionals.set(1);
       }
       if (struct.isSetImageName()) {
         optionals.set(2);
       }
-      if (struct.isSetOsId()) {
+      if (struct.isSetDescription()) {
         optionals.set(3);
       }
-      if (struct.isSetVirtId()) {
+      if (struct.isSetCreateTime()) {
         optionals.set(4);
       }
-      if (struct.isSetBaseCreateTime()) {
+      if (struct.isSetUserId()) {
         optionals.set(5);
       }
-      if (struct.isSetVersionCreateTime()) {
+      if (struct.isSetFileSize()) {
         optionals.set(6);
       }
-      if (struct.isSetOwnerId()) {
+      if (struct.isSetSoftware()) {
         optionals.set(7);
       }
-      if (struct.isSetUploaderId()) {
+      if (struct.isSetTags()) {
         optionals.set(8);
       }
-      if (struct.isSetFileSize()) {
+      if (struct.isSetOsId()) {
         optionals.set(9);
       }
-      if (struct.isSetIsTemplate()) {
+      if (struct.isSetVirtId()) {
         optionals.set(10);
       }
-      oprot.writeBitSet(optionals, 11);
+      if (struct.isSetIsTemplate()) {
+        optionals.set(11);
+      }
+      oprot.writeBitSet(optionals, 12);
       if (struct.isSetImageBaseId()) {
         oprot.writeString(struct.imageBaseId);
       }
-      if (struct.isSetCurrentVersionId()) {
-        oprot.writeString(struct.currentVersionId);
+      if (struct.isSetImageVersionId()) {
+        oprot.writeString(struct.imageVersionId);
       }
       if (struct.isSetImageName()) {
         oprot.writeString(struct.imageName);
+      }
+      if (struct.isSetDescription()) {
+        oprot.writeString(struct.description);
+      }
+      if (struct.isSetCreateTime()) {
+        oprot.writeI64(struct.createTime);
+      }
+      if (struct.isSetUserId()) {
+        oprot.writeString(struct.userId);
+      }
+      if (struct.isSetFileSize()) {
+        oprot.writeI64(struct.fileSize);
+      }
+      if (struct.isSetSoftware()) {
+        {
+          oprot.writeI32(struct.software.size());
+          for (String _iter82 : struct.software)
+          {
+            oprot.writeString(_iter82);
+          }
+        }
+      }
+      if (struct.isSetTags()) {
+        {
+          oprot.writeI32(struct.tags.size());
+          for (String _iter83 : struct.tags)
+          {
+            oprot.writeString(_iter83);
+          }
+        }
       }
       if (struct.isSetOsId()) {
         oprot.writeI32(struct.osId);
       }
       if (struct.isSetVirtId()) {
         oprot.writeString(struct.virtId);
-      }
-      if (struct.isSetBaseCreateTime()) {
-        oprot.writeI64(struct.baseCreateTime);
-      }
-      if (struct.isSetVersionCreateTime()) {
-        oprot.writeI64(struct.versionCreateTime);
-      }
-      if (struct.isSetOwnerId()) {
-        oprot.writeString(struct.ownerId);
-      }
-      if (struct.isSetUploaderId()) {
-        oprot.writeString(struct.uploaderId);
-      }
-      if (struct.isSetFileSize()) {
-        oprot.writeI64(struct.fileSize);
       }
       if (struct.isSetIsTemplate()) {
         oprot.writeBool(struct.isTemplate);
@@ -1310,48 +1492,70 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ImagePublishData struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(11);
+      BitSet incoming = iprot.readBitSet(12);
       if (incoming.get(0)) {
         struct.imageBaseId = iprot.readString();
         struct.setImageBaseIdIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.currentVersionId = iprot.readString();
-        struct.setCurrentVersionIdIsSet(true);
+        struct.imageVersionId = iprot.readString();
+        struct.setImageVersionIdIsSet(true);
       }
       if (incoming.get(2)) {
         struct.imageName = iprot.readString();
         struct.setImageNameIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.osId = iprot.readI32();
-        struct.setOsIdIsSet(true);
+        struct.description = iprot.readString();
+        struct.setDescriptionIsSet(true);
       }
       if (incoming.get(4)) {
-        struct.virtId = iprot.readString();
-        struct.setVirtIdIsSet(true);
+        struct.createTime = iprot.readI64();
+        struct.setCreateTimeIsSet(true);
       }
       if (incoming.get(5)) {
-        struct.baseCreateTime = iprot.readI64();
-        struct.setBaseCreateTimeIsSet(true);
+        struct.userId = iprot.readString();
+        struct.setUserIdIsSet(true);
       }
       if (incoming.get(6)) {
-        struct.versionCreateTime = iprot.readI64();
-        struct.setVersionCreateTimeIsSet(true);
-      }
-      if (incoming.get(7)) {
-        struct.ownerId = iprot.readString();
-        struct.setOwnerIdIsSet(true);
-      }
-      if (incoming.get(8)) {
-        struct.uploaderId = iprot.readString();
-        struct.setUploaderIdIsSet(true);
-      }
-      if (incoming.get(9)) {
         struct.fileSize = iprot.readI64();
         struct.setFileSizeIsSet(true);
       }
+      if (incoming.get(7)) {
+        {
+          org.apache.thrift.protocol.TList _list84 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.software = new ArrayList<String>(_list84.size);
+          for (int _i85 = 0; _i85 < _list84.size; ++_i85)
+          {
+            String _elem86;
+            _elem86 = iprot.readString();
+            struct.software.add(_elem86);
+          }
+        }
+        struct.setSoftwareIsSet(true);
+      }
+      if (incoming.get(8)) {
+        {
+          org.apache.thrift.protocol.TList _list87 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.tags = new ArrayList<String>(_list87.size);
+          for (int _i88 = 0; _i88 < _list87.size; ++_i88)
+          {
+            String _elem89;
+            _elem89 = iprot.readString();
+            struct.tags.add(_elem89);
+          }
+        }
+        struct.setTagsIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.osId = iprot.readI32();
+        struct.setOsIdIsSet(true);
+      }
       if (incoming.get(10)) {
+        struct.virtId = iprot.readString();
+        struct.setVirtIdIsSet(true);
+      }
+      if (incoming.get(11)) {
         struct.isTemplate = iprot.readBool();
         struct.setIsTemplateIsSet(true);
       }

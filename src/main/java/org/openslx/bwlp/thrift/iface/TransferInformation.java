@@ -667,13 +667,13 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
           case 4: // BLOCK_HASHES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list130 = iprot.readListBegin();
-                struct.blockHashes = new ArrayList<ByteBuffer>(_list130.size);
-                for (int _i131 = 0; _i131 < _list130.size; ++_i131)
+                org.apache.thrift.protocol.TList _list146 = iprot.readListBegin();
+                struct.blockHashes = new ArrayList<ByteBuffer>(_list146.size);
+                for (int _i147 = 0; _i147 < _list146.size; ++_i147)
                 {
-                  ByteBuffer _elem132;
-                  _elem132 = iprot.readBinary();
-                  struct.blockHashes.add(_elem132);
+                  ByteBuffer _elem148;
+                  _elem148 = iprot.readBinary();
+                  struct.blockHashes.add(_elem148);
                 }
                 iprot.readListEnd();
               }
@@ -721,9 +721,9 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
           oprot.writeFieldBegin(BLOCK_HASHES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.blockHashes.size()));
-            for (ByteBuffer _iter133 : struct.blockHashes)
+            for (ByteBuffer _iter149 : struct.blockHashes)
             {
-              oprot.writeBinary(_iter133);
+              oprot.writeBinary(_iter149);
             }
             oprot.writeListEnd();
           }
@@ -783,9 +783,9 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       if (struct.isSetBlockHashes()) {
         {
           oprot.writeI32(struct.blockHashes.size());
-          for (ByteBuffer _iter134 : struct.blockHashes)
+          for (ByteBuffer _iter150 : struct.blockHashes)
           {
-            oprot.writeBinary(_iter134);
+            oprot.writeBinary(_iter150);
           }
         }
       }
@@ -812,13 +812,13 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list135 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.blockHashes = new ArrayList<ByteBuffer>(_list135.size);
-          for (int _i136 = 0; _i136 < _list135.size; ++_i136)
+          org.apache.thrift.protocol.TList _list151 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.blockHashes = new ArrayList<ByteBuffer>(_list151.size);
+          for (int _i152 = 0; _i152 < _list151.size; ++_i152)
           {
-            ByteBuffer _elem137;
-            _elem137 = iprot.readBinary();
-            struct.blockHashes.add(_elem137);
+            ByteBuffer _elem153;
+            _elem153 = iprot.readBinary();
+            struct.blockHashes.add(_elem153);
           }
         }
         struct.setBlockHashesIsSet(true);
