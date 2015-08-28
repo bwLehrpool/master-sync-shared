@@ -40,7 +40,7 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
   private static final org.apache.thrift.protocol.TField IMAGE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("imageName", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField CREATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("createTime", org.apache.thrift.protocol.TType.I64, (short)5);
-  private static final org.apache.thrift.protocol.TField USER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("userId", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField USER_FIELD_DESC = new org.apache.thrift.protocol.TField("user", org.apache.thrift.protocol.TType.STRUCT, (short)6);
   private static final org.apache.thrift.protocol.TField FILE_SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSize", org.apache.thrift.protocol.TType.I64, (short)7);
   private static final org.apache.thrift.protocol.TField SOFTWARE_FIELD_DESC = new org.apache.thrift.protocol.TField("software", org.apache.thrift.protocol.TType.LIST, (short)8);
   private static final org.apache.thrift.protocol.TField TAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("tags", org.apache.thrift.protocol.TType.LIST, (short)9);
@@ -59,7 +59,7 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
   public String imageName; // required
   public String description; // required
   public long createTime; // required
-  public String userId; // required
+  public UserInfo user; // required
   public long fileSize; // required
   public List<String> software; // required
   public List<String> tags; // required
@@ -74,7 +74,7 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     IMAGE_NAME((short)3, "imageName"),
     DESCRIPTION((short)4, "description"),
     CREATE_TIME((short)5, "createTime"),
-    USER_ID((short)6, "userId"),
+    USER((short)6, "user"),
     FILE_SIZE((short)7, "fileSize"),
     SOFTWARE((short)8, "software"),
     TAGS((short)9, "tags"),
@@ -105,8 +105,8 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
           return DESCRIPTION;
         case 5: // CREATE_TIME
           return CREATE_TIME;
-        case 6: // USER_ID
-          return USER_ID;
+        case 6: // USER
+          return USER;
         case 7: // FILE_SIZE
           return FILE_SIZE;
         case 8: // SOFTWARE
@@ -177,8 +177,8 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CREATE_TIME, new org.apache.thrift.meta_data.FieldMetaData("createTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "UnixTimestamp")));
-    tmpMap.put(_Fields.USER_ID, new org.apache.thrift.meta_data.FieldMetaData("userId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , "UUID")));
+    tmpMap.put(_Fields.USER, new org.apache.thrift.meta_data.FieldMetaData("user", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, UserInfo.class)));
     tmpMap.put(_Fields.FILE_SIZE, new org.apache.thrift.meta_data.FieldMetaData("fileSize", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.SOFTWARE, new org.apache.thrift.meta_data.FieldMetaData("software", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -206,7 +206,7 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     String imageName,
     String description,
     long createTime,
-    String userId,
+    UserInfo user,
     long fileSize,
     List<String> software,
     List<String> tags,
@@ -221,7 +221,7 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     this.description = description;
     this.createTime = createTime;
     setCreateTimeIsSet(true);
-    this.userId = userId;
+    this.user = user;
     this.fileSize = fileSize;
     setFileSizeIsSet(true);
     this.software = software;
@@ -251,8 +251,8 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       this.description = other.description;
     }
     this.createTime = other.createTime;
-    if (other.isSetUserId()) {
-      this.userId = other.userId;
+    if (other.isSetUser()) {
+      this.user = new UserInfo(other.user);
     }
     this.fileSize = other.fileSize;
     if (other.isSetSoftware()) {
@@ -282,7 +282,7 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     this.description = null;
     setCreateTimeIsSet(false);
     this.createTime = 0;
-    this.userId = null;
+    this.user = null;
     setFileSizeIsSet(false);
     this.fileSize = 0;
     this.software = null;
@@ -413,27 +413,27 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CREATETIME_ISSET_ID, value);
   }
 
-  public String getUserId() {
-    return this.userId;
+  public UserInfo getUser() {
+    return this.user;
   }
 
-  public ImagePublishData setUserId(String userId) {
-    this.userId = userId;
+  public ImagePublishData setUser(UserInfo user) {
+    this.user = user;
     return this;
   }
 
-  public void unsetUserId() {
-    this.userId = null;
+  public void unsetUser() {
+    this.user = null;
   }
 
-  /** Returns true if field userId is set (has been assigned a value) and false otherwise */
-  public boolean isSetUserId() {
-    return this.userId != null;
+  /** Returns true if field user is set (has been assigned a value) and false otherwise */
+  public boolean isSetUser() {
+    return this.user != null;
   }
 
-  public void setUserIdIsSet(boolean value) {
+  public void setUserIsSet(boolean value) {
     if (!value) {
-      this.userId = null;
+      this.user = null;
     }
   }
 
@@ -650,11 +650,11 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       }
       break;
 
-    case USER_ID:
+    case USER:
       if (value == null) {
-        unsetUserId();
+        unsetUser();
       } else {
-        setUserId((String)value);
+        setUser((UserInfo)value);
       }
       break;
 
@@ -726,8 +726,8 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     case CREATE_TIME:
       return Long.valueOf(getCreateTime());
 
-    case USER_ID:
-      return getUserId();
+    case USER:
+      return getUser();
 
     case FILE_SIZE:
       return Long.valueOf(getFileSize());
@@ -768,8 +768,8 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       return isSetDescription();
     case CREATE_TIME:
       return isSetCreateTime();
-    case USER_ID:
-      return isSetUserId();
+    case USER:
+      return isSetUser();
     case FILE_SIZE:
       return isSetFileSize();
     case SOFTWARE:
@@ -844,12 +844,12 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
         return false;
     }
 
-    boolean this_present_userId = true && this.isSetUserId();
-    boolean that_present_userId = true && that.isSetUserId();
-    if (this_present_userId || that_present_userId) {
-      if (!(this_present_userId && that_present_userId))
+    boolean this_present_user = true && this.isSetUser();
+    boolean that_present_user = true && that.isSetUser();
+    if (this_present_user || that_present_user) {
+      if (!(this_present_user && that_present_user))
         return false;
-      if (!this.userId.equals(that.userId))
+      if (!this.user.equals(that.user))
         return false;
     }
 
@@ -973,12 +973,12 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetUserId()).compareTo(other.isSetUserId());
+    lastComparison = Boolean.valueOf(isSetUser()).compareTo(other.isSetUser());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetUserId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userId, other.userId);
+    if (isSetUser()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.user, other.user);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1099,11 +1099,11 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
     sb.append(this.createTime);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("userId:");
-    if (this.userId == null) {
+    sb.append("user:");
+    if (this.user == null) {
       sb.append("null");
     } else {
-      sb.append(this.userId);
+      sb.append(this.user);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -1149,6 +1149,9 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
     // check for sub-struct validity
+    if (user != null) {
+      user.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -1227,10 +1230,11 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // USER_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.userId = iprot.readString();
-              struct.setUserIdIsSet(true);
+          case 6: // USER
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.user = new UserInfo();
+              struct.user.read(iprot);
+              struct.setUserIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1341,9 +1345,9 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       oprot.writeFieldBegin(CREATE_TIME_FIELD_DESC);
       oprot.writeI64(struct.createTime);
       oprot.writeFieldEnd();
-      if (struct.userId != null) {
-        oprot.writeFieldBegin(USER_ID_FIELD_DESC);
-        oprot.writeString(struct.userId);
+      if (struct.user != null) {
+        oprot.writeFieldBegin(USER_FIELD_DESC);
+        struct.user.write(oprot);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldBegin(FILE_SIZE_FIELD_DESC);
@@ -1417,7 +1421,7 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       if (struct.isSetCreateTime()) {
         optionals.set(4);
       }
-      if (struct.isSetUserId()) {
+      if (struct.isSetUser()) {
         optionals.set(5);
       }
       if (struct.isSetFileSize()) {
@@ -1454,8 +1458,8 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
       if (struct.isSetCreateTime()) {
         oprot.writeI64(struct.createTime);
       }
-      if (struct.isSetUserId()) {
-        oprot.writeString(struct.userId);
+      if (struct.isSetUser()) {
+        struct.user.write(oprot);
       }
       if (struct.isSetFileSize()) {
         oprot.writeI64(struct.fileSize);
@@ -1514,8 +1518,9 @@ public class ImagePublishData implements org.apache.thrift.TBase<ImagePublishDat
         struct.setCreateTimeIsSet(true);
       }
       if (incoming.get(5)) {
-        struct.userId = iprot.readString();
-        struct.setUserIdIsSet(true);
+        struct.user = new UserInfo();
+        struct.user.read(iprot);
+        struct.setUserIsSet(true);
       }
       if (incoming.get(6)) {
         struct.fileSize = iprot.readI64();

@@ -218,7 +218,7 @@ struct ImagePublishData {
 	3: string imageName,
 	4: string description,
 	5: UnixTimestamp createTime,
-	6: UUID userId,
+	6: UserInfo user,
 	7: i64 fileSize,
 	8: list<string> software,
 	9: list<string> tags,
