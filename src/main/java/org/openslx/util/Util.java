@@ -51,14 +51,15 @@ public class Util
 	 * @param defaultValue fallback value if given string can't be parsed
 	 * @return
 	 */
-	public static int parseInt(String value, int defaultValue) {
+	public static int parseInt( String value, int defaultValue )
+	{
 		try {
-			return Integer.parseInt(value);
-		} catch (Exception e) {
+			return Integer.parseInt( value );
+		} catch ( Exception e ) {
 			return defaultValue;
 		}
 	}
-	
+
 	public static void safeClose( Closeable... closeable )
 	{
 		for ( Closeable c : closeable ) {
@@ -70,7 +71,7 @@ public class Util
 			}
 		}
 	}
-	
+
 	public static void safeClose( AutoCloseable... closeable )
 	{
 		for ( AutoCloseable c : closeable ) {
@@ -82,8 +83,9 @@ public class Util
 			}
 		}
 	}
-	
-	public static boolean sleep(int millis) {
+
+	public static boolean sleep( int millis )
+	{
 		try {
 			Thread.sleep( millis );
 			return true;
@@ -92,8 +94,9 @@ public class Util
 			return false;
 		}
 	}
-	
-	public static boolean joinThread(Thread t) {
+
+	public static boolean joinThread( Thread t )
+	{
 		try {
 			t.join();
 			return true;
@@ -101,4 +104,10 @@ public class Util
 			return false;
 		}
 	}
+
+	public static long unixTime()
+	{
+		return System.currentTimeMillis() / 1000;
+	}
+
 }
