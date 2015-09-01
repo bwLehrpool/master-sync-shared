@@ -314,7 +314,7 @@ struct TransferInformation {
 	2: i32 plainPort,
 	3: i32 sslPort,
 	4: optional list<binary> blockHashes, // Only if transfer is a download (and list is known)
-	5: optional string machineDescription, // Only if transfer is a download
+	5: optional binary machineDescription, // Only if transfer is a download
 }
 
 // Used to tell status of an upload. The blockStatus is one byte per 16MB block,

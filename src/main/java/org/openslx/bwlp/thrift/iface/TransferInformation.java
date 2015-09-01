@@ -51,7 +51,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
   public int plainPort; // required
   public int sslPort; // required
   public List<ByteBuffer> blockHashes; // optional
-  public String machineDescription; // optional
+  public ByteBuffer machineDescription; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -141,7 +141,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING            , true))));
     tmpMap.put(_Fields.MACHINE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("machineDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TransferInformation.class, metaDataMap);
   }
@@ -177,7 +177,8 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       this.blockHashes = __this__blockHashes;
     }
     if (other.isSetMachineDescription()) {
-      this.machineDescription = other.machineDescription;
+      this.machineDescription = org.apache.thrift.TBaseHelper.copyBinary(other.machineDescription);
+;
     }
   }
 
@@ -305,11 +306,21 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
     }
   }
 
-  public String getMachineDescription() {
-    return this.machineDescription;
+  public byte[] getMachineDescription() {
+    setMachineDescription(org.apache.thrift.TBaseHelper.rightSize(machineDescription));
+    return machineDescription == null ? null : machineDescription.array();
   }
 
-  public TransferInformation setMachineDescription(String machineDescription) {
+  public ByteBuffer bufferForMachineDescription() {
+    return machineDescription;
+  }
+
+  public TransferInformation setMachineDescription(byte[] machineDescription) {
+    setMachineDescription(machineDescription == null ? (ByteBuffer)null : ByteBuffer.wrap(machineDescription));
+    return this;
+  }
+
+  public TransferInformation setMachineDescription(ByteBuffer machineDescription) {
     this.machineDescription = machineDescription;
     return this;
   }
@@ -367,7 +378,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       if (value == null) {
         unsetMachineDescription();
       } else {
-        setMachineDescription((String)value);
+        setMachineDescription((ByteBuffer)value);
       }
       break;
 
@@ -591,7 +602,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       if (this.machineDescription == null) {
         sb.append("null");
       } else {
-        sb.append(this.machineDescription);
+        org.apache.thrift.TBaseHelper.toString(this.machineDescription, sb);
       }
       first = false;
     }
@@ -684,7 +695,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
             break;
           case 5: // MACHINE_DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.machineDescription = iprot.readString();
+              struct.machineDescription = iprot.readBinary();
               struct.setMachineDescriptionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -733,7 +744,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
       if (struct.machineDescription != null) {
         if (struct.isSetMachineDescription()) {
           oprot.writeFieldBegin(MACHINE_DESCRIPTION_FIELD_DESC);
-          oprot.writeString(struct.machineDescription);
+          oprot.writeBinary(struct.machineDescription);
           oprot.writeFieldEnd();
         }
       }
@@ -790,7 +801,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
         }
       }
       if (struct.isSetMachineDescription()) {
-        oprot.writeString(struct.machineDescription);
+        oprot.writeBinary(struct.machineDescription);
       }
     }
 
@@ -824,7 +835,7 @@ public class TransferInformation implements org.apache.thrift.TBase<TransferInfo
         struct.setBlockHashesIsSet(true);
       }
       if (incoming.get(4)) {
-        struct.machineDescription = iprot.readString();
+        struct.machineDescription = iprot.readBinary();
         struct.setMachineDescriptionIsSet(true);
       }
     }

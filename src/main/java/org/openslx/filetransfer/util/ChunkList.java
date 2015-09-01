@@ -2,6 +2,7 @@ package org.openslx.filetransfer.util;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class ChunkList
 	{
 		FileChunk.createChunkList( missingChunks, fileSize, sha1Sums );
 		statusArray = ByteBuffer.allocate( missingChunks.size() );
-		allChunks = new ArrayList<>( missingChunks );
+		allChunks = Collections.unmodifiableList( new ArrayList<>( missingChunks ) );
 	}
 
 	/**
@@ -232,6 +233,16 @@ public class ChunkList
 		}
 		sb.append( '}' );
 		return sb.toString();
+	}
+
+	public synchronized boolean isEmpty()
+	{
+		return allChunks.isEmpty();
+	}
+
+	public List<FileChunk> getAll()
+	{
+		return allChunks;
 	}
 
 }
