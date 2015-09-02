@@ -183,7 +183,7 @@ public class VmwareConfig
 
 	public String toString( boolean filteredRequired, boolean generatedRequired )
 	{
-		set( ".encoding", "UTF-8" );
+		set( ".encoding", "UTF-8" ).filtered( true ).generated( true );
 		StringBuilder sb = new StringBuilder( 300 );
 		for ( Entry<String, ConfigEntry> entry : entries.entrySet() ) {
 			ConfigEntry value = entry.getValue();
