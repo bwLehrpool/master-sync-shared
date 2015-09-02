@@ -1,13 +1,7 @@
 package org.openslx.util.vm;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
-import org.openslx.util.Util;
+import org.openslx.util.vm.VmwareConfig.ConfigEntry;
 
 public class VmwareMetaData extends VmMetaData
 {
@@ -33,6 +27,8 @@ public class VmwareMetaData extends VmMetaData
 	// Lowercase list of allowed settings for upload (as regex)
 	private static final Pattern[] whitelist;
 
+	private final VmwareConfig config;
+
 	// Init static members
 	static {
 		String[] list = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci\\.",
@@ -45,73 +41,24 @@ public class VmwareMetaData extends VmMetaData
 
 	private final Map<String, Controller> disks = new HashMap<>();
 
-	private final Map<String, String> slxLines = new HashMap<>();
-
-	private final StringBuilder cleanedConfig = new StringBuilder( 200 );
-
 	public VmwareMetaData( List<OperatingSystem> osList, File file ) throws IOException
 	{
 		super( osList );
-		int todo = (int)Math.min( 100000, file.length() );
-		int offset = 0;
-		byte[] data = new byte[ todo ];
-		FileInputStream fr = null;
-		try {
-			fr = new FileInputStream( file );
-			while ( todo > 0 ) {
-				int ret = fr.read( data, offset, todo );
-				if ( ret <= 0 )
-					break;
-				todo -= ret;
-				offset += ret;
-			}
-		} finally {
-			Util.safeClose( fr );
-		}
-		init( data, offset );
+		this.config = new VmwareConfig( file );
+		init();
 	}
 
 	public VmwareMetaData( List<OperatingSystem> osList, byte[] vmxContent, int length )
 	{
 		super( osList );
-		init( vmxContent, length );
+		this.config = new VmwareConfig( vmxContent, length );
+		init();
 	}
 
-	private void init( byte[] vmxContent, int length )
+	private void init()
 	{
-		String csName = detectCharset( new ByteArrayInputStream( vmxContent, 0, length ) );
-		Charset cs = null;
-		try {
-			cs = Charset.forName( csName );
-		} catch ( Exception e ) {
-			LOGGER.warn( "Could not instantiate charset " + csName, e );
-		}
-		if ( cs == null )
-			cs = StandardCharsets.ISO_8859_1;
-		try {
-			loadVmx( new ByteArrayInputStream( vmxContent, 0, length ), cs );
-		} catch ( IOException e ) {
-			LOGGER.warn( "Exception when loading vmx from byte array (how!?)", e );
-		}
-	}
-
-	private void loadVmx( InputStream is, Charset cs ) throws IOException
-	{
-		LOGGER.info( "Loading VMX with charset " + cs.name() );
-		// Prepare filtered vmx
-		addFiltered( ".encoding", "UTF-8" );
-		// Read line-by-line
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader( new InputStreamReader( is, cs ) );
-			String line;
-			while ( ( line = reader.readLine() ) != null ) {
-				KeyValuePair entry = parse( line );
-				if ( entry != null )
-					handleLoadEntry( entry );
-			}
-		} finally {
-			Util.safeClose( reader );
+		for ( Entry<String, ConfigEntry> entry : config.entrySet() ) {
+			handleLoadEntry( entry );
 		}
 		// Now find the HDDs and add to list
 		for ( Entry<String, Controller> cEntry : disks.entrySet() ) {
@@ -148,37 +95,33 @@ public class VmwareMetaData extends VmMetaData
 
 	private void addFiltered( String key, String value )
 	{
-		cleanedConfig.append( key ).append( " = \"" ).append( value ).append( "\"\n" );
+		config.set( key, value ).filtered( true );
 	}
 
-	private void handleLoadEntry( KeyValuePair entry )
+	private void handleLoadEntry( Entry<String, ConfigEntry> entry )
 	{
-		// Check if it's one of our special keys
-		if ( entry.key.startsWith( "#SLX_" ) ) {
-			slxLines.put( entry.key, entry.value );
-			return;
-		}
-		String lowerKey = entry.key.toLowerCase();
+		String lowerKey = entry.getKey().toLowerCase();
 		// Cleaned vmx construction
 		for ( Pattern exp : whitelist ) {
 			if ( exp.matcher( lowerKey ).find() ) {
-				addFiltered( entry.key, entry.value );
+				entry.getValue().filtered( true );
 				break;
 			}
 		}
 		//
 		// Dig Usable meta data
+		String value = entry.getValue().getValue();
 		if ( lowerKey.equals( "guestos" ) ) {
-			setOs( "vmware", entry.value );
+			setOs( "vmware", value );
 			return;
 		}
 		if ( lowerKey.equals( "displayname" ) ) {
-			displayName = entry.value;
+			displayName = value;
 			return;
 		}
-		Matcher hdd = hddKey.matcher( entry.key );
+		Matcher hdd = hddKey.matcher( entry.getKey() );
 		if ( hdd.find() ) {
-			handleHddEntry( hdd.group( 1 ).toLowerCase(), hdd.group( 2 ), hdd.group( 3 ), entry.value );
+			handleHddEntry( hdd.group( 1 ).toLowerCase(), hdd.group( 2 ), hdd.group( 3 ), value );
 		}
 	}
 
@@ -213,52 +156,16 @@ public class VmwareMetaData extends VmMetaData
 		}
 	}
 
-	private String detectCharset( InputStream is )
-	{
-		BufferedReader csDetectReader = null;
-		try {
-			csDetectReader = new BufferedReader( new InputStreamReader( is, StandardCharsets.ISO_8859_1 ) );
-			String line;
-			while ( ( line = csDetectReader.readLine() ) != null ) {
-				KeyValuePair entry = parse( line );
-				if ( entry == null )
-					continue;
-				if ( entry.key.equals( ".encoding" ) ) {
-					return entry.value;
-				}
-			}
-		} catch ( Exception e ) {
-			LOGGER.warn( "Could not detect charset, fallback to latin1", e );
-		} finally {
-			Util.safeClose( csDetectReader );
-		}
-		// Dumb fallback
-		return "ISO-8859-1";
-	}
-
-	private static final Pattern settingMatcher = Pattern.compile( "^\\s*(#?[a-z0-9\\.\\:_]+)\\s*=\\s*\"(.*)\"\\s*$",
-			Pattern.CASE_INSENSITIVE );
-
-	private KeyValuePair parse( String line )
-	{
-		Matcher matcher = settingMatcher.matcher( line );
-		if ( !matcher.matches() )
-			return null;
-		return new KeyValuePair(
-				matcher.group( 1 ), matcher.group( 2 ) );
-
-	}
-
 	public boolean addHddTemplate( String diskImagePath )
 	{
 		DriveBusType bus;
 		try {
-			bus = DriveBusType.valueOf( slxLines.get( "#SLX_HDD_BUS" ) );
+			bus = DriveBusType.valueOf( config.get( "#SLX_HDD_BUS" ) );
 		} catch ( Exception e ) {
-			LOGGER.warn( "Unknown bus type: " + slxLines.get( "#SLX_HDD_BUS" ) + ". Cannot add hdd config." );
+			LOGGER.warn( "Unknown bus type: " + config.get( "#SLX_HDD_BUS" ) + ". Cannot add hdd config." );
 			return false;
 		}
-		String chipset = slxLines.get( "#SLX_HDD_CHIP" );
+		String chipset = config.get( "#SLX_HDD_CHIP" );
 		switch ( bus ) {
 		case IDE:
 			addFiltered( "ide0.present", "TRUE" );
@@ -267,7 +174,7 @@ public class VmwareMetaData extends VmMetaData
 			addFiltered( "ide0:0.fileName", diskImagePath );
 			return true;
 		case SATA:
-			// Cannot happen, use lsisas1068
+			// Cannot happen?... use lsisas1068
 		case SCSI:
 			addFiltered( "scsi0.present", "TRUE" );
 			addFiltered( "scsi0:0.present", "TRUE" );
@@ -305,84 +212,13 @@ public class VmwareMetaData extends VmMetaData
 	@Override
 	public byte[] getFilteredDefinitionArray()
 	{
-		return cleanedConfig.toString().getBytes( StandardCharsets.UTF_8 );
+		return config.toString( true, false ).getBytes( StandardCharsets.UTF_8 );
 	}
 
 	@Override
 	public Virtualizer getVirtualizer()
 	{
 		return virtualizer;
-	}
-
-	// ###############################
-	// TODO Structured approach to above mess
-
-	private static class KeyValuePair
-	{
-		public final String key;
-		public final String value;
-
-		public KeyValuePair( String key, String value )
-		{
-			this.key = key;
-			this.value = value;
-		}
-	}
-
-	private static class ConfigEntry
-	{
-		private String value;
-		private boolean forFiltered;
-		private boolean forGenerated;
-
-		public ConfigEntry( String value )
-		{
-			this.value = value;
-		}
-
-		public ConfigEntry filtered( boolean set )
-		{
-			this.forFiltered = set;
-			return this;
-		}
-
-		public ConfigEntry generated( boolean set )
-		{
-			this.forGenerated = set;
-			return this;
-		}
-
-	}
-
-	private static class ConfigEntries
-	{
-		private Map<String, ConfigEntry> entries = new HashMap<>();
-
-		public ConfigEntry set( String key, String value )
-		{
-			return entries.put( key, new ConfigEntry( value ) );
-		}
-
-		public ConfigEntry set( KeyValuePair entry )
-		{
-			return set( entry.key, entry.value );
-		}
-
-		public String get( boolean filteredRequired, boolean generatedRequired )
-		{
-			StringBuilder sb = new StringBuilder( 300 );
-			for ( Entry<String, ConfigEntry> entry : entries.entrySet() ) {
-				ConfigEntry value = entry.getValue();
-				if ( ( !filteredRequired || value.forFiltered ) &&
-						( !generatedRequired || value.forGenerated ) ) {
-					sb.append( entry.getKey() );
-					sb.append( " = \"" );
-					sb.append( entry.getValue() );
-					sb.append( "\"\n" );
-				}
-			}
-			return sb.toString();
-		}
 	}
 
 	private static class Device
