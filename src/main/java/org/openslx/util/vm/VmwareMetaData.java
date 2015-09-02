@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -45,6 +44,8 @@ public class VmwareMetaData extends VmMetaData
 	}
 
 	private final Map<String, Controller> disks = new HashMap<>();
+
+	private final Map<String, String> slxLines = new HashMap<>();
 
 	private final StringBuilder cleanedConfig = new StringBuilder( 200 );
 
@@ -122,7 +123,7 @@ public class VmwareMetaData extends VmMetaData
 				Device device = dEntry.getValue();
 				if ( !device.present )
 					continue; // Not present
-				if ( device.deviceType != null && !device.deviceType.endsWith( "disk" ) )
+				if ( device.deviceType != null && !device.deviceType.toLowerCase().endsWith( "disk" ) )
 					continue; // Not a HDD
 				DriveBusType bus = null;
 				if ( controllerType.startsWith( "ide" ) ) {
@@ -152,6 +153,11 @@ public class VmwareMetaData extends VmMetaData
 
 	private void handleLoadEntry( KeyValuePair entry )
 	{
+		// Check if it's one of our special keys
+		if ( entry.key.startsWith( "#SLX_" ) ) {
+			slxLines.put( entry.key, entry.value );
+			return;
+		}
 		String lowerKey = entry.key.toLowerCase();
 		// Cleaned vmx construction
 		for ( Pattern exp : whitelist ) {
@@ -230,7 +236,8 @@ public class VmwareMetaData extends VmMetaData
 		return "ISO-8859-1";
 	}
 
-	private static final Pattern settingMatcher = Pattern.compile( "^\\s*([a-z0-9\\.\\:]+)\\s*=\\s*\"(.*)\"\\s*$", Pattern.CASE_INSENSITIVE );
+	private static final Pattern settingMatcher = Pattern.compile( "^\\s*(#?[a-z0-9\\.\\:_]+)\\s*=\\s*\"(.*)\"\\s*$",
+			Pattern.CASE_INSENSITIVE );
 
 	private KeyValuePair parse( String line )
 	{
@@ -239,13 +246,66 @@ public class VmwareMetaData extends VmMetaData
 			return null;
 		return new KeyValuePair(
 				matcher.group( 1 ), matcher.group( 2 ) );
-				
+
+	}
+
+	public boolean addHddTemplate( String diskImagePath )
+	{
+		DriveBusType bus;
+		try {
+			bus = DriveBusType.valueOf( slxLines.get( "#SLX_HDD_BUS" ) );
+		} catch ( Exception e ) {
+			LOGGER.warn( "Unknown bus type: " + slxLines.get( "#SLX_HDD_BUS" ) + ". Cannot add hdd config." );
+			return false;
+		}
+		String chipset = slxLines.get( "#SLX_HDD_CHIP" );
+		switch ( bus ) {
+		case IDE:
+			addFiltered( "ide0.present", "TRUE" );
+			addFiltered( "ide0:0.present", "TRUE" );
+			addFiltered( "ide0:0.deviceType", "disk" );
+			addFiltered( "ide0:0.fileName", diskImagePath );
+			return true;
+		case SATA:
+			// Cannot happen, use lsisas1068
+		case SCSI:
+			addFiltered( "scsi0.present", "TRUE" );
+			addFiltered( "scsi0:0.present", "TRUE" );
+			addFiltered( "scsi0:0.deviceType", "disk" );
+			addFiltered( "scsi0:0.fileName", diskImagePath );
+			if ( chipset != null ) {
+				addFiltered( "scsi0.virtualDev", chipset );
+			}
+			return true;
+		default:
+			LOGGER.warn( "Unknown HDD bus type: " + bus.toString() );
+			return false;
+		}
+	}
+
+	public boolean addEthernetNat()
+	{
+		addFiltered( "ethernet0.present", "TRUE" );
+		addFiltered( "ethernet0.connectionType", "nat" );
+		return true;
+	}
+
+	public boolean addDisplayName( String name )
+	{
+		addFiltered( "displayName", name );
+		return true;
+	}
+
+	public void setOs( String vendorOsId )
+	{
+		addFiltered( "guestOS", vendorOsId );
+		setOs( "vmware", vendorOsId );
 	}
 
 	@Override
-	public ByteBuffer getFilteredDefinition()
+	public byte[] getFilteredDefinitionArray()
 	{
-		return ByteBuffer.wrap( cleanedConfig.toString().getBytes( StandardCharsets.UTF_8 ) );
+		return cleanedConfig.toString().getBytes( StandardCharsets.UTF_8 );
 	}
 
 	@Override
@@ -255,6 +315,7 @@ public class VmwareMetaData extends VmMetaData
 	}
 
 	// ###############################
+	// TODO Structured approach to above mess
 
 	private static class KeyValuePair
 	{

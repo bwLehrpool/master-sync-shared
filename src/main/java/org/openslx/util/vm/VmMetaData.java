@@ -87,7 +87,12 @@ public abstract class VmMetaData
 	 * CD/DVD/FLoppy drives, serial or parallel ports, shared folders, or anything else that could be
 	 * considered sensible information (absolute paths containing the local user's name).
 	 */
-	public abstract ByteBuffer getFilteredDefinition();
+	public abstract byte[] getFilteredDefinitionArray();
+
+	public final ByteBuffer getFilteredDefinition()
+	{
+		return ByteBuffer.wrap( getFilteredDefinitionArray() );
+	}
 
 	/*
 	 * Methods
@@ -123,7 +128,7 @@ public abstract class VmMetaData
 		}
 		this.os = lazyMatch;
 	}
-	
+
 	public abstract Virtualizer getVirtualizer();
 
 }
