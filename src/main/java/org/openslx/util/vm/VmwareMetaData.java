@@ -203,6 +203,12 @@ public class VmwareMetaData extends VmMetaData
 		return true;
 	}
 
+	public boolean addRam( int mem )
+	{
+		addFiltered( "memsize", Integer.toString( mem ) );
+		return true;
+	}
+
 	public void setOs( String vendorOsId )
 	{
 		addFiltered( "guestOS", vendorOsId );
