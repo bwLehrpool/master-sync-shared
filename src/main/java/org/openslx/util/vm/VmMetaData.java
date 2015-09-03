@@ -115,6 +115,8 @@ public abstract class VmMetaData
 	{
 		OperatingSystem lazyMatch = null;
 		for ( OperatingSystem os : osList ) {
+			if ( os.getVirtualizerOsId() == null )
+				continue;
 			for ( Entry<String, String> entry : os.getVirtualizerOsId().entrySet() ) {
 				if ( !entry.getValue().equals( virtOsId ) )
 					continue;
