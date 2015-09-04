@@ -39,6 +39,8 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
   private static final org.apache.thrift.protocol.TField OS_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("osName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField VIRTUALIZER_OS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("virtualizerOsId", org.apache.thrift.protocol.TType.MAP, (short)3);
   private static final org.apache.thrift.protocol.TField ARCHITECTURE_FIELD_DESC = new org.apache.thrift.protocol.TField("architecture", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField MAX_MEM_MB_FIELD_DESC = new org.apache.thrift.protocol.TField("maxMemMb", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField MAX_CORES_FIELD_DESC = new org.apache.thrift.protocol.TField("maxCores", org.apache.thrift.protocol.TType.I32, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,13 +52,17 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
   public String osName; // required
   public Map<String,String> virtualizerOsId; // required
   public String architecture; // required
+  public int maxMemMb; // required
+  public int maxCores; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     OS_ID((short)1, "osId"),
     OS_NAME((short)2, "osName"),
     VIRTUALIZER_OS_ID((short)3, "virtualizerOsId"),
-    ARCHITECTURE((short)4, "architecture");
+    ARCHITECTURE((short)4, "architecture"),
+    MAX_MEM_MB((short)5, "maxMemMb"),
+    MAX_CORES((short)6, "maxCores");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -79,6 +85,10 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
           return VIRTUALIZER_OS_ID;
         case 4: // ARCHITECTURE
           return ARCHITECTURE;
+        case 5: // MAX_MEM_MB
+          return MAX_MEM_MB;
+        case 6: // MAX_CORES
+          return MAX_CORES;
         default:
           return null;
       }
@@ -120,6 +130,8 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
 
   // isset id assignments
   private static final int __OSID_ISSET_ID = 0;
+  private static final int __MAXMEMMB_ISSET_ID = 1;
+  private static final int __MAXCORES_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -134,6 +146,10 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.ARCHITECTURE, new org.apache.thrift.meta_data.FieldMetaData("architecture", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.MAX_MEM_MB, new org.apache.thrift.meta_data.FieldMetaData("maxMemMb", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.MAX_CORES, new org.apache.thrift.meta_data.FieldMetaData("maxCores", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(OperatingSystem.class, metaDataMap);
   }
@@ -145,7 +161,9 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
     int osId,
     String osName,
     Map<String,String> virtualizerOsId,
-    String architecture)
+    String architecture,
+    int maxMemMb,
+    int maxCores)
   {
     this();
     this.osId = osId;
@@ -153,6 +171,10 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
     this.osName = osName;
     this.virtualizerOsId = virtualizerOsId;
     this.architecture = architecture;
+    this.maxMemMb = maxMemMb;
+    setMaxMemMbIsSet(true);
+    this.maxCores = maxCores;
+    setMaxCoresIsSet(true);
   }
 
   /**
@@ -171,6 +193,8 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
     if (other.isSetArchitecture()) {
       this.architecture = other.architecture;
     }
+    this.maxMemMb = other.maxMemMb;
+    this.maxCores = other.maxCores;
   }
 
   public OperatingSystem deepCopy() {
@@ -184,6 +208,10 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
     this.osName = null;
     this.virtualizerOsId = null;
     this.architecture = null;
+    setMaxMemMbIsSet(false);
+    this.maxMemMb = 0;
+    setMaxCoresIsSet(false);
+    this.maxCores = 0;
   }
 
   public int getOsId() {
@@ -292,6 +320,52 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
     }
   }
 
+  public int getMaxMemMb() {
+    return this.maxMemMb;
+  }
+
+  public OperatingSystem setMaxMemMb(int maxMemMb) {
+    this.maxMemMb = maxMemMb;
+    setMaxMemMbIsSet(true);
+    return this;
+  }
+
+  public void unsetMaxMemMb() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __MAXMEMMB_ISSET_ID);
+  }
+
+  /** Returns true if field maxMemMb is set (has been assigned a value) and false otherwise */
+  public boolean isSetMaxMemMb() {
+    return EncodingUtils.testBit(__isset_bitfield, __MAXMEMMB_ISSET_ID);
+  }
+
+  public void setMaxMemMbIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXMEMMB_ISSET_ID, value);
+  }
+
+  public int getMaxCores() {
+    return this.maxCores;
+  }
+
+  public OperatingSystem setMaxCores(int maxCores) {
+    this.maxCores = maxCores;
+    setMaxCoresIsSet(true);
+    return this;
+  }
+
+  public void unsetMaxCores() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __MAXCORES_ISSET_ID);
+  }
+
+  /** Returns true if field maxCores is set (has been assigned a value) and false otherwise */
+  public boolean isSetMaxCores() {
+    return EncodingUtils.testBit(__isset_bitfield, __MAXCORES_ISSET_ID);
+  }
+
+  public void setMaxCoresIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXCORES_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case OS_ID:
@@ -326,6 +400,22 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
       }
       break;
 
+    case MAX_MEM_MB:
+      if (value == null) {
+        unsetMaxMemMb();
+      } else {
+        setMaxMemMb((Integer)value);
+      }
+      break;
+
+    case MAX_CORES:
+      if (value == null) {
+        unsetMaxCores();
+      } else {
+        setMaxCores((Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -342,6 +432,12 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
 
     case ARCHITECTURE:
       return getArchitecture();
+
+    case MAX_MEM_MB:
+      return Integer.valueOf(getMaxMemMb());
+
+    case MAX_CORES:
+      return Integer.valueOf(getMaxCores());
 
     }
     throw new IllegalStateException();
@@ -362,6 +458,10 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
       return isSetVirtualizerOsId();
     case ARCHITECTURE:
       return isSetArchitecture();
+    case MAX_MEM_MB:
+      return isSetMaxMemMb();
+    case MAX_CORES:
+      return isSetMaxCores();
     }
     throw new IllegalStateException();
   }
@@ -412,6 +512,24 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
       if (!(this_present_architecture && that_present_architecture))
         return false;
       if (!this.architecture.equals(that.architecture))
+        return false;
+    }
+
+    boolean this_present_maxMemMb = true;
+    boolean that_present_maxMemMb = true;
+    if (this_present_maxMemMb || that_present_maxMemMb) {
+      if (!(this_present_maxMemMb && that_present_maxMemMb))
+        return false;
+      if (this.maxMemMb != that.maxMemMb)
+        return false;
+    }
+
+    boolean this_present_maxCores = true;
+    boolean that_present_maxCores = true;
+    if (this_present_maxCores || that_present_maxCores) {
+      if (!(this_present_maxCores && that_present_maxCores))
+        return false;
+      if (this.maxCores != that.maxCores)
         return false;
     }
 
@@ -471,6 +589,26 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetMaxMemMb()).compareTo(other.isSetMaxMemMb());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMaxMemMb()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.maxMemMb, other.maxMemMb);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetMaxCores()).compareTo(other.isSetMaxCores());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMaxCores()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.maxCores, other.maxCores);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -517,6 +655,14 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
     } else {
       sb.append(this.architecture);
     }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("maxMemMb:");
+    sb.append(this.maxMemMb);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("maxCores:");
+    sb.append(this.maxCores);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -607,6 +753,22 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 5: // MAX_MEM_MB
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.maxMemMb = iprot.readI32();
+              struct.setMaxMemMbIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // MAX_CORES
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.maxCores = iprot.readI32();
+              struct.setMaxCoresIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -648,6 +810,12 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
         oprot.writeString(struct.architecture);
         oprot.writeFieldEnd();
       }
+      oprot.writeFieldBegin(MAX_MEM_MB_FIELD_DESC);
+      oprot.writeI32(struct.maxMemMb);
+      oprot.writeFieldEnd();
+      oprot.writeFieldBegin(MAX_CORES_FIELD_DESC);
+      oprot.writeI32(struct.maxCores);
+      oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -678,7 +846,13 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
       if (struct.isSetArchitecture()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetMaxMemMb()) {
+        optionals.set(4);
+      }
+      if (struct.isSetMaxCores()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetOsId()) {
         oprot.writeI32(struct.osId);
       }
@@ -698,12 +872,18 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
       if (struct.isSetArchitecture()) {
         oprot.writeString(struct.architecture);
       }
+      if (struct.isSetMaxMemMb()) {
+        oprot.writeI32(struct.maxMemMb);
+      }
+      if (struct.isSetMaxCores()) {
+        oprot.writeI32(struct.maxCores);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, OperatingSystem struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.osId = iprot.readI32();
         struct.setOsIdIsSet(true);
@@ -730,6 +910,14 @@ public class OperatingSystem implements org.apache.thrift.TBase<OperatingSystem,
       if (incoming.get(3)) {
         struct.architecture = iprot.readString();
         struct.setArchitectureIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.maxMemMb = iprot.readI32();
+        struct.setMaxMemMbIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.maxCores = iprot.readI32();
+        struct.setMaxCoresIsSet(true);
       }
     }
   }

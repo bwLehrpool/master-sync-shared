@@ -129,6 +129,8 @@ struct OperatingSystem {
 	2: string osName,
 	3: map<string, string> virtualizerOsId,
 	4: string architecture,
+	5: i32 maxMemMb,
+	6: i32 maxCores,
 }
 
 struct ImagePermissions {
