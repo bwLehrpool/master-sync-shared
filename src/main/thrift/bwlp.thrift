@@ -512,7 +512,7 @@ service SatelliteServer {
 
 	// Create new lecture
     UUID createLecture(1: Token userToken, 2: LectureWrite lecture)
-		throws (1:TAuthorizationException authError, 2:TInvocationException serverError, 3:TInvalidDateParam dateError),
+		throws (1:TAuthorizationException authError, 2:TInvocationException serverError, 3:TInvalidDateParam dateError, 4:TNotFoundException notFound),
 
 	// Update existing lecture
     void updateLecture(1: Token userToken, 2: UUID lectureId, 3: LectureWrite lecture)

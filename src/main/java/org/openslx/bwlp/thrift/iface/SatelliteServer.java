@@ -96,7 +96,7 @@ public class SatelliteServer {
 
     public String requestImageReplication(String userToken, String imageVersionId) throws TAuthorizationException, TNotFoundException, TInvocationException, org.apache.thrift.TException;
 
-    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException;
+    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInvocationException, TInvalidDateParam, TNotFoundException, org.apache.thrift.TException;
 
     public void updateLecture(String userToken, String lectureId, LectureWrite lecture) throws TAuthorizationException, TNotFoundException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException;
 
@@ -1059,7 +1059,7 @@ public class SatelliteServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "requestImageReplication failed: unknown result");
     }
 
-    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException
+    public String createLecture(String userToken, LectureWrite lecture) throws TAuthorizationException, TInvocationException, TInvalidDateParam, TNotFoundException, org.apache.thrift.TException
     {
       send_createLecture(userToken, lecture);
       return recv_createLecture();
@@ -1073,7 +1073,7 @@ public class SatelliteServer {
       sendBase("createLecture", args);
     }
 
-    public String recv_createLecture() throws TAuthorizationException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException
+    public String recv_createLecture() throws TAuthorizationException, TInvocationException, TInvalidDateParam, TNotFoundException, org.apache.thrift.TException
     {
       createLecture_result result = new createLecture_result();
       receiveBase(result, "createLecture");
@@ -1088,6 +1088,9 @@ public class SatelliteServer {
       }
       if (result.dateError != null) {
         throw result.dateError;
+      }
+      if (result.notFound != null) {
+        throw result.notFound;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createLecture failed: unknown result");
     }
@@ -2377,7 +2380,7 @@ public class SatelliteServer {
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws TAuthorizationException, TInvocationException, TInvalidDateParam, org.apache.thrift.TException {
+      public String getResult() throws TAuthorizationException, TInvocationException, TInvalidDateParam, TNotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -3483,6 +3486,8 @@ public class SatelliteServer {
           result.serverError = serverError;
         } catch (TInvalidDateParam dateError) {
           result.dateError = dateError;
+        } catch (TNotFoundException notFound) {
+          result.notFound = notFound;
         }
         return result;
       }
@@ -5610,6 +5615,11 @@ public class SatelliteServer {
             else             if (e instanceof TInvalidDateParam) {
                         result.dateError = (TInvalidDateParam) e;
                         result.setDateErrorIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof TNotFoundException) {
+                        result.notFound = (TNotFoundException) e;
+                        result.setNotFoundIsSet(true);
                         msg = result;
             }
              else 
@@ -34983,6 +34993,7 @@ public class SatelliteServer {
     private static final org.apache.thrift.protocol.TField AUTH_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("authError", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField SERVER_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("serverError", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField DATE_ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("dateError", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField NOT_FOUND_FIELD_DESC = new org.apache.thrift.protocol.TField("notFound", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -34994,13 +35005,15 @@ public class SatelliteServer {
     public TAuthorizationException authError; // required
     public TInvocationException serverError; // required
     public TInvalidDateParam dateError; // required
+    public TNotFoundException notFound; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
       AUTH_ERROR((short)1, "authError"),
       SERVER_ERROR((short)2, "serverError"),
-      DATE_ERROR((short)3, "dateError");
+      DATE_ERROR((short)3, "dateError"),
+      NOT_FOUND((short)4, "notFound");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -35023,6 +35036,8 @@ public class SatelliteServer {
             return SERVER_ERROR;
           case 3: // DATE_ERROR
             return DATE_ERROR;
+          case 4: // NOT_FOUND
+            return NOT_FOUND;
           default:
             return null;
         }
@@ -35074,6 +35089,8 @@ public class SatelliteServer {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.DATE_ERROR, new org.apache.thrift.meta_data.FieldMetaData("dateError", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.NOT_FOUND, new org.apache.thrift.meta_data.FieldMetaData("notFound", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(createLecture_result.class, metaDataMap);
     }
@@ -35085,13 +35102,15 @@ public class SatelliteServer {
       String success,
       TAuthorizationException authError,
       TInvocationException serverError,
-      TInvalidDateParam dateError)
+      TInvalidDateParam dateError,
+      TNotFoundException notFound)
     {
       this();
       this.success = success;
       this.authError = authError;
       this.serverError = serverError;
       this.dateError = dateError;
+      this.notFound = notFound;
     }
 
     /**
@@ -35110,6 +35129,9 @@ public class SatelliteServer {
       if (other.isSetDateError()) {
         this.dateError = new TInvalidDateParam(other.dateError);
       }
+      if (other.isSetNotFound()) {
+        this.notFound = new TNotFoundException(other.notFound);
+      }
     }
 
     public createLecture_result deepCopy() {
@@ -35122,6 +35144,7 @@ public class SatelliteServer {
       this.authError = null;
       this.serverError = null;
       this.dateError = null;
+      this.notFound = null;
     }
 
     public String getSuccess() {
@@ -35220,6 +35243,30 @@ public class SatelliteServer {
       }
     }
 
+    public TNotFoundException getNotFound() {
+      return this.notFound;
+    }
+
+    public createLecture_result setNotFound(TNotFoundException notFound) {
+      this.notFound = notFound;
+      return this;
+    }
+
+    public void unsetNotFound() {
+      this.notFound = null;
+    }
+
+    /** Returns true if field notFound is set (has been assigned a value) and false otherwise */
+    public boolean isSetNotFound() {
+      return this.notFound != null;
+    }
+
+    public void setNotFoundIsSet(boolean value) {
+      if (!value) {
+        this.notFound = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -35254,6 +35301,14 @@ public class SatelliteServer {
         }
         break;
 
+      case NOT_FOUND:
+        if (value == null) {
+          unsetNotFound();
+        } else {
+          setNotFound((TNotFoundException)value);
+        }
+        break;
+
       }
     }
 
@@ -35270,6 +35325,9 @@ public class SatelliteServer {
 
       case DATE_ERROR:
         return getDateError();
+
+      case NOT_FOUND:
+        return getNotFound();
 
       }
       throw new IllegalStateException();
@@ -35290,6 +35348,8 @@ public class SatelliteServer {
         return isSetServerError();
       case DATE_ERROR:
         return isSetDateError();
+      case NOT_FOUND:
+        return isSetNotFound();
       }
       throw new IllegalStateException();
     }
@@ -35340,6 +35400,15 @@ public class SatelliteServer {
         if (!(this_present_dateError && that_present_dateError))
           return false;
         if (!this.dateError.equals(that.dateError))
+          return false;
+      }
+
+      boolean this_present_notFound = true && this.isSetNotFound();
+      boolean that_present_notFound = true && that.isSetNotFound();
+      if (this_present_notFound || that_present_notFound) {
+        if (!(this_present_notFound && that_present_notFound))
+          return false;
+        if (!this.notFound.equals(that.notFound))
           return false;
       }
 
@@ -35399,6 +35468,16 @@ public class SatelliteServer {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetNotFound()).compareTo(other.isSetNotFound());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetNotFound()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.notFound, other.notFound);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -35448,6 +35527,14 @@ public class SatelliteServer {
         sb.append("null");
       } else {
         sb.append(this.dateError);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("notFound:");
+      if (this.notFound == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.notFound);
       }
       first = false;
       sb.append(")");
@@ -35528,6 +35615,15 @@ public class SatelliteServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 4: // NOT_FOUND
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.notFound = new TNotFoundException();
+                struct.notFound.read(iprot);
+                struct.setNotFoundIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -35563,6 +35659,11 @@ public class SatelliteServer {
           struct.dateError.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.notFound != null) {
+          oprot.writeFieldBegin(NOT_FOUND_FIELD_DESC);
+          struct.notFound.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -35593,7 +35694,10 @@ public class SatelliteServer {
         if (struct.isSetDateError()) {
           optionals.set(3);
         }
-        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetNotFound()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
         }
@@ -35606,12 +35710,15 @@ public class SatelliteServer {
         if (struct.isSetDateError()) {
           struct.dateError.write(oprot);
         }
+        if (struct.isSetNotFound()) {
+          struct.notFound.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, createLecture_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
@@ -35630,6 +35737,11 @@ public class SatelliteServer {
           struct.dateError = new TInvalidDateParam();
           struct.dateError.read(iprot);
           struct.setDateErrorIsSet(true);
+        }
+        if (incoming.get(4)) {
+          struct.notFound = new TNotFoundException();
+          struct.notFound.read(iprot);
+          struct.setNotFoundIsSet(true);
         }
       }
     }
