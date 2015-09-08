@@ -52,17 +52,17 @@ public class MasterServer {
 
     public boolean isServerAuthenticated(String serverSessionId) throws org.apache.thrift.TException;
 
-    public ByteBuffer startServerAuthentication(String organizationId) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
+    public ByteBuffer startServerAuthentication(int satelliteId) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
 
-    public ServerSessionData serverAuthenticate(String organizationId, ByteBuffer challengeResponse) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
+    public ServerSessionData serverAuthenticate(int satelliteId, ByteBuffer challengeResponse) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
 
     public ImagePublishData getImageData(String serverSessionId, String imageVersionId) throws TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException;
 
     public TransferInformation submitImage(String serverSessionId, ImagePublishData imageDescription, List<ByteBuffer> blockHashes) throws TAuthorizationException, TInvocationException, TTransferRejectedException, org.apache.thrift.TException;
 
-    public boolean registerSatellite(String organizationId, String address, String modulus, String exponent) throws TInvocationException, org.apache.thrift.TException;
+    public int registerSatellite(String userToken, String displayName, List<String> addresses, String modulus, String exponent, ByteBuffer certsha256) throws TInvocationException, org.apache.thrift.TException;
 
-    public boolean updateSatelliteAddress(String serverSessionId, String address) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
+    public boolean updateSatellite(String serverSessionId, String displayName, List<String> addresses) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException;
 
     public TransferInformation downloadImage(String sessionId, String imageVersionId) throws TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException;
 
@@ -96,17 +96,17 @@ public class MasterServer {
 
     public void isServerAuthenticated(String serverSessionId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void startServerAuthentication(String organizationId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void startServerAuthentication(int satelliteId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void serverAuthenticate(String organizationId, ByteBuffer challengeResponse, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void serverAuthenticate(int satelliteId, ByteBuffer challengeResponse, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getImageData(String serverSessionId, String imageVersionId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void submitImage(String serverSessionId, ImagePublishData imageDescription, List<ByteBuffer> blockHashes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void registerSatellite(String organizationId, String address, String modulus, String exponent, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void registerSatellite(String userToken, String displayName, List<String> addresses, String modulus, String exponent, ByteBuffer certsha256, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void updateSatelliteAddress(String serverSessionId, String address, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void updateSatellite(String serverSessionId, String displayName, List<String> addresses, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void downloadImage(String sessionId, String imageVersionId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -357,16 +357,16 @@ public class MasterServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "isServerAuthenticated failed: unknown result");
     }
 
-    public ByteBuffer startServerAuthentication(String organizationId) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
+    public ByteBuffer startServerAuthentication(int satelliteId) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
-      send_startServerAuthentication(organizationId);
+      send_startServerAuthentication(satelliteId);
       return recv_startServerAuthentication();
     }
 
-    public void send_startServerAuthentication(String organizationId) throws org.apache.thrift.TException
+    public void send_startServerAuthentication(int satelliteId) throws org.apache.thrift.TException
     {
       startServerAuthentication_args args = new startServerAuthentication_args();
-      args.setOrganizationId(organizationId);
+      args.setSatelliteId(satelliteId);
       sendBase("startServerAuthentication", args);
     }
 
@@ -386,16 +386,16 @@ public class MasterServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "startServerAuthentication failed: unknown result");
     }
 
-    public ServerSessionData serverAuthenticate(String organizationId, ByteBuffer challengeResponse) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
+    public ServerSessionData serverAuthenticate(int satelliteId, ByteBuffer challengeResponse) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
-      send_serverAuthenticate(organizationId, challengeResponse);
+      send_serverAuthenticate(satelliteId, challengeResponse);
       return recv_serverAuthenticate();
     }
 
-    public void send_serverAuthenticate(String organizationId, ByteBuffer challengeResponse) throws org.apache.thrift.TException
+    public void send_serverAuthenticate(int satelliteId, ByteBuffer challengeResponse) throws org.apache.thrift.TException
     {
       serverAuthenticate_args args = new serverAuthenticate_args();
-      args.setOrganizationId(organizationId);
+      args.setSatelliteId(satelliteId);
       args.setChallengeResponse(challengeResponse);
       sendBase("serverAuthenticate", args);
     }
@@ -483,23 +483,25 @@ public class MasterServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "submitImage failed: unknown result");
     }
 
-    public boolean registerSatellite(String organizationId, String address, String modulus, String exponent) throws TInvocationException, org.apache.thrift.TException
+    public int registerSatellite(String userToken, String displayName, List<String> addresses, String modulus, String exponent, ByteBuffer certsha256) throws TInvocationException, org.apache.thrift.TException
     {
-      send_registerSatellite(organizationId, address, modulus, exponent);
+      send_registerSatellite(userToken, displayName, addresses, modulus, exponent, certsha256);
       return recv_registerSatellite();
     }
 
-    public void send_registerSatellite(String organizationId, String address, String modulus, String exponent) throws org.apache.thrift.TException
+    public void send_registerSatellite(String userToken, String displayName, List<String> addresses, String modulus, String exponent, ByteBuffer certsha256) throws org.apache.thrift.TException
     {
       registerSatellite_args args = new registerSatellite_args();
-      args.setOrganizationId(organizationId);
-      args.setAddress(address);
+      args.setUserToken(userToken);
+      args.setDisplayName(displayName);
+      args.setAddresses(addresses);
       args.setModulus(modulus);
       args.setExponent(exponent);
+      args.setCertsha256(certsha256);
       sendBase("registerSatellite", args);
     }
 
-    public boolean recv_registerSatellite() throws TInvocationException, org.apache.thrift.TException
+    public int recv_registerSatellite() throws TInvocationException, org.apache.thrift.TException
     {
       registerSatellite_result result = new registerSatellite_result();
       receiveBase(result, "registerSatellite");
@@ -512,24 +514,25 @@ public class MasterServer {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "registerSatellite failed: unknown result");
     }
 
-    public boolean updateSatelliteAddress(String serverSessionId, String address) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
+    public boolean updateSatellite(String serverSessionId, String displayName, List<String> addresses) throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
-      send_updateSatelliteAddress(serverSessionId, address);
-      return recv_updateSatelliteAddress();
+      send_updateSatellite(serverSessionId, displayName, addresses);
+      return recv_updateSatellite();
     }
 
-    public void send_updateSatelliteAddress(String serverSessionId, String address) throws org.apache.thrift.TException
+    public void send_updateSatellite(String serverSessionId, String displayName, List<String> addresses) throws org.apache.thrift.TException
     {
-      updateSatelliteAddress_args args = new updateSatelliteAddress_args();
+      updateSatellite_args args = new updateSatellite_args();
       args.setServerSessionId(serverSessionId);
-      args.setAddress(address);
-      sendBase("updateSatelliteAddress", args);
+      args.setDisplayName(displayName);
+      args.setAddresses(addresses);
+      sendBase("updateSatellite", args);
     }
 
-    public boolean recv_updateSatelliteAddress() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
+    public boolean recv_updateSatellite() throws TAuthorizationException, TInvocationException, org.apache.thrift.TException
     {
-      updateSatelliteAddress_result result = new updateSatelliteAddress_result();
-      receiveBase(result, "updateSatelliteAddress");
+      updateSatellite_result result = new updateSatellite_result();
+      receiveBase(result, "updateSatellite");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -539,7 +542,7 @@ public class MasterServer {
       if (result.error != null) {
         throw result.error;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateSatelliteAddress failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateSatellite failed: unknown result");
     }
 
     public TransferInformation downloadImage(String sessionId, String imageVersionId) throws TAuthorizationException, TInvocationException, TNotFoundException, org.apache.thrift.TException
@@ -988,24 +991,24 @@ public class MasterServer {
       }
     }
 
-    public void startServerAuthentication(String organizationId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void startServerAuthentication(int satelliteId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      startServerAuthentication_call method_call = new startServerAuthentication_call(organizationId, resultHandler, this, ___protocolFactory, ___transport);
+      startServerAuthentication_call method_call = new startServerAuthentication_call(satelliteId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class startServerAuthentication_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String organizationId;
-      public startServerAuthentication_call(String organizationId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private int satelliteId;
+      public startServerAuthentication_call(int satelliteId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.organizationId = organizationId;
+        this.satelliteId = satelliteId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("startServerAuthentication", org.apache.thrift.protocol.TMessageType.CALL, 0));
         startServerAuthentication_args args = new startServerAuthentication_args();
-        args.setOrganizationId(organizationId);
+        args.setSatelliteId(satelliteId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1020,26 +1023,26 @@ public class MasterServer {
       }
     }
 
-    public void serverAuthenticate(String organizationId, ByteBuffer challengeResponse, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void serverAuthenticate(int satelliteId, ByteBuffer challengeResponse, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      serverAuthenticate_call method_call = new serverAuthenticate_call(organizationId, challengeResponse, resultHandler, this, ___protocolFactory, ___transport);
+      serverAuthenticate_call method_call = new serverAuthenticate_call(satelliteId, challengeResponse, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class serverAuthenticate_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String organizationId;
+      private int satelliteId;
       private ByteBuffer challengeResponse;
-      public serverAuthenticate_call(String organizationId, ByteBuffer challengeResponse, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public serverAuthenticate_call(int satelliteId, ByteBuffer challengeResponse, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.organizationId = organizationId;
+        this.satelliteId = satelliteId;
         this.challengeResponse = challengeResponse;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("serverAuthenticate", org.apache.thrift.protocol.TMessageType.CALL, 0));
         serverAuthenticate_args args = new serverAuthenticate_args();
-        args.setOrganizationId(organizationId);
+        args.setSatelliteId(satelliteId);
         args.setChallengeResponse(challengeResponse);
         args.write(prot);
         prot.writeMessageEnd();
@@ -1128,38 +1131,44 @@ public class MasterServer {
       }
     }
 
-    public void registerSatellite(String organizationId, String address, String modulus, String exponent, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void registerSatellite(String userToken, String displayName, List<String> addresses, String modulus, String exponent, ByteBuffer certsha256, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      registerSatellite_call method_call = new registerSatellite_call(organizationId, address, modulus, exponent, resultHandler, this, ___protocolFactory, ___transport);
+      registerSatellite_call method_call = new registerSatellite_call(userToken, displayName, addresses, modulus, exponent, certsha256, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class registerSatellite_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String organizationId;
-      private String address;
+      private String userToken;
+      private String displayName;
+      private List<String> addresses;
       private String modulus;
       private String exponent;
-      public registerSatellite_call(String organizationId, String address, String modulus, String exponent, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private ByteBuffer certsha256;
+      public registerSatellite_call(String userToken, String displayName, List<String> addresses, String modulus, String exponent, ByteBuffer certsha256, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.organizationId = organizationId;
-        this.address = address;
+        this.userToken = userToken;
+        this.displayName = displayName;
+        this.addresses = addresses;
         this.modulus = modulus;
         this.exponent = exponent;
+        this.certsha256 = certsha256;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("registerSatellite", org.apache.thrift.protocol.TMessageType.CALL, 0));
         registerSatellite_args args = new registerSatellite_args();
-        args.setOrganizationId(organizationId);
-        args.setAddress(address);
+        args.setUserToken(userToken);
+        args.setDisplayName(displayName);
+        args.setAddresses(addresses);
         args.setModulus(modulus);
         args.setExponent(exponent);
+        args.setCertsha256(certsha256);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public boolean getResult() throws TInvocationException, org.apache.thrift.TException {
+      public int getResult() throws TInvocationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1169,27 +1178,30 @@ public class MasterServer {
       }
     }
 
-    public void updateSatelliteAddress(String serverSessionId, String address, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void updateSatellite(String serverSessionId, String displayName, List<String> addresses, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      updateSatelliteAddress_call method_call = new updateSatelliteAddress_call(serverSessionId, address, resultHandler, this, ___protocolFactory, ___transport);
+      updateSatellite_call method_call = new updateSatellite_call(serverSessionId, displayName, addresses, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class updateSatelliteAddress_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class updateSatellite_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String serverSessionId;
-      private String address;
-      public updateSatelliteAddress_call(String serverSessionId, String address, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String displayName;
+      private List<String> addresses;
+      public updateSatellite_call(String serverSessionId, String displayName, List<String> addresses, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.serverSessionId = serverSessionId;
-        this.address = address;
+        this.displayName = displayName;
+        this.addresses = addresses;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateSatelliteAddress", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        updateSatelliteAddress_args args = new updateSatelliteAddress_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateSatellite", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        updateSatellite_args args = new updateSatellite_args();
         args.setServerSessionId(serverSessionId);
-        args.setAddress(address);
+        args.setDisplayName(displayName);
+        args.setAddresses(addresses);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1200,7 +1212,7 @@ public class MasterServer {
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_updateSatelliteAddress();
+        return (new Client(prot)).recv_updateSatellite();
       }
     }
 
@@ -1416,7 +1428,7 @@ public class MasterServer {
       processMap.put("getImageData", new getImageData());
       processMap.put("submitImage", new submitImage());
       processMap.put("registerSatellite", new registerSatellite());
-      processMap.put("updateSatelliteAddress", new updateSatelliteAddress());
+      processMap.put("updateSatellite", new updateSatellite());
       processMap.put("downloadImage", new downloadImage());
       processMap.put("getOrganizations", new getOrganizations());
       processMap.put("getOperatingSystems", new getOperatingSystems());
@@ -1636,7 +1648,7 @@ public class MasterServer {
       public startServerAuthentication_result getResult(I iface, startServerAuthentication_args args) throws org.apache.thrift.TException {
         startServerAuthentication_result result = new startServerAuthentication_result();
         try {
-          result.success = iface.startServerAuthentication(args.organizationId);
+          result.success = iface.startServerAuthentication(args.satelliteId);
         } catch (TAuthorizationException failure) {
           result.failure = failure;
         } catch (TInvocationException error) {
@@ -1662,7 +1674,7 @@ public class MasterServer {
       public serverAuthenticate_result getResult(I iface, serverAuthenticate_args args) throws org.apache.thrift.TException {
         serverAuthenticate_result result = new serverAuthenticate_result();
         try {
-          result.success = iface.serverAuthenticate(args.organizationId, args.challengeResponse);
+          result.success = iface.serverAuthenticate(args.satelliteId, args.challengeResponse);
         } catch (TAuthorizationException failure) {
           result.failure = failure;
         } catch (TInvocationException errr) {
@@ -1744,7 +1756,7 @@ public class MasterServer {
       public registerSatellite_result getResult(I iface, registerSatellite_args args) throws org.apache.thrift.TException {
         registerSatellite_result result = new registerSatellite_result();
         try {
-          result.success = iface.registerSatellite(args.organizationId, args.address, args.modulus, args.exponent);
+          result.success = iface.registerSatellite(args.userToken, args.displayName, args.addresses, args.modulus, args.exponent, args.certsha256);
           result.setSuccessIsSet(true);
         } catch (TInvocationException error) {
           result.error = error;
@@ -1753,23 +1765,23 @@ public class MasterServer {
       }
     }
 
-    public static class updateSatelliteAddress<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateSatelliteAddress_args> {
-      public updateSatelliteAddress() {
-        super("updateSatelliteAddress");
+    public static class updateSatellite<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateSatellite_args> {
+      public updateSatellite() {
+        super("updateSatellite");
       }
 
-      public updateSatelliteAddress_args getEmptyArgsInstance() {
-        return new updateSatelliteAddress_args();
+      public updateSatellite_args getEmptyArgsInstance() {
+        return new updateSatellite_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public updateSatelliteAddress_result getResult(I iface, updateSatelliteAddress_args args) throws org.apache.thrift.TException {
-        updateSatelliteAddress_result result = new updateSatelliteAddress_result();
+      public updateSatellite_result getResult(I iface, updateSatellite_args args) throws org.apache.thrift.TException {
+        updateSatellite_result result = new updateSatellite_result();
         try {
-          result.success = iface.updateSatelliteAddress(args.serverSessionId, args.address);
+          result.success = iface.updateSatellite(args.serverSessionId, args.displayName, args.addresses);
           result.setSuccessIsSet(true);
         } catch (TAuthorizationException failure) {
           result.failure = failure;
@@ -1954,7 +1966,7 @@ public class MasterServer {
       processMap.put("getImageData", new getImageData());
       processMap.put("submitImage", new submitImage());
       processMap.put("registerSatellite", new registerSatellite());
-      processMap.put("updateSatelliteAddress", new updateSatelliteAddress());
+      processMap.put("updateSatellite", new updateSatellite());
       processMap.put("downloadImage", new downloadImage());
       processMap.put("getOrganizations", new getOrganizations());
       processMap.put("getOperatingSystems", new getOperatingSystems());
@@ -2487,7 +2499,7 @@ public class MasterServer {
       }
 
       public void start(I iface, startServerAuthentication_args args, org.apache.thrift.async.AsyncMethodCallback<ByteBuffer> resultHandler) throws TException {
-        iface.startServerAuthentication(args.organizationId,resultHandler);
+        iface.startServerAuthentication(args.satelliteId,resultHandler);
       }
     }
 
@@ -2549,7 +2561,7 @@ public class MasterServer {
       }
 
       public void start(I iface, serverAuthenticate_args args, org.apache.thrift.async.AsyncMethodCallback<ServerSessionData> resultHandler) throws TException {
-        iface.serverAuthenticate(args.organizationId, args.challengeResponse,resultHandler);
+        iface.serverAuthenticate(args.satelliteId, args.challengeResponse,resultHandler);
       }
     }
 
@@ -2687,7 +2699,7 @@ public class MasterServer {
       }
     }
 
-    public static class registerSatellite<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, registerSatellite_args, Boolean> {
+    public static class registerSatellite<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, registerSatellite_args, Integer> {
       public registerSatellite() {
         super("registerSatellite");
       }
@@ -2696,10 +2708,10 @@ public class MasterServer {
         return new registerSatellite_args();
       }
 
-      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Integer> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Boolean>() { 
-          public void onComplete(Boolean o) {
+        return new AsyncMethodCallback<Integer>() { 
+          public void onComplete(Integer o) {
             registerSatellite_result result = new registerSatellite_result();
             result.success = o;
             result.setSuccessIsSet(true);
@@ -2740,25 +2752,25 @@ public class MasterServer {
         return false;
       }
 
-      public void start(I iface, registerSatellite_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.registerSatellite(args.organizationId, args.address, args.modulus, args.exponent,resultHandler);
+      public void start(I iface, registerSatellite_args args, org.apache.thrift.async.AsyncMethodCallback<Integer> resultHandler) throws TException {
+        iface.registerSatellite(args.userToken, args.displayName, args.addresses, args.modulus, args.exponent, args.certsha256,resultHandler);
       }
     }
 
-    public static class updateSatelliteAddress<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateSatelliteAddress_args, Boolean> {
-      public updateSatelliteAddress() {
-        super("updateSatelliteAddress");
+    public static class updateSatellite<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateSatellite_args, Boolean> {
+      public updateSatellite() {
+        super("updateSatellite");
       }
 
-      public updateSatelliteAddress_args getEmptyArgsInstance() {
-        return new updateSatelliteAddress_args();
+      public updateSatellite_args getEmptyArgsInstance() {
+        return new updateSatellite_args();
       }
 
       public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<Boolean>() { 
           public void onComplete(Boolean o) {
-            updateSatelliteAddress_result result = new updateSatelliteAddress_result();
+            updateSatellite_result result = new updateSatellite_result();
             result.success = o;
             result.setSuccessIsSet(true);
             try {
@@ -2772,7 +2784,7 @@ public class MasterServer {
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            updateSatelliteAddress_result result = new updateSatelliteAddress_result();
+            updateSatellite_result result = new updateSatellite_result();
             if (e instanceof TAuthorizationException) {
                         result.failure = (TAuthorizationException) e;
                         result.setFailureIsSet(true);
@@ -2803,8 +2815,8 @@ public class MasterServer {
         return false;
       }
 
-      public void start(I iface, updateSatelliteAddress_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.updateSatelliteAddress(args.serverSessionId, args.address,resultHandler);
+      public void start(I iface, updateSatellite_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.updateSatellite(args.serverSessionId, args.displayName, args.addresses,resultHandler);
       }
     }
 
@@ -10262,7 +10274,7 @@ public class MasterServer {
   public static class startServerAuthentication_args implements org.apache.thrift.TBase<startServerAuthentication_args, startServerAuthentication_args._Fields>, java.io.Serializable, Cloneable, Comparable<startServerAuthentication_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("startServerAuthentication_args");
 
-    private static final org.apache.thrift.protocol.TField ORGANIZATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("organizationId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField SATELLITE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("satelliteId", org.apache.thrift.protocol.TType.I32, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -10270,11 +10282,11 @@ public class MasterServer {
       schemes.put(TupleScheme.class, new startServerAuthentication_argsTupleSchemeFactory());
     }
 
-    public String organizationId; // required
+    public int satelliteId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      ORGANIZATION_ID((short)1, "organizationId");
+      SATELLITE_ID((short)1, "satelliteId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -10289,8 +10301,8 @@ public class MasterServer {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // ORGANIZATION_ID
-            return ORGANIZATION_ID;
+          case 1: // SATELLITE_ID
+            return SATELLITE_ID;
           default:
             return null;
         }
@@ -10331,11 +10343,13 @@ public class MasterServer {
     }
 
     // isset id assignments
+    private static final int __SATELLITEID_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.ORGANIZATION_ID, new org.apache.thrift.meta_data.FieldMetaData("organizationId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.SATELLITE_ID, new org.apache.thrift.meta_data.FieldMetaData("satelliteId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(startServerAuthentication_args.class, metaDataMap);
     }
@@ -10344,19 +10358,19 @@ public class MasterServer {
     }
 
     public startServerAuthentication_args(
-      String organizationId)
+      int satelliteId)
     {
       this();
-      this.organizationId = organizationId;
+      this.satelliteId = satelliteId;
+      setSatelliteIdIsSet(true);
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public startServerAuthentication_args(startServerAuthentication_args other) {
-      if (other.isSetOrganizationId()) {
-        this.organizationId = other.organizationId;
-      }
+      __isset_bitfield = other.__isset_bitfield;
+      this.satelliteId = other.satelliteId;
     }
 
     public startServerAuthentication_args deepCopy() {
@@ -10365,40 +10379,40 @@ public class MasterServer {
 
     @Override
     public void clear() {
-      this.organizationId = null;
+      setSatelliteIdIsSet(false);
+      this.satelliteId = 0;
     }
 
-    public String getOrganizationId() {
-      return this.organizationId;
+    public int getSatelliteId() {
+      return this.satelliteId;
     }
 
-    public startServerAuthentication_args setOrganizationId(String organizationId) {
-      this.organizationId = organizationId;
+    public startServerAuthentication_args setSatelliteId(int satelliteId) {
+      this.satelliteId = satelliteId;
+      setSatelliteIdIsSet(true);
       return this;
     }
 
-    public void unsetOrganizationId() {
-      this.organizationId = null;
+    public void unsetSatelliteId() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SATELLITEID_ISSET_ID);
     }
 
-    /** Returns true if field organizationId is set (has been assigned a value) and false otherwise */
-    public boolean isSetOrganizationId() {
-      return this.organizationId != null;
+    /** Returns true if field satelliteId is set (has been assigned a value) and false otherwise */
+    public boolean isSetSatelliteId() {
+      return EncodingUtils.testBit(__isset_bitfield, __SATELLITEID_ISSET_ID);
     }
 
-    public void setOrganizationIdIsSet(boolean value) {
-      if (!value) {
-        this.organizationId = null;
-      }
+    public void setSatelliteIdIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SATELLITEID_ISSET_ID, value);
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case ORGANIZATION_ID:
+      case SATELLITE_ID:
         if (value == null) {
-          unsetOrganizationId();
+          unsetSatelliteId();
         } else {
-          setOrganizationId((String)value);
+          setSatelliteId((Integer)value);
         }
         break;
 
@@ -10407,8 +10421,8 @@ public class MasterServer {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case ORGANIZATION_ID:
-        return getOrganizationId();
+      case SATELLITE_ID:
+        return Integer.valueOf(getSatelliteId());
 
       }
       throw new IllegalStateException();
@@ -10421,8 +10435,8 @@ public class MasterServer {
       }
 
       switch (field) {
-      case ORGANIZATION_ID:
-        return isSetOrganizationId();
+      case SATELLITE_ID:
+        return isSetSatelliteId();
       }
       throw new IllegalStateException();
     }
@@ -10440,12 +10454,12 @@ public class MasterServer {
       if (that == null)
         return false;
 
-      boolean this_present_organizationId = true && this.isSetOrganizationId();
-      boolean that_present_organizationId = true && that.isSetOrganizationId();
-      if (this_present_organizationId || that_present_organizationId) {
-        if (!(this_present_organizationId && that_present_organizationId))
+      boolean this_present_satelliteId = true;
+      boolean that_present_satelliteId = true;
+      if (this_present_satelliteId || that_present_satelliteId) {
+        if (!(this_present_satelliteId && that_present_satelliteId))
           return false;
-        if (!this.organizationId.equals(that.organizationId))
+        if (this.satelliteId != that.satelliteId)
           return false;
       }
 
@@ -10465,12 +10479,12 @@ public class MasterServer {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetOrganizationId()).compareTo(other.isSetOrganizationId());
+      lastComparison = Boolean.valueOf(isSetSatelliteId()).compareTo(other.isSetSatelliteId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetOrganizationId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.organizationId, other.organizationId);
+      if (isSetSatelliteId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.satelliteId, other.satelliteId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -10495,12 +10509,8 @@ public class MasterServer {
       StringBuilder sb = new StringBuilder("startServerAuthentication_args(");
       boolean first = true;
 
-      sb.append("organizationId:");
-      if (this.organizationId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.organizationId);
-      }
+      sb.append("satelliteId:");
+      sb.append(this.satelliteId);
       first = false;
       sb.append(")");
       return sb.toString();
@@ -10521,6 +10531,8 @@ public class MasterServer {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);
@@ -10545,10 +10557,10 @@ public class MasterServer {
             break;
           }
           switch (schemeField.id) {
-            case 1: // ORGANIZATION_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.organizationId = iprot.readString();
-                struct.setOrganizationIdIsSet(true);
+            case 1: // SATELLITE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.satelliteId = iprot.readI32();
+                struct.setSatelliteIdIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -10568,11 +10580,9 @@ public class MasterServer {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.organizationId != null) {
-          oprot.writeFieldBegin(ORGANIZATION_ID_FIELD_DESC);
-          oprot.writeString(struct.organizationId);
-          oprot.writeFieldEnd();
-        }
+        oprot.writeFieldBegin(SATELLITE_ID_FIELD_DESC);
+        oprot.writeI32(struct.satelliteId);
+        oprot.writeFieldEnd();
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -10591,12 +10601,12 @@ public class MasterServer {
       public void write(org.apache.thrift.protocol.TProtocol prot, startServerAuthentication_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetOrganizationId()) {
+        if (struct.isSetSatelliteId()) {
           optionals.set(0);
         }
         oprot.writeBitSet(optionals, 1);
-        if (struct.isSetOrganizationId()) {
-          oprot.writeString(struct.organizationId);
+        if (struct.isSetSatelliteId()) {
+          oprot.writeI32(struct.satelliteId);
         }
       }
 
@@ -10605,8 +10615,8 @@ public class MasterServer {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
-          struct.organizationId = iprot.readString();
-          struct.setOrganizationIdIsSet(true);
+          struct.satelliteId = iprot.readI32();
+          struct.setSatelliteIdIsSet(true);
         }
       }
     }
@@ -11185,7 +11195,7 @@ public class MasterServer {
   public static class serverAuthenticate_args implements org.apache.thrift.TBase<serverAuthenticate_args, serverAuthenticate_args._Fields>, java.io.Serializable, Cloneable, Comparable<serverAuthenticate_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("serverAuthenticate_args");
 
-    private static final org.apache.thrift.protocol.TField ORGANIZATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("organizationId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField SATELLITE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("satelliteId", org.apache.thrift.protocol.TType.I32, (short)1);
     private static final org.apache.thrift.protocol.TField CHALLENGE_RESPONSE_FIELD_DESC = new org.apache.thrift.protocol.TField("challengeResponse", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -11194,12 +11204,12 @@ public class MasterServer {
       schemes.put(TupleScheme.class, new serverAuthenticate_argsTupleSchemeFactory());
     }
 
-    public String organizationId; // required
+    public int satelliteId; // required
     public ByteBuffer challengeResponse; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      ORGANIZATION_ID((short)1, "organizationId"),
+      SATELLITE_ID((short)1, "satelliteId"),
       CHALLENGE_RESPONSE((short)2, "challengeResponse");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -11215,8 +11225,8 @@ public class MasterServer {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // ORGANIZATION_ID
-            return ORGANIZATION_ID;
+          case 1: // SATELLITE_ID
+            return SATELLITE_ID;
           case 2: // CHALLENGE_RESPONSE
             return CHALLENGE_RESPONSE;
           default:
@@ -11259,11 +11269,13 @@ public class MasterServer {
     }
 
     // isset id assignments
+    private static final int __SATELLITEID_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.ORGANIZATION_ID, new org.apache.thrift.meta_data.FieldMetaData("organizationId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.SATELLITE_ID, new org.apache.thrift.meta_data.FieldMetaData("satelliteId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.CHALLENGE_RESPONSE, new org.apache.thrift.meta_data.FieldMetaData("challengeResponse", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , true)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -11274,11 +11286,12 @@ public class MasterServer {
     }
 
     public serverAuthenticate_args(
-      String organizationId,
+      int satelliteId,
       ByteBuffer challengeResponse)
     {
       this();
-      this.organizationId = organizationId;
+      this.satelliteId = satelliteId;
+      setSatelliteIdIsSet(true);
       this.challengeResponse = challengeResponse;
     }
 
@@ -11286,9 +11299,8 @@ public class MasterServer {
      * Performs a deep copy on <i>other</i>.
      */
     public serverAuthenticate_args(serverAuthenticate_args other) {
-      if (other.isSetOrganizationId()) {
-        this.organizationId = other.organizationId;
-      }
+      __isset_bitfield = other.__isset_bitfield;
+      this.satelliteId = other.satelliteId;
       if (other.isSetChallengeResponse()) {
         this.challengeResponse = org.apache.thrift.TBaseHelper.copyBinary(other.challengeResponse);
 ;
@@ -11301,32 +11313,32 @@ public class MasterServer {
 
     @Override
     public void clear() {
-      this.organizationId = null;
+      setSatelliteIdIsSet(false);
+      this.satelliteId = 0;
       this.challengeResponse = null;
     }
 
-    public String getOrganizationId() {
-      return this.organizationId;
+    public int getSatelliteId() {
+      return this.satelliteId;
     }
 
-    public serverAuthenticate_args setOrganizationId(String organizationId) {
-      this.organizationId = organizationId;
+    public serverAuthenticate_args setSatelliteId(int satelliteId) {
+      this.satelliteId = satelliteId;
+      setSatelliteIdIsSet(true);
       return this;
     }
 
-    public void unsetOrganizationId() {
-      this.organizationId = null;
+    public void unsetSatelliteId() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SATELLITEID_ISSET_ID);
     }
 
-    /** Returns true if field organizationId is set (has been assigned a value) and false otherwise */
-    public boolean isSetOrganizationId() {
-      return this.organizationId != null;
+    /** Returns true if field satelliteId is set (has been assigned a value) and false otherwise */
+    public boolean isSetSatelliteId() {
+      return EncodingUtils.testBit(__isset_bitfield, __SATELLITEID_ISSET_ID);
     }
 
-    public void setOrganizationIdIsSet(boolean value) {
-      if (!value) {
-        this.organizationId = null;
-      }
+    public void setSatelliteIdIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SATELLITEID_ISSET_ID, value);
     }
 
     public byte[] getChallengeResponse() {
@@ -11365,11 +11377,11 @@ public class MasterServer {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case ORGANIZATION_ID:
+      case SATELLITE_ID:
         if (value == null) {
-          unsetOrganizationId();
+          unsetSatelliteId();
         } else {
-          setOrganizationId((String)value);
+          setSatelliteId((Integer)value);
         }
         break;
 
@@ -11386,8 +11398,8 @@ public class MasterServer {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case ORGANIZATION_ID:
-        return getOrganizationId();
+      case SATELLITE_ID:
+        return Integer.valueOf(getSatelliteId());
 
       case CHALLENGE_RESPONSE:
         return getChallengeResponse();
@@ -11403,8 +11415,8 @@ public class MasterServer {
       }
 
       switch (field) {
-      case ORGANIZATION_ID:
-        return isSetOrganizationId();
+      case SATELLITE_ID:
+        return isSetSatelliteId();
       case CHALLENGE_RESPONSE:
         return isSetChallengeResponse();
       }
@@ -11424,12 +11436,12 @@ public class MasterServer {
       if (that == null)
         return false;
 
-      boolean this_present_organizationId = true && this.isSetOrganizationId();
-      boolean that_present_organizationId = true && that.isSetOrganizationId();
-      if (this_present_organizationId || that_present_organizationId) {
-        if (!(this_present_organizationId && that_present_organizationId))
+      boolean this_present_satelliteId = true;
+      boolean that_present_satelliteId = true;
+      if (this_present_satelliteId || that_present_satelliteId) {
+        if (!(this_present_satelliteId && that_present_satelliteId))
           return false;
-        if (!this.organizationId.equals(that.organizationId))
+        if (this.satelliteId != that.satelliteId)
           return false;
       }
 
@@ -11458,12 +11470,12 @@ public class MasterServer {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetOrganizationId()).compareTo(other.isSetOrganizationId());
+      lastComparison = Boolean.valueOf(isSetSatelliteId()).compareTo(other.isSetSatelliteId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetOrganizationId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.organizationId, other.organizationId);
+      if (isSetSatelliteId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.satelliteId, other.satelliteId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -11498,12 +11510,8 @@ public class MasterServer {
       StringBuilder sb = new StringBuilder("serverAuthenticate_args(");
       boolean first = true;
 
-      sb.append("organizationId:");
-      if (this.organizationId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.organizationId);
-      }
+      sb.append("satelliteId:");
+      sb.append(this.satelliteId);
       first = false;
       if (!first) sb.append(", ");
       sb.append("challengeResponse:");
@@ -11532,6 +11540,8 @@ public class MasterServer {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);
@@ -11556,10 +11566,10 @@ public class MasterServer {
             break;
           }
           switch (schemeField.id) {
-            case 1: // ORGANIZATION_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.organizationId = iprot.readString();
-                struct.setOrganizationIdIsSet(true);
+            case 1: // SATELLITE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.satelliteId = iprot.readI32();
+                struct.setSatelliteIdIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -11587,11 +11597,9 @@ public class MasterServer {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.organizationId != null) {
-          oprot.writeFieldBegin(ORGANIZATION_ID_FIELD_DESC);
-          oprot.writeString(struct.organizationId);
-          oprot.writeFieldEnd();
-        }
+        oprot.writeFieldBegin(SATELLITE_ID_FIELD_DESC);
+        oprot.writeI32(struct.satelliteId);
+        oprot.writeFieldEnd();
         if (struct.challengeResponse != null) {
           oprot.writeFieldBegin(CHALLENGE_RESPONSE_FIELD_DESC);
           oprot.writeBinary(struct.challengeResponse);
@@ -11615,15 +11623,15 @@ public class MasterServer {
       public void write(org.apache.thrift.protocol.TProtocol prot, serverAuthenticate_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetOrganizationId()) {
+        if (struct.isSetSatelliteId()) {
           optionals.set(0);
         }
         if (struct.isSetChallengeResponse()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
-        if (struct.isSetOrganizationId()) {
-          oprot.writeString(struct.organizationId);
+        if (struct.isSetSatelliteId()) {
+          oprot.writeI32(struct.satelliteId);
         }
         if (struct.isSetChallengeResponse()) {
           oprot.writeBinary(struct.challengeResponse);
@@ -11635,8 +11643,8 @@ public class MasterServer {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.organizationId = iprot.readString();
-          struct.setOrganizationIdIsSet(true);
+          struct.satelliteId = iprot.readI32();
+          struct.setSatelliteIdIsSet(true);
         }
         if (incoming.get(1)) {
           struct.challengeResponse = iprot.readBinary();
@@ -14605,10 +14613,12 @@ public class MasterServer {
   public static class registerSatellite_args implements org.apache.thrift.TBase<registerSatellite_args, registerSatellite_args._Fields>, java.io.Serializable, Cloneable, Comparable<registerSatellite_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerSatellite_args");
 
-    private static final org.apache.thrift.protocol.TField ORGANIZATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("organizationId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("address", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField USER_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("userToken", org.apache.thrift.protocol.TType.STRING, (short)6);
+    private static final org.apache.thrift.protocol.TField DISPLAY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("displayName", org.apache.thrift.protocol.TType.STRING, (short)5);
+    private static final org.apache.thrift.protocol.TField ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("addresses", org.apache.thrift.protocol.TType.LIST, (short)2);
     private static final org.apache.thrift.protocol.TField MODULUS_FIELD_DESC = new org.apache.thrift.protocol.TField("modulus", org.apache.thrift.protocol.TType.STRING, (short)3);
     private static final org.apache.thrift.protocol.TField EXPONENT_FIELD_DESC = new org.apache.thrift.protocol.TField("exponent", org.apache.thrift.protocol.TType.STRING, (short)4);
+    private static final org.apache.thrift.protocol.TField CERTSHA256_FIELD_DESC = new org.apache.thrift.protocol.TField("certsha256", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -14616,17 +14626,21 @@ public class MasterServer {
       schemes.put(TupleScheme.class, new registerSatellite_argsTupleSchemeFactory());
     }
 
-    public String organizationId; // required
-    public String address; // required
+    public String userToken; // required
+    public String displayName; // required
+    public List<String> addresses; // required
     public String modulus; // required
     public String exponent; // required
+    public ByteBuffer certsha256; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      ORGANIZATION_ID((short)1, "organizationId"),
-      ADDRESS((short)2, "address"),
+      USER_TOKEN((short)6, "userToken"),
+      DISPLAY_NAME((short)5, "displayName"),
+      ADDRESSES((short)2, "addresses"),
       MODULUS((short)3, "modulus"),
-      EXPONENT((short)4, "exponent");
+      EXPONENT((short)4, "exponent"),
+      CERTSHA256((short)1, "certsha256");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -14641,14 +14655,18 @@ public class MasterServer {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // ORGANIZATION_ID
-            return ORGANIZATION_ID;
-          case 2: // ADDRESS
-            return ADDRESS;
+          case 6: // USER_TOKEN
+            return USER_TOKEN;
+          case 5: // DISPLAY_NAME
+            return DISPLAY_NAME;
+          case 2: // ADDRESSES
+            return ADDRESSES;
           case 3: // MODULUS
             return MODULUS;
           case 4: // EXPONENT
             return EXPONENT;
+          case 1: // CERTSHA256
+            return CERTSHA256;
           default:
             return null;
         }
@@ -14692,14 +14710,19 @@ public class MasterServer {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.ORGANIZATION_ID, new org.apache.thrift.meta_data.FieldMetaData("organizationId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.USER_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("userToken", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "Token")));
+      tmpMap.put(_Fields.DISPLAY_NAME, new org.apache.thrift.meta_data.FieldMetaData("displayName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("address", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.ADDRESSES, new org.apache.thrift.meta_data.FieldMetaData("addresses", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
       tmpMap.put(_Fields.MODULUS, new org.apache.thrift.meta_data.FieldMetaData("modulus", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.EXPONENT, new org.apache.thrift.meta_data.FieldMetaData("exponent", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.CERTSHA256, new org.apache.thrift.meta_data.FieldMetaData("certsha256", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , true)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerSatellite_args.class, metaDataMap);
     }
@@ -14708,33 +14731,45 @@ public class MasterServer {
     }
 
     public registerSatellite_args(
-      String organizationId,
-      String address,
+      String userToken,
+      String displayName,
+      List<String> addresses,
       String modulus,
-      String exponent)
+      String exponent,
+      ByteBuffer certsha256)
     {
       this();
-      this.organizationId = organizationId;
-      this.address = address;
+      this.userToken = userToken;
+      this.displayName = displayName;
+      this.addresses = addresses;
       this.modulus = modulus;
       this.exponent = exponent;
+      this.certsha256 = certsha256;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public registerSatellite_args(registerSatellite_args other) {
-      if (other.isSetOrganizationId()) {
-        this.organizationId = other.organizationId;
+      if (other.isSetUserToken()) {
+        this.userToken = other.userToken;
       }
-      if (other.isSetAddress()) {
-        this.address = other.address;
+      if (other.isSetDisplayName()) {
+        this.displayName = other.displayName;
+      }
+      if (other.isSetAddresses()) {
+        List<String> __this__addresses = new ArrayList<String>(other.addresses);
+        this.addresses = __this__addresses;
       }
       if (other.isSetModulus()) {
         this.modulus = other.modulus;
       }
       if (other.isSetExponent()) {
         this.exponent = other.exponent;
+      }
+      if (other.isSetCertsha256()) {
+        this.certsha256 = org.apache.thrift.TBaseHelper.copyBinary(other.certsha256);
+;
       }
     }
 
@@ -14744,57 +14779,98 @@ public class MasterServer {
 
     @Override
     public void clear() {
-      this.organizationId = null;
-      this.address = null;
+      this.userToken = null;
+      this.displayName = null;
+      this.addresses = null;
       this.modulus = null;
       this.exponent = null;
+      this.certsha256 = null;
     }
 
-    public String getOrganizationId() {
-      return this.organizationId;
+    public String getUserToken() {
+      return this.userToken;
     }
 
-    public registerSatellite_args setOrganizationId(String organizationId) {
-      this.organizationId = organizationId;
+    public registerSatellite_args setUserToken(String userToken) {
+      this.userToken = userToken;
       return this;
     }
 
-    public void unsetOrganizationId() {
-      this.organizationId = null;
+    public void unsetUserToken() {
+      this.userToken = null;
     }
 
-    /** Returns true if field organizationId is set (has been assigned a value) and false otherwise */
-    public boolean isSetOrganizationId() {
-      return this.organizationId != null;
+    /** Returns true if field userToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserToken() {
+      return this.userToken != null;
     }
 
-    public void setOrganizationIdIsSet(boolean value) {
+    public void setUserTokenIsSet(boolean value) {
       if (!value) {
-        this.organizationId = null;
+        this.userToken = null;
       }
     }
 
-    public String getAddress() {
-      return this.address;
+    public String getDisplayName() {
+      return this.displayName;
     }
 
-    public registerSatellite_args setAddress(String address) {
-      this.address = address;
+    public registerSatellite_args setDisplayName(String displayName) {
+      this.displayName = displayName;
       return this;
     }
 
-    public void unsetAddress() {
-      this.address = null;
+    public void unsetDisplayName() {
+      this.displayName = null;
     }
 
-    /** Returns true if field address is set (has been assigned a value) and false otherwise */
-    public boolean isSetAddress() {
-      return this.address != null;
+    /** Returns true if field displayName is set (has been assigned a value) and false otherwise */
+    public boolean isSetDisplayName() {
+      return this.displayName != null;
     }
 
-    public void setAddressIsSet(boolean value) {
+    public void setDisplayNameIsSet(boolean value) {
       if (!value) {
-        this.address = null;
+        this.displayName = null;
+      }
+    }
+
+    public int getAddressesSize() {
+      return (this.addresses == null) ? 0 : this.addresses.size();
+    }
+
+    public java.util.Iterator<String> getAddressesIterator() {
+      return (this.addresses == null) ? null : this.addresses.iterator();
+    }
+
+    public void addToAddresses(String elem) {
+      if (this.addresses == null) {
+        this.addresses = new ArrayList<String>();
+      }
+      this.addresses.add(elem);
+    }
+
+    public List<String> getAddresses() {
+      return this.addresses;
+    }
+
+    public registerSatellite_args setAddresses(List<String> addresses) {
+      this.addresses = addresses;
+      return this;
+    }
+
+    public void unsetAddresses() {
+      this.addresses = null;
+    }
+
+    /** Returns true if field addresses is set (has been assigned a value) and false otherwise */
+    public boolean isSetAddresses() {
+      return this.addresses != null;
+    }
+
+    public void setAddressesIsSet(boolean value) {
+      if (!value) {
+        this.addresses = null;
       }
     }
 
@@ -14846,21 +14922,63 @@ public class MasterServer {
       }
     }
 
+    public byte[] getCertsha256() {
+      setCertsha256(org.apache.thrift.TBaseHelper.rightSize(certsha256));
+      return certsha256 == null ? null : certsha256.array();
+    }
+
+    public ByteBuffer bufferForCertsha256() {
+      return certsha256;
+    }
+
+    public registerSatellite_args setCertsha256(byte[] certsha256) {
+      setCertsha256(certsha256 == null ? (ByteBuffer)null : ByteBuffer.wrap(certsha256));
+      return this;
+    }
+
+    public registerSatellite_args setCertsha256(ByteBuffer certsha256) {
+      this.certsha256 = certsha256;
+      return this;
+    }
+
+    public void unsetCertsha256() {
+      this.certsha256 = null;
+    }
+
+    /** Returns true if field certsha256 is set (has been assigned a value) and false otherwise */
+    public boolean isSetCertsha256() {
+      return this.certsha256 != null;
+    }
+
+    public void setCertsha256IsSet(boolean value) {
+      if (!value) {
+        this.certsha256 = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case ORGANIZATION_ID:
+      case USER_TOKEN:
         if (value == null) {
-          unsetOrganizationId();
+          unsetUserToken();
         } else {
-          setOrganizationId((String)value);
+          setUserToken((String)value);
         }
         break;
 
-      case ADDRESS:
+      case DISPLAY_NAME:
         if (value == null) {
-          unsetAddress();
+          unsetDisplayName();
         } else {
-          setAddress((String)value);
+          setDisplayName((String)value);
+        }
+        break;
+
+      case ADDRESSES:
+        if (value == null) {
+          unsetAddresses();
+        } else {
+          setAddresses((List<String>)value);
         }
         break;
 
@@ -14880,22 +14998,36 @@ public class MasterServer {
         }
         break;
 
+      case CERTSHA256:
+        if (value == null) {
+          unsetCertsha256();
+        } else {
+          setCertsha256((ByteBuffer)value);
+        }
+        break;
+
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case ORGANIZATION_ID:
-        return getOrganizationId();
+      case USER_TOKEN:
+        return getUserToken();
 
-      case ADDRESS:
-        return getAddress();
+      case DISPLAY_NAME:
+        return getDisplayName();
+
+      case ADDRESSES:
+        return getAddresses();
 
       case MODULUS:
         return getModulus();
 
       case EXPONENT:
         return getExponent();
+
+      case CERTSHA256:
+        return getCertsha256();
 
       }
       throw new IllegalStateException();
@@ -14908,14 +15040,18 @@ public class MasterServer {
       }
 
       switch (field) {
-      case ORGANIZATION_ID:
-        return isSetOrganizationId();
-      case ADDRESS:
-        return isSetAddress();
+      case USER_TOKEN:
+        return isSetUserToken();
+      case DISPLAY_NAME:
+        return isSetDisplayName();
+      case ADDRESSES:
+        return isSetAddresses();
       case MODULUS:
         return isSetModulus();
       case EXPONENT:
         return isSetExponent();
+      case CERTSHA256:
+        return isSetCertsha256();
       }
       throw new IllegalStateException();
     }
@@ -14933,21 +15069,30 @@ public class MasterServer {
       if (that == null)
         return false;
 
-      boolean this_present_organizationId = true && this.isSetOrganizationId();
-      boolean that_present_organizationId = true && that.isSetOrganizationId();
-      if (this_present_organizationId || that_present_organizationId) {
-        if (!(this_present_organizationId && that_present_organizationId))
+      boolean this_present_userToken = true && this.isSetUserToken();
+      boolean that_present_userToken = true && that.isSetUserToken();
+      if (this_present_userToken || that_present_userToken) {
+        if (!(this_present_userToken && that_present_userToken))
           return false;
-        if (!this.organizationId.equals(that.organizationId))
+        if (!this.userToken.equals(that.userToken))
           return false;
       }
 
-      boolean this_present_address = true && this.isSetAddress();
-      boolean that_present_address = true && that.isSetAddress();
-      if (this_present_address || that_present_address) {
-        if (!(this_present_address && that_present_address))
+      boolean this_present_displayName = true && this.isSetDisplayName();
+      boolean that_present_displayName = true && that.isSetDisplayName();
+      if (this_present_displayName || that_present_displayName) {
+        if (!(this_present_displayName && that_present_displayName))
           return false;
-        if (!this.address.equals(that.address))
+        if (!this.displayName.equals(that.displayName))
+          return false;
+      }
+
+      boolean this_present_addresses = true && this.isSetAddresses();
+      boolean that_present_addresses = true && that.isSetAddresses();
+      if (this_present_addresses || that_present_addresses) {
+        if (!(this_present_addresses && that_present_addresses))
+          return false;
+        if (!this.addresses.equals(that.addresses))
           return false;
       }
 
@@ -14969,6 +15114,15 @@ public class MasterServer {
           return false;
       }
 
+      boolean this_present_certsha256 = true && this.isSetCertsha256();
+      boolean that_present_certsha256 = true && that.isSetCertsha256();
+      if (this_present_certsha256 || that_present_certsha256) {
+        if (!(this_present_certsha256 && that_present_certsha256))
+          return false;
+        if (!this.certsha256.equals(that.certsha256))
+          return false;
+      }
+
       return true;
     }
 
@@ -14985,22 +15139,32 @@ public class MasterServer {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetOrganizationId()).compareTo(other.isSetOrganizationId());
+      lastComparison = Boolean.valueOf(isSetUserToken()).compareTo(other.isSetUserToken());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetOrganizationId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.organizationId, other.organizationId);
+      if (isSetUserToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userToken, other.userToken);
         if (lastComparison != 0) {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetAddress()).compareTo(other.isSetAddress());
+      lastComparison = Boolean.valueOf(isSetDisplayName()).compareTo(other.isSetDisplayName());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetAddress()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.address, other.address);
+      if (isSetDisplayName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.displayName, other.displayName);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAddresses()).compareTo(other.isSetAddresses());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAddresses()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.addresses, other.addresses);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -15025,6 +15189,16 @@ public class MasterServer {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetCertsha256()).compareTo(other.isSetCertsha256());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCertsha256()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.certsha256, other.certsha256);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -15045,19 +15219,27 @@ public class MasterServer {
       StringBuilder sb = new StringBuilder("registerSatellite_args(");
       boolean first = true;
 
-      sb.append("organizationId:");
-      if (this.organizationId == null) {
+      sb.append("userToken:");
+      if (this.userToken == null) {
         sb.append("null");
       } else {
-        sb.append(this.organizationId);
+        sb.append(this.userToken);
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("address:");
-      if (this.address == null) {
+      sb.append("displayName:");
+      if (this.displayName == null) {
         sb.append("null");
       } else {
-        sb.append(this.address);
+        sb.append(this.displayName);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("addresses:");
+      if (this.addresses == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.addresses);
       }
       first = false;
       if (!first) sb.append(", ");
@@ -15074,6 +15256,14 @@ public class MasterServer {
         sb.append("null");
       } else {
         sb.append(this.exponent);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("certsha256:");
+      if (this.certsha256 == null) {
+        sb.append("null");
+      } else {
+        org.apache.thrift.TBaseHelper.toString(this.certsha256, sb);
       }
       first = false;
       sb.append(")");
@@ -15119,18 +15309,36 @@ public class MasterServer {
             break;
           }
           switch (schemeField.id) {
-            case 1: // ORGANIZATION_ID
+            case 6: // USER_TOKEN
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.organizationId = iprot.readString();
-                struct.setOrganizationIdIsSet(true);
+                struct.userToken = iprot.readString();
+                struct.setUserTokenIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // ADDRESS
+            case 5: // DISPLAY_NAME
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.address = iprot.readString();
-                struct.setAddressIsSet(true);
+                struct.displayName = iprot.readString();
+                struct.setDisplayNameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ADDRESSES
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list290 = iprot.readListBegin();
+                  struct.addresses = new ArrayList<String>(_list290.size);
+                  for (int _i291 = 0; _i291 < _list290.size; ++_i291)
+                  {
+                    String _elem292;
+                    _elem292 = iprot.readString();
+                    struct.addresses.add(_elem292);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setAddressesIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -15151,6 +15359,14 @@ public class MasterServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // CERTSHA256
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.certsha256 = iprot.readBinary();
+                struct.setCertsha256IsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -15166,14 +15382,21 @@ public class MasterServer {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.organizationId != null) {
-          oprot.writeFieldBegin(ORGANIZATION_ID_FIELD_DESC);
-          oprot.writeString(struct.organizationId);
+        if (struct.certsha256 != null) {
+          oprot.writeFieldBegin(CERTSHA256_FIELD_DESC);
+          oprot.writeBinary(struct.certsha256);
           oprot.writeFieldEnd();
         }
-        if (struct.address != null) {
-          oprot.writeFieldBegin(ADDRESS_FIELD_DESC);
-          oprot.writeString(struct.address);
+        if (struct.addresses != null) {
+          oprot.writeFieldBegin(ADDRESSES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.addresses.size()));
+            for (String _iter293 : struct.addresses)
+            {
+              oprot.writeString(_iter293);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
         if (struct.modulus != null) {
@@ -15184,6 +15407,16 @@ public class MasterServer {
         if (struct.exponent != null) {
           oprot.writeFieldBegin(EXPONENT_FIELD_DESC);
           oprot.writeString(struct.exponent);
+          oprot.writeFieldEnd();
+        }
+        if (struct.displayName != null) {
+          oprot.writeFieldBegin(DISPLAY_NAME_FIELD_DESC);
+          oprot.writeString(struct.displayName);
+          oprot.writeFieldEnd();
+        }
+        if (struct.userToken != null) {
+          oprot.writeFieldBegin(USER_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.userToken);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -15204,24 +15437,39 @@ public class MasterServer {
       public void write(org.apache.thrift.protocol.TProtocol prot, registerSatellite_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetOrganizationId()) {
+        if (struct.isSetUserToken()) {
           optionals.set(0);
         }
-        if (struct.isSetAddress()) {
+        if (struct.isSetDisplayName()) {
           optionals.set(1);
         }
-        if (struct.isSetModulus()) {
+        if (struct.isSetAddresses()) {
           optionals.set(2);
         }
-        if (struct.isSetExponent()) {
+        if (struct.isSetModulus()) {
           optionals.set(3);
         }
-        oprot.writeBitSet(optionals, 4);
-        if (struct.isSetOrganizationId()) {
-          oprot.writeString(struct.organizationId);
+        if (struct.isSetExponent()) {
+          optionals.set(4);
         }
-        if (struct.isSetAddress()) {
-          oprot.writeString(struct.address);
+        if (struct.isSetCertsha256()) {
+          optionals.set(5);
+        }
+        oprot.writeBitSet(optionals, 6);
+        if (struct.isSetUserToken()) {
+          oprot.writeString(struct.userToken);
+        }
+        if (struct.isSetDisplayName()) {
+          oprot.writeString(struct.displayName);
+        }
+        if (struct.isSetAddresses()) {
+          {
+            oprot.writeI32(struct.addresses.size());
+            for (String _iter294 : struct.addresses)
+            {
+              oprot.writeString(_iter294);
+            }
+          }
         }
         if (struct.isSetModulus()) {
           oprot.writeString(struct.modulus);
@@ -15229,27 +15477,47 @@ public class MasterServer {
         if (struct.isSetExponent()) {
           oprot.writeString(struct.exponent);
         }
+        if (struct.isSetCertsha256()) {
+          oprot.writeBinary(struct.certsha256);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, registerSatellite_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(6);
         if (incoming.get(0)) {
-          struct.organizationId = iprot.readString();
-          struct.setOrganizationIdIsSet(true);
+          struct.userToken = iprot.readString();
+          struct.setUserTokenIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.address = iprot.readString();
-          struct.setAddressIsSet(true);
+          struct.displayName = iprot.readString();
+          struct.setDisplayNameIsSet(true);
         }
         if (incoming.get(2)) {
+          {
+            org.apache.thrift.protocol.TList _list295 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.addresses = new ArrayList<String>(_list295.size);
+            for (int _i296 = 0; _i296 < _list295.size; ++_i296)
+            {
+              String _elem297;
+              _elem297 = iprot.readString();
+              struct.addresses.add(_elem297);
+            }
+          }
+          struct.setAddressesIsSet(true);
+        }
+        if (incoming.get(3)) {
           struct.modulus = iprot.readString();
           struct.setModulusIsSet(true);
         }
-        if (incoming.get(3)) {
+        if (incoming.get(4)) {
           struct.exponent = iprot.readString();
           struct.setExponentIsSet(true);
+        }
+        if (incoming.get(5)) {
+          struct.certsha256 = iprot.readBinary();
+          struct.setCertsha256IsSet(true);
         }
       }
     }
@@ -15259,7 +15527,7 @@ public class MasterServer {
   public static class registerSatellite_result implements org.apache.thrift.TBase<registerSatellite_result, registerSatellite_result._Fields>, java.io.Serializable, Cloneable, Comparable<registerSatellite_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerSatellite_result");
 
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.I32, (short)0);
     private static final org.apache.thrift.protocol.TField ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("error", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -15268,7 +15536,7 @@ public class MasterServer {
       schemes.put(TupleScheme.class, new registerSatellite_resultTupleSchemeFactory());
     }
 
-    public boolean success; // required
+    public int success; // required
     public TInvocationException error; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -15339,7 +15607,7 @@ public class MasterServer {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.ERROR, new org.apache.thrift.meta_data.FieldMetaData("error", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -15350,7 +15618,7 @@ public class MasterServer {
     }
 
     public registerSatellite_result(
-      boolean success,
+      int success,
       TInvocationException error)
     {
       this();
@@ -15377,15 +15645,15 @@ public class MasterServer {
     @Override
     public void clear() {
       setSuccessIsSet(false);
-      this.success = false;
+      this.success = 0;
       this.error = null;
     }
 
-    public boolean isSuccess() {
+    public int getSuccess() {
       return this.success;
     }
 
-    public registerSatellite_result setSuccess(boolean success) {
+    public registerSatellite_result setSuccess(int success) {
       this.success = success;
       setSuccessIsSet(true);
       return this;
@@ -15434,7 +15702,7 @@ public class MasterServer {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((Boolean)value);
+          setSuccess((Integer)value);
         }
         break;
 
@@ -15452,7 +15720,7 @@ public class MasterServer {
     public Object getFieldValue(_Fields field) {
       switch (field) {
       case SUCCESS:
-        return Boolean.valueOf(isSuccess());
+        return Integer.valueOf(getSuccess());
 
       case ERROR:
         return getError();
@@ -15620,8 +15888,8 @@ public class MasterServer {
           }
           switch (schemeField.id) {
             case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-                struct.success = iprot.readBool();
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.success = iprot.readI32();
                 struct.setSuccessIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -15653,7 +15921,7 @@ public class MasterServer {
         oprot.writeStructBegin(STRUCT_DESC);
         if (struct.isSetSuccess()) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          oprot.writeBool(struct.success);
+          oprot.writeI32(struct.success);
           oprot.writeFieldEnd();
         }
         if (struct.error != null) {
@@ -15687,7 +15955,7 @@ public class MasterServer {
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
-          oprot.writeBool(struct.success);
+          oprot.writeI32(struct.success);
         }
         if (struct.isSetError()) {
           struct.error.write(oprot);
@@ -15699,7 +15967,7 @@ public class MasterServer {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = iprot.readBool();
+          struct.success = iprot.readI32();
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
@@ -15712,25 +15980,28 @@ public class MasterServer {
 
   }
 
-  public static class updateSatelliteAddress_args implements org.apache.thrift.TBase<updateSatelliteAddress_args, updateSatelliteAddress_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateSatelliteAddress_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateSatelliteAddress_args");
+  public static class updateSatellite_args implements org.apache.thrift.TBase<updateSatellite_args, updateSatellite_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateSatellite_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateSatellite_args");
 
     private static final org.apache.thrift.protocol.TField SERVER_SESSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("serverSessionId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("address", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField DISPLAY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("displayName", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("addresses", org.apache.thrift.protocol.TType.LIST, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new updateSatelliteAddress_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new updateSatelliteAddress_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new updateSatellite_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateSatellite_argsTupleSchemeFactory());
     }
 
     public String serverSessionId; // required
-    public String address; // required
+    public String displayName; // required
+    public List<String> addresses; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SERVER_SESSION_ID((short)1, "serverSessionId"),
-      ADDRESS((short)2, "address");
+      DISPLAY_NAME((short)2, "displayName"),
+      ADDRESSES((short)3, "addresses");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -15747,8 +16018,10 @@ public class MasterServer {
         switch(fieldId) {
           case 1: // SERVER_SESSION_ID
             return SERVER_SESSION_ID;
-          case 2: // ADDRESS
-            return ADDRESS;
+          case 2: // DISPLAY_NAME
+            return DISPLAY_NAME;
+          case 3: // ADDRESSES
+            return ADDRESSES;
           default:
             return null;
         }
@@ -15794,51 +16067,61 @@ public class MasterServer {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SERVER_SESSION_ID, new org.apache.thrift.meta_data.FieldMetaData("serverSessionId", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING          , "Token")));
-      tmpMap.put(_Fields.ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("address", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.DISPLAY_NAME, new org.apache.thrift.meta_data.FieldMetaData("displayName", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.ADDRESSES, new org.apache.thrift.meta_data.FieldMetaData("addresses", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateSatelliteAddress_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateSatellite_args.class, metaDataMap);
     }
 
-    public updateSatelliteAddress_args() {
+    public updateSatellite_args() {
     }
 
-    public updateSatelliteAddress_args(
+    public updateSatellite_args(
       String serverSessionId,
-      String address)
+      String displayName,
+      List<String> addresses)
     {
       this();
       this.serverSessionId = serverSessionId;
-      this.address = address;
+      this.displayName = displayName;
+      this.addresses = addresses;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public updateSatelliteAddress_args(updateSatelliteAddress_args other) {
+    public updateSatellite_args(updateSatellite_args other) {
       if (other.isSetServerSessionId()) {
         this.serverSessionId = other.serverSessionId;
       }
-      if (other.isSetAddress()) {
-        this.address = other.address;
+      if (other.isSetDisplayName()) {
+        this.displayName = other.displayName;
+      }
+      if (other.isSetAddresses()) {
+        List<String> __this__addresses = new ArrayList<String>(other.addresses);
+        this.addresses = __this__addresses;
       }
     }
 
-    public updateSatelliteAddress_args deepCopy() {
-      return new updateSatelliteAddress_args(this);
+    public updateSatellite_args deepCopy() {
+      return new updateSatellite_args(this);
     }
 
     @Override
     public void clear() {
       this.serverSessionId = null;
-      this.address = null;
+      this.displayName = null;
+      this.addresses = null;
     }
 
     public String getServerSessionId() {
       return this.serverSessionId;
     }
 
-    public updateSatelliteAddress_args setServerSessionId(String serverSessionId) {
+    public updateSatellite_args setServerSessionId(String serverSessionId) {
       this.serverSessionId = serverSessionId;
       return this;
     }
@@ -15858,27 +16141,66 @@ public class MasterServer {
       }
     }
 
-    public String getAddress() {
-      return this.address;
+    public String getDisplayName() {
+      return this.displayName;
     }
 
-    public updateSatelliteAddress_args setAddress(String address) {
-      this.address = address;
+    public updateSatellite_args setDisplayName(String displayName) {
+      this.displayName = displayName;
       return this;
     }
 
-    public void unsetAddress() {
-      this.address = null;
+    public void unsetDisplayName() {
+      this.displayName = null;
     }
 
-    /** Returns true if field address is set (has been assigned a value) and false otherwise */
-    public boolean isSetAddress() {
-      return this.address != null;
+    /** Returns true if field displayName is set (has been assigned a value) and false otherwise */
+    public boolean isSetDisplayName() {
+      return this.displayName != null;
     }
 
-    public void setAddressIsSet(boolean value) {
+    public void setDisplayNameIsSet(boolean value) {
       if (!value) {
-        this.address = null;
+        this.displayName = null;
+      }
+    }
+
+    public int getAddressesSize() {
+      return (this.addresses == null) ? 0 : this.addresses.size();
+    }
+
+    public java.util.Iterator<String> getAddressesIterator() {
+      return (this.addresses == null) ? null : this.addresses.iterator();
+    }
+
+    public void addToAddresses(String elem) {
+      if (this.addresses == null) {
+        this.addresses = new ArrayList<String>();
+      }
+      this.addresses.add(elem);
+    }
+
+    public List<String> getAddresses() {
+      return this.addresses;
+    }
+
+    public updateSatellite_args setAddresses(List<String> addresses) {
+      this.addresses = addresses;
+      return this;
+    }
+
+    public void unsetAddresses() {
+      this.addresses = null;
+    }
+
+    /** Returns true if field addresses is set (has been assigned a value) and false otherwise */
+    public boolean isSetAddresses() {
+      return this.addresses != null;
+    }
+
+    public void setAddressesIsSet(boolean value) {
+      if (!value) {
+        this.addresses = null;
       }
     }
 
@@ -15892,11 +16214,19 @@ public class MasterServer {
         }
         break;
 
-      case ADDRESS:
+      case DISPLAY_NAME:
         if (value == null) {
-          unsetAddress();
+          unsetDisplayName();
         } else {
-          setAddress((String)value);
+          setDisplayName((String)value);
+        }
+        break;
+
+      case ADDRESSES:
+        if (value == null) {
+          unsetAddresses();
+        } else {
+          setAddresses((List<String>)value);
         }
         break;
 
@@ -15908,8 +16238,11 @@ public class MasterServer {
       case SERVER_SESSION_ID:
         return getServerSessionId();
 
-      case ADDRESS:
-        return getAddress();
+      case DISPLAY_NAME:
+        return getDisplayName();
+
+      case ADDRESSES:
+        return getAddresses();
 
       }
       throw new IllegalStateException();
@@ -15924,8 +16257,10 @@ public class MasterServer {
       switch (field) {
       case SERVER_SESSION_ID:
         return isSetServerSessionId();
-      case ADDRESS:
-        return isSetAddress();
+      case DISPLAY_NAME:
+        return isSetDisplayName();
+      case ADDRESSES:
+        return isSetAddresses();
       }
       throw new IllegalStateException();
     }
@@ -15934,12 +16269,12 @@ public class MasterServer {
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof updateSatelliteAddress_args)
-        return this.equals((updateSatelliteAddress_args)that);
+      if (that instanceof updateSatellite_args)
+        return this.equals((updateSatellite_args)that);
       return false;
     }
 
-    public boolean equals(updateSatelliteAddress_args that) {
+    public boolean equals(updateSatellite_args that) {
       if (that == null)
         return false;
 
@@ -15952,12 +16287,21 @@ public class MasterServer {
           return false;
       }
 
-      boolean this_present_address = true && this.isSetAddress();
-      boolean that_present_address = true && that.isSetAddress();
-      if (this_present_address || that_present_address) {
-        if (!(this_present_address && that_present_address))
+      boolean this_present_displayName = true && this.isSetDisplayName();
+      boolean that_present_displayName = true && that.isSetDisplayName();
+      if (this_present_displayName || that_present_displayName) {
+        if (!(this_present_displayName && that_present_displayName))
           return false;
-        if (!this.address.equals(that.address))
+        if (!this.displayName.equals(that.displayName))
+          return false;
+      }
+
+      boolean this_present_addresses = true && this.isSetAddresses();
+      boolean that_present_addresses = true && that.isSetAddresses();
+      if (this_present_addresses || that_present_addresses) {
+        if (!(this_present_addresses && that_present_addresses))
+          return false;
+        if (!this.addresses.equals(that.addresses))
           return false;
       }
 
@@ -15970,7 +16314,7 @@ public class MasterServer {
     }
 
     @Override
-    public int compareTo(updateSatelliteAddress_args other) {
+    public int compareTo(updateSatellite_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -15987,12 +16331,22 @@ public class MasterServer {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetAddress()).compareTo(other.isSetAddress());
+      lastComparison = Boolean.valueOf(isSetDisplayName()).compareTo(other.isSetDisplayName());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetAddress()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.address, other.address);
+      if (isSetDisplayName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.displayName, other.displayName);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAddresses()).compareTo(other.isSetAddresses());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAddresses()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.addresses, other.addresses);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -16014,7 +16368,7 @@ public class MasterServer {
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("updateSatelliteAddress_args(");
+      StringBuilder sb = new StringBuilder("updateSatellite_args(");
       boolean first = true;
 
       sb.append("serverSessionId:");
@@ -16025,11 +16379,19 @@ public class MasterServer {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("address:");
-      if (this.address == null) {
+      sb.append("displayName:");
+      if (this.displayName == null) {
         sb.append("null");
       } else {
-        sb.append(this.address);
+        sb.append(this.displayName);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("addresses:");
+      if (this.addresses == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.addresses);
       }
       first = false;
       sb.append(")");
@@ -16057,15 +16419,15 @@ public class MasterServer {
       }
     }
 
-    private static class updateSatelliteAddress_argsStandardSchemeFactory implements SchemeFactory {
-      public updateSatelliteAddress_argsStandardScheme getScheme() {
-        return new updateSatelliteAddress_argsStandardScheme();
+    private static class updateSatellite_argsStandardSchemeFactory implements SchemeFactory {
+      public updateSatellite_argsStandardScheme getScheme() {
+        return new updateSatellite_argsStandardScheme();
       }
     }
 
-    private static class updateSatelliteAddress_argsStandardScheme extends StandardScheme<updateSatelliteAddress_args> {
+    private static class updateSatellite_argsStandardScheme extends StandardScheme<updateSatellite_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, updateSatelliteAddress_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateSatellite_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -16083,10 +16445,28 @@ public class MasterServer {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // ADDRESS
+            case 2: // DISPLAY_NAME
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.address = iprot.readString();
-                struct.setAddressIsSet(true);
+                struct.displayName = iprot.readString();
+                struct.setDisplayNameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ADDRESSES
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list298 = iprot.readListBegin();
+                  struct.addresses = new ArrayList<String>(_list298.size);
+                  for (int _i299 = 0; _i299 < _list298.size; ++_i299)
+                  {
+                    String _elem300;
+                    _elem300 = iprot.readString();
+                    struct.addresses.add(_elem300);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setAddressesIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -16102,7 +16482,7 @@ public class MasterServer {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, updateSatelliteAddress_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateSatellite_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -16111,9 +16491,21 @@ public class MasterServer {
           oprot.writeString(struct.serverSessionId);
           oprot.writeFieldEnd();
         }
-        if (struct.address != null) {
-          oprot.writeFieldBegin(ADDRESS_FIELD_DESC);
-          oprot.writeString(struct.address);
+        if (struct.displayName != null) {
+          oprot.writeFieldBegin(DISPLAY_NAME_FIELD_DESC);
+          oprot.writeString(struct.displayName);
+          oprot.writeFieldEnd();
+        }
+        if (struct.addresses != null) {
+          oprot.writeFieldBegin(ADDRESSES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.addresses.size()));
+            for (String _iter301 : struct.addresses)
+            {
+              oprot.writeString(_iter301);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -16122,52 +16514,77 @@ public class MasterServer {
 
     }
 
-    private static class updateSatelliteAddress_argsTupleSchemeFactory implements SchemeFactory {
-      public updateSatelliteAddress_argsTupleScheme getScheme() {
-        return new updateSatelliteAddress_argsTupleScheme();
+    private static class updateSatellite_argsTupleSchemeFactory implements SchemeFactory {
+      public updateSatellite_argsTupleScheme getScheme() {
+        return new updateSatellite_argsTupleScheme();
       }
     }
 
-    private static class updateSatelliteAddress_argsTupleScheme extends TupleScheme<updateSatelliteAddress_args> {
+    private static class updateSatellite_argsTupleScheme extends TupleScheme<updateSatellite_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, updateSatelliteAddress_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateSatellite_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetServerSessionId()) {
           optionals.set(0);
         }
-        if (struct.isSetAddress()) {
+        if (struct.isSetDisplayName()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetAddresses()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetServerSessionId()) {
           oprot.writeString(struct.serverSessionId);
         }
-        if (struct.isSetAddress()) {
-          oprot.writeString(struct.address);
+        if (struct.isSetDisplayName()) {
+          oprot.writeString(struct.displayName);
+        }
+        if (struct.isSetAddresses()) {
+          {
+            oprot.writeI32(struct.addresses.size());
+            for (String _iter302 : struct.addresses)
+            {
+              oprot.writeString(_iter302);
+            }
+          }
         }
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, updateSatelliteAddress_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateSatellite_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.serverSessionId = iprot.readString();
           struct.setServerSessionIdIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.address = iprot.readString();
-          struct.setAddressIsSet(true);
+          struct.displayName = iprot.readString();
+          struct.setDisplayNameIsSet(true);
+        }
+        if (incoming.get(2)) {
+          {
+            org.apache.thrift.protocol.TList _list303 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.addresses = new ArrayList<String>(_list303.size);
+            for (int _i304 = 0; _i304 < _list303.size; ++_i304)
+            {
+              String _elem305;
+              _elem305 = iprot.readString();
+              struct.addresses.add(_elem305);
+            }
+          }
+          struct.setAddressesIsSet(true);
         }
       }
     }
 
   }
 
-  public static class updateSatelliteAddress_result implements org.apache.thrift.TBase<updateSatelliteAddress_result, updateSatelliteAddress_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateSatelliteAddress_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateSatelliteAddress_result");
+  public static class updateSatellite_result implements org.apache.thrift.TBase<updateSatellite_result, updateSatellite_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateSatellite_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateSatellite_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
     private static final org.apache.thrift.protocol.TField FAILURE_FIELD_DESC = new org.apache.thrift.protocol.TField("failure", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -16175,8 +16592,8 @@ public class MasterServer {
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new updateSatelliteAddress_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new updateSatelliteAddress_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new updateSatellite_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateSatellite_resultTupleSchemeFactory());
     }
 
     public boolean success; // required
@@ -16260,13 +16677,13 @@ public class MasterServer {
       tmpMap.put(_Fields.ERROR, new org.apache.thrift.meta_data.FieldMetaData("error", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateSatelliteAddress_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateSatellite_result.class, metaDataMap);
     }
 
-    public updateSatelliteAddress_result() {
+    public updateSatellite_result() {
     }
 
-    public updateSatelliteAddress_result(
+    public updateSatellite_result(
       boolean success,
       TAuthorizationException failure,
       TInvocationException error)
@@ -16281,7 +16698,7 @@ public class MasterServer {
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public updateSatelliteAddress_result(updateSatelliteAddress_result other) {
+    public updateSatellite_result(updateSatellite_result other) {
       __isset_bitfield = other.__isset_bitfield;
       this.success = other.success;
       if (other.isSetFailure()) {
@@ -16292,8 +16709,8 @@ public class MasterServer {
       }
     }
 
-    public updateSatelliteAddress_result deepCopy() {
-      return new updateSatelliteAddress_result(this);
+    public updateSatellite_result deepCopy() {
+      return new updateSatellite_result(this);
     }
 
     @Override
@@ -16308,7 +16725,7 @@ public class MasterServer {
       return this.success;
     }
 
-    public updateSatelliteAddress_result setSuccess(boolean success) {
+    public updateSatellite_result setSuccess(boolean success) {
       this.success = success;
       setSuccessIsSet(true);
       return this;
@@ -16331,7 +16748,7 @@ public class MasterServer {
       return this.failure;
     }
 
-    public updateSatelliteAddress_result setFailure(TAuthorizationException failure) {
+    public updateSatellite_result setFailure(TAuthorizationException failure) {
       this.failure = failure;
       return this;
     }
@@ -16355,7 +16772,7 @@ public class MasterServer {
       return this.error;
     }
 
-    public updateSatelliteAddress_result setError(TInvocationException error) {
+    public updateSatellite_result setError(TInvocationException error) {
       this.error = error;
       return this;
     }
@@ -16440,12 +16857,12 @@ public class MasterServer {
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof updateSatelliteAddress_result)
-        return this.equals((updateSatelliteAddress_result)that);
+      if (that instanceof updateSatellite_result)
+        return this.equals((updateSatellite_result)that);
       return false;
     }
 
-    public boolean equals(updateSatelliteAddress_result that) {
+    public boolean equals(updateSatellite_result that) {
       if (that == null)
         return false;
 
@@ -16485,7 +16902,7 @@ public class MasterServer {
     }
 
     @Override
-    public int compareTo(updateSatelliteAddress_result other) {
+    public int compareTo(updateSatellite_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -16539,7 +16956,7 @@ public class MasterServer {
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("updateSatelliteAddress_result(");
+      StringBuilder sb = new StringBuilder("updateSatellite_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -16588,15 +17005,15 @@ public class MasterServer {
       }
     }
 
-    private static class updateSatelliteAddress_resultStandardSchemeFactory implements SchemeFactory {
-      public updateSatelliteAddress_resultStandardScheme getScheme() {
-        return new updateSatelliteAddress_resultStandardScheme();
+    private static class updateSatellite_resultStandardSchemeFactory implements SchemeFactory {
+      public updateSatellite_resultStandardScheme getScheme() {
+        return new updateSatellite_resultStandardScheme();
       }
     }
 
-    private static class updateSatelliteAddress_resultStandardScheme extends StandardScheme<updateSatelliteAddress_result> {
+    private static class updateSatellite_resultStandardScheme extends StandardScheme<updateSatellite_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, updateSatelliteAddress_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateSatellite_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -16643,7 +17060,7 @@ public class MasterServer {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, updateSatelliteAddress_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateSatellite_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -16668,16 +17085,16 @@ public class MasterServer {
 
     }
 
-    private static class updateSatelliteAddress_resultTupleSchemeFactory implements SchemeFactory {
-      public updateSatelliteAddress_resultTupleScheme getScheme() {
-        return new updateSatelliteAddress_resultTupleScheme();
+    private static class updateSatellite_resultTupleSchemeFactory implements SchemeFactory {
+      public updateSatellite_resultTupleScheme getScheme() {
+        return new updateSatellite_resultTupleScheme();
       }
     }
 
-    private static class updateSatelliteAddress_resultTupleScheme extends TupleScheme<updateSatelliteAddress_result> {
+    private static class updateSatellite_resultTupleScheme extends TupleScheme<updateSatellite_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, updateSatelliteAddress_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateSatellite_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -16702,7 +17119,7 @@ public class MasterServer {
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, updateSatelliteAddress_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateSatellite_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
@@ -18475,14 +18892,14 @@ public class MasterServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list290 = iprot.readListBegin();
-                  struct.success = new ArrayList<Organization>(_list290.size);
-                  for (int _i291 = 0; _i291 < _list290.size; ++_i291)
+                  org.apache.thrift.protocol.TList _list306 = iprot.readListBegin();
+                  struct.success = new ArrayList<Organization>(_list306.size);
+                  for (int _i307 = 0; _i307 < _list306.size; ++_i307)
                   {
-                    Organization _elem292;
-                    _elem292 = new Organization();
-                    _elem292.read(iprot);
-                    struct.success.add(_elem292);
+                    Organization _elem308;
+                    _elem308 = new Organization();
+                    _elem308.read(iprot);
+                    struct.success.add(_elem308);
                   }
                   iprot.readListEnd();
                 }
@@ -18519,9 +18936,9 @@ public class MasterServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Organization _iter293 : struct.success)
+            for (Organization _iter309 : struct.success)
             {
-              _iter293.write(oprot);
+              _iter309.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -18560,9 +18977,9 @@ public class MasterServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Organization _iter294 : struct.success)
+            for (Organization _iter310 : struct.success)
             {
-              _iter294.write(oprot);
+              _iter310.write(oprot);
             }
           }
         }
@@ -18577,14 +18994,14 @@ public class MasterServer {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list295 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Organization>(_list295.size);
-            for (int _i296 = 0; _i296 < _list295.size; ++_i296)
+            org.apache.thrift.protocol.TList _list311 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Organization>(_list311.size);
+            for (int _i312 = 0; _i312 < _list311.size; ++_i312)
             {
-              Organization _elem297;
-              _elem297 = new Organization();
-              _elem297.read(iprot);
-              struct.success.add(_elem297);
+              Organization _elem313;
+              _elem313 = new Organization();
+              _elem313.read(iprot);
+              struct.success.add(_elem313);
             }
           }
           struct.setSuccessIsSet(true);
@@ -19231,14 +19648,14 @@ public class MasterServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list298 = iprot.readListBegin();
-                  struct.success = new ArrayList<OperatingSystem>(_list298.size);
-                  for (int _i299 = 0; _i299 < _list298.size; ++_i299)
+                  org.apache.thrift.protocol.TList _list314 = iprot.readListBegin();
+                  struct.success = new ArrayList<OperatingSystem>(_list314.size);
+                  for (int _i315 = 0; _i315 < _list314.size; ++_i315)
                   {
-                    OperatingSystem _elem300;
-                    _elem300 = new OperatingSystem();
-                    _elem300.read(iprot);
-                    struct.success.add(_elem300);
+                    OperatingSystem _elem316;
+                    _elem316 = new OperatingSystem();
+                    _elem316.read(iprot);
+                    struct.success.add(_elem316);
                   }
                   iprot.readListEnd();
                 }
@@ -19275,9 +19692,9 @@ public class MasterServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (OperatingSystem _iter301 : struct.success)
+            for (OperatingSystem _iter317 : struct.success)
             {
-              _iter301.write(oprot);
+              _iter317.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -19316,9 +19733,9 @@ public class MasterServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (OperatingSystem _iter302 : struct.success)
+            for (OperatingSystem _iter318 : struct.success)
             {
-              _iter302.write(oprot);
+              _iter318.write(oprot);
             }
           }
         }
@@ -19333,14 +19750,14 @@ public class MasterServer {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list303 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<OperatingSystem>(_list303.size);
-            for (int _i304 = 0; _i304 < _list303.size; ++_i304)
+            org.apache.thrift.protocol.TList _list319 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<OperatingSystem>(_list319.size);
+            for (int _i320 = 0; _i320 < _list319.size; ++_i320)
             {
-              OperatingSystem _elem305;
-              _elem305 = new OperatingSystem();
-              _elem305.read(iprot);
-              struct.success.add(_elem305);
+              OperatingSystem _elem321;
+              _elem321 = new OperatingSystem();
+              _elem321.read(iprot);
+              struct.success.add(_elem321);
             }
           }
           struct.setSuccessIsSet(true);
@@ -19987,14 +20404,14 @@ public class MasterServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list306 = iprot.readListBegin();
-                  struct.success = new ArrayList<Virtualizer>(_list306.size);
-                  for (int _i307 = 0; _i307 < _list306.size; ++_i307)
+                  org.apache.thrift.protocol.TList _list322 = iprot.readListBegin();
+                  struct.success = new ArrayList<Virtualizer>(_list322.size);
+                  for (int _i323 = 0; _i323 < _list322.size; ++_i323)
                   {
-                    Virtualizer _elem308;
-                    _elem308 = new Virtualizer();
-                    _elem308.read(iprot);
-                    struct.success.add(_elem308);
+                    Virtualizer _elem324;
+                    _elem324 = new Virtualizer();
+                    _elem324.read(iprot);
+                    struct.success.add(_elem324);
                   }
                   iprot.readListEnd();
                 }
@@ -20031,9 +20448,9 @@ public class MasterServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Virtualizer _iter309 : struct.success)
+            for (Virtualizer _iter325 : struct.success)
             {
-              _iter309.write(oprot);
+              _iter325.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -20072,9 +20489,9 @@ public class MasterServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Virtualizer _iter310 : struct.success)
+            for (Virtualizer _iter326 : struct.success)
             {
-              _iter310.write(oprot);
+              _iter326.write(oprot);
             }
           }
         }
@@ -20089,14 +20506,14 @@ public class MasterServer {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list311 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<Virtualizer>(_list311.size);
-            for (int _i312 = 0; _i312 < _list311.size; ++_i312)
+            org.apache.thrift.protocol.TList _list327 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<Virtualizer>(_list327.size);
+            for (int _i328 = 0; _i328 < _list327.size; ++_i328)
             {
-              Virtualizer _elem313;
-              _elem313 = new Virtualizer();
-              _elem313.read(iprot);
-              struct.success.add(_elem313);
+              Virtualizer _elem329;
+              _elem329 = new Virtualizer();
+              _elem329.read(iprot);
+              struct.success.add(_elem329);
             }
           }
           struct.setSuccessIsSet(true);
@@ -20849,14 +21266,14 @@ public class MasterServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list314 = iprot.readListBegin();
-                  struct.success = new ArrayList<MasterTag>(_list314.size);
-                  for (int _i315 = 0; _i315 < _list314.size; ++_i315)
+                  org.apache.thrift.protocol.TList _list330 = iprot.readListBegin();
+                  struct.success = new ArrayList<MasterTag>(_list330.size);
+                  for (int _i331 = 0; _i331 < _list330.size; ++_i331)
                   {
-                    MasterTag _elem316;
-                    _elem316 = new MasterTag();
-                    _elem316.read(iprot);
-                    struct.success.add(_elem316);
+                    MasterTag _elem332;
+                    _elem332 = new MasterTag();
+                    _elem332.read(iprot);
+                    struct.success.add(_elem332);
                   }
                   iprot.readListEnd();
                 }
@@ -20893,9 +21310,9 @@ public class MasterServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (MasterTag _iter317 : struct.success)
+            for (MasterTag _iter333 : struct.success)
             {
-              _iter317.write(oprot);
+              _iter333.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -20934,9 +21351,9 @@ public class MasterServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (MasterTag _iter318 : struct.success)
+            for (MasterTag _iter334 : struct.success)
             {
-              _iter318.write(oprot);
+              _iter334.write(oprot);
             }
           }
         }
@@ -20951,14 +21368,14 @@ public class MasterServer {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list319 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<MasterTag>(_list319.size);
-            for (int _i320 = 0; _i320 < _list319.size; ++_i320)
+            org.apache.thrift.protocol.TList _list335 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<MasterTag>(_list335.size);
+            for (int _i336 = 0; _i336 < _list335.size; ++_i336)
             {
-              MasterTag _elem321;
-              _elem321 = new MasterTag();
-              _elem321.read(iprot);
-              struct.success.add(_elem321);
+              MasterTag _elem337;
+              _elem337 = new MasterTag();
+              _elem337.read(iprot);
+              struct.success.add(_elem337);
             }
           }
           struct.setSuccessIsSet(true);
@@ -21711,14 +22128,14 @@ public class MasterServer {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list322 = iprot.readListBegin();
-                  struct.success = new ArrayList<MasterSoftware>(_list322.size);
-                  for (int _i323 = 0; _i323 < _list322.size; ++_i323)
+                  org.apache.thrift.protocol.TList _list338 = iprot.readListBegin();
+                  struct.success = new ArrayList<MasterSoftware>(_list338.size);
+                  for (int _i339 = 0; _i339 < _list338.size; ++_i339)
                   {
-                    MasterSoftware _elem324;
-                    _elem324 = new MasterSoftware();
-                    _elem324.read(iprot);
-                    struct.success.add(_elem324);
+                    MasterSoftware _elem340;
+                    _elem340 = new MasterSoftware();
+                    _elem340.read(iprot);
+                    struct.success.add(_elem340);
                   }
                   iprot.readListEnd();
                 }
@@ -21755,9 +22172,9 @@ public class MasterServer {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (MasterSoftware _iter325 : struct.success)
+            for (MasterSoftware _iter341 : struct.success)
             {
-              _iter325.write(oprot);
+              _iter341.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -21796,9 +22213,9 @@ public class MasterServer {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (MasterSoftware _iter326 : struct.success)
+            for (MasterSoftware _iter342 : struct.success)
             {
-              _iter326.write(oprot);
+              _iter342.write(oprot);
             }
           }
         }
@@ -21813,14 +22230,14 @@ public class MasterServer {
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list327 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<MasterSoftware>(_list327.size);
-            for (int _i328 = 0; _i328 < _list327.size; ++_i328)
+            org.apache.thrift.protocol.TList _list343 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<MasterSoftware>(_list343.size);
+            for (int _i344 = 0; _i344 < _list343.size; ++_i344)
             {
-              MasterSoftware _elem329;
-              _elem329 = new MasterSoftware();
-              _elem329.read(iprot);
-              struct.success.add(_elem329);
+              MasterSoftware _elem345;
+              _elem345 = new MasterSoftware();
+              _elem345.read(iprot);
+              struct.success.add(_elem345);
             }
           }
           struct.setSuccessIsSet(true);

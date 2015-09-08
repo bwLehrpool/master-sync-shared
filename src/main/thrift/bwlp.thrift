@@ -587,11 +587,11 @@ service MasterServer {
 	bool isServerAuthenticated(1:Token serverSessionId),
 
 	// Start authentication of server for given organization
-	binary startServerAuthentication(1:string organizationId)
+	binary startServerAuthentication(1:i32 satelliteId)
 		throws (1: TAuthorizationException failure, 2:TInvocationException error),
 
 	// Reply to master server authentication challenge
-	ServerSessionData serverAuthenticate(1:string organizationId, 2:binary challengeResponse)
+	ServerSessionData serverAuthenticate(1:i32 satelliteId, 2:binary challengeResponse)
 		throws (1:TAuthorizationException failure, 2:TInvocationException errr),
 
 	// Get image information (prior to download)
@@ -602,10 +602,10 @@ service MasterServer {
 	TransferInformation submitImage(1:Token serverSessionId, 2:ImagePublishData imageDescription, 3:list<binary> blockHashes)
 		throws (1:TAuthorizationException failure, 2: TInvocationException failure2, 3: TTransferRejectedException failure3),
 
-	bool registerSatellite(1:string organizationId, 2:string address, 3:string modulus, 4:string exponent)
+	i32 registerSatellite(6:Token userToken, 5:string displayName, 2:list<string> addresses, 3:string modulus, 4:string exponent, 1:binary certsha256)
 		throws (1:TInvocationException error),
 
-	bool updateSatelliteAddress(1:Token serverSessionId, 2:string address)
+	bool updateSatellite(1:Token serverSessionId, 2:string displayName, 3:list<string> addresses)
 		throws (1:TAuthorizationException failure, 2:TInvocationException error),
 
 	/*
