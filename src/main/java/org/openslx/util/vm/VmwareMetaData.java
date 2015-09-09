@@ -190,10 +190,35 @@ public class VmwareMetaData extends VmMetaData
 		}
 	}
 
-	public boolean addEthernetNat()
+	public boolean addDefaultNat()
 	{
 		addFiltered( "ethernet0.present", "TRUE" );
 		addFiltered( "ethernet0.connectionType", "nat" );
+		return true;
+	}
+
+	public boolean addEthernet( EthernetType type )
+	{
+		int index = 0;
+		for ( ;; ++index ) {
+			if ( config.get( "ethernet" + index + ".present" ) == null )
+				break;
+		}
+		return addEthernet( index, type );
+	}
+
+	public boolean addEthernet( int index, EthernetType type )
+	{
+		String ether = "ethernet" + index;
+		addFiltered( ether + ".present", "TRUE" );
+		addFiltered( ether + ".connectionType", "custom" );
+		addFiltered( ether + ".vnet", type.vmnet );
+		if ( config.get( ether + ".virtualDev" ) == null ) {
+			String dev = config.get( "ethernet0.virtualDev" );
+			if ( dev != null ) {
+				addFiltered( ether + ".virtualDev", dev );
+			}
+		}
 		return true;
 	}
 
@@ -250,6 +275,20 @@ public class VmwareMetaData extends VmMetaData
 		public String toString()
 		{
 			return virtualDev + " is (present: " + present + "): " + devices.toString();
+		}
+	}
+
+	public static enum EthernetType
+	{
+		NAT( "vmnet1" ),
+		BRIDGED( "vmnet0" ),
+		HOST_ONLY( "vmnet2" );
+
+		public final String vmnet;
+
+		private EthernetType( String vnet )
+		{
+			this.vmnet = vnet;
 		}
 	}
 
