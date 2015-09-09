@@ -5,6 +5,7 @@ import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 
 import org.apache.log4j.Logger;
@@ -193,23 +194,22 @@ public class ThriftManager<T>
 	{
 		try {
 			TSocket tsock;
-			if ( ctx == null ) {
-				tsock = new TSocket( host, port, timeout );
-				tsock.open();
-			} else {
-				Socket socket = null;
-				try {
+			Socket socket = null;
+			try {
+				if ( ctx == null ) {
+					socket = SocketFactory.getDefault().createSocket();
+				} else {
 					socket = ctx.getSocketFactory().createSocket();
-					socket.setSoTimeout( timeout );
-					socket.connect( new InetSocketAddress( host, port ), timeout );
-				} catch ( IOException e ) {
-					if ( socket != null ) {
-						Util.safeClose( socket );
-					}
-					throw new TTransportException();
 				}
-				tsock = new TSocket( socket );
+				socket.connect( new InetSocketAddress( host, port ), 4000 );
+				socket.setSoTimeout( timeout );
+			} catch ( IOException e ) {
+				if ( socket != null ) {
+					Util.safeClose( socket );
+				}
+				throw new TTransportException();
 			}
+			tsock = new TSocket( socket );
 			return new TBinaryProtocol( new TFramedTransport( tsock ) );
 		} catch ( TTransportException e ) {
 			LOGGER.error( "Could not open transport to thrift server at " + host + ":" + port );

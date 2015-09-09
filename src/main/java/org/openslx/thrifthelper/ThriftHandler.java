@@ -60,25 +60,13 @@ class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 
 		// first find the thrift methods
 		if ( !thriftMethods.contains( method.getName() ) ) {
-			try {
-				return method.invoke( getClient(), args );
-			} catch ( InvocationTargetException e ) {
-				Throwable cause = e.getCause();
-				if ( cause == null ) {
-					cause = e;
-				}
-				throw cause;
-			}
+			throw new IllegalAccessException( "Cannot call this method on a proxied thrift client" );
 		}
 
 		T client = getClient();
 		try {
 			Throwable cause = null;
 			for ( int i = 1;; i++ ) {
-				if ( client == null ) {
-					LOGGER.debug( "Transport error - re-initialising ..." );
-					client = getClient();
-				}
 				if ( client != null ) {
 					try {
 						return method.invoke( client, args );
@@ -89,13 +77,18 @@ class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 						}
 						freeClient( client );
 						client = null;
-						if ( cause == null )
+						if ( cause == null ) {
 							cause = e;
+						}
 					}
 				}
 				// Call the error callback. As long as true is returned, keep retrying
 				if ( !errorCallback.thriftError( i, method.getName(), cause ) ) {
 					break;
+				}
+				if ( client == null ) {
+					client = getClient();
+					cause = null;
 				}
 			}
 
@@ -126,8 +119,9 @@ class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 		T client;
 		synchronized ( pool ) {
 			client = pool.poll();
-			if ( client != null )
+			if ( client != null ) {
 				return client;
+			}
 		}
 		// Pool is closed, create new client
 		LOGGER.debug( "Creating new thrift client" );
