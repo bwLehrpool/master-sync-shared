@@ -156,7 +156,7 @@ public class VmwareMetaData extends VmMetaData
 		}
 	}
 
-	public boolean addHddTemplate( String diskImagePath, String hddMode, String redoFile )
+	public boolean addHddTemplate( String diskImagePath, String hddMode, String redoDir )
 	{
 		DriveBusType bus;
 		try {
@@ -191,7 +191,8 @@ public class VmwareMetaData extends VmMetaData
 		addFiltered( prefix + ".fileName", diskImagePath );
 		if ( hddMode != null ) {
 			addFiltered( prefix + ".mode", hddMode );
-			addFiltered( prefix + ".redo", redoFile );
+			addFiltered( prefix + ".redo", "" );
+			addFiltered( prefix + ".redoLogDir", redoDir );
 		}
 		return true;
 	}
