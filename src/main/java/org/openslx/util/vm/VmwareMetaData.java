@@ -156,7 +156,7 @@ public class VmwareMetaData extends VmMetaData
 		}
 	}
 
-	public boolean addHddTemplate( String diskImagePath )
+	public boolean addHddTemplate( String diskImagePath, String hddMode, String redoFile )
 	{
 		DriveBusType bus;
 		try {
@@ -166,28 +166,34 @@ public class VmwareMetaData extends VmMetaData
 			return false;
 		}
 		String chipset = config.get( "#SLX_HDD_CHIP" );
+		String prefix;
 		switch ( bus ) {
 		case IDE:
+			prefix = "ide0:0";
 			addFiltered( "ide0.present", "TRUE" );
-			addFiltered( "ide0:0.present", "TRUE" );
-			addFiltered( "ide0:0.deviceType", "disk" );
-			addFiltered( "ide0:0.fileName", diskImagePath );
-			return true;
+			break;
 		case SATA:
 			// Cannot happen?... use lsisas1068
 		case SCSI:
+			prefix = "scsi0:0";
 			addFiltered( "scsi0.present", "TRUE" );
-			addFiltered( "scsi0:0.present", "TRUE" );
-			addFiltered( "scsi0:0.deviceType", "disk" );
-			addFiltered( "scsi0:0.fileName", diskImagePath );
 			if ( chipset != null ) {
 				addFiltered( "scsi0.virtualDev", chipset );
 			}
-			return true;
+			break;
 		default:
 			LOGGER.warn( "Unknown HDD bus type: " + bus.toString() );
 			return false;
 		}
+		// Gen
+		addFiltered( prefix + ".present", "TRUE" );
+		addFiltered( prefix + ".deviceType", "disk" );
+		addFiltered( prefix + ".fileName", diskImagePath );
+		if ( hddMode != null ) {
+			addFiltered( prefix + ".mode", hddMode );
+			addFiltered( prefix + ".redo", redoFile );
+		}
+		return true;
 	}
 
 	public boolean addDefaultNat()
