@@ -14,7 +14,7 @@ public class HashChecker
 {
 	private static final Logger LOGGER = Logger.getLogger( HashChecker.class );
 
-	private final BlockingQueue<HashTask> queue = new LinkedBlockingQueue<>( 10 );
+	private final BlockingQueue<HashTask> queue;
 
 	private final List<Thread> threads = new ArrayList<>();
 
@@ -24,7 +24,13 @@ public class HashChecker
 
 	public HashChecker( String algorithm ) throws NoSuchAlgorithmException
 	{
+		this( algorithm, 10 );
+	}
+
+	public HashChecker( String algorithm, int queueLen ) throws NoSuchAlgorithmException
+	{
 		this.algorithm = algorithm;
+		this.queue = new LinkedBlockingQueue<>( queueLen );
 		CheckThread thread = new CheckThread( false );
 		thread.start();
 		threads.add( thread );
