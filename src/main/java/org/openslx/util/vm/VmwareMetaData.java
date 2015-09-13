@@ -228,6 +228,11 @@ public class VmwareMetaData extends VmMetaData
 		}
 		return true;
 	}
+	
+	public boolean disableSuspend() {
+		addFiltered( "suspend.disabled", "TRUE" );
+		return true;
+	}
 
 	public boolean addDisplayName( String name )
 	{
