@@ -113,6 +113,7 @@ public class HashChecker
 			super( "HashCheck" );
 			md = MessageDigest.getInstance( algorithm );
 			extraThread = isExtra;
+			setPriority( Thread.NORM_PRIORITY - 1 );
 		}
 
 		@Override

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.openslx.bwlp.thrift.iface.Virtualizer;
+import org.openslx.util.Util;
 
 public class DiskImage
 {
@@ -48,6 +49,7 @@ public class DiskImage
 	public final boolean isStandalone;
 	public final boolean isCompressed;
 	public final ImageFormat format;
+	public final int hwVersion;
 
 	public DiskImage( File disk ) throws FileNotFoundException, IOException,
 			UnknownImageFormatException
@@ -65,6 +67,12 @@ public class DiskImage
 			this.isCompressed = ct != null
 					&& ct.equalsIgnoreCase( "streamOptimized" );
 			this.format = ImageFormat.VMDK;
+			String hwv = config.get(  "ddb.virtualHWVersion" );
+			if (hwv == null ) {
+				this.hwVersion = 10;
+			} else {
+				this.hwVersion = Util.parseInt( hwv, 10 );
+			}
 		}
 	}
 
