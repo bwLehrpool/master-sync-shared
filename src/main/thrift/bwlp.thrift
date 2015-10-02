@@ -337,11 +337,15 @@ struct SatelliteConfig {
 	4: i32 maxImageValidityDays,
 	// Maximum number of days the expiration date of a lecture may be set in the future
 	5: i32 maxLectureValidityDays,
+	// Maximum number of concurrent transfers (individual uploads/downloads)
+	6: optional i32 maxTransfers,
+	// Maximum number of connections per transfer
+	7: optional i32 maxConnectionsPerTransfer,
 }
 
 struct SatelliteStatus {
 	1: i64 availableStorageBytes,
-	2: UnixTimestamp serverTime
+	2: UnixTimestamp serverTime,
 }
 
 // Settings a user can change on a satellite server

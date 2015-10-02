@@ -40,6 +40,8 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
   private static final org.apache.thrift.protocol.TField DEFAULT_LECTURE_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultLecturePermissions", org.apache.thrift.protocol.TType.STRUCT, (short)3);
   private static final org.apache.thrift.protocol.TField MAX_IMAGE_VALIDITY_DAYS_FIELD_DESC = new org.apache.thrift.protocol.TField("maxImageValidityDays", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField MAX_LECTURE_VALIDITY_DAYS_FIELD_DESC = new org.apache.thrift.protocol.TField("maxLectureValidityDays", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField MAX_TRANSFERS_FIELD_DESC = new org.apache.thrift.protocol.TField("maxTransfers", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField MAX_CONNECTIONS_PER_TRANSFER_FIELD_DESC = new org.apache.thrift.protocol.TField("maxConnectionsPerTransfer", org.apache.thrift.protocol.TType.I32, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -52,6 +54,8 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
   public LecturePermissions defaultLecturePermissions; // required
   public int maxImageValidityDays; // required
   public int maxLectureValidityDays; // required
+  public int maxTransfers; // optional
+  public int maxConnectionsPerTransfer; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -59,7 +63,9 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
     DEFAULT_IMAGE_PERMISSIONS((short)2, "defaultImagePermissions"),
     DEFAULT_LECTURE_PERMISSIONS((short)3, "defaultLecturePermissions"),
     MAX_IMAGE_VALIDITY_DAYS((short)4, "maxImageValidityDays"),
-    MAX_LECTURE_VALIDITY_DAYS((short)5, "maxLectureValidityDays");
+    MAX_LECTURE_VALIDITY_DAYS((short)5, "maxLectureValidityDays"),
+    MAX_TRANSFERS((short)6, "maxTransfers"),
+    MAX_CONNECTIONS_PER_TRANSFER((short)7, "maxConnectionsPerTransfer");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -84,6 +90,10 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
           return MAX_IMAGE_VALIDITY_DAYS;
         case 5: // MAX_LECTURE_VALIDITY_DAYS
           return MAX_LECTURE_VALIDITY_DAYS;
+        case 6: // MAX_TRANSFERS
+          return MAX_TRANSFERS;
+        case 7: // MAX_CONNECTIONS_PER_TRANSFER
+          return MAX_CONNECTIONS_PER_TRANSFER;
         default:
           return null;
       }
@@ -127,7 +137,10 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
   private static final int __PAGESIZE_ISSET_ID = 0;
   private static final int __MAXIMAGEVALIDITYDAYS_ISSET_ID = 1;
   private static final int __MAXLECTUREVALIDITYDAYS_ISSET_ID = 2;
+  private static final int __MAXTRANSFERS_ISSET_ID = 3;
+  private static final int __MAXCONNECTIONSPERTRANSFER_ISSET_ID = 4;
   private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.MAX_TRANSFERS,_Fields.MAX_CONNECTIONS_PER_TRANSFER};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -140,6 +153,10 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
     tmpMap.put(_Fields.MAX_IMAGE_VALIDITY_DAYS, new org.apache.thrift.meta_data.FieldMetaData("maxImageValidityDays", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.MAX_LECTURE_VALIDITY_DAYS, new org.apache.thrift.meta_data.FieldMetaData("maxLectureValidityDays", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.MAX_TRANSFERS, new org.apache.thrift.meta_data.FieldMetaData("maxTransfers", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.MAX_CONNECTIONS_PER_TRANSFER, new org.apache.thrift.meta_data.FieldMetaData("maxConnectionsPerTransfer", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SatelliteConfig.class, metaDataMap);
@@ -180,6 +197,8 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
     }
     this.maxImageValidityDays = other.maxImageValidityDays;
     this.maxLectureValidityDays = other.maxLectureValidityDays;
+    this.maxTransfers = other.maxTransfers;
+    this.maxConnectionsPerTransfer = other.maxConnectionsPerTransfer;
   }
 
   public SatelliteConfig deepCopy() {
@@ -196,6 +215,10 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
     this.maxImageValidityDays = 0;
     setMaxLectureValidityDaysIsSet(false);
     this.maxLectureValidityDays = 0;
+    setMaxTransfersIsSet(false);
+    this.maxTransfers = 0;
+    setMaxConnectionsPerTransferIsSet(false);
+    this.maxConnectionsPerTransfer = 0;
   }
 
   public int getPageSize() {
@@ -315,6 +338,52 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXLECTUREVALIDITYDAYS_ISSET_ID, value);
   }
 
+  public int getMaxTransfers() {
+    return this.maxTransfers;
+  }
+
+  public SatelliteConfig setMaxTransfers(int maxTransfers) {
+    this.maxTransfers = maxTransfers;
+    setMaxTransfersIsSet(true);
+    return this;
+  }
+
+  public void unsetMaxTransfers() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __MAXTRANSFERS_ISSET_ID);
+  }
+
+  /** Returns true if field maxTransfers is set (has been assigned a value) and false otherwise */
+  public boolean isSetMaxTransfers() {
+    return EncodingUtils.testBit(__isset_bitfield, __MAXTRANSFERS_ISSET_ID);
+  }
+
+  public void setMaxTransfersIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXTRANSFERS_ISSET_ID, value);
+  }
+
+  public int getMaxConnectionsPerTransfer() {
+    return this.maxConnectionsPerTransfer;
+  }
+
+  public SatelliteConfig setMaxConnectionsPerTransfer(int maxConnectionsPerTransfer) {
+    this.maxConnectionsPerTransfer = maxConnectionsPerTransfer;
+    setMaxConnectionsPerTransferIsSet(true);
+    return this;
+  }
+
+  public void unsetMaxConnectionsPerTransfer() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __MAXCONNECTIONSPERTRANSFER_ISSET_ID);
+  }
+
+  /** Returns true if field maxConnectionsPerTransfer is set (has been assigned a value) and false otherwise */
+  public boolean isSetMaxConnectionsPerTransfer() {
+    return EncodingUtils.testBit(__isset_bitfield, __MAXCONNECTIONSPERTRANSFER_ISSET_ID);
+  }
+
+  public void setMaxConnectionsPerTransferIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXCONNECTIONSPERTRANSFER_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PAGE_SIZE:
@@ -357,6 +426,22 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
       }
       break;
 
+    case MAX_TRANSFERS:
+      if (value == null) {
+        unsetMaxTransfers();
+      } else {
+        setMaxTransfers((Integer)value);
+      }
+      break;
+
+    case MAX_CONNECTIONS_PER_TRANSFER:
+      if (value == null) {
+        unsetMaxConnectionsPerTransfer();
+      } else {
+        setMaxConnectionsPerTransfer((Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -376,6 +461,12 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
 
     case MAX_LECTURE_VALIDITY_DAYS:
       return Integer.valueOf(getMaxLectureValidityDays());
+
+    case MAX_TRANSFERS:
+      return Integer.valueOf(getMaxTransfers());
+
+    case MAX_CONNECTIONS_PER_TRANSFER:
+      return Integer.valueOf(getMaxConnectionsPerTransfer());
 
     }
     throw new IllegalStateException();
@@ -398,6 +489,10 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
       return isSetMaxImageValidityDays();
     case MAX_LECTURE_VALIDITY_DAYS:
       return isSetMaxLectureValidityDays();
+    case MAX_TRANSFERS:
+      return isSetMaxTransfers();
+    case MAX_CONNECTIONS_PER_TRANSFER:
+      return isSetMaxConnectionsPerTransfer();
     }
     throw new IllegalStateException();
   }
@@ -457,6 +552,24 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
       if (!(this_present_maxLectureValidityDays && that_present_maxLectureValidityDays))
         return false;
       if (this.maxLectureValidityDays != that.maxLectureValidityDays)
+        return false;
+    }
+
+    boolean this_present_maxTransfers = true && this.isSetMaxTransfers();
+    boolean that_present_maxTransfers = true && that.isSetMaxTransfers();
+    if (this_present_maxTransfers || that_present_maxTransfers) {
+      if (!(this_present_maxTransfers && that_present_maxTransfers))
+        return false;
+      if (this.maxTransfers != that.maxTransfers)
+        return false;
+    }
+
+    boolean this_present_maxConnectionsPerTransfer = true && this.isSetMaxConnectionsPerTransfer();
+    boolean that_present_maxConnectionsPerTransfer = true && that.isSetMaxConnectionsPerTransfer();
+    if (this_present_maxConnectionsPerTransfer || that_present_maxConnectionsPerTransfer) {
+      if (!(this_present_maxConnectionsPerTransfer && that_present_maxConnectionsPerTransfer))
+        return false;
+      if (this.maxConnectionsPerTransfer != that.maxConnectionsPerTransfer)
         return false;
     }
 
@@ -526,6 +639,26 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetMaxTransfers()).compareTo(other.isSetMaxTransfers());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMaxTransfers()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.maxTransfers, other.maxTransfers);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetMaxConnectionsPerTransfer()).compareTo(other.isSetMaxConnectionsPerTransfer());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMaxConnectionsPerTransfer()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.maxConnectionsPerTransfer, other.maxConnectionsPerTransfer);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -573,6 +706,18 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
     sb.append("maxLectureValidityDays:");
     sb.append(this.maxLectureValidityDays);
     first = false;
+    if (isSetMaxTransfers()) {
+      if (!first) sb.append(", ");
+      sb.append("maxTransfers:");
+      sb.append(this.maxTransfers);
+      first = false;
+    }
+    if (isSetMaxConnectionsPerTransfer()) {
+      if (!first) sb.append(", ");
+      sb.append("maxConnectionsPerTransfer:");
+      sb.append(this.maxConnectionsPerTransfer);
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -666,6 +811,22 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // MAX_TRANSFERS
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.maxTransfers = iprot.readI32();
+              struct.setMaxTransfersIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // MAX_CONNECTIONS_PER_TRANSFER
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.maxConnectionsPerTransfer = iprot.readI32();
+              struct.setMaxConnectionsPerTransferIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -700,6 +861,16 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
       oprot.writeFieldBegin(MAX_LECTURE_VALIDITY_DAYS_FIELD_DESC);
       oprot.writeI32(struct.maxLectureValidityDays);
       oprot.writeFieldEnd();
+      if (struct.isSetMaxTransfers()) {
+        oprot.writeFieldBegin(MAX_TRANSFERS_FIELD_DESC);
+        oprot.writeI32(struct.maxTransfers);
+        oprot.writeFieldEnd();
+      }
+      if (struct.isSetMaxConnectionsPerTransfer()) {
+        oprot.writeFieldBegin(MAX_CONNECTIONS_PER_TRANSFER_FIELD_DESC);
+        oprot.writeI32(struct.maxConnectionsPerTransfer);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -733,7 +904,13 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
       if (struct.isSetMaxLectureValidityDays()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetMaxTransfers()) {
+        optionals.set(5);
+      }
+      if (struct.isSetMaxConnectionsPerTransfer()) {
+        optionals.set(6);
+      }
+      oprot.writeBitSet(optionals, 7);
       if (struct.isSetPageSize()) {
         oprot.writeI32(struct.pageSize);
       }
@@ -749,12 +926,18 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
       if (struct.isSetMaxLectureValidityDays()) {
         oprot.writeI32(struct.maxLectureValidityDays);
       }
+      if (struct.isSetMaxTransfers()) {
+        oprot.writeI32(struct.maxTransfers);
+      }
+      if (struct.isSetMaxConnectionsPerTransfer()) {
+        oprot.writeI32(struct.maxConnectionsPerTransfer);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, SatelliteConfig struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         struct.pageSize = iprot.readI32();
         struct.setPageSizeIsSet(true);
@@ -776,6 +959,14 @@ public class SatelliteConfig implements org.apache.thrift.TBase<SatelliteConfig,
       if (incoming.get(4)) {
         struct.maxLectureValidityDays = iprot.readI32();
         struct.setMaxLectureValidityDaysIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.maxTransfers = iprot.readI32();
+        struct.setMaxTransfersIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.maxConnectionsPerTransfer = iprot.readI32();
+        struct.setMaxConnectionsPerTransferIsSet(true);
       }
     }
   }
