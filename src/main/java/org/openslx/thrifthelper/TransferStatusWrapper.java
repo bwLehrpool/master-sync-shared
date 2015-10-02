@@ -4,10 +4,10 @@ public class TransferStatusWrapper
 {
 	
 	public static enum BlockStatus {
-		COMPLETE, MISSING, UPLOADING, QUEUED_FOR_COPYING, COPYING;
+		COMPLETE, MISSING, UPLOADING, QUEUED_FOR_COPYING, COPYING, HASHING;
 	}
 	
-	// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying
+	// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying, 5 = hashing
 	private byte[] blocks = null;
 	
 	public TransferStatusWrapper(byte[] blocks) {
