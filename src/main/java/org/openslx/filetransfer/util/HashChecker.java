@@ -67,7 +67,11 @@ public class HashChecker
 
 	private void execCallback( HashTask task, HashResult result )
 	{
-		task.callback.hashCheckDone( result, task.data, task.chunk );
+		try {
+			task.callback.hashCheckDone( result, task.data, task.chunk );
+		} catch ( Throwable t ) {
+			LOGGER.warn( "HashCheck callback threw!", t );
+		}
 	}
 
 	public void queue( FileChunk chunk, byte[] data, HashCheckCallback callback ) throws InterruptedException
