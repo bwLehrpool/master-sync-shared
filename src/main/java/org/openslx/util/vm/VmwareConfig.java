@@ -173,6 +173,11 @@ public class VmwareConfig
 		return set( entry.key, entry.value );
 	}
 
+	public void remove( String key )
+	{
+		entries.remove( key );
+	}
+
 	public String get( String key )
 	{
 		ConfigEntry ce = entries.get( key );

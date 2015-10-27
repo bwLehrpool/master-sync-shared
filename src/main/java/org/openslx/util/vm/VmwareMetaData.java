@@ -230,6 +230,24 @@ public class VmwareMetaData extends VmMetaData
 		return true;
 	}
 
+	public void addFloppy( int index, String image, boolean readOnly )
+	{
+		String pre = "floppy" + index;
+		addFiltered( pre + ".present", "TRUE" );
+		if ( image == null ) {
+			addFiltered( pre + ".startConnected", "FALSE" );
+			addFiltered( pre + ".autodetect", "TRUE" );
+			addFiltered( pre + ".fileType", "device" );
+			config.remove( pre + ".fileName" );
+		} else {
+			addFiltered( pre + ".startConnected", "TRUE" );
+			addFiltered( pre + ".fileType", "file" );
+			addFiltered( pre + ".fileName", image );
+			addFiltered( pre + ".readonly", Boolean.toString( readOnly ).toUpperCase() );
+			config.remove( pre + ".autodetect" );
+		}
+	}
+
 	public boolean disableSuspend()
 	{
 		addFiltered( "suspend.disabled", "TRUE" );
