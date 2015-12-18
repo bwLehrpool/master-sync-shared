@@ -253,6 +253,7 @@ struct LectureWrite {
 	15: LecturePermissions defaultPermissions,
 	11: optional list<string> addAllowedUsers, // add allowed to see/select image in vmchooser. These are local accounts, not bwIDM/Master
 	16: optional list<string> remAllowedUsers, // users to remove from that list
+	17: list<i32> locationIds,
 }
 
 struct LectureSummary {
@@ -298,6 +299,7 @@ struct LectureRead {
 	18: bool hasInternetAccess,
 	19: LecturePermissions defaultPermissions,
 	22: optional LecturePermissions userPermissions,
+	25: list<i32> locationIds,
 }
 
 struct MasterTag {
@@ -351,6 +353,12 @@ struct SatelliteStatus {
 // Settings a user can change on a satellite server
 struct SatelliteUserConfig {
 	1: bool emailNotifications,
+}
+
+// Location of a Lecture
+struct Location {
+	1: i32 locationId,
+	2: string locationName,
 }
 
 // ############ EXCEPTION ######################
@@ -453,6 +461,7 @@ service SatelliteServer {
     list<OperatingSystem> getOperatingSystems(),
 	list<Virtualizer> getVirtualizers(),
     list<Organization> getAllOrganizations(),
+    list<Location> getLocations(),
     
     SatelliteStatus getStatus(),
 	
