@@ -4,6 +4,7 @@ import java.util.Comparator;
 
 import org.openslx.bwlp.thrift.iface.ImageSummaryRead;
 import org.openslx.bwlp.thrift.iface.ImageVersionDetails;
+import org.openslx.bwlp.thrift.iface.Location;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Organization;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
@@ -74,5 +75,17 @@ public class Comparators
 			return o1.organizationId.compareTo( o2.organizationId );
 		}
 	};
+
+//	public static final Comparator<Location> location = new Comparator<Location>() {
+//		@Override
+//		public int compare( Location o1, Location o2 )
+//		{
+//			if ( o1 == null || o1.loca == null )
+//				return o2 == null || o2.organizationId == null ? 0 : 1;
+//			if ( o2 == null || o2.organizationId == null )
+//				return -1;
+//			return o1.organizationId.compareTo( o2.organizationId );
+//		}
+//	};
 
 }

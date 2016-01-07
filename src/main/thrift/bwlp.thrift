@@ -254,6 +254,7 @@ struct LectureWrite {
 	11: optional list<string> addAllowedUsers, // add allowed to see/select image in vmchooser. These are local accounts, not bwIDM/Master
 	16: optional list<string> remAllowedUsers, // users to remove from that list
 	17: list<i32> locationIds,
+	18: bool limitToLocations,
 }
 
 struct LectureSummary {
