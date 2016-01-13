@@ -2,7 +2,7 @@
  * Define some namespace/package name for our stuff
  */
 namespace java org.openslx.bwlp.thrift.iface
- 
+
 typedef i64 int
 
 // Use these typedefs if appropriate (to clarify)
@@ -13,7 +13,7 @@ typedef i64 UnixTimestamp
 // Use *only* strings (or typedefs of string) as keys for a map (map<string, ...>)
 // UpperCamelCase for struct names
 // lowerCamelCase for methods, variables, struct members
-// CAPS_WITH_UNDERSCORE for enum members 
+// CAPS_WITH_UNDERSCORE for enum members
 
 // ################# ENUM ################
 
@@ -147,7 +147,7 @@ struct LecturePermissions {
 
 struct ImageBaseWrite {
 	1: string imageName,
-    2: string description,
+	2: string description,
 	3: i32 osId,
 	4: string virtId,
 	5: bool isTemplate,
@@ -395,10 +395,10 @@ exception TInvocationException {
 service SatelliteServer {
 	// Get server (thrift interface) version
 	int getVersion(),
-	
+
 	// Get configuration parameters of this satellite server
 	SatelliteConfig getConfiguration(),
-	
+
 	/*
 	 * File transfer related
 	 */
@@ -426,15 +426,15 @@ service SatelliteServer {
 	// Client cancels a download
 	void cancelDownload(1: string downloadToken)
 		throws (1:TInvalidTokenException ex1),
-		
+
 	/*
 	 * Auth/Session
 	 */
-	
+
 	// Authentication check (deprecated, superseded by whoami)
 	void isAuthenticated(1: Token userToken)
 		throws (1:TAuthorizationException authError, 2:TInvocationException serverError),
-		
+
 	// Query own user information (for validation or session resume)
 	WhoamiInfo whoami(1: Token userToken)
 		throws (1:TAuthorizationException authError, 2:TInvocationException serverError),
@@ -442,7 +442,7 @@ service SatelliteServer {
 	// Logout - make server forget given token
 	void invalidateSession(1: Token userToken)
 		throws (1:TInvalidTokenException ex),
-	
+
 	// find a user in a given organization by a search term
 	list<UserInfo> getUserList(1:Token userToken, 2:i32 page)
 		throws (1:TAuthorizationException failure, 2:TInvocationException serverError),
@@ -454,24 +454,24 @@ service SatelliteServer {
 	// Set user configurable options
 	void setUserConfig(1:Token userToken, 2:SatelliteUserConfig config)
 		throws (1:TAuthorizationException failure, 2:TInvocationException serverError),
-	
+
 	/*
 	 * Misc
 	 */
-	 
-    list<OperatingSystem> getOperatingSystems(),
+ 
+	list<OperatingSystem> getOperatingSystems(),
 	list<Virtualizer> getVirtualizers(),
-    list<Organization> getAllOrganizations(),
-    list<Location> getLocations(),
-    
-    SatelliteStatus getStatus(),
-	
+	list<Organization> getAllOrganizations(),
+	list<Location> getLocations(),
+
+	SatelliteStatus getStatus(),
+
 	/*
 	 * Image related
 	 */
 
 	// Get image list. tagSearch can be null, which disables this type of filtering and returns all
-    list<ImageSummaryRead> getImageList(1: Token userToken, 2: list<string> tagSearch, 3: i32 page)
+	list<ImageSummaryRead> getImageList(1: Token userToken, 2: list<string> tagSearch, 3: i32 page)
 		throws (1:TAuthorizationException authError, 2:TInvocationException serverError),
 
 	// Query detailed information about an image
@@ -500,11 +500,11 @@ service SatelliteServer {
 	void deleteImageBase(1:Token userToken, 2:UUID imageBaseId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 
-	// Write list of permissions for given image 
+	// Write list of permissions for given image
 	void writeImagePermissions(1: Token userToken, 2: UUID imageBaseId, 3: map<UUID, ImagePermissions> permissions)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 
-	// Get all user-permissions for given image 
+	// Get all user-permissions for given image
 	map<UUID, ImagePermissions> getImagePermissions(1: Token userToken, 2: UUID imageBaseId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 
@@ -525,15 +525,15 @@ service SatelliteServer {
 	 */
 
 	// Create new lecture
-    UUID createLecture(1: Token userToken, 2: LectureWrite lecture)
+	UUID createLecture(1: Token userToken, 2: LectureWrite lecture)
 		throws (1:TAuthorizationException authError, 2:TInvocationException serverError, 3:TInvalidDateParam dateError, 4:TNotFoundException notFound),
 
 	// Update existing lecture
-    void updateLecture(1: Token userToken, 2: UUID lectureId, 3: LectureWrite lecture)
+	void updateLecture(1: Token userToken, 2: UUID lectureId, 3: LectureWrite lecture)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError, 4:TInvalidDateParam dateError),
 
 	// Get list of all lectures
-    list<LectureSummary> getLectureList(1: Token userToken, 2: i32 page)
+	list<LectureSummary> getLectureList(1: Token userToken, 2: i32 page)
 		throws (1:TAuthorizationException authError, 2:TInvocationException serverError),
 
 	// Get detailed lecture information
@@ -564,16 +564,15 @@ service MasterServer {
 	/*
 	 * Client (User's Desktop App) calls
 	 */
- 
- 
+
 	// Ping service
 	bool ping(),
 
-	// Old style test-account login 
+	// Old style test-account login
 	SessionData authenticate(1:string login, 2:string password)
 		throws (1:TAuthorizationException failure, 2:TInvocationException error),
 
-	// New style test-account login 
+	// New style test-account login
 	ClientSessionData localAccountLogin(1:string login, 2:string password)
 		throws (1:TAuthorizationException failure, 2:TInvocationException error),
 
@@ -592,8 +591,8 @@ service MasterServer {
 	/*
 	 * Server (Satellite) calls
 	 */
-	 
- 	// Verify a user by querying its meta data from the supplied token
+
+	// Verify a user by querying its meta data from the supplied token
 	UserInfo getUserFromToken(1:Token token)
 		throws (1:TInvalidTokenException failure),
 
@@ -629,23 +628,23 @@ service MasterServer {
 	// Request download of an image (session id can be a client or a server session)
 	TransferInformation downloadImage(2:Token sessionId, 1:UUID imageVersionId)
 		throws (1:TAuthorizationException failure, 2:TInvocationException failure2, 3:TNotFoundException f3),
-	 
- 	// Get list of known organizations with meta data 
+
+	// Get list of known organizations with meta data
 	list<Organization> getOrganizations()
 		throws (1:TInvocationException serverError),
 
 	// List of known/defined operating systems
 	list<OperatingSystem> getOperatingSystems()
 		throws (1:TInvocationException serverError),
-	
+
 	// List of known/defined virtualizers
 	list<Virtualizer> getVirtualizers()
 		throws (1:TInvocationException serverError),
-	
+
 	// List of "official" tags, starting from specific date
 	list<MasterTag> getTags(1:UnixTimestamp startDate)
 		throws (1:TInvocationException serverError),
-	
+
 	// List of "official" software, starting from specific date
 	list<MasterSoftware> getSoftware(1:UnixTimestamp startDate)
 		throws (1:TInvocationException serverError),
