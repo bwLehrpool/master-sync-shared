@@ -255,6 +255,7 @@ struct LectureWrite {
 	16: optional list<string> remAllowedUsers, // users to remove from that list
 	17: list<i32> locationIds,
 	18: bool limitToLocations,
+	19: bool limitToAllowedUsers,
 }
 
 struct LectureSummary {
