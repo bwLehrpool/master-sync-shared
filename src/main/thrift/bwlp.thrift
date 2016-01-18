@@ -302,6 +302,8 @@ struct LectureRead {
 	19: LecturePermissions defaultPermissions,
 	22: optional LecturePermissions userPermissions,
 	25: list<i32> locationIds,
+	26: bool limitToLocations,
+	27: bool limitToAllowedUsers,
 }
 
 struct MasterTag {
@@ -361,6 +363,7 @@ struct SatelliteUserConfig {
 struct Location {
 	1: i32 locationId,
 	2: string locationName,
+	3: i32 parentLocationId,
 }
 
 // ############ EXCEPTION ######################

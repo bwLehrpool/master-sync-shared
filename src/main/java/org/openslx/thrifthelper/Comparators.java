@@ -4,7 +4,6 @@ import java.util.Comparator;
 
 import org.openslx.bwlp.thrift.iface.ImageSummaryRead;
 import org.openslx.bwlp.thrift.iface.ImageVersionDetails;
-import org.openslx.bwlp.thrift.iface.Location;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Organization;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
