@@ -347,6 +347,8 @@ struct SatelliteConfig {
 	6: optional i32 maxTransfers,
 	// Maximum number of connections per transfer
 	7: optional i32 maxConnectionsPerTransfer,
+	// Maximum number of locations per lecture
+	8: optional i32 maxLocationsPerLecture,
 }
 
 struct SatelliteStatus {
