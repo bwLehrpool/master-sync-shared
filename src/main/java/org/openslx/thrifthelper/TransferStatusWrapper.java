@@ -7,7 +7,7 @@ public class TransferStatusWrapper
 		COMPLETE, MISSING, UPLOADING, QUEUED_FOR_COPYING, COPYING, HASHING;
 	}
 	
-	// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying, 5 = hashing
+	// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying, 5 = hashing (server side)
 	private byte[] blocks = null;
 	
 	public TransferStatusWrapper(byte[] blocks) {
@@ -29,7 +29,7 @@ public class TransferStatusWrapper
 	public float getComplete() {
 		int done = 0;
 		for (byte block : blocks) {
-			if (block == 0) {
+			if (block == 0 || block == 5) {
 				done++;
 			}
 		}
