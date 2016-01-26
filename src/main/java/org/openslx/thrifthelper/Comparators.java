@@ -6,6 +6,7 @@ import org.openslx.bwlp.thrift.iface.ImageSummaryRead;
 import org.openslx.bwlp.thrift.iface.ImageVersionDetails;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Organization;
+import org.openslx.bwlp.thrift.iface.UserInfo;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 
 /**
@@ -72,6 +73,18 @@ public class Comparators
 			if ( o2 == null || o2.organizationId == null )
 				return -1;
 			return o1.organizationId.compareTo( o2.organizationId );
+		}
+	};
+	
+	public static final Comparator<UserInfo> user = new Comparator<UserInfo>() {
+		@Override
+		public int compare( UserInfo o1, UserInfo o2 )
+		{
+			if ( o1 == null || o1.userId == null )
+				return o2 == null || o2.userId == null ? 0 : 1;
+			if ( o2 == null || o2.userId == null )
+				return -1;
+			return o1.userId.compareTo( o2.userId );
 		}
 	};
 
