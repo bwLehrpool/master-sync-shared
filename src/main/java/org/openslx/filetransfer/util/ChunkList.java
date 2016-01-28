@@ -33,6 +33,11 @@ public class ChunkList
 
 	// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying
 	private final ByteBuffer statusArray;
+	
+	/**
+	 * True if at least one block has a checksum set
+	 */
+	private boolean hasChecksum = false;
 
 	// Do we need to keep valid chunks, or chunks that failed too many times?
 
@@ -56,9 +61,12 @@ public class ChunkList
 		for ( byte[] sum : sha1Sums ) {
 			if ( index >= allChunks.size() )
 				break;
-			if ( sum == null )
-				continue;
-			allChunks.get( index ).setSha1Sum( sum );
+			if ( sum != null ) {
+				allChunks.get( index ).setSha1Sum( sum );
+				if ( !hasChecksum ) {
+					hasChecksum = true;
+				}
+			}
 			index++;
 		}
 	}
@@ -91,7 +99,13 @@ public class ChunkList
 	{
 		byte[] array = statusArray.array();
 		for ( int i = 0; i < array.length; ++i ) {
-			array[i] = allChunks.get( i ).getStatus().val;
+			FileChunk chunk = allChunks.get( i );
+			ChunkStatus status = chunk.getStatus();
+			if ( hasChecksum && status == ChunkStatus.COMPLETE && chunk.getSha1Sum() == null ) {
+				array[i] = ChunkStatus.HASHING.val;
+			} else {
+				array[i] = chunk.getStatus().val;
+			}
 		}
 		return statusArray;
 	}
@@ -136,7 +150,7 @@ public class ChunkList
 					+ ", but chunk is not marked as currently transferring!" );
 			return;
 		}
-		c.setStatus( ChunkStatus.COMPETE );
+		c.setStatus( ChunkStatus.COMPLETE );
 		completeChunks.add( c );
 		this.notifyAll();
 	}
@@ -199,7 +213,7 @@ public class ChunkList
 				sb.append( '+' );
 			////
 			switch ( chunk.status ) {
-			case COMPETE:
+			case COMPLETE:
 				sb.append( 'C' );
 				break;
 			case COPYING:

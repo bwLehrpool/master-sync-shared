@@ -43,6 +43,7 @@ public class HashChecker
 				return;
 			invalid = true;
 		}
+		LOGGER.debug( "Marking all queued chunks as failed" );
 		for ( ;; ) {
 			HashTask task = queue.poll();
 			if ( task == null )
@@ -132,7 +133,6 @@ public class HashChecker
 						continue;
 				} catch ( InterruptedException e ) {
 					LOGGER.info( "Interrupted while waiting for hash task", e );
-					threadFailed( this );
 					break;
 				}
 				// Calculate digest
@@ -141,10 +141,15 @@ public class HashChecker
 				HashResult result = Arrays.equals( digest, task.chunk.getSha1Sum() ) ? HashResult.VALID : HashResult.INVALID;
 				execCallback( task, result );
 				if ( extraThread && queue.isEmpty() ) {
-					LOGGER.info( "Stopping additional hash checker" );
 					break;
 				}
 			}
+			if ( extraThread ) {
+				LOGGER.info( "Stopped additional hash checker" );
+			} else {
+				LOGGER.info( "Stopped MAIN hash checker" );
+			}
+			threadFailed( this );
 		}
 	}
 

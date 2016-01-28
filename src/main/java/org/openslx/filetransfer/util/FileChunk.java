@@ -16,6 +16,7 @@ public class FileChunk
 	private int failCount = 0;
 	protected byte[] sha1sum;
 	protected ChunkStatus status = ChunkStatus.MISSING;
+	private boolean writtenToDisk = false;
 
 	public FileChunk( long startOffset, long endOffset, byte[] sha1sum )
 	{
@@ -32,7 +33,7 @@ public class FileChunk
 		if ( this.sha1sum != null || sha1sum == null || sha1sum.length != SHA1_LENGTH )
 			return;
 		this.sha1sum = sha1sum;
-		if ( this.status == ChunkStatus.COMPETE ) {
+		if ( this.status == ChunkStatus.COMPLETE ) {
 			this.status = ChunkStatus.HASHING;
 		}
 	}
@@ -69,9 +70,23 @@ public class FileChunk
 		return status;
 	}
 
+	/**
+	 * Whether the chunk of data this chunk refers to has been written to
+	 * disk and is assumed to be valid/up to date.
+	 */
+	public synchronized boolean isWrittenToDisk()
+	{
+		return writtenToDisk;
+	}
+
 	protected synchronized void setStatus( ChunkStatus status )
 	{
 		if ( status != null ) {
+			if ( status == ChunkStatus.COMPLETE ) {
+				this.writtenToDisk = true;
+			} else if ( status == ChunkStatus.MISSING ) {
+				this.writtenToDisk = false;
+			}
 			this.status = status;
 		}
 	}
