@@ -99,6 +99,12 @@ public class VmwareMetaData extends VmMetaData
 		config.set( key, value ).filtered( true );
 	}
 
+	private boolean isSetAndTrue( String key )
+	{
+		String value = config.get( key );
+		return value != null && value.equalsIgnoreCase( "true" );
+	}
+
 	private void handleLoadEntry( Entry<String, ConfigEntry> entry )
 	{
 		String lowerKey = entry.getKey().toLowerCase();
@@ -236,9 +242,10 @@ public class VmwareMetaData extends VmMetaData
 		addFiltered( pre + ".present", "TRUE" );
 		if ( image == null ) {
 			addFiltered( pre + ".startConnected", "FALSE" );
-			addFiltered( pre + ".autodetect", "TRUE" );
 			addFiltered( pre + ".fileType", "device" );
 			config.remove( pre + ".fileName" );
+			config.remove( pre + ".readonly" );
+			addFiltered( pre + ".autodetect", "TRUE" );
 		} else {
 			addFiltered( pre + ".startConnected", "TRUE" );
 			addFiltered( pre + ".fileType", "file" );
@@ -246,6 +253,26 @@ public class VmwareMetaData extends VmMetaData
 			addFiltered( pre + ".readonly", Boolean.toString( readOnly ).toUpperCase() );
 			config.remove( pre + ".autodetect" );
 		}
+	}
+
+	public boolean addCdrom( String image )
+	{
+		for ( String port : new String[] { "ide0:0", "ide0:1", "ide1:0", "ide1:1", "scsi0:1" } ) {
+			if ( !isSetAndTrue( port + ".present" ) ) {
+				addFiltered( port + ".present", "TRUE" );
+				if ( image == null ) {
+					addFiltered( port + ".autodetect", "TRUE" );
+					addFiltered( port + ".deviceType", "cdrom-raw" );
+					config.remove( port + ".fileName" );
+				} else {
+					config.remove( port + ".autodetect" );
+					addFiltered( port + ".deviceType", "cdrom-image" );
+					addFiltered( port + ".fileName", image );
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean disableSuspend()
