@@ -256,6 +256,7 @@ struct LectureWrite {
 	17: list<i32> locationIds,
 	18: bool limitToLocations,
 	19: bool limitToAllowedUsers,
+	20: bool hasUsbAccess,
 }
 
 struct LectureSummary {
@@ -275,6 +276,7 @@ struct LectureSummary {
 	14: LecturePermissions defaultPermissions,
 	15: optional LecturePermissions userPermissions,
 	16: bool isImageVersionUsable, // Is the linked image version valid and enabled?
+	17: bool hasUsbAccess,
 }
 
 struct LectureRead {
@@ -304,6 +306,7 @@ struct LectureRead {
 	25: list<i32> locationIds,
 	26: bool limitToLocations,
 	27: bool limitToAllowedUsers,
+	28: bool hasUsbAccess,
 }
 
 struct MasterTag {
