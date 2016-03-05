@@ -230,7 +230,6 @@ struct ImagePublishData {
 }
 
 struct NetRule {
-	1: i32 ruleId,
 	2: NetDirection direction,
 	3: string host,
 	4: i32 port,
