@@ -8,6 +8,9 @@ import org.openslx.filetransfer.FileRange;
 public class FileChunk
 {
 
+	/**
+	 * Length in bytes of binary sha1 representation
+	 */
 	public static final int SHA1_LENGTH = 20;
 	public static final int CHUNK_SIZE_MIB = 16;
 	public static final int CHUNK_SIZE = CHUNK_SIZE_MIB * ( 1024 * 1024 );

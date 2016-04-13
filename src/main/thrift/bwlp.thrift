@@ -584,6 +584,9 @@ service MasterServer {
 	ClientSessionData localAccountLogin(1:string login, 2:string password)
 		throws (1:TAuthorizationException failure, 2:TInvocationException error),
 
+	// Client tells us which satellite it is using
+	void setUsedSatellite(1:Token sessionId, 2:string satelliteName),
+
 	// find a user in a given organization by a search term
 	list<UserInfo> findUser(1:Token sessionId, 2:string organizationId, 3:string searchTerm)
 		throws (1:TAuthorizationException failure, 2:TInvocationException error),
@@ -620,7 +623,7 @@ service MasterServer {
 		throws (1:TAuthorizationException failure, 2: TInvocationException failure2, 3:TNotFoundException f3),
 
 	// Request upload of an image to the master server
-	TransferInformation submitImage(1:Token serverSessionId, 2:ImagePublishData imageDescription, 3:list<binary> blockHashes)
+	TransferInformation submitImage(1:Token userToken, 2:ImagePublishData imageDescription, 3:list<binary> blockHashes)
 		throws (1:TAuthorizationException failure, 2: TInvocationException failure2, 3: TTransferRejectedException failure3),
 
 	i32 registerSatellite(6:Token userToken, 5:string displayName, 2:list<string> addresses, 3:string modulus, 4:string exponent, 1:binary certsha256)

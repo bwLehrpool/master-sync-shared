@@ -110,7 +110,14 @@ public abstract class Transfer
 		return true;
 	}
 
-	public boolean sendDone()
+	public void sendDoneAndClose()
+	{
+		sendDone();
+		sendEndOfMeta();
+		close( "Transfer finished" );
+	}
+
+	protected boolean sendDone()
 	{
 		try {
 			sendKeyValuePair( "DONE", "" );
@@ -202,7 +209,6 @@ public abstract class Transfer
 				sendErrorCode( error );
 			if ( callback != null )
 				callback.uploadError( error );
-			log.info( error );
 		}
 		synchronized ( transferSocket ) {
 			safeClose( dataFromServer, outStream, transferSocket );

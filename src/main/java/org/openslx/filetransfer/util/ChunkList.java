@@ -31,7 +31,7 @@ public class ChunkList
 
 	private final List<FileChunk> completeChunks = new ArrayList<>( 100 );
 
-	// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying
+	// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying, 5 = hashing
 	private final ByteBuffer statusArray;
 	
 	/**
@@ -50,8 +50,8 @@ public class ChunkList
 
 	/**
 	 * Update the sha1sums of all chunks. This is meant to be used if you passed an incomplete list
-	 * before (with null elements), so you don't have to has hthe whole file before starting the
-	 * upload, but periodically update it while thie upload is running.
+	 * before (with null elements), so you don't have to hash the whole file before starting the
+	 * upload, but periodically update it while the upload is running.
 	 * 
 	 * @param sha1Sums list of sums
 	 */
