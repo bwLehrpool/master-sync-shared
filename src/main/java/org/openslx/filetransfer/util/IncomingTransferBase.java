@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.TransferState;
+import org.openslx.bwlp.thrift.iface.TransferStatus;
 import org.openslx.filetransfer.DataReceivedCallback;
 import org.openslx.filetransfer.Downloader;
 import org.openslx.filetransfer.FileRange;
@@ -107,7 +108,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				download.cancel();
 			}
 		}
-		lastActivityTime.set( 0 );
+		potentialFinishTime.set( 0 );
 		safeClose( tmpFileHandle );
 	}
 
@@ -152,6 +153,10 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 	public final TransferState getState()
 	{
 		return state;
+	}
+
+	public synchronized TransferStatus getStatus() {
+		return new TransferStatus(chunks.getStatusArray(), getState());
 	}
 
 	public final ChunkList getChunks()

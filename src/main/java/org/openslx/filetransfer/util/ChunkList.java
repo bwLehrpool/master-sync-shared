@@ -135,7 +135,7 @@ public class ChunkList
 		int index = 0;
 		for ( Boolean missing : statusList ) {
 			FileChunk chunk = allChunks.get( index );
-			if ( fileLength != 0 && fileLength < chunk.range.endOffset )
+			if ( fileLength != -1 && fileLength < chunk.range.endOffset )
 				break; // Stop, file is shorter than end of this chunk
 			if ( missingChunks.remove( chunk ) || pendingChunks.remove( chunk ) ) {
 				completeChunks.add( chunk );

@@ -665,4 +665,8 @@ service MasterServer {
 	list<MasterSoftware> getSoftware(1:UnixTimestamp startDate)
 		throws (1:TInvocationException serverError),
 
+	// Client (maybe later server too) queries server-side status of an upload
+	TransferStatus queryUploadStatus(1: Token uploadToken)
+		throws (1:TInvalidTokenException ex1),
+
 }
