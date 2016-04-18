@@ -1,5 +1,6 @@
 package org.openslx.filetransfer.util;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -181,16 +182,26 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		if ( hashChecker == null )
 			return;
 		FileChunk chunk;
-		while ( null != ( chunk = chunks.getUnhashedComplete() ) ) {
-			byte[] data = loadChunkFromFile( chunk );
+		int cnt = 0;
+		while ( null != ( chunk = chunks.getUnhashedComplete() ) && ++cnt <= 3 ) {
+			byte[] data;
+			try {
+				data = loadChunkFromFile( chunk );
+			} catch ( EOFException e1 ) {
+				LOGGER.warn( "blockhash update: file too short, marking chunk as invalid" );
+				chunks.markFailed( chunk );
+				chunkStatusChanged( chunk );
+				continue;
+			}
 			if ( data == null ) {
-				LOGGER.warn( "Will mark unloadable chunk as valid :-(" );
+				LOGGER.warn( "blockhash update: Will mark unloadable unhashed chunk as valid :-(" );
 				chunks.markSuccessful( chunk );
 				chunkStatusChanged( chunk );
 				continue;
 			}
 			try {
-				hashChecker.queue( chunk, data, this );
+				if ( !hashChecker.queue( chunk, data, this, false ) ) // false == blocked while adding, so stop
+					break;
 			} catch ( InterruptedException e ) {
 				Thread.currentThread().interrupt();
 				return;
@@ -198,7 +209,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		}
 	}
 
-	private byte[] loadChunkFromFile( FileChunk chunk )
+	private byte[] loadChunkFromFile( FileChunk chunk ) throws EOFException
 	{
 		synchronized ( tmpFileHandle ) {
 			if ( state != TransferState.IDLE && state != TransferState.WORKING )
@@ -208,6 +219,8 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				byte[] buffer = new byte[ chunk.range.getLength() ];
 				tmpFileHandle.readFully( buffer );
 				return buffer;
+			} catch ( EOFException e ) {
+				throw e;
 			} catch ( IOException e ) {
 				LOGGER.error( "Could not read chunk " + chunk.getChunkIndex() + " of File " + getTmpFileName().toString(), e );
 				return null;
@@ -256,7 +269,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			if ( currentChunk != null ) {
 				if ( hashChecker != null && currentChunk.getSha1Sum() != null ) {
 					try {
-						hashChecker.queue( currentChunk, buffer, IncomingTransferBase.this );
+						hashChecker.queue( currentChunk, buffer, IncomingTransferBase.this, true );
 					} catch ( InterruptedException e ) {
 						Thread.currentThread().interrupt();
 						return null;
@@ -341,7 +354,6 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 						LOGGER.warn( "Download of " + getTmpFileName().getAbsolutePath() + " failed" );
 					}
 					if ( state != TransferState.FINISHED && state != TransferState.ERROR ) {
-						LOGGER.debug( "Download from satellite complete" );
 						lastActivityTime.set( System.currentTimeMillis() );
 					}
 					synchronized ( downloads ) {
@@ -349,6 +361,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 					}
 					if ( chunks.isComplete() ) {
 						finishUploadInternal();
+					} else {
+						// Keep pumping unhashed chunks into the hasher
+						queueUnhashedChunk();
 					}
 				}
 			} );
@@ -435,6 +450,38 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			chunks.markFailed( chunk );
 			chunkStatusChanged( chunk );
 			break;
+		}
+		// A block finished, see if we can queue a new one
+		queueUnhashedChunk();
+	}
+
+	/**
+	 * Gets an unhashed chunk (if existent) and queues it for hashing
+	 */
+	protected void queueUnhashedChunk()
+	{
+		FileChunk chunk = chunks.getUnhashedComplete();
+		if ( chunk == null )
+			return;
+		byte[] data;
+		try {
+			data = loadChunkFromFile( chunk );
+		} catch ( EOFException e1 ) {
+			LOGGER.warn( "Cannot queue unhashed chunk: file too short. Marking is invalid." );
+			chunks.markFailed( chunk );
+			chunkStatusChanged( chunk );
+			return;
+		}
+		if ( data == null ) {
+			LOGGER.warn( "Cannot queue unhashed chunk: Will mark unloadable unhashed chunk as valid :-(" );
+			chunks.markSuccessful( chunk );
+			chunkStatusChanged( chunk );
+			return;
+		}
+		try {
+			hashChecker.queue( chunk, data, this, true );
+		} catch ( InterruptedException e ) {
+			Thread.currentThread().interrupt();
 		}
 	}
 

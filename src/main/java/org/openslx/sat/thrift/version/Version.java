@@ -7,7 +7,9 @@ package org.openslx.sat.thrift.version;
  * their dozentenmodul client.
  */
 public class Version {
+	
+	public static final long MIN_VERSION = 2;
 
-	public static final long VERSION = 2;
+	public static final long VERSION = 3;
 	
 }

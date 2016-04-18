@@ -220,13 +220,14 @@ struct ImagePublishData {
 	3: string imageName,
 	4: string description,
 	5: UnixTimestamp createTime,
-	6: UserInfo user,
+	6: UserInfo uploader,
 	7: i64 fileSize,
 	8: list<string> software,
 	9: list<string> tags,
 	10: i32 osId,
 	11: string virtId,
 	12: bool isTemplate,
+	13: UserInfo owner,
 }
 
 struct NetRule {
@@ -402,7 +403,7 @@ exception TInvocationException {
 
 service SatelliteServer {
 	// Get server (thrift interface) version
-	int getVersion(),
+	int getVersion(1: int clientVersion),
 
 	// Get configuration parameters of this satellite server
 	SatelliteConfig getConfiguration(),
@@ -527,6 +528,10 @@ service SatelliteServer {
 	// Client asks server to replicate an image from the master server
 	UUID requestImageReplication(1:Token userToken, 2: UUID imageVersionId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
+
+	// Client asks the satellite to publish given image to master server
+	UUID publishImageVersion(1:Token userToken, 2: UUID imageVersionId)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError, 4:TTransferRejectedException tre),
 
 	/*
 	 * Lecture related

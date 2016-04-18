@@ -2,12 +2,14 @@ package org.openslx.filetransfer.util;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.openslx.util.ThriftUtil;
 
 public class ChunkList
 {
@@ -33,7 +35,7 @@ public class ChunkList
 
 	// 0 = complete, 1 = missing, 2 = uploading, 3 = queued for copying, 4 = copying, 5 = hashing
 	private final ByteBuffer statusArray;
-	
+
 	/**
 	 * True if at least one block has a checksum set
 	 */
@@ -121,6 +123,35 @@ public class ChunkList
 	}
 
 	/**
+	 * Set status of blocks according to given "ismissing" list. Intended to be called
+	 * right after creating the list, in case we have a local file already and want to
+	 * resume downloading.
+	 */
+	public synchronized void resumeFromStatusList( List<Boolean> statusList, long fileLength )
+	{
+		if ( !completeChunks.isEmpty() || !pendingChunks.isEmpty() ) {
+			LOGGER.warn( "Inconsistent state: resume called when not all chunks are marked missing" );
+		}
+		int index = 0;
+		for ( Boolean missing : statusList ) {
+			FileChunk chunk = allChunks.get( index );
+			if ( fileLength != 0 && fileLength < chunk.range.endOffset )
+				break; // Stop, file is shorter than end of this chunk
+			if ( missingChunks.remove( chunk ) || pendingChunks.remove( chunk ) ) {
+				completeChunks.add( chunk );
+			}
+			if ( missing ) {
+				// Trigger hashing
+				chunk.setStatus( ChunkStatus.HASHING );
+			} else {
+				// Assume complete
+				chunk.setStatus( ChunkStatus.COMPLETE );
+			}
+			index++;
+		}
+	}
+
+	/**
 	 * Get a chunk that is marked complete, has a sha1 hash, but has not been hash-checked yet.
 	 * 
 	 * @return chunk
@@ -166,7 +197,7 @@ public class ChunkList
 	public synchronized int markFailed( FileChunk c )
 	{
 		if ( !pendingChunks.remove( c ) ) {
-			LOGGER.warn( "Inconsistent state: markTransferred called for Chunk " + c.toString()
+			LOGGER.warn( "Inconsistent state: markFailed called for Chunk " + c.toString()
 					+ ", but chunk is not marked as currently transferring!" );
 			return -1;
 		}
@@ -175,6 +206,25 @@ public class ChunkList
 		missingChunks.add( 0, c );
 		this.notifyAll();
 		return c.incFailed();
+	}
+
+	/**
+	 * Mark a missing chunk as complete.
+	 */
+	private synchronized boolean markMissingAsComplete( int index )
+	{
+		FileChunk chunk = allChunks.get( index );
+		if ( completeChunks.contains( chunk ) )
+			return true;
+		if ( !missingChunks.remove( chunk ) ) {
+			LOGGER.warn( "Inconsistent state: markMissingAsComplete called for chunk " + chunk.toString() + " (indexed as " + index
+					+ ") which is not missing" );
+			return false;
+		}
+		chunk.setStatus( ChunkStatus.COMPLETE );
+		completeChunks.add( chunk );
+		this.notifyAll();
+		return true;
 	}
 
 	/**
@@ -257,6 +307,50 @@ public class ChunkList
 	public List<FileChunk> getAll()
 	{
 		return allChunks;
+	}
+
+	public static boolean hashListsEqualFcBb( List<FileChunk> one, List<ByteBuffer> two )
+	{
+		return hashListsEqualFcArray( one, ThriftUtil.unwrapByteBufferList( two ) );
+	}
+
+	public static boolean hashListsEqualFcArray( List<FileChunk> one, List<byte[]> two )
+	{
+		if ( one.size() != two.size() )
+			return false;
+		FileChunk first = one.get( 0 );
+		if ( first == null || first.getSha1Sum() == null )
+			return false;
+		Iterator<byte[]> it = two.iterator();
+		for ( FileChunk existingChunk : one ) {
+			byte[] testChunk = it.next();
+			if ( !Arrays.equals( testChunk, existingChunk.getSha1Sum() ) )
+				return false;
+		}
+		return true;
+	}
+
+	public static boolean hashListsEqualBbBb( List<ByteBuffer> list1, List<ByteBuffer> list2 )
+	{
+		return hashListsEqualBbArray( list1, ThriftUtil.unwrapByteBufferList( list2 ) );
+	}
+
+	public static boolean hashListsEqualBbArray( List<ByteBuffer> bufferList, List<byte[]> arrayList )
+	{
+		return hashListsEqualArray( ThriftUtil.unwrapByteBufferList( bufferList ), arrayList );
+	}
+
+	public static boolean hashListsEqualArray( List<byte[]> list1, List<byte[]> list2 )
+	{
+		if ( list1.size() != list2.size() )
+			return false;
+		Iterator<byte[]> it1 = list1.iterator();
+		Iterator<byte[]> it2 = list2.iterator();
+		while ( it1.hasNext() && it2.hasNext() ) {
+			if ( !Arrays.equals( it1.next(), it2.next() ) )
+				return false;
+		}
+		return true;
 	}
 
 }

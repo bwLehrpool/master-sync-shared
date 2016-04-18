@@ -31,7 +31,7 @@ public class FileChunk
 		}
 	}
 
-	public synchronized void setSha1Sum( byte[] sha1sum )
+	synchronized void setSha1Sum( byte[] sha1sum )
 	{
 		if ( this.sha1sum != null || sha1sum == null || sha1sum.length != SHA1_LENGTH )
 			return;
@@ -47,7 +47,7 @@ public class FileChunk
 	 * 
 	 * @return Number of times the transfer failed now
 	 */
-	public synchronized int incFailed()
+	synchronized int incFailed()
 	{
 		return ++failCount;
 	}
@@ -82,7 +82,7 @@ public class FileChunk
 		return writtenToDisk;
 	}
 
-	protected synchronized void setStatus( ChunkStatus status )
+	synchronized void setStatus( ChunkStatus status )
 	{
 		if ( status != null ) {
 			if ( status == ChunkStatus.COMPLETE ) {

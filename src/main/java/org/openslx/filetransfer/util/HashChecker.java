@@ -75,7 +75,16 @@ public class HashChecker
 		}
 	}
 
-	public void queue( FileChunk chunk, byte[] data, HashCheckCallback callback ) throws InterruptedException
+	/**
+	 * Queue the given chunk for hashing. The chunk should be in pending state.
+	 * 
+	 * @param chunk chunk to hash
+	 * @param data binary data of this chunk
+	 * @param callback callback to call when hashing is done
+	 * @return true if the chunk was handled, false if the queue was full and rejected the chunk.
+	 * @throws InterruptedException
+	 */
+	public boolean queue( FileChunk chunk, byte[] data, HashCheckCallback callback, boolean blocking ) throws InterruptedException
 	{
 		byte[] sha1Sum = chunk.getSha1Sum();
 		if ( sha1Sum == null )
@@ -84,7 +93,7 @@ public class HashChecker
 		synchronized ( threads ) {
 			if ( invalid ) {
 				execCallback( task, HashResult.FAILURE );
-				return;
+				return true;
 			}
 			if ( queue.remainingCapacity() <= 1 && threads.size() < Runtime.getRuntime().availableProcessors() ) {
 				try {
@@ -95,8 +104,18 @@ public class HashChecker
 					LOGGER.warn( "Could not create additional hash checking thread", e );
 				}
 			}
-			queue.put( task );
 		}
+		ChunkStatus old = chunk.getStatus();
+		chunk.setStatus( ChunkStatus.HASHING );
+		if ( blocking ) {
+			queue.put( task );
+		} else {
+			if ( !queue.offer( task ) ) {
+				chunk.setStatus( old );
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// ############################################################# \\
@@ -171,7 +190,6 @@ public class HashChecker
 			this.data = data;
 			this.chunk = chunk;
 			this.callback = callback;
-			chunk.setStatus( ChunkStatus.HASHING );
 		}
 	}
 
