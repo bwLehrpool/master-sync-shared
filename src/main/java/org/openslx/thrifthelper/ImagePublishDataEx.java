@@ -6,4 +6,5 @@ import org.openslx.bwlp.thrift.iface.ImagePublishData;
 public class ImagePublishDataEx extends ImagePublishData
 {
 	public String exImagePath;
+	public boolean exIsValid;
 }

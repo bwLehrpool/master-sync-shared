@@ -105,13 +105,11 @@ public class HashChecker
 				}
 			}
 		}
-		ChunkStatus old = chunk.getStatus();
 		chunk.setStatus( ChunkStatus.HASHING );
 		if ( blocking ) {
 			queue.put( task );
 		} else {
 			if ( !queue.offer( task ) ) {
-				chunk.setStatus( old );
 				return false;
 			}
 		}

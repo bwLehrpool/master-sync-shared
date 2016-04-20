@@ -155,8 +155,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		return state;
 	}
 
-	public synchronized TransferStatus getStatus() {
-		return new TransferStatus(chunks.getStatusArray(), getState());
+	public synchronized TransferStatus getStatus()
+	{
+		return new TransferStatus( chunks.getStatusArray(), getState() );
 	}
 
 	public final ChunkList getChunks()
@@ -186,9 +187,10 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		chunks.updateSha1Sums( hashList );
 		if ( hashChecker == null )
 			return;
-		FileChunk chunk;
-		int cnt = 0;
-		while ( null != ( chunk = chunks.getUnhashedComplete() ) && ++cnt <= 3 ) {
+		for ( int cnt = 0; cnt < 3; ++cnt ) {
+			FileChunk chunk = chunks.getUnhashedComplete();
+			if ( chunk == null )
+				break;
 			byte[] data;
 			try {
 				data = loadChunkFromFile( chunk );
@@ -200,14 +202,18 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			}
 			if ( data == null ) {
 				LOGGER.warn( "blockhash update: Will mark unloadable unhashed chunk as valid :-(" );
-				chunks.markSuccessful( chunk );
+				chunks.markCompleted( chunk, true );
 				chunkStatusChanged( chunk );
 				continue;
 			}
 			try {
-				if ( !hashChecker.queue( chunk, data, this, false ) ) // false == blocked while adding, so stop
+				if ( !hashChecker.queue( chunk, data, this, false ) ) { // false == queue full, stop
+					chunks.markCompleted( chunk, false );
 					break;
+				}
 			} catch ( InterruptedException e ) {
+				LOGGER.debug( "updateBlockHashList got interrupted" );
+				chunks.markCompleted( chunk, false );
 				Thread.currentThread().interrupt();
 				return;
 			}
@@ -304,7 +310,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				} else {
 					// We have no hash checker or the hash for the current chunk is unknown - flush to disk
 					writeFileData( currentChunk.range.startOffset, currentChunk.range.getLength(), buffer );
-					chunks.markSuccessful( currentChunk );
+					chunks.markCompleted( currentChunk, true );
 					chunkStatusChanged( currentChunk );
 				}
 			}
@@ -356,7 +362,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 							chunks.markFailed( cbh.currentChunk );
 							chunkStatusChanged( cbh.currentChunk );
 						}
-						LOGGER.warn( "Download of " + getTmpFileName().getAbsolutePath() + " failed" );
+						LOGGER.debug( "Connection for " + getTmpFileName().getAbsolutePath() + " dropped" );
 					}
 					if ( state != TransferState.FINISHED && state != TransferState.ERROR ) {
 						lastActivityTime.set( System.currentTimeMillis() );
@@ -368,7 +374,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 						finishUploadInternal();
 					} else {
 						// Keep pumping unhashed chunks into the hasher
-						queueUnhashedChunk();
+						queueUnhashedChunk( true );
 					}
 				}
 			} );
@@ -443,7 +449,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			if ( !chunk.isWrittenToDisk() ) {
 				writeFileData( chunk.range.startOffset, chunk.range.getLength(), data );
 			}
-			chunks.markSuccessful( chunk );
+			chunks.markCompleted( chunk, true );
 			chunkStatusChanged( chunk );
 			if ( chunks.isComplete() ) {
 				finishUploadInternal();
@@ -457,13 +463,13 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			break;
 		}
 		// A block finished, see if we can queue a new one
-		queueUnhashedChunk();
+		queueUnhashedChunk( false );
 	}
 
 	/**
 	 * Gets an unhashed chunk (if existent) and queues it for hashing
 	 */
-	protected void queueUnhashedChunk()
+	protected void queueUnhashedChunk( boolean blocking )
 	{
 		FileChunk chunk = chunks.getUnhashedComplete();
 		if ( chunk == null )
@@ -479,12 +485,12 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		}
 		if ( data == null ) {
 			LOGGER.warn( "Cannot queue unhashed chunk: Will mark unloadable unhashed chunk as valid :-(" );
-			chunks.markSuccessful( chunk );
+			chunks.markCompleted( chunk, true );
 			chunkStatusChanged( chunk );
 			return;
 		}
 		try {
-			hashChecker.queue( chunk, data, this, true );
+			hashChecker.queue( chunk, data, this, blocking );
 		} catch ( InterruptedException e ) {
 			Thread.currentThread().interrupt();
 		}

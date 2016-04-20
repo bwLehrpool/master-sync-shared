@@ -228,6 +228,7 @@ struct ImagePublishData {
 	11: string virtId,
 	12: bool isTemplate,
 	13: UserInfo owner,
+	14: binary machineDescription,
 }
 
 struct NetRule {

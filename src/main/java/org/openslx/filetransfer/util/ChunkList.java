@@ -174,14 +174,14 @@ public class ChunkList
 	 * 
 	 * @param c The chunk in question
 	 */
-	public synchronized void markSuccessful( FileChunk c )
+	public synchronized void markCompleted( FileChunk c, boolean hashCheckSuccessful )
 	{
 		if ( !pendingChunks.remove( c ) ) {
 			LOGGER.warn( "Inconsistent state: markSuccessful called for Chunk " + c.toString()
 					+ ", but chunk is not marked as currently transferring!" );
 			return;
 		}
-		c.setStatus( ChunkStatus.COMPLETE );
+		c.setStatus( ( hashCheckSuccessful || c.getSha1Sum() == null ) ? ChunkStatus.COMPLETE : ChunkStatus.HASHING );
 		completeChunks.add( c );
 		this.notifyAll();
 	}
