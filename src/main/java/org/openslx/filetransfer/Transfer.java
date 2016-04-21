@@ -90,6 +90,7 @@ public abstract class Transfer
 	{
 		try {
 			sendKeyValuePair( "ERROR", errString );
+			sendEndOfMeta();
 		} catch ( IOException e ) {
 			e.printStackTrace();
 			this.close( e.toString() );

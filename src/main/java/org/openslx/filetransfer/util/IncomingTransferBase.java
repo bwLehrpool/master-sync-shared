@@ -88,6 +88,13 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		tmpFileName = absFilePath;
 		tmpFileName.getParentFile().mkdirs();
 		tmpFileHandle = new RandomAccessFile( absFilePath, "rw" );
+		try {
+			if ( tmpFileHandle.length() > fileSize ) {
+				tmpFileHandle.setLength( fileSize );
+			}
+		} catch ( IOException e ) {
+			LOGGER.debug( "File " + tmpFileName + " is too long and could not be truncated" );
+		}
 		chunks = new ChunkList( fileSize, blockHashes );
 	}
 
