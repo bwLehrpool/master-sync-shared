@@ -598,8 +598,16 @@ service MasterServer {
 		throws (1:TAuthorizationException failure, 2:TInvocationException error),
 
 	// Get list of publicly available images
-	list<ImagePublishData> getPublicImages(1:Token sessionId, 2:i32 page)
+	list<ImageSummaryRead> getPublicImages(1:Token sessionId, 2:i32 page)
 		throws (1:TAuthorizationException failure, 2:TInvocationException error),
+
+	// Query detailed information about an image
+	ImageDetailsRead getImageDetails(1: Token sessionId, 2: UUID imageBaseId)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
+
+	// Get user by id
+	UserInfo getUser(1: Token userToken, 2: UUID userId)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 
 	// Logout
 	void invalidateSession(1: Token sessionId)
