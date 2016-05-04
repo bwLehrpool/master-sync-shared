@@ -72,7 +72,7 @@ class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 						return method.invoke( client, args );
 					} catch ( InvocationTargetException e ) {
 						cause = e.getCause();
-						if ( cause != null && ! ( cause instanceof TTransportException ) ) {
+						if ( cause != null && ! ( cause instanceof TException ) ) {
 							throw cause;
 						}
 						freeClient( client );
