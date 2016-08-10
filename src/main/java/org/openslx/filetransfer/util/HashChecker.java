@@ -39,6 +39,7 @@ public class HashChecker
 	private void threadFailed( CheckThread thread )
 	{
 		synchronized ( threads ) {
+			threads.remove( thread );
 			if ( thread.extraThread )
 				return;
 			invalid = true;

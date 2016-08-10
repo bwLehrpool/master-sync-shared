@@ -7,7 +7,7 @@ import org.openslx.filetransfer.FileRange;
 
 public class FileChunk
 {
-
+	
 	/**
 	 * Length in bytes of binary sha1 representation
 	 */
@@ -60,7 +60,7 @@ public class FileChunk
 	@Override
 	public String toString()
 	{
-		return "[Chunk " + getChunkIndex() + " (" + range.startOffset + "-" + range.endOffset + "), fails: " + failCount + "]";
+		return "[Chunk " + getChunkIndex() + " (" + status + "), fails: " + failCount + "]";
 	}
 
 	public synchronized byte[] getSha1Sum()

@@ -309,6 +309,17 @@ public class ChunkList
 		return allChunks;
 	}
 
+	public synchronized String getQueueName( FileChunk chunk )
+	{
+		if ( missingChunks.contains( chunk ) )
+			return "missing";
+		if ( pendingChunks.contains( chunk ) )
+			return "pending";
+		if ( completeChunks.contains( chunk ) )
+			return "completed";
+		return "NOQUEUE";
+	}
+
 	public static boolean hashListsEqualFcBb( List<FileChunk> one, List<ByteBuffer> two )
 	{
 		return hashListsEqualFcArray( one, ThriftUtil.unwrapByteBufferList( two ) );

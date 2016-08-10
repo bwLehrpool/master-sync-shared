@@ -289,6 +289,8 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 					try {
 						hashChecker.queue( currentChunk, buffer, IncomingTransferBase.this, true );
 					} catch ( InterruptedException e ) {
+						chunks.markCompleted( currentChunk, false );
+						currentChunk = null;
 						Thread.currentThread().interrupt();
 						return null;
 					}
@@ -317,9 +319,10 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				} else {
 					// We have no hash checker or the hash for the current chunk is unknown - flush to disk
 					writeFileData( currentChunk.range.startOffset, currentChunk.range.getLength(), buffer );
-					chunks.markCompleted( currentChunk, true );
+					chunks.markCompleted( currentChunk, false );
 					chunkStatusChanged( currentChunk );
 				}
+				currentChunk = null;
 			}
 			// Get next missing chunk
 			try {
@@ -445,8 +448,10 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 	@Override
 	public void hashCheckDone( HashResult result, byte[] data, FileChunk chunk )
 	{
-		if ( state != TransferState.IDLE && state != TransferState.WORKING )
+		if ( state != TransferState.IDLE && state != TransferState.WORKING ) {
+			LOGGER.debug( "hashCheckDone called in bad state " + state.name() );
 			return;
+		}
 		switch ( result ) {
 		case FAILURE:
 			LOGGER.warn( "Hash check of chunk " + chunk.toString()
@@ -497,8 +502,12 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			return;
 		}
 		try {
-			hashChecker.queue( chunk, data, this, blocking );
+			if ( !hashChecker.queue( chunk, data, this, blocking ) ) {
+				chunks.markCompleted( chunk, false );
+			}
 		} catch ( InterruptedException e ) {
+			LOGGER.debug( "Interrupted while trying to queueUnhashedChunk" );
+			chunks.markCompleted( chunk, false );
 			Thread.currentThread().interrupt();
 		}
 	}
