@@ -109,7 +109,6 @@ public class Json {
 					continue;
 				try {
 					setter.invoke(inst, context.deserialize(element, field.getType()));
-					LOGGER.info("Called " + methodName + " on " + clazz.getSimpleName());
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					LOGGER.warn("Could not call " + methodName + " on " + clazz.getSimpleName(), e);
 				}
