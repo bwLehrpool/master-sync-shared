@@ -1,6 +1,7 @@
 package org.openslx.filetransfer.util;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.openslx.bwlp.thrift.iface.TransferInformation;
@@ -43,6 +44,8 @@ public abstract class AbstractTransfer
 	protected final AtomicLong lastActivityTime = new AtomicLong( System.currentTimeMillis() );
 
 	private final String transferId;
+	
+	protected AtomicInteger connectFails = new AtomicInteger();
 
 	public AbstractTransfer( String transferId )
 	{
@@ -76,6 +79,11 @@ public abstract class AbstractTransfer
 	public final boolean countsTowardsConnectionLimit( long now )
 	{
 		return getActiveConnectionCount() > 0 || lastActivityTime.get() + HOT_IDLE_TIMEOUT > now;
+	}
+	
+	public final int connectFailCount()
+	{
+		return connectFails.get();
 	}
 
 	public final String getId()

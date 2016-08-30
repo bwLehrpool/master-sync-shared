@@ -342,6 +342,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				cancel();
 				return null;
 			}
+			if ( state == TransferState.IDLE ) {
+				state = TransferState.WORKING;
+			}
 			return currentChunk.range;
 		}
 	}
@@ -365,7 +368,10 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				public void run()
 				{
 					CbHandler cbh = new CbHandler( connection );
-					if ( !connection.download( cbh, cbh ) ) {
+					if ( connection.download( cbh, cbh ) ) {
+						connectFails.set( 0 );
+					} else {
+						connectFails.incrementAndGet();
 						if ( cbh.currentChunk != null ) {
 							// If the download failed and we have a current chunk, put it back into
 							// the queue, so it will be handled again later...
@@ -430,7 +436,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 	{
 		synchronized ( tmpFileHandle ) {
 			if ( state != TransferState.WORKING )
-				throw new IllegalStateException( "Cannot write to file if state != WORKING" );
+				throw new IllegalStateException( "Cannot write to file if state != WORKING (is " + state.toString() + ")" );
 			try {
 				tmpFileHandle.seek( fileOffset );
 				tmpFileHandle.write( data, 0, dataLength );
@@ -459,9 +465,14 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			// Fall through
 		case VALID:
 			if ( !chunk.isWrittenToDisk() ) {
-				writeFileData( chunk.range.startOffset, chunk.range.getLength(), data );
+				try {
+					writeFileData( chunk.range.startOffset, chunk.range.getLength(), data );
+					chunks.markCompleted( chunk, true );
+				} catch ( Exception e ) {
+					LOGGER.warn( "Cannot write to file after hash check", e );
+					chunks.markFailed( chunk );
+				}
 			}
-			chunks.markCompleted( chunk, true );
 			chunkStatusChanged( chunk );
 			if ( chunks.isComplete() ) {
 				finishUploadInternal();

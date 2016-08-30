@@ -78,8 +78,14 @@ public abstract class OutgoingTransferBase extends AbstractTransfer
 					synchronized ( uploads ) {
 						uploads.remove( connection );
 					}
+					if ( ret ) {
+						connectFails.set( 0 );
+					}
 					if ( ret && uploads.isEmpty() && potentialFinishTime.get() == 0 ) {
 						potentialFinishTime.set( System.currentTimeMillis() );
+					}
+					if ( !ret && uploads.isEmpty() ) {
+						connectFails.incrementAndGet();
 					}
 					lastActivityTime.set( System.currentTimeMillis() );
 				}
