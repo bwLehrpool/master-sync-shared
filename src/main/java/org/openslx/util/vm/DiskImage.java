@@ -48,7 +48,9 @@ public class DiskImage
 
 	public final boolean isStandalone;
 	public final boolean isCompressed;
+	public final boolean isSnapshot;
 	public final ImageFormat format;
+	public final String subFormat;
 	public final int hwVersion;
 
 	public DiskImage( File disk ) throws FileNotFoundException, IOException,
@@ -62,10 +64,13 @@ public class DiskImage
 			byte[] buffer = new byte[ 2048 ];
 			file.readFully( buffer );
 			VmwareConfig config = new VmwareConfig( buffer, findNull( buffer ) );
-			String ct = config.get( "createType" );
-			this.isStandalone = isStandaloneCreateType( ct );
-			this.isCompressed = ct != null
-					&& ct.equalsIgnoreCase( "streamOptimized" );
+			subFormat = config.get( "createType" );
+			String parent = config.get( "parentCID" );
+			this.isStandalone = isStandaloneCreateType( subFormat, parent );
+			this.isCompressed = subFormat != null
+					&& subFormat.equalsIgnoreCase( "streamOptimized" );
+			this.isSnapshot = parent != null
+					&& !parent.equalsIgnoreCase( "ffffffff" );
 			this.format = ImageFormat.VMDK;
 			String hwv = config.get(  "ddb.virtualHWVersion" );
 			if (hwv == null ) {
@@ -85,9 +90,11 @@ public class DiskImage
 		return buffer.length;
 	}
 
-	private boolean isStandaloneCreateType( String type )
+	private boolean isStandaloneCreateType( String type, String parent )
 	{
 		if ( type == null )
+			return false;
+		if ( parent != null && !parent.equalsIgnoreCase( "ffffffff" ) )
 			return false;
 		return type.equalsIgnoreCase( "streamOptimized" )
 				|| type.equalsIgnoreCase( "monolithicSparse" );
