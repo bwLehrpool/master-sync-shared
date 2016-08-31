@@ -526,6 +526,14 @@ service SatelliteServer {
 	void setImageVersionExpiry(1: Token userToken, 2: UUID imageBaseId 3: UnixTimestamp expireTime)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError, 4:TInvalidDateParam dateError),
 
+	// Get image's VM metadata for the given version
+	binary getImageVersionVirtConfig(1: Token userToken, 2: UUID imageVersionId)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
+
+	// Set image's VM metadata for the given version
+	binary setImageVersionVirtConfig(1: Token userToken, 2: UUID imageVersionId, 3: binary meta)
+		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
+
 	// Client asks server to replicate an image from the master server
 	UUID requestImageReplication(1:Token userToken, 2: UUID imageVersionId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),

@@ -75,17 +75,8 @@ public class VmwareConfig
 
 	private void init( byte[] vmxContent, int length )
 	{
-		String csName = detectCharset( new ByteArrayInputStream( vmxContent, 0, length ) );
-		Charset cs = null;
 		try {
-			cs = Charset.forName( csName );
-		} catch ( Exception e ) {
-			LOGGER.warn( "Could not instantiate charset " + csName, e );
-		}
-		if ( cs == null )
-			cs = StandardCharsets.ISO_8859_1;
-		try {
-			BufferedReader reader = new BufferedReader( new InputStreamReader( new ByteArrayInputStream( vmxContent, 0, length ), cs ) );
+			BufferedReader reader = getVmxReader( vmxContent, length );
 			String line;
 			while ( ( line = reader.readLine() ) != null ) {
 				KeyValuePair entry = parse( line );
@@ -96,6 +87,20 @@ public class VmwareConfig
 		} catch ( IOException e ) {
 			LOGGER.warn( "Exception when loading vmx from byte array (how!?)", e );
 		}
+	}
+
+	public static BufferedReader getVmxReader( byte[] vmxContent, int length ) throws IOException {
+		String csName = detectCharset( new ByteArrayInputStream( vmxContent, 0, length ) );
+		Charset cs = null;
+		try {
+			cs = Charset.forName( csName );
+		} catch ( Exception e ) {
+			LOGGER.warn( "Could not instantiate charset " + csName, e );
+		}
+		if ( cs == null )
+			cs = StandardCharsets.ISO_8859_1;
+		return new BufferedReader( new InputStreamReader( new ByteArrayInputStream( vmxContent, 0, length ), cs ) );
+
 	}
 
 	private String unescape( String value )
@@ -110,7 +115,7 @@ public class VmwareConfig
 		return ret;
 	}
 
-	private String detectCharset( InputStream is )
+	public static String detectCharset( InputStream is )
 	{
 		try {
 			BufferedReader csDetectReader = new BufferedReader( new InputStreamReader( is, StandardCharsets.ISO_8859_1 ) );
@@ -140,7 +145,7 @@ public class VmwareConfig
 	private static final Pattern settingMatcher2 = Pattern.compile( "^\\s*(#?[a-z0-9\\.\\:_]+)\\s*=\\s*([^\"]*)\\s*$",
 			Pattern.CASE_INSENSITIVE );
 
-	private KeyValuePair parse( String line )
+	private static KeyValuePair parse( String line )
 	{
 		Matcher matcher = settingMatcher1.matcher( line );
 		if ( !matcher.matches() ) {
