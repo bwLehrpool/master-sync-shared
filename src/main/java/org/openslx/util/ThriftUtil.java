@@ -43,7 +43,7 @@ public class ThriftUtil {
 			reader = VmwareConfig.getVmxReader(bytes, bytes.length);
 			String line="";
 			while ((line=reader.readLine()) != null) {
-				content.append(line + System.lineSeparator());
+				content.append(line + "\n");
 			}
 			reader.close();
 		} catch (IOException e) {
