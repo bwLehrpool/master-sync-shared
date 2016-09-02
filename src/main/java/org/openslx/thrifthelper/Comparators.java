@@ -53,6 +53,18 @@ public class Comparators
 		}
 	};
 
+	public static final Comparator<OperatingSystem> operatingSystemByName = new Comparator<OperatingSystem>() {
+		@Override
+		public int compare( OperatingSystem o1, OperatingSystem o2 )
+		{
+			if ( o1 == null )
+				return o2 == null ? 0 : 1;
+			if ( o2 == null )
+				return -1;
+			return o1.osName.compareTo(o2.osName);
+		}
+	};
+
 	public static final Comparator<Virtualizer> virtualizer = new Comparator<Virtualizer>() {
 		@Override
 		public int compare( Virtualizer o1, Virtualizer o2 )
