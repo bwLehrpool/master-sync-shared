@@ -52,14 +52,18 @@ public class VmwareMetaData extends VmMetaData
 	public VmwareMetaData( List<OperatingSystem> osList, byte[] vmxContent, int length )
 	{
 		super( osList );
-		this.config = new VmwareConfig( vmxContent, length );
-		init();
+		this.config = new VmwareConfig( vmxContent, length ); // still unfiltered 
+		init(); // now filtered
 	}
 
 	private void init()
 	{
 		for ( Entry<String, ConfigEntry> entry : config.entrySet() ) {
 			handleLoadEntry( entry );
+		}
+		// if we find this tag, we already went through the hdd's - so we're done.
+		if ( config.get("#SLX_HDD_BUS" ) != null) {
+			return;
 		}
 		// Now find the HDDs and add to list
 		for ( Entry<String, Controller> cEntry : disks.entrySet() ) {
@@ -84,6 +88,7 @@ public class VmwareMetaData extends VmMetaData
 				hdds.add( new HardDisk( controller.virtualDev, bus, device.filename ) );
 			}
 		}
+
 		// Add HDD to cleaned vmx
 		if ( !hdds.isEmpty() ) {
 			HardDisk hdd = hdds.get( 0 );
@@ -303,6 +308,11 @@ public class VmwareMetaData extends VmMetaData
 	public byte[] getFilteredDefinitionArray()
 	{
 		return config.toString( true, false ).getBytes( StandardCharsets.UTF_8 );
+	}
+
+	public byte[] getDefinitionArray()
+	{
+		return config.toString( false, false ).getBytes( StandardCharsets.UTF_8 );
 	}
 
 	@Override

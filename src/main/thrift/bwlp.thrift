@@ -531,7 +531,7 @@ service SatelliteServer {
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 
 	// Set image's VM metadata for the given version
-	binary setImageVersionVirtConfig(1: Token userToken, 2: UUID imageVersionId, 3: binary meta)
+	void setImageVersionVirtConfig(1: Token userToken, 2: UUID imageVersionId, 3: binary meta)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
 
 	// Client asks server to replicate an image from the master server

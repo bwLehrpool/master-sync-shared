@@ -1,8 +1,12 @@
 package org.openslx.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openslx.util.vm.VmwareConfig;
 
 public class ThriftUtil {
 
@@ -31,4 +35,21 @@ public class ThriftUtil {
 		return byteArray;
 	}
 
+	public static String byteBufferToString(ByteBuffer buffer) {
+		byte[] bytes = unwrapByteBuffer(buffer);
+		BufferedReader reader;
+		StringBuffer content = new StringBuffer("");
+		try {
+			reader = VmwareConfig.getVmxReader(bytes, bytes.length);
+			String line="";
+			while ((line=reader.readLine()) != null) {
+				content.append(line + System.lineSeparator());
+			}
+			reader.close();
+		} catch (IOException e) {
+			// swallow - shouldn't happen. 
+			return null;
+		}
+		return content.toString();
+	}
 }

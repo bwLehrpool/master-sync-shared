@@ -90,6 +90,12 @@ public class VmwareConfig
 	}
 
 	public static BufferedReader getVmxReader( byte[] vmxContent, int length ) throws IOException {
+		Charset cs = getCharset(vmxContent, length);
+		return new BufferedReader( new InputStreamReader( new ByteArrayInputStream( vmxContent, 0, length ), cs ) );
+
+	}
+
+	public static Charset getCharset( byte[] vmxContent, int length ) {
 		String csName = detectCharset( new ByteArrayInputStream( vmxContent, 0, length ) );
 		Charset cs = null;
 		try {
@@ -99,8 +105,7 @@ public class VmwareConfig
 		}
 		if ( cs == null )
 			cs = StandardCharsets.ISO_8859_1;
-		return new BufferedReader( new InputStreamReader( new ByteArrayInputStream( vmxContent, 0, length ), cs ) );
-
+		return cs;
 	}
 
 	private String unescape( String value )
