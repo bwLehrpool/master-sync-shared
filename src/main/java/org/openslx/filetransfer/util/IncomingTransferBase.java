@@ -464,7 +464,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 					+ " could not be executed. Assuming valid :-(" );
 			// Fall through
 		case VALID:
-			if ( !chunk.isWrittenToDisk() ) {
+			if ( chunk.isWrittenToDisk() ) {
+				chunks.markCompleted( chunk, true );
+			} else {
 				try {
 					writeFileData( chunk.range.startOffset, chunk.range.getLength(), data );
 					chunks.markCompleted( chunk, true );
