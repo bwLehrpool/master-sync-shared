@@ -10,6 +10,6 @@ public class Version {
 	
 	public static final long MIN_VERSION = 2;
 
-	public static final long VERSION = 3;
+	public static final long VERSION = 4;
 	
 }
