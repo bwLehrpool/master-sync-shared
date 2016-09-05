@@ -255,7 +255,7 @@ public class VmwareMetaData extends VmMetaData
 			addFiltered( pre + ".startConnected", "TRUE" );
 			addFiltered( pre + ".fileType", "file" );
 			addFiltered( pre + ".fileName", image );
-			addFiltered( pre + ".readonly", Boolean.toString( readOnly ).toUpperCase() );
+			addFiltered( pre + ".readonly", vmBoolean( readOnly ) );
 			config.remove( pre + ".autodetect" );
 		}
 	}
@@ -278,6 +278,11 @@ public class VmwareMetaData extends VmMetaData
 			}
 		}
 		return false;
+	}
+	
+	private static String vmBoolean( boolean var )
+	{
+		return Boolean.toString( var ).toUpperCase();
 	}
 
 	public boolean disableSuspend()
@@ -359,6 +364,12 @@ public class VmwareMetaData extends VmMetaData
 		{
 			this.vmnet = vnet;
 		}
+	}
+
+	@Override
+	public void enableUsb( boolean enabled )
+	{
+		addFiltered( "usb.present", vmBoolean( enabled ) );
 	}
 
 }

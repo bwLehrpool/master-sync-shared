@@ -132,5 +132,7 @@ public abstract class VmMetaData
 	}
 
 	public abstract Virtualizer getVirtualizer();
+	
+	public abstract void enableUsb(boolean enabled);
 
 }
