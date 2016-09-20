@@ -370,6 +370,7 @@ public class VmwareMetaData extends VmMetaData
 	public void enableUsb( boolean enabled )
 	{
 		addFiltered( "usb.present", vmBoolean( enabled ) );
+		addFiltered( "ehci.present", vmBoolean( enabled ) );
 	}
 
 }
