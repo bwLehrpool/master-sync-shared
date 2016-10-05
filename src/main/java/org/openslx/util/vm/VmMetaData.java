@@ -134,5 +134,11 @@ public abstract class VmMetaData
 	public abstract Virtualizer getVirtualizer();
 	
 	public abstract void enableUsb(boolean enabled);
+	
+	/**
+	 * Apply config options that are desired when locally editing a VM.
+	 * for vmware, this disables automatic DPI scaling of the guest.
+	 */
+	public abstract void applySettingsForLocalEdit();
 
 }

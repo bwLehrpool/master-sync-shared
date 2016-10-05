@@ -373,4 +373,10 @@ public class VmwareMetaData extends VmMetaData
 		addFiltered( "ehci.present", vmBoolean( enabled ) );
 	}
 
+	@Override
+	public void applySettingsForLocalEdit()
+	{
+		addFiltered( "gui.applyHostDisplayScalingToGuest", "FALSE" );
+	}
+
 }
