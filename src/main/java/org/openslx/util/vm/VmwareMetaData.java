@@ -206,6 +206,8 @@ public class VmwareMetaData extends VmMetaData
 			addFiltered( prefix + ".redo", "" );
 			addFiltered( prefix + ".redoLogDir", redoDir );
 		}
+		config.remove( "#SLX_HDD_BUS" );
+		config.remove( "#SLX_HDD_CHIP" );
 		return true;
 	}
 
@@ -392,8 +394,8 @@ public class VmwareMetaData extends VmMetaData
 	// SOUND
 	public static enum SoundCardType
 	{
-		NONE( false, null, "No card" ),
-		DEFAULT( true, null, "Default card" ),
+		NONE( false, null, "None" ),
+		DEFAULT( true, null, "(default)" ),
 		SOUND_BLASTER( true, "sb16", "Sound Blaster 16" ),
 		ES( true, "es1371", "ES 1371" ),
 		HD_AUDIO( true, "hdaudio", "Intel Integrated HD Audio" );
@@ -469,16 +471,16 @@ public class VmwareMetaData extends VmMetaData
 	// Virtual hardware version
 	public static enum HWVersion
 	{
-		NONE( 0, "Bitte korrekter Eintrag wählen!" ),
-		THREE( 3, "3" ),
-		FOUR( 4, "4" ),
-		SIX( 6, "6" ),
-		SEVEN( 7, "7" ),
-		EIGHT( 8, "8" ),
-		NINE( 9, "9" ),
-		TEN( 10, "10" ),
-		ELEVEN( 11, "11" ),
-		TWELVE( 12, "12" );
+		NONE( 0, "(invalid)" ),
+		THREE( 3, "  3 (Workstation 4/5, Player 1)" ),
+		FOUR( 4, "  4 (Workstation 4/5, Player 1/2, Fusion 1)" ),
+		SIX( 6, "  6 (Workstation 6)" ),
+		SEVEN( 7, "  7 (Workstation 6.5/7, Player 3, Fusion 2/3)" ),
+		EIGHT( 8, "  8 (Workstation 8, Player/Fusion 4)" ),
+		NINE( 9, "  9 (Workstation 9, Player/Fusion 5)" ),
+		TEN( 10, "10 (Workstation 10, Player/Fusion 6)" ),
+		ELEVEN( 11, "11 (Workstation 11, Player/Fusion 7)" ),
+		TWELVE( 12, "12 (Workstation/Player 12, Fusion 8)" );
 
 		public final int version;
 		public final String displayName;
@@ -509,7 +511,7 @@ public class VmwareMetaData extends VmMetaData
 	// Virtual network adapter
 	public static enum EthernetDevType
 	{
-		AUTO( null, "auto detect" ),
+		AUTO( null, "(default)" ),
 		PCNET32( "vlance", "AMD PCnet32" ),
 		E1000( "e1000", "Intel E1000 (PCI)" ),
 		E1000E( "e1000e", "Intel E1000e (PCI-Express)" ),
