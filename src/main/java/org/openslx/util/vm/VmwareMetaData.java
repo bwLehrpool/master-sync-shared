@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
+import org.openslx.util.Util;
 import org.openslx.util.vm.VmwareConfig.ConfigEntry;
 
 public class VmwareMetaData extends VmMetaData
@@ -421,17 +422,18 @@ public class VmwareMetaData extends VmMetaData
 
 	public SoundCardType getSoundCard()
 	{
-		if ( isSetAndTrue( "sound.present" ) && isSetAndTrue( "sound.autodetect" ) && config.get( "sound.virtualDev" ) == null ) {
-			return SoundCardType.DEFAULT;
-		} else if ( isSetAndTrue( "sound.present" ) && isSetAndTrue( "sound.autodetect" ) && config.get( "sound.virtualDev" ).equals( "sb16" ) ) {
-			return SoundCardType.SOUND_BLASTER;
-		} else if ( isSetAndTrue( "sound.present" ) && isSetAndTrue( "sound.autodetect" ) && config.get( "sound.virtualDev" ).equals( "es1371" ) ) {
-			return SoundCardType.ES;
-		} else if ( isSetAndTrue( "sound.present" ) && isSetAndTrue( "sound.autodetect" ) && config.get( "sound.virtualDev" ).equals( "hdaudio" ) ) {
-			return SoundCardType.HD_AUDIO;
-		} else {
+		if ( !isSetAndTrue( "sound.present" ) || !isSetAndTrue( "sound.autodetect" ) ) {
 			return SoundCardType.NONE;
 		}
+		String current = config.get( "sound.virtualDev" );
+		if ( current != null ) {
+			for ( SoundCardType type : SoundCardType.values() ) {
+				if ( current.equals( type.value ) ) {
+					return type;
+				}
+			}
+		}
+		return SoundCardType.DEFAULT;
 	}
 
 	// 3DAcceleration
@@ -459,10 +461,9 @@ public class VmwareMetaData extends VmMetaData
 	{
 		if ( isSetAndTrue( "mks.enable3d" ) ) {
 			return DDAcceleration.ON;
-		} else if ( !isSetAndTrue( "mks.enable3d" ) ) {
+		} else {
 			return DDAcceleration.OFF;
-		} else
-			return DDAcceleration.OFF;
+		}
 	}
 
 	// Virtual hardware version
@@ -496,81 +497,55 @@ public class VmwareMetaData extends VmMetaData
 
 	public HWVersion getHWVersion()
 	{
-
-		String temp = config.get( "virtualHW.version" );
-		if ( temp == null ) {
-			return HWVersion.NONE;
+		int currentValue = Util.parseInt( config.get( "virtualHW.version" ), -1 );
+		for ( HWVersion ver : HWVersion.values() ) {
+			if ( currentValue == ver.version ) {
+				return ver;
+			}
 		}
-
-		switch ( config.get( "virtualHW.version" ) ) {
-		case "3":
-			return HWVersion.THREE;
-		case "4":
-			return HWVersion.FOUR;
-		case "6":
-			return HWVersion.SIX;
-		case "7":
-			return HWVersion.SEVEN;
-		case "8":
-			return HWVersion.EIGHT;
-		case "9":
-			return HWVersion.NINE;
-		case "10":
-			return HWVersion.TEN;
-		case "11":
-			return HWVersion.ELEVEN;
-		case "12":
-			return HWVersion.TWELVE;
-		default:
-			return HWVersion.NONE;
-		}
+		return HWVersion.NONE;
 	}
 
 	// Virtual network adapter
-	public static enum E0VirtDev
+	public static enum EthernetDevType
 	{
 		AUTO( null, "auto detect" ),
-		AMD( "vlance", "AMD PCnet32" ),
-		INTEL( "e1000", "Intel E1000" ),
-		VMX( "vmxnet", "VMXnet" );
+		PCNET32( "vlance", "AMD PCnet32" ),
+		E1000( "e1000", "Intel E1000 (PCI)" ),
+		E1000E( "e1000e", "Intel E1000e (PCI-Express)" ),
+		VMXNET( "vmxnet", "VMXnet" ),
+		VMXNET3( "vmxnet3", "VMXnet 3" );
 
 		public final String value;
 		public final String displayName;
 
-		private E0VirtDev( String value, String dName )
+		private EthernetDevType( String value, String dName )
 		{
 			this.value = value;
 			this.displayName = dName;
 		}
 	}
 
-	public void setE0VirtDev( E0VirtDev type )
+	public void setEthernetDevType( int cardIndex, EthernetDevType type )
 	{
 		if ( type.value != null ) {
-			addFiltered( "ethernet0.virtualDev", type.value );
+			addFiltered( "ethernet" + cardIndex + ".virtualDev", type.value );
 		} else {
-			config.remove( "ethernet0.virtualDev" );
+			config.remove( "ethernet" + cardIndex + ".virtualDev" );
 		}
 	}
 
-	public E0VirtDev getE0VirtDev()
+	public EthernetDevType getEthernetDevType( int cardIndex )
 	{
+		String temp = config.get( "ethernet" + cardIndex + ".virtualDev" );
+		if ( temp != null ) {
 
-		String temp = config.get( "ethernet0.virtualDev" );
-		if ( temp == null ) {
-			return E0VirtDev.AUTO;
+			for ( EthernetDevType type : EthernetDevType.values() ) {
+				if ( temp.equals( type.value ) ) {
+					return type;
+				}
+			}
 		}
-
-		switch ( config.get( "ethernet0.virtualDev" ) ) {
-		case "vlance":
-			return E0VirtDev.AMD;
-		case "e1000":
-			return E0VirtDev.INTEL;
-		case "vmxnet":
-			return E0VirtDev.VMX;
-		default:
-			return E0VirtDev.AUTO;
-
-		}
+		return EthernetDevType.AUTO;
 	}
 }
