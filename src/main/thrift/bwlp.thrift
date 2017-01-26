@@ -353,6 +353,8 @@ struct SatelliteConfig {
 	7: optional i32 maxConnectionsPerTransfer,
 	// Maximum number of locations per lecture
 	8: optional i32 maxLocationsPerLecture,
+	// Whether users connecting to the sat for the first time are allowed to login
+	9: optional bool allowLoginByDefault,
 }
 
 struct SatelliteStatus {
@@ -405,6 +407,10 @@ exception TInvocationException {
 service SatelliteServer {
 	// Get server (thrift interface) version
 	int getVersion(1: int clientVersion),
+
+	// Get server features. Kinda superseding getVersion, as it's reasier to handle minor updates
+	// This returns a space separated list of keywords which represent certain features
+	string getSupportedFeatures(),
 
 	// Get configuration parameters of this satellite server
 	SatelliteConfig getConfiguration(),
