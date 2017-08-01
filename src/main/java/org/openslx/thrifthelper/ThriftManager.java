@@ -207,12 +207,12 @@ public class ThriftManager<T>
 				if ( socket != null ) {
 					Util.safeClose( socket );
 				}
-				throw new TTransportException();
+				throw new TTransportException( e );
 			}
 			tsock = new TSocket( socket );
 			return new TBinaryProtocol( new TFramedTransport( tsock ) );
 		} catch ( TTransportException e ) {
-			LOGGER.error( "Could not open transport to thrift server at " + host + ":" + port );
+			LOGGER.error( "Could not open transport to thrift server at " + host + ":" + port, e );
 			return null;
 		}
 	}
