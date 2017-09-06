@@ -71,6 +71,12 @@ enum DateParamError {
 	NEGATIVE_RANGE
 }
 
+enum NetShareAuth {
+	LOGIN_USER,
+	SPECIAL_USER,
+	GUEST_USER
+}
+
 // ############## STRUCT ###############
 
 struct UserInfo {
@@ -237,6 +243,13 @@ struct NetRule {
 	4: i32 port,
 }
 
+struct NetShare {
+	4: NetShareAuth auth,
+	1: string path,
+	2: optional string username,
+	3: optional string password,
+}
+
 // Write lecture to sat. if optional fields are not set or null, their value stays unchanged
 struct LectureWrite {
 	1: string lectureName,
@@ -258,6 +271,7 @@ struct LectureWrite {
 	18: bool limitToLocations,
 	19: bool limitToAllowedUsers,
 	20: bool hasUsbAccess,
+	21: optional list<NetShare> networkShares,
 }
 
 struct LectureSummary {
@@ -308,6 +322,7 @@ struct LectureRead {
 	26: bool limitToLocations,
 	27: bool limitToAllowedUsers,
 	28: bool hasUsbAccess,
+	29: optional list<NetShare> networkShares,
 }
 
 struct MasterTag {
