@@ -8,5 +8,11 @@ public enum Feature {
 	 * did not handle this case properly.)
 	 */
 	EXTEND_EXPIRED_VM,
+	
+	/**
+	 * Server supports configuring network shares for individual lectures. Whether 
+	 * these will function on the clients further depends on the minilinux version!
+	 */
+	NETWORK_SHARES,
 
 }
