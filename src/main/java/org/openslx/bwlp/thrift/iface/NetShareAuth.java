@@ -13,8 +13,7 @@ import org.apache.thrift.TEnum;
 
 public enum NetShareAuth implements org.apache.thrift.TEnum {
   LOGIN_USER(0),
-  SPECIAL_USER(1),
-  GUEST_USER(2);
+  OTHER_USER(1);
 
   private final int value;
 
@@ -38,9 +37,7 @@ public enum NetShareAuth implements org.apache.thrift.TEnum {
       case 0:
         return LOGIN_USER;
       case 1:
-        return SPECIAL_USER;
-      case 2:
-        return GUEST_USER;
+        return OTHER_USER;
       default:
         return null;
     }

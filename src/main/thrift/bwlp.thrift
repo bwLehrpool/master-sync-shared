@@ -73,8 +73,7 @@ enum DateParamError {
 
 enum NetShareAuth {
 	LOGIN_USER,
-	SPECIAL_USER,
-	GUEST_USER
+	OTHER_USER
 }
 
 // ############## STRUCT ###############
