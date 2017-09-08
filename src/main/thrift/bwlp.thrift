@@ -245,6 +245,8 @@ struct NetRule {
 struct NetShare {
 	4: NetShareAuth auth,
 	1: string path,
+	5: optional string displayname,
+	6: optional string mountpoint,
 	2: optional string username,
 	3: optional string password,
 }
