@@ -214,7 +214,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				continue;
 			}
 			try {
-				if ( !hashChecker.queue( chunk, data, this, false ) ) { // false == queue full, stop
+				if ( !hashChecker.queue( chunk, data, this, HashChecker.CALC_HASH ) ) { // false == queue full, stop
 					chunks.markCompleted( chunk, false );
 					break;
 				}
@@ -285,9 +285,10 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		public FileRange get()
 		{
 			if ( currentChunk != null ) {
+				chunkReceived( currentChunk, buffer );
 				if ( hashChecker != null && currentChunk.getSha1Sum() != null ) {
 					try {
-						hashChecker.queue( currentChunk, buffer, IncomingTransferBase.this, true );
+						hashChecker.queue( currentChunk, buffer, IncomingTransferBase.this, HashChecker.BLOCKING | HashChecker.CALC_HASH );
 					} catch ( InterruptedException e ) {
 						chunks.markCompleted( currentChunk, false );
 						currentChunk = null;
@@ -515,7 +516,11 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			return;
 		}
 		try {
-			if ( !hashChecker.queue( chunk, data, this, blocking ) ) {
+			int flags = HashChecker.CALC_HASH;
+			if ( blocking ) {
+				flags |= HashChecker.BLOCKING;
+			}
+			if ( !hashChecker.queue( chunk, data, this, flags ) ) {
 				chunks.markCompleted( chunk, false );
 			}
 		} catch ( InterruptedException e ) {
@@ -540,6 +545,11 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			}
 		}
 	}
+	
+	protected HashChecker getHashChecker()
+	{
+		return hashChecker;
+	}
 
 	/*
 	 * 
@@ -558,5 +568,12 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 	protected abstract boolean finishIncomingTransfer();
 
 	protected abstract void chunkStatusChanged( FileChunk chunk );
+
+	/**
+	 * Called when a chunk has been received -- no validation has taken place yet
+	 */
+	protected void chunkReceived( FileChunk chunk, byte[] data )
+	{
+	}
 
 }

@@ -2,6 +2,7 @@ package org.openslx.filetransfer.util;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.CRC32;
 
 import org.openslx.filetransfer.FileRange;
 
@@ -18,6 +19,7 @@ public class FileChunk
 	public final FileRange range;
 	private int failCount = 0;
 	protected byte[] sha1sum;
+	protected CRC32 crc32;
 	protected ChunkStatus status = ChunkStatus.MISSING;
 	private boolean writtenToDisk = false;
 
@@ -71,6 +73,36 @@ public class FileChunk
 	public synchronized ChunkStatus getStatus()
 	{
 		return status;
+	}
+
+	public synchronized void calculateDnbd3Crc32( byte[] data )
+	{
+		// As this is usually called before we validated the sha1, handle the case where
+		// this gets called multiple times and only remember the last result
+		if ( crc32 == null ) {
+			crc32 = new CRC32();
+		} else {
+			crc32.reset();
+		}
+		int chunkLength = range.getLength();
+		crc32.update( data, 0, chunkLength );
+		if ( ( chunkLength % 4096 ) != 0 ) {
+			// DNBD3 virtually pads all images to be a multiple of 4KiB in size,
+			// so simulate that here too
+			byte[] padding = new byte[ 4096 - ( chunkLength % 4096 ) ];
+			crc32.update( padding );
+		}
+	}
+
+	public synchronized void getCrc32Le( byte[] buffer, int offset )
+	{
+		if ( crc32 == null )
+			throw new IllegalStateException( "Trying to get CRC32 on Chunk that doesn't have one" );
+		int value = (int)crc32.getValue();
+		buffer[offset + 3] = (byte) ( value >>> 24 );
+		buffer[offset + 2] = (byte) ( value >>> 16 );
+		buffer[offset + 1] = (byte) ( value >>> 8 );
+		buffer[offset + 0] = (byte)value;
 	}
 
 	/**

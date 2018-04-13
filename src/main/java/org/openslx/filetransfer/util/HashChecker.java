@@ -12,6 +12,10 @@ import org.apache.log4j.Logger;
 
 public class HashChecker
 {
+	public static final int BLOCKING = 1;
+	public static final int CALC_HASH = 2;
+	public static final int CALC_CRC32 = 4;
+	
 	private static final Logger LOGGER = Logger.getLogger( HashChecker.class );
 
 	private final BlockingQueue<HashTask> queue;
@@ -69,6 +73,8 @@ public class HashChecker
 
 	private void execCallback( HashTask task, HashResult result )
 	{
+		if ( task.callback == null )
+			return;
 		try {
 			task.callback.hashCheckDone( result, task.data, task.chunk );
 		} catch ( Throwable t ) {
@@ -85,12 +91,14 @@ public class HashChecker
 	 * @return true if the chunk was handled, false if the queue was full and rejected the chunk.
 	 * @throws InterruptedException
 	 */
-	public boolean queue( FileChunk chunk, byte[] data, HashCheckCallback callback, boolean blocking ) throws InterruptedException
+	public boolean queue( FileChunk chunk, byte[] data, HashCheckCallback callback, int flags ) throws InterruptedException
 	{
-		byte[] sha1Sum = chunk.getSha1Sum();
-		if ( sha1Sum == null )
+		boolean blocking = ( flags & BLOCKING ) != 0;
+		boolean doHash = ( flags & CALC_HASH ) != 0;
+		boolean doCrc32 = ( flags & CALC_CRC32 ) != 0;
+		if ( doHash && chunk.getSha1Sum() == null )
 			throw new NullPointerException( "Chunk has no sha1 hash" );
-		HashTask task = new HashTask( data, chunk, callback );
+		HashTask task = new HashTask( data, chunk, callback, doHash, doCrc32 );
 		synchronized ( threads ) {
 			if ( invalid ) {
 				execCallback( task, HashResult.FAILURE );
@@ -106,7 +114,9 @@ public class HashChecker
 				}
 			}
 		}
-		chunk.setStatus( ChunkStatus.HASHING );
+		if ( doHash ) {
+			chunk.setStatus( ChunkStatus.HASHING );
+		}
 		if ( blocking ) {
 			queue.put( task );
 		} else {
@@ -153,10 +163,17 @@ public class HashChecker
 					LOGGER.info( "Interrupted while waiting for hash task", e );
 					break;
 				}
-				// Calculate digest
-				md.update( task.data, 0, task.chunk.range.getLength() );
-				byte[] digest = md.digest();
-				HashResult result = Arrays.equals( digest, task.chunk.getSha1Sum() ) ? HashResult.VALID : HashResult.INVALID;
+				HashResult result = HashResult.NONE;
+				if ( task.doHash ) {
+   				// Calculate digest
+   				md.update( task.data, 0, task.chunk.range.getLength() );
+   				byte[] digest = md.digest();
+					result = Arrays.equals( digest, task.chunk.getSha1Sum() ) ? HashResult.VALID : HashResult.INVALID;
+				}
+				if ( task.doCrc32 ) {
+   				// Calculate CRC32
+   				task.chunk.calculateDnbd3Crc32( task.data );
+				}
 				execCallback( task, result );
 				if ( extraThread && queue.isEmpty() ) {
 					break;
@@ -173,6 +190,7 @@ public class HashChecker
 
 	public static enum HashResult
 	{
+		NONE, // No hashing tool place
 		VALID, // Hash matches
 		INVALID, // Hash does not match
 		FAILURE // Error calculating hash
@@ -183,12 +201,16 @@ public class HashChecker
 		public final byte[] data;
 		public final FileChunk chunk;
 		public final HashCheckCallback callback;
+		public final boolean doHash;
+		public final boolean doCrc32;
 
-		public HashTask( byte[] data, FileChunk chunk, HashCheckCallback callback )
+		public HashTask( byte[] data, FileChunk chunk, HashCheckCallback callback, boolean doHash, boolean doCrc32 )
 		{
 			this.data = data;
 			this.chunk = chunk;
 			this.callback = callback;
+			this.doHash = doHash;
+			this.doCrc32 = doCrc32;
 		}
 	}
 

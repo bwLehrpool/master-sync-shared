@@ -1,5 +1,6 @@
 package org.openslx.filetransfer.util;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.zip.CRC32;
 
 import org.apache.log4j.Logger;
 import org.openslx.util.ThriftUtil;
@@ -71,6 +73,36 @@ public class ChunkList
 			}
 			index++;
 		}
+	}
+
+	/**
+	 * Get CRC32 list in DNBD3 format. All checksums are little
+	 * endian and prefixed by the crc32 sum of the list itself.
+	 */
+	public synchronized byte[] getDnbd3Crc32List() throws IOException
+	{
+		byte buffer[] = new byte[ allChunks.size() * 4 + 4 ]; // 4 byte per chunk plus master
+		long nextChunkOffset = 0;
+		int nextCrcArrayPos = 4;
+		for ( FileChunk c : allChunks ) {
+			if ( c.crc32 == null ) {
+				throw new IllegalStateException( "Called on ChunkList that doesn't have crc32 enabled" );
+			}
+			if ( c.range.startOffset != nextChunkOffset ) {
+				throw new IllegalStateException( "Chunk list is not in order or has wrong chunk size" );
+			}
+			nextChunkOffset += FileChunk.CHUNK_SIZE;
+			c.getCrc32Le( buffer, nextCrcArrayPos );
+			nextCrcArrayPos += 4;
+		}
+		CRC32 masterCrc = new CRC32();
+		masterCrc.update( buffer, 4, buffer.length - 4 );
+		int value = (int)masterCrc.getValue();
+		buffer[3] = (byte) ( value >>> 24 );
+		buffer[2] = (byte) ( value >>> 16 );
+		buffer[1] = (byte) ( value >>> 8 );
+		buffer[0] = (byte)value;
+		return buffer;
 	}
 
 	/**
