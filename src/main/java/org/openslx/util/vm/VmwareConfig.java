@@ -31,7 +31,7 @@ public class VmwareConfig
 		// (void)
 	}
 
-	public VmwareConfig( File file ) throws IOException
+	public VmwareConfig( File file ) throws IOException, UnsupportedVirtualizerFormatException
 	{
 		int todo = (int)Math.min( 100000, file.length() );
 		int offset = 0;
@@ -53,7 +53,7 @@ public class VmwareConfig
 
 	}
 
-	public VmwareConfig( InputStream is ) throws IOException
+	public VmwareConfig( InputStream is ) throws IOException, UnsupportedVirtualizerFormatException
 	{
 		int todo = Math.max( 4000, Math.min( 100000, is.available() ) );
 		int offset = 0;
@@ -68,34 +68,44 @@ public class VmwareConfig
 		init( data, offset );
 	}
 
-	public VmwareConfig( byte[] vmxContent, int length )
+	public VmwareConfig( byte[] vmxContent, int length ) throws UnsupportedVirtualizerFormatException
 	{
 		init( vmxContent, length );
 	}
 
-	private void init( byte[] vmxContent, int length )
+	// function is used for both .vmx and .vmdk files
+	private void init( byte[] vmxContent, int length ) throws UnsupportedVirtualizerFormatException
 	{
 		try {
+			boolean isValid = false;
 			BufferedReader reader = getVmxReader( vmxContent, length );
 			String line;
 			while ( ( line = reader.readLine() ) != null ) {
 				KeyValuePair entry = parse( line );
+
 				if ( entry != null ) {
+					if ( entry.key.equals( "virtualHW.version" ) || entry.key.equals( "ddb.virtualHWVersion" ) ) {
+						isValid = true;
+					}
 					set( entry.key, unescape( entry.value ) );
 				}
+			}
+			if ( !isValid ) {
+				throw new UnsupportedVirtualizerFormatException( "Not in VMX format." );
 			}
 		} catch ( IOException e ) {
 			LOGGER.warn( "Exception when loading vmx from byte array (how!?)", e );
 		}
 	}
 
-	public static BufferedReader getVmxReader( byte[] vmxContent, int length ) throws IOException {
-		Charset cs = getCharset(vmxContent, length);
+	public static BufferedReader getVmxReader( byte[] vmxContent, int length ) throws IOException
+	{
+		Charset cs = getCharset( vmxContent, length );
 		return new BufferedReader( new InputStreamReader( new ByteArrayInputStream( vmxContent, 0, length ), cs ) );
-
 	}
 
-	public static Charset getCharset( byte[] vmxContent, int length ) {
+	public static Charset getCharset( byte[] vmxContent, int length )
+	{
 		String csName = detectCharset( new ByteArrayInputStream( vmxContent, 0, length ) );
 		Charset cs = null;
 		try {
@@ -145,10 +155,8 @@ public class VmwareConfig
 		return entries.entrySet();
 	}
 
-	private static final Pattern settingMatcher1 = Pattern.compile( "^\\s*(#?[a-z0-9\\.\\:_]+)\\s*=\\s*\"(.*)\"\\s*$",
-			Pattern.CASE_INSENSITIVE );
-	private static final Pattern settingMatcher2 = Pattern.compile( "^\\s*(#?[a-z0-9\\.\\:_]+)\\s*=\\s*([^\"]*)\\s*$",
-			Pattern.CASE_INSENSITIVE );
+	private static final Pattern settingMatcher1 = Pattern.compile( "^\\s*(#?[a-z0-9\\.\\:_]+)\\s*=\\s*\"(.*)\"\\s*$", Pattern.CASE_INSENSITIVE );
+	private static final Pattern settingMatcher2 = Pattern.compile( "^\\s*(#?[a-z0-9\\.\\:_]+)\\s*=\\s*([^\"]*)\\s*$", Pattern.CASE_INSENSITIVE );
 
 	private static KeyValuePair parse( String line )
 	{
@@ -159,8 +167,7 @@ public class VmwareConfig
 		if ( !matcher.matches() ) {
 			return null;
 		}
-		return new KeyValuePair(
-				matcher.group( 1 ), matcher.group( 2 ) );
+		return new KeyValuePair( matcher.group( 1 ), matcher.group( 2 ) );
 
 	}
 
@@ -202,8 +209,7 @@ public class VmwareConfig
 		StringBuilder sb = new StringBuilder( 300 );
 		for ( Entry<String, ConfigEntry> entry : entries.entrySet() ) {
 			ConfigEntry value = entry.getValue();
-			if ( ( !filteredRequired || value.forFiltered ) &&
-					( !generatedRequired || value.forGenerated ) ) {
+			if ( ( !filteredRequired || value.forFiltered ) && ( !generatedRequired || value.forGenerated ) ) {
 				sb.append( entry.getKey() );
 				sb.append( " = \"" );
 				sb.append( value.getEscaped() );
@@ -263,7 +269,5 @@ public class VmwareConfig
 		{
 			this.value = value;
 		}
-
 	}
-
 }

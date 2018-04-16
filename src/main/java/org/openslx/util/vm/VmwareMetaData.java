@@ -16,7 +16,49 @@ import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.util.Util;
 import org.openslx.util.vm.VmwareConfig.ConfigEntry;
 
-public class VmwareMetaData extends VmMetaData
+class VmWareSoundCardMeta
+{
+	public final boolean isPresent;
+	public final String value;
+
+	public VmWareSoundCardMeta( boolean present, String val )
+	{
+		isPresent = present;
+		value = val;
+	}
+}
+
+class VmWareDDAccelMeta
+{
+	public final boolean isPresent;
+
+	public VmWareDDAccelMeta( boolean present )
+	{
+		isPresent = present;
+	}
+}
+
+class VmWareHWVersionMeta
+{
+	public final int version;
+
+	public VmWareHWVersionMeta( int vers )
+	{
+		version = vers;
+	}
+}
+
+class VmWareEthernetDevTypeMeta
+{
+	public final String value;
+
+	public VmWareEthernetDevTypeMeta( String val )
+	{
+		value = val;
+	}
+}
+
+public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareHWVersionMeta, VmWareEthernetDevTypeMeta>
 {
 
 	private static final Logger LOGGER = Logger.getLogger( VmwareMetaData.class );
@@ -40,24 +82,38 @@ public class VmwareMetaData extends VmMetaData
 		}
 	}
 
+	public static enum EthernetType
+	{
+		NAT( "vmnet1" ), BRIDGED( "vmnet0" ), HOST_ONLY( "vmnet2" );
+
+		public final String vmnet;
+
+		private EthernetType( String vnet )
+		{
+			this.vmnet = vnet;
+		}
+	}
+
 	private final Map<String, Controller> disks = new HashMap<>();
 
-	public VmwareMetaData( List<OperatingSystem> osList, File file ) throws IOException
+	public VmwareMetaData( List<OperatingSystem> osList, File file ) throws IOException, UnsupportedVirtualizerFormatException
 	{
 		super( osList );
 		this.config = new VmwareConfig( file );
 		init();
 	}
 
-	public VmwareMetaData( List<OperatingSystem> osList, byte[] vmxContent, int length )
+	public VmwareMetaData( List<OperatingSystem> osList, byte[] vmxContent, int length ) throws UnsupportedVirtualizerFormatException
 	{
 		super( osList );
-		this.config = new VmwareConfig( vmxContent, length ); // still unfiltered 
+		this.config = new VmwareConfig( vmxContent, length ); // still unfiltered
 		init(); // now filtered
 	}
 
 	private void init()
 	{
+		registerVirtualHW();
+
 		for ( Entry<String, ConfigEntry> entry : config.entrySet() ) {
 			handleLoadEntry( entry );
 		}
@@ -168,8 +224,19 @@ public class VmwareMetaData extends VmMetaData
 		}
 	}
 
+	@Override
+	public boolean addHddTemplate( File diskImage, String hddMode, String redoDir )
+	{
+		return addHddTemplate( diskImage.getName(), hddMode, redoDir );
+	}
+
+	@Override
 	public boolean addHddTemplate( String diskImagePath, String hddMode, String redoDir )
 	{
+		if ( diskImagePath.isEmpty() ) {
+			LOGGER.error( "Empty disk image path given!" );
+			return false;
+		}
 		DriveBusType bus;
 		try {
 			bus = DriveBusType.valueOf( config.get( "#SLX_HDD_BUS" ) );
@@ -218,14 +285,29 @@ public class VmwareMetaData extends VmMetaData
 		return true;
 	}
 
-	public boolean addEthernet( EthernetType type )
+	public boolean addEthernet( VmMetaData.EtherType type )
 	{
+		boolean ret = false;
 		int index = 0;
 		for ( ;; ++index ) {
 			if ( config.get( "ethernet" + index + ".present" ) == null )
 				break;
 		}
-		return addEthernet( index, type );
+		switch ( type ) {
+		case NAT:
+			ret = addEthernet( index, EthernetType.NAT );
+			break;
+		case BRIDGED:
+			ret = addEthernet( index, EthernetType.BRIDGED );
+			break;
+		case HOST_ONLY:
+			ret = addEthernet( index, EthernetType.HOST_ONLY );
+			break;
+		default:
+			// Should not come to this...
+			break;
+		}
+		return ret;
 	}
 
 	public boolean addEthernet( int index, EthernetType type )
@@ -292,18 +374,21 @@ public class VmwareMetaData extends VmMetaData
 		return Integer.toString( val );
 	}
 
+	@Override
 	public boolean disableSuspend()
 	{
 		addFiltered( "suspend.disabled", "TRUE" );
 		return true;
 	}
 
+	@Override
 	public boolean addDisplayName( String name )
 	{
 		addFiltered( "displayName", name );
 		return true;
 	}
 
+	@Override
 	public boolean addRam( int mem )
 	{
 		addFiltered( "memsize", Integer.toString( mem ) );
@@ -359,20 +444,6 @@ public class VmwareMetaData extends VmMetaData
 		}
 	}
 
-	public static enum EthernetType
-	{
-		NAT( "vmnet1" ),
-		BRIDGED( "vmnet0" ),
-		HOST_ONLY( "vmnet2" );
-
-		public final String vmnet;
-
-		private EthernetType( String vnet )
-		{
-			this.vmnet = vnet;
-		}
-	}
-
 	@Override
 	public void enableUsb( boolean enabled )
 	{
@@ -391,147 +462,79 @@ public class VmwareMetaData extends VmMetaData
 		return config.get( key );
 	}
 
-	// SOUND
-	public static enum SoundCardType
+	public void setSoundCard( VmMetaData.SoundCardType type )
 	{
-		NONE( false, null, "None" ),
-		DEFAULT( true, null, "(default)" ),
-		SOUND_BLASTER( true, "sb16", "Sound Blaster 16" ),
-		ES( true, "es1371", "ES 1371" ),
-		HD_AUDIO( true, "hdaudio", "Intel Integrated HD Audio" );
-
-		public final boolean isPresent;
-		public final String value;
-		public final String displayName;
-
-		private SoundCardType( boolean present, String value, String dName )
-		{
-			this.isPresent = present;
-			this.value = value;
-			this.displayName = dName;
-		}
-	}
-
-	public void setSoundCard( SoundCardType type )
-	{
-		addFiltered( "sound.present", vmBoolean( type.isPresent ) );
-		if ( type.value != null ) {
-			addFiltered( "sound.virtualDev", type.value );
+		VmWareSoundCardMeta soundCardMeta = soundCards.get( type );
+		addFiltered( "sound.present", vmBoolean( soundCardMeta.isPresent ) );
+		if ( soundCardMeta.value != null ) {
+			addFiltered( "sound.virtualDev", soundCardMeta.value );
 		} else {
 			config.remove( "sound.virtualDev" );
 		}
 	}
 
-	public SoundCardType getSoundCard()
+	public VmMetaData.SoundCardType getSoundCard()
 	{
 		if ( !isSetAndTrue( "sound.present" ) || !isSetAndTrue( "sound.autodetect" ) ) {
-			return SoundCardType.NONE;
+			return VmMetaData.SoundCardType.NONE;
 		}
 		String current = config.get( "sound.virtualDev" );
 		if ( current != null ) {
-			for ( SoundCardType type : SoundCardType.values() ) {
-				if ( current.equals( type.value ) ) {
-					return type;
+			VmWareSoundCardMeta soundCardMeta = null;
+			for ( VmMetaData.SoundCardType type : VmMetaData.SoundCardType.values() ) {
+				soundCardMeta = soundCards.get( type );
+				if ( soundCardMeta != null ) {
+					if ( current.equals( soundCardMeta.value ) ) {
+						return type;
+					}
 				}
 			}
 		}
-		return SoundCardType.DEFAULT;
+		return VmMetaData.SoundCardType.DEFAULT;
 	}
 
-	// 3DAcceleration
-	public static enum DDAcceleration
+	public void setDDAcceleration( VmMetaData.DDAcceleration type )
 	{
-		OFF( false, "Off" ),
-		ON( true, "On" );
-
-		public final boolean isPresent;
-		public final String displayName;
-
-		private DDAcceleration( boolean present, String dName )
-		{
-			this.isPresent = present;
-			this.displayName = dName;
-		}
+		VmWareDDAccelMeta ddaMeta = ddacc.get( type );
+		addFiltered( "mks.enable3d", vmBoolean( ddaMeta.isPresent ) );
 	}
 
-	public void setDDAcceleration( DDAcceleration type )
-	{
-		addFiltered( "mks.enable3d", vmBoolean( type.isPresent ) );
-	}
-
-	public DDAcceleration getDDAcceleration()
+	public VmMetaData.DDAcceleration getDDAcceleration()
 	{
 		if ( isSetAndTrue( "mks.enable3d" ) ) {
-			return DDAcceleration.ON;
+			return VmMetaData.DDAcceleration.ON;
 		} else {
-			return DDAcceleration.OFF;
+			return VmMetaData.DDAcceleration.OFF;
 		}
 	}
 
-	// Virtual hardware version
-	public static enum HWVersion
+	public void setHWVersion( VmMetaData.HWVersion type )
 	{
-		NONE( 0, "(invalid)" ),
-		THREE( 3, "  3 (Workstation 4/5, Player 1)" ),
-		FOUR( 4, "  4 (Workstation 4/5, Player 1/2, Fusion 1)" ),
-		SIX( 6, "  6 (Workstation 6)" ),
-		SEVEN( 7, "  7 (Workstation 6.5/7, Player 3, Fusion 2/3)" ),
-		EIGHT( 8, "  8 (Workstation 8, Player/Fusion 4)" ),
-		NINE( 9, "  9 (Workstation 9, Player/Fusion 5)" ),
-		TEN( 10, "10 (Workstation 10, Player/Fusion 6)" ),
-		ELEVEN( 11, "11 (Workstation 11, Player/Fusion 7)" ),
-		TWELVE( 12, "12 (Workstation/Player 12, Fusion 8)" );
-
-		public final int version;
-		public final String displayName;
-
-		private HWVersion( int vers, String dName )
-		{
-			this.version = vers;
-			this.displayName = dName;
-		}
+		VmWareHWVersionMeta hwVersionMeta = hwversion.get( type );
+		addFiltered( "virtualHW.version", vmInteger( hwVersionMeta.version ) );
 	}
 
-	public void setHWVersion( HWVersion type )
-	{
-		addFiltered( "virtualHW.version", vmInteger( type.version ) );
-	}
-
-	public HWVersion getHWVersion()
+	public VmMetaData.HWVersion getHWVersion()
 	{
 		int currentValue = Util.parseInt( config.get( "virtualHW.version" ), -1 );
-		for ( HWVersion ver : HWVersion.values() ) {
-			if ( currentValue == ver.version ) {
+		VmWareHWVersionMeta hwVersionMeta = null;
+		for ( VmMetaData.HWVersion ver : VmMetaData.HWVersion.values() ) {
+			hwVersionMeta = hwversion.get( ver );
+			if ( hwVersionMeta == null ) {
+				continue;
+			}
+			if ( currentValue == hwVersionMeta.version ) {
 				return ver;
 			}
 		}
 		return HWVersion.NONE;
 	}
 
-	// Virtual network adapter
-	public static enum EthernetDevType
+	public void setEthernetDevType( int cardIndex, VmMetaData.EthernetDevType type )
 	{
-		AUTO( null, "(default)" ),
-		PCNET32( "vlance", "AMD PCnet32" ),
-		E1000( "e1000", "Intel E1000 (PCI)" ),
-		E1000E( "e1000e", "Intel E1000e (PCI-Express)" ),
-		VMXNET( "vmxnet", "VMXnet" ),
-		VMXNET3( "vmxnet3", "VMXnet 3" );
-
-		public final String value;
-		public final String displayName;
-
-		private EthernetDevType( String value, String dName )
-		{
-			this.value = value;
-			this.displayName = dName;
-		}
-	}
-
-	public void setEthernetDevType( int cardIndex, EthernetDevType type )
-	{
-		if ( type.value != null ) {
-			addFiltered( "ethernet" + cardIndex + ".virtualDev", type.value );
+		VmWareEthernetDevTypeMeta ethernetDevTypeMeta = networkCards.get( type );
+		if ( ethernetDevTypeMeta.value != null ) {
+			addFiltered( "ethernet" + cardIndex + ".virtualDev", ethernetDevTypeMeta.value );
 		} else {
 			config.remove( "ethernet" + cardIndex + ".virtualDev" );
 		}
@@ -541,13 +544,54 @@ public class VmwareMetaData extends VmMetaData
 	{
 		String temp = config.get( "ethernet" + cardIndex + ".virtualDev" );
 		if ( temp != null ) {
-
-			for ( EthernetDevType type : EthernetDevType.values() ) {
-				if ( temp.equals( type.value ) ) {
+			VmWareEthernetDevTypeMeta ethernetDevTypeMeta = null;
+			for ( EthernetDevType type : VmMetaData.EthernetDevType.values() ) {
+				ethernetDevTypeMeta = networkCards.get( type );
+				if ( ethernetDevTypeMeta == null ) {
+					continue;
+				}
+				if ( temp.equals( ethernetDevTypeMeta.value ) ) {
 					return type;
 				}
 			}
 		}
 		return EthernetDevType.AUTO;
+	}
+
+	@Override
+	public boolean addCpuCoreCount( int numCores )
+	{
+		// TODO actually add the cpu core count to the machine description
+		return false;
+	}
+
+	public void registerVirtualHW()
+	{
+		soundCards.put( VmMetaData.SoundCardType.NONE, new VmWareSoundCardMeta( false, null ) );
+		soundCards.put( VmMetaData.SoundCardType.DEFAULT, new VmWareSoundCardMeta( true, null ) );
+		soundCards.put( VmMetaData.SoundCardType.SOUND_BLASTER, new VmWareSoundCardMeta( true, "sb16" ) );
+		soundCards.put( VmMetaData.SoundCardType.ES, new VmWareSoundCardMeta( true, "es1371" ) );
+		soundCards.put( VmMetaData.SoundCardType.HD_AUDIO, new VmWareSoundCardMeta( true, "hdaudio" ) );
+
+		ddacc.put( VmMetaData.DDAcceleration.OFF, new VmWareDDAccelMeta( false ) );
+		ddacc.put( VmMetaData.DDAcceleration.ON, new VmWareDDAccelMeta( true ) );
+
+		hwversion.put( VmMetaData.HWVersion.NONE, new VmWareHWVersionMeta( 0 ) );
+		hwversion.put( VmMetaData.HWVersion.THREE, new VmWareHWVersionMeta( 3 ) );
+		hwversion.put( VmMetaData.HWVersion.FOUR, new VmWareHWVersionMeta( 4 ) );
+		hwversion.put( VmMetaData.HWVersion.SIX, new VmWareHWVersionMeta( 6 ) );
+		hwversion.put( VmMetaData.HWVersion.SEVEN, new VmWareHWVersionMeta( 7 ) );
+		hwversion.put( VmMetaData.HWVersion.EIGHT, new VmWareHWVersionMeta( 8 ) );
+		hwversion.put( VmMetaData.HWVersion.NINE, new VmWareHWVersionMeta( 9 ) );
+		hwversion.put( VmMetaData.HWVersion.TEN, new VmWareHWVersionMeta( 10 ) );
+		hwversion.put( VmMetaData.HWVersion.ELEVEN, new VmWareHWVersionMeta( 11 ) );
+		hwversion.put( VmMetaData.HWVersion.TWELVE, new VmWareHWVersionMeta( 12 ) );
+
+		networkCards.put( VmMetaData.EthernetDevType.AUTO, new VmWareEthernetDevTypeMeta( null ) );
+		networkCards.put( VmMetaData.EthernetDevType.PCNET32, new VmWareEthernetDevTypeMeta( "vlance" ) );
+		networkCards.put( VmMetaData.EthernetDevType.E1000, new VmWareEthernetDevTypeMeta( "e1000" ) );
+		networkCards.put( VmMetaData.EthernetDevType.E1000E, new VmWareEthernetDevTypeMeta( "e1000e" ) );
+		networkCards.put( VmMetaData.EthernetDevType.VMXNET, new VmWareEthernetDevTypeMeta( "vmxnet" ) );
+		networkCards.put( VmMetaData.EthernetDevType.VMXNET3, new VmWareEthernetDevTypeMeta( "vmxnet3" ) );
 	}
 }
