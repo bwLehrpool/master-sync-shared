@@ -256,6 +256,11 @@ public class VboxConfig
 			// take the uuid
 			String uuid = hddElement.getAttribute( "uuid" );
 			// search in the xml object and give back the parent of the parent of the node that is called Image and has the given uuid
+			String type = hddElement.getAttribute( "type" );
+			if ( !type.equals( "Normal" ) && !type.equals( "Writethrough" ) ) {
+				LOGGER.warn( "Type of the disk file is neither 'Normal' nor 'Writethrough' but: " + type );
+				LOGGER.warn( "This makes the image not directly modificable, which might lead to problems when editing it locally." );
+			}
 			String pathToParent = givePathToStorageController( uuid );
 			XPathExpression attachedDevicesExpr = xPath.compile( pathToParent );
 			Object devicesResult = attachedDevicesExpr.evaluate( this.doc, XPathConstants.NODESET );
@@ -263,6 +268,10 @@ public class VboxConfig
 			// TODO -- ehm...should only have 1 element...what do when there are more?
 			if ( devicesNodes.getLength() > 1 ) {
 				LOGGER.error( "There can not be more HDDs with the same UUID!" );
+				return;
+			}
+			if ( devicesNodes.getLength() == 0 ) {
+				LOGGER.error( "Image with UUID '" + uuid + "' does not seem connected to any storage controller. Is it a snapshot?" );
 				return;
 			}
 			Element deviceElement = (Element)devicesNodes.item( 0 );

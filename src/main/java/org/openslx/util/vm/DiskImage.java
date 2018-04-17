@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
@@ -11,12 +12,12 @@ import org.openslx.util.Util;
 
 public class DiskImage
 {
+	private static final Logger LOGGER = Logger.getLogger( DiskImage.class );
 	/**
 	 * Big endian representation of the 4 bytes 'KDMV'
 	 */
 	private static final int VMDK_MAGIC = 0x4b444d56;
-	private static final String VDI_PREFIX = "<<< ";
-	private static final String VDI_SUFFIX = "Disk Image >>>";
+	private static final int VDI_MAGIC = 0x7f10dabe;
 	private static final String QEMU = "QFI";
 
 	public enum ImageFormat
@@ -57,6 +58,7 @@ public class DiskImage
 	public final ImageFormat format;
 	public final String subFormat;
 	public final int hwVersion;
+	public final String diskDescription;
 
 	public ImageFormat getImageFormat()
 	{
@@ -65,6 +67,7 @@ public class DiskImage
 
 	public DiskImage( File disk ) throws FileNotFoundException, IOException, UnknownImageFormatException
 	{
+		LOGGER.debug( "Validating disk file: " + disk.getAbsolutePath() );
 		try ( RandomAccessFile file = new RandomAccessFile( disk, "r" ) ) {
 			// vmdk
 			if ( file.readInt() == VMDK_MAGIC ) {
@@ -90,46 +93,65 @@ public class DiskImage
 					} else {
 						this.hwVersion = Util.parseInt( hwv, 10 );
 					}
+					this.diskDescription = null;
 					return;
 				}
 			}
-			// vdi
-			file.seek( 0 );
-			byte[] prefixBuffer = new byte[ VDI_PREFIX.length() ];
-			file.readFully( prefixBuffer );
-			String prefixString = new String( prefixBuffer );
-			if ( VDI_PREFIX.equals( prefixString ) ) {
+			// Format spec from: https://forums.virtualbox.org/viewtopic.php?t=8046
+			// First 64 bytes are the opening tag: <<< .... >>>
+			// which we don't care about, then comes the VDI signature
+			file.seek( 64 );
+			if ( file.readInt() == VDI_MAGIC ) {
+				// skip the next 4 ints as they don't interest us:
+				// - VDI version
+				// - size of header, strangely irrelevant?
+				// - image type, 1 for dynamic allocated storage, 2 for fixed size
+				// - image flags, seem to be always 00 00 00 00
+				file.skipBytes( 4 * 4 );
 
-				byte[] localBuffer = new byte[ 1 ];
-				byte[] suffixBuffer = new byte[ VDI_SUFFIX.length() - 1 ];
-				// 30 in this case would be the remaining length of the vdi header
-				// the longest string to date would be "<<< QEMU VM Virtual Disk Image >>>"
-				// if the loop doesn't find the first letter of the VID_SUFFIX then we have another format on our hands and should throw exception
-				for ( int i = 0; i < 30; i++ ) {
-					file.readFully( localBuffer );
-					String localString = new String( localBuffer );
+				// next 256 bytes are image description
+				byte[] imageDesc = new byte[ 256 ];
+				file.readFully( imageDesc );
+				// next sections are irrelevant (int if not specified):
+				// - offset blocks
+				// - offset data
+				// - cylinders
+				// - heads
+				// - sectors
+				// - sector size
+				// - <unused>
+				// - disk size (long = 8 bytes)
+				// - block size
+				// - block extra data
+				// - blocks in hdd
+				// - blocks allocated
+				file.skipBytes( 4 * 13 );
 
-					if ( !localString.equals( VDI_SUFFIX.substring( 0, 1 ) ) ) {
-						continue;
-					}
-					file.readFully( suffixBuffer );
-					String suffixString = new String( suffixBuffer );
-					if ( suffixString.equals( VDI_SUFFIX.substring( 1 ) ) ) {
-						// TODO still don't know where they are found in a .vdi file
-						this.isStandalone = true;
-						this.isCompressed = false;
-						this.isSnapshot = false;
-						this.format = ImageFormat.VDI;
-						this.subFormat = "";
-						this.hwVersion = 0;
-						return;
-					} else {
-						// this will ensure the search doesn't stop at the first D we find
-						file.seek( i + VDI_PREFIX.length() + 1 );
-					}
-				}
+				// now it gets interesting, UUID of VDI
+				byte[] diskUuid = new byte[ 16 ];
+				file.readFully( diskUuid );
+				// last snapshot uuid, mostly uninteresting since we don't support snapshots -> skip 16 bytes
+				// TODO: meaning of "uuid link"? for now, skip 16
+				file.skipBytes( 32 );
+
+				// parent uuid, indicator if this VDI is a snapshot or not
+				byte[] parentUuid = new byte[ 16 ];
+				file.readFully( parentUuid );
+				byte[] zeroUuid = new byte[ 16 ];
+				Arrays.fill( new byte[ 16 ], (byte)0 );
+				this.isSnapshot = !Arrays.equals( parentUuid, zeroUuid );
+				// VDI does not seem to support split VDI files so always standalone
+				this.isStandalone = true;
+				// compression is done by sparsifying the disk files, there is no flag for it
+				this.isCompressed = false;
+				this.format = ImageFormat.VDI;
+				this.subFormat = null;
+				this.diskDescription = new String( imageDesc );
+				this.hwVersion = 0;
+				return;
 			}
-			//qcow
+
+			// TODO: qcow
 			file.seek( 0 );
 			byte[] qcowBuffer = new byte[ QEMU.length() ];
 			file.readFully( qcowBuffer );
@@ -140,7 +162,8 @@ public class DiskImage
 				this.isCompressed = false;
 				this.isSnapshot = false;
 				this.format = ImageFormat.QCOW2;
-				this.subFormat = "";
+				this.subFormat = null;
+				this.diskDescription = null;
 				this.hwVersion = 0;
 				return;
 			}
