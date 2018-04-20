@@ -49,9 +49,9 @@ public class VboxConfig
 	private String hddsExpression = "/VirtualBox/Machine/MediaRegistry/HardDisks/*";
 	private ArrayList<HardDisk> hddsArray = new ArrayList<HardDisk>();
 
-	// a black list of sorts of tags that need to be removed from the .vbox file
+	// list of nodes to automatically remove when reading the vbox file
 	private static String[] blackList = { "SharedFolders", "HID", "USB", "ExtraData", "Adapter", "GuestProperties", "LPT", "StorageController", "FloppyImages", "DVDImages",
-			"AttachedDevice" };
+			"AttachedDevice", "RemoteDisplay", "VideoCapture" };
 
 	public static enum PlaceHolder
 	{
