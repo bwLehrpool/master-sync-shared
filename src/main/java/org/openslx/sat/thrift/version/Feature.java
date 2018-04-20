@@ -15,4 +15,9 @@ public enum Feature {
 	 */
 	NETWORK_SHARES,
 
+	/**
+	 * Server supports multiple hypervisors which requires special handling since
+	 * multiple components needs to be compatible to fully support them.
+	 */
+	MULTIPLE_HYPERVISORS,
 }
