@@ -130,6 +130,7 @@ public abstract class VmMetaData<T, U, V, W>
 
 	protected String displayName = null;
 
+	protected boolean isMachineSnapshot;
 	/*
 	 * Getters for virtual hardware
 	 */
@@ -185,6 +186,12 @@ public abstract class VmMetaData<T, U, V, W>
 		return displayName;
 	}
 
+	/*
+	 * Getter for isMachineSnapshot
+	 */
+	public boolean isMachineSnapshot() {
+		return isMachineSnapshot;
+	}
 	/**
 	 * This method should return a minimal representation of the input meta data.
 	 * The representation is platform dependent, and should be stripped of all

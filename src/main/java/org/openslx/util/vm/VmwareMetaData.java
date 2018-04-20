@@ -144,6 +144,8 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 				hdds.add( new HardDisk( controller.virtualDev, bus, device.filename ) );
 			}
 		}
+		// TODO check if this machine is in a paused/suspended state
+		this.isMachineSnapshot = false;
 
 		// Add HDD to cleaned vmx
 		if ( !hdds.isEmpty() ) {

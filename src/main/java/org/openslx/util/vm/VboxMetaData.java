@@ -100,7 +100,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 		this.config.init();
 		displayName = config.getDisplayName();
 		setOs( "virtualbox", config.getOsName() );
-
+		this.isMachineSnapshot = config.isMachineSnapshot();
 		for ( HardDisk hardDisk : config.getHdds() ) {
 			hdds.add( hardDisk );
 		}

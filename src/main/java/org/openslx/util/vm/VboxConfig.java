@@ -48,7 +48,7 @@ public class VboxConfig
 
 	private String hddsExpression = "/VirtualBox/Machine/MediaRegistry/HardDisks/*";
 	private ArrayList<HardDisk> hddsArray = new ArrayList<HardDisk>();
-
+	private boolean isMachineSnapshot = false;
 	// list of nodes to automatically remove when reading the vbox file
 	private static String[] blackList = { "SharedFolders", "HID", "USB", "ExtraData", "Adapter", "GuestProperties", "LPT", "StorageController", "FloppyImages", "DVDImages",
 			"AttachedDevice", "RemoteDisplay", "VideoCapture" };
@@ -147,6 +147,7 @@ public class VboxConfig
 		}
 		try {
 			setMachineName();
+			checkForMachineSnapshots();
 			ensureHardwareUuid();
 			setOsType();
 			if ( checkForPlaceholders() ) {
@@ -161,17 +162,24 @@ public class VboxConfig
 		}
 	}
 
+	private void checkForMachineSnapshots() throws XPathExpressionException {
+		// check if the vbox configuration file contains some machine snapshots.
+		// by looking at the existance of /VirtualBox/Machine/Snapshot
+		NodeList machineSnapshots = findNodes("/VirtualBox/Machine/Snapshot");
+		isMachineSnapshot = (machineSnapshots != null && machineSnapshots.getLength() > 0 );
+	}
+
 	private void ensureHardwareUuid() throws XPathExpressionException
 	{
-		NodeList hwNodes = findNodes( "Hardware" );
-		int count = hwNodes.getLength();
 		// we will need the machine uuid, so get it
 		String machineUuid = xPath.compile( "/VirtualBox/Machine/@uuid" ).evaluate( this.doc );
 		if ( machineUuid.isEmpty() ) {
 			LOGGER.error( "Machine UUID empty, should never happen!" );
 			return;
 		}
-		// now check if we had a <Hardware/> node, which we always should
+
+		NodeList hwNodes = findNodes( "/VirtualBox/Machine/Hardware" );
+		int count = hwNodes.getLength();
 		if ( count == 1 ) {
 			Element hw = (Element)hwNodes.item( 0 );
 			String hwUuid = hw.getAttribute( "uuid" );
@@ -186,9 +194,8 @@ public class VboxConfig
 				LOGGER.info( "Saved machine UUID as hardware UUID." );
 			}
 		} else {
-			// zero or more than 1 <Hardware/> were found, fatal either way
-			// HACK: hijack XPathExpressionException ...
-			throw new XPathExpressionException( "Zero or more than one <Hardware> node found, should never happen!" );
+			 // HACK: hijack XPathExpressionException ...
+			throw new XPathExpressionException( "Zero or more '/VirtualBox/Machine/Hardware' node were found, should never happen!" );
 		}
 	}
 
@@ -330,17 +337,21 @@ public class VboxConfig
 	}
 
 	/**
-	 * Function used to find nodes in the document
-	 * Function returnes a NodeList of Nodes...not just a Node...even when the wanted Node is a
-	 * single
-	 * Node, you get a NodeList with just one element
+	 * Search through the doc for nodes with the given name.
+	 * If the given name starts with '/', assume a full XPath was
+	 * given and do not do a full search
 	 * 
-	 * @param targetTag as String
+	 * @param identifier
 	 * @return nodes as NodeList
 	 */
-	public NodeList findNodes( String targetTag )
+	public NodeList findNodes( String identifier )
 	{
-		String path = ".//" + targetTag;
+		String path;
+		if ( identifier.startsWith( "/", 0 ) )
+			path = identifier;
+		else
+			path = ".//" + identifier;
+
 		XPathExpression expr;
 		NodeList nodes = null;
 		try {
@@ -616,5 +627,9 @@ public class VboxConfig
 		} catch ( Exception ex ) {
 			throw new RuntimeException( "Error converting to String", ex );
 		}
+	}
+
+	public boolean isMachineSnapshot() {
+		return isMachineSnapshot;
 	}
 }
