@@ -55,8 +55,8 @@ public class VboxConfig
 
 	public static enum PlaceHolder
 	{
-		FLOPPYUUID( "%OpenSLX_FloppyUUID%" ), FLOPPYLOCATION( "%OpenSLX_Floppy_Location%" ), CPU( "%OpenSLX_CPU%" ), MEMORY( "%OpenSLX_MEMORY%" ), MACHINEUUID(
-				"%OpenSLX_MUUID%" ), NETWORKMAC( "%OpenSLX_Networkcard_MACAddress%" ), HDDLOCATION( "%OpenSLX_HDD_Location%" ), HDDUUID( "%OpenSLX_HDDUUID_" );
+		FLOPPYUUID( "%VM_FLOPPY_UUID%" ), FLOPPYLOCATION( "%VM_FLOPPY_LOCATION%" ), CPU( "%VM_CPU_CORES%" ), MEMORY( "%VM_RAM%" ), MACHINEUUID(
+				"%VM_MACHINE_UUID%" ), NETWORKMAC( "%VM_NIC_MAC%" ), HDDLOCATION( "%VM_HDD_LOCATION%" ), HDDUUID( "%VM_HDD_UUID_" );
 		private final String holderName;
 
 		private PlaceHolder( String name )
@@ -64,7 +64,8 @@ public class VboxConfig
 			this.holderName = name;
 		}
 
-		public String holderName()
+		@Override
+		public String toString()
 		{
 			return holderName;
 		}
@@ -120,7 +121,6 @@ public class VboxConfig
 			doc = dBuilder.parse( is );
 
 		} catch ( ParserConfigurationException | SAXException e ) {
-
 			LOGGER.warn( "Could not recreate the dom", e );
 		}
 	}
@@ -136,9 +136,7 @@ public class VboxConfig
 	}
 
 	/**
-	 * initialization function
-	 * reads the doc, sets Machine name, os type, sets the hdds, adds placeholders, removes unwanted/
-	 * unneeded nodes
+	 * Main initialization functions parsing the XML document.
 	 */
 	public void init()
 	{
@@ -162,11 +160,12 @@ public class VboxConfig
 		}
 	}
 
-	private void checkForMachineSnapshots() throws XPathExpressionException {
+	private void checkForMachineSnapshots() throws XPathExpressionException
+	{
 		// check if the vbox configuration file contains some machine snapshots.
 		// by looking at the existance of /VirtualBox/Machine/Snapshot
-		NodeList machineSnapshots = findNodes("/VirtualBox/Machine/Snapshot");
-		isMachineSnapshot = (machineSnapshots != null && machineSnapshots.getLength() > 0 );
+		NodeList machineSnapshots = findNodes( "/VirtualBox/Machine/Snapshot" );
+		isMachineSnapshot = ( machineSnapshots != null && machineSnapshots.getLength() > 0 );
 	}
 
 	private void ensureHardwareUuid() throws XPathExpressionException
@@ -194,7 +193,7 @@ public class VboxConfig
 				LOGGER.info( "Saved machine UUID as hardware UUID." );
 			}
 		} else {
-			 // HACK: hijack XPathExpressionException ...
+			// HACK: hijack XPathExpressionException ...
 			throw new XPathExpressionException( "Zero or more '/VirtualBox/Machine/Hardware' node were found, should never happen!" );
 		}
 	}
@@ -211,7 +210,7 @@ public class VboxConfig
 			Element hdd = (Element)hdds.item( i );
 			if ( hdd == null )
 				continue;
-			if ( hdd.getAttribute( "location" ).equals( PlaceHolder.HDDLOCATION.holderName() ) ) {
+			if ( hdd.getAttribute( "location" ).equals( PlaceHolder.HDDLOCATION.toString() ) ) {
 				return true;
 			}
 		}
@@ -268,7 +267,7 @@ public class VboxConfig
 				LOGGER.warn( "Type of the disk file is neither 'Normal' nor 'Writethrough' but: " + type );
 				LOGGER.warn( "This makes the image not directly modificable, which might lead to problems when editing it locally." );
 			}
-			String pathToParent = givePathToStorageController( uuid );
+			String pathToParent = "//Image[contains(@uuid, \'" + uuid + "\')]/../..";
 			XPathExpression attachedDevicesExpr = xPath.compile( pathToParent );
 			Object devicesResult = attachedDevicesExpr.evaluate( this.doc, XPathConstants.NODESET );
 			NodeList devicesNodes = (NodeList)devicesResult;
@@ -300,19 +299,19 @@ public class VboxConfig
 	public void addPlaceHolders()
 	{
 		// placeholder for the MACAddress
-		changeAttribute( "Adapter", "MACAddress", PlaceHolder.NETWORKMAC.holderName() );
+		changeAttribute( "Adapter", "MACAddress", PlaceHolder.NETWORKMAC.toString() );
 
 		// placeholder for the machine uuid
-		changeAttribute( "Machine", "uuid", PlaceHolder.MACHINEUUID.holderName() );
+		changeAttribute( "Machine", "uuid", PlaceHolder.MACHINEUUID.toString() );
 
 		// placeholder for the location of the virtual hdd
-		changeAttribute( "HardDisk", "location", PlaceHolder.HDDLOCATION.holderName() );
+		changeAttribute( "HardDisk", "location", PlaceHolder.HDDLOCATION.toString() );
 
 		// placeholder for the memory
-		changeAttribute( "Memory", "RAMSize", PlaceHolder.MEMORY.holderName() );
+		changeAttribute( "Memory", "RAMSize", PlaceHolder.MEMORY.toString() );
 
 		// placeholder for the CPU
-		changeAttribute( "CPU", "count", PlaceHolder.CPU.holderName() );
+		changeAttribute( "CPU", "count", PlaceHolder.CPU.toString() );
 
 		// add placeholder for the uuid of the virtual harddrive.
 		// must be added on 2 positions...in the HardDisk tag and the attachedDevice tag
@@ -323,13 +322,13 @@ public class VboxConfig
 			if ( hdd == null )
 				continue;
 			String uuid = hdd.getAttribute( "uuid" );
-			hdd.setAttribute( "uuid", PlaceHolder.HDDUUID.holderName() + i + "%" );
+			hdd.setAttribute( "uuid", PlaceHolder.HDDUUID.toString() + i + "%" );
 			NodeList images = findNodes( "Image" );
 			Element image;
 			for ( int j = 0; j < images.getLength(); j++ ) {
 				if ( ( (Element)images.item( j ) ).getAttribute( "uuid" ).equals( uuid ) ) {
 					image = (Element)images.item( j );
-					image.setAttribute( "uuid", PlaceHolder.HDDUUID.holderName() + i + "%" );
+					image.setAttribute( "uuid", PlaceHolder.HDDUUID.toString() + i + "%" );
 					break;
 				}
 			}
@@ -526,7 +525,6 @@ public class VboxConfig
 	private void removeNode( Node node )
 	{
 		if ( node == null ) {
-			LOGGER.warn( "node is null; unsafe" );
 			return;
 		}
 		Node parent = node.getParentNode();
@@ -590,12 +588,6 @@ public class VboxConfig
 		}
 	}
 
-	private String givePathToStorageController( String uuid )
-	{
-		// StorageController is the parent of the parent of node with given uuid
-		return "//Image[contains(@uuid, \'" + uuid + "\')]/../..";
-	}
-
 	public String getDisplayName()
 	{
 		return displayName;
@@ -629,7 +621,8 @@ public class VboxConfig
 		}
 	}
 
-	public boolean isMachineSnapshot() {
+	public boolean isMachineSnapshot()
+	{
 		return isMachineSnapshot;
 	}
 }

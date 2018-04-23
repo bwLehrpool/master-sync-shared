@@ -242,11 +242,11 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 			attachedDev = (Element)config.addNewNode( "StorageController", "AttachedDevice", false, "name", "Floppy" );
 
 			Element imageTag = (Element)config.addNewNode( "AttachedDevice", "Image", true, "type", "Floppy" );
-			imageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.holderName() );
+			imageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
 			config.addNewNode( "MediaRegistry", "FloppyImages", false );
 			Element floppyImageTag = (Element)config.addNewNode( "FloppyImages", "Image", true );
-			floppyImageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.holderName() );
-			floppyImageTag.setAttribute( "location", VboxConfig.PlaceHolder.FLOPPYLOCATION.holderName() );
+			floppyImageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
+			floppyImageTag.setAttribute( "location", VboxConfig.PlaceHolder.FLOPPYLOCATION.toString() );
 		}
 
 		attachedDev.setAttribute( "type", "Floppy" );
