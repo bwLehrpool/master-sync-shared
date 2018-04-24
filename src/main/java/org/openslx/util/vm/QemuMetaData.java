@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
+import org.openslx.thrifthelper.TConst;
 
 public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta>
 {
@@ -18,13 +19,13 @@ public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	private static String config = "qemu-system-i386 <args> <image> -enable-kvm \n\r qemu-system-x86_64 <args> <image> -enable-kvm";
 	private static final Logger LOGGER = Logger.getLogger( QemuMetaData.class );
 
-	private static final Virtualizer virtualizer = new Virtualizer( "qemukvm", "QEMU-KVM" );
+	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_QEMU, "QEMU-KVM" );
 
 	public QemuMetaData( List<OperatingSystem> osList, File file )
 	{
 		super( osList );
 		displayName = file.getName().substring( 0, file.getName().indexOf( "." ) );
-		setOs( "qemukvm", "anyOs" );
+		setOs( "anyOs" );
 		hdds.add( new HardDisk( "anychipset", DriveBusType.IDE, file.getAbsolutePath() ) );
 		makeStartSequence();
 	}
@@ -34,7 +35,7 @@ public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 		super( osList );
 		config = new String( vmContent );
 		displayName = "QemuVM";
-		setOs( "qemukvm", "anyOs" );
+		setOs( "anyOs" );
 	}
 
 	// initiates the arguments map with a default working sequence that will later be used in the definition array
@@ -93,8 +94,7 @@ public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	@Override
 	public void setOs( String vendorOsId )
 	{
-		// TODO Auto-generated method stub
-
+		setOs( TConst.VIRT_QEMU, vendorOsId );
 	}
 
 	@Override

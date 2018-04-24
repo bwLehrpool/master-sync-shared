@@ -7,7 +7,9 @@ import java.io.RandomAccessFile;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
+import org.apache.thrift.protocol.TCompactProtocol;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
+import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
 
 public class DiskImage
@@ -42,11 +44,11 @@ public class DiskImage
 		{
 			if ( virtId == null )
 				return null;
-			if ( virtId.equals( "vmware" ) )
+			if ( virtId.equals( TConst.VIRT_VMWARE ) )
 				return VMDK;
-			if ( virtId.equals( "virtualbox" ) )
+			if ( virtId.equals( TConst.VIRT_VIRTUALBOX ) )
 				return VDI;
-			if ( virtId.equals( "qemukvm" ) )
+			if ( virtId.equals( TConst.VIRT_QEMU ) )
 				return QCOW2;
 			return null;
 		}

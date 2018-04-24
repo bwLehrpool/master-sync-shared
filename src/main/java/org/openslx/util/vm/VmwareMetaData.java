@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
+import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
 import org.openslx.util.vm.VmwareConfig.ConfigEntry;
 
@@ -63,7 +64,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 
 	private static final Logger LOGGER = Logger.getLogger( VmwareMetaData.class );
 
-	private static final Virtualizer virtualizer = new Virtualizer( "vmware", "VMware" );
+	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_VMWARE, "VMware" );
 
 	private static final Pattern hddKey = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d):?(\\d)?\\.(.*)", Pattern.CASE_INSENSITIVE );
 
@@ -182,7 +183,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		// Dig Usable meta data
 		String value = entry.getValue().getValue();
 		if ( lowerKey.equals( "guestos" ) ) {
-			setOs( "vmware", value );
+			setOs( value );
 			return;
 		}
 		if ( lowerKey.equals( "displayname" ) ) {
@@ -400,7 +401,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 	public void setOs( String vendorOsId )
 	{
 		addFiltered( "guestOS", vendorOsId );
-		setOs( "vmware", vendorOsId );
+		setOs( TConst.VIRT_VMWARE, vendorOsId );
 	}
 
 	@Override

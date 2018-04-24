@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
+import org.openslx.thrifthelper.TConst;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -63,7 +64,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 {
 	private static final Logger LOGGER = Logger.getLogger( VboxMetaData.class );
 
-	private static final Virtualizer virtualizer = new Virtualizer( "virtualbox", "VirtualBox" );
+	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_VIRTUALBOX, "VirtualBox" );
 
 	private final VboxConfig config;
 
@@ -99,7 +100,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 
 		this.config.init();
 		displayName = config.getDisplayName();
-		setOs( "virtualbox", config.getOsName() );
+		setOs( config.getOsName() );
 		this.isMachineSnapshot = config.isMachineSnapshot();
 		for ( HardDisk hardDisk : config.getHdds() ) {
 			hdds.add( hardDisk );
@@ -202,7 +203,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	public void setOs( String vendorOsId )
 	{
 		config.changeAttribute( "Machine", "OSType", vendorOsId );
-		setOs( "virtualbox", vendorOsId );
+		setOs( TConst.VIRT_VIRTUALBOX, vendorOsId );
 	}
 
 	@Override
