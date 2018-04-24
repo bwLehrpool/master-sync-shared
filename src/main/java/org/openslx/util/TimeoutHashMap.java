@@ -1,6 +1,7 @@
 package org.openslx.util;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,9 +48,13 @@ public class TimeoutHashMap<K, V> implements Map<K, V>
 		TimeoutReference<V> timeoutReference = map.get( key );
 		if ( timeoutReference == null )
 			return null;
-		return timeoutReference.get();
+		V obj = timeoutReference.get();
+		if ( obj == null && timeoutReference.isInvalid() ) {
+			map.remove( key );
+		}
+		return obj;
 	}
-
+	
 	@Override
 	public V put( K key, V value )
 	{
@@ -85,6 +90,18 @@ public class TimeoutHashMap<K, V> implements Map<K, V>
 	public Set<K> keySet()
 	{
 		return map.keySet();
+	}
+	
+	public Map<K, V> getImmutableSnapshot()
+	{
+		Map<K, V> copy = new HashMap<>();
+		for (Entry<K, TimeoutReference<V>> i : map.entrySet()) {
+			V v = i.getValue().get();
+			if (i.getValue().isInvalid())
+				continue;
+			copy.put(i.getKey(), v);
+		}
+		return Collections.unmodifiableMap( copy );
 	}
 
 	@Override

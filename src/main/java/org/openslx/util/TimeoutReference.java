@@ -10,9 +10,10 @@ public class TimeoutReference<T>
 {
 
 	private final long timeoutMs;
+	private final boolean refreshOnGet;
+	private final T item;
 	private long deadline;
-	private boolean refreshOnGet;
-	private T item;
+	private boolean invalid;
 
 	public TimeoutReference( boolean refreshOnGet, long timeoutMs, T item )
 	{
@@ -29,33 +30,34 @@ public class TimeoutReference<T>
 
 	public synchronized T get()
 	{
-		if ( item != null ) {
-			final long now = System.currentTimeMillis();
-			if ( deadline < now ) {
-				item = null;
-			} else if ( refreshOnGet ) {
-				deadline = now + timeoutMs;
-			}
+		if ( item == null || invalid )
+			return null;
+		final long now = System.currentTimeMillis();
+		if ( deadline < now ) {
+			invalid = true;
+			return null;
+		}
+		if ( refreshOnGet ) {
+			deadline = now + timeoutMs;
 		}
 		return item;
 	}
-
-	public synchronized void set( T newItem )
+	
+	synchronized boolean isInvalid()
 	{
-		this.item = newItem;
-		this.deadline = System.currentTimeMillis() + timeoutMs;
+		return invalid;
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return item.hashCode();
+		return item == null ? super.hashCode() : item.hashCode();
 	}
 
 	@Override
 	public boolean equals( Object o )
 	{
-		return this == o || item.equals( o );
+		return ( this == o || this.item == o || ( o != null && o.equals( this.item ) ) );
 	}
 
 }
