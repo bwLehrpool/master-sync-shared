@@ -13,8 +13,10 @@ import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.util.vm.VboxConfig.PlaceHolder;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 class VBoxSoundCardMeta
 {
@@ -99,6 +101,8 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 		registerVirtualHW();
 
 		this.config.init();
+		LOGGER.debug( "DUMPING CONFIG: " );
+		LOGGER.debug( this.config.toString( true ) );
 		displayName = config.getDisplayName();
 		setOs( config.getOsName() );
 		this.isMachineSnapshot = config.isMachineSnapshot();
@@ -130,16 +134,22 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
+	public byte[] getDefinitionArray()
+	{
+		return config.toString( true ).getBytes( StandardCharsets.UTF_8 );
+	}
+
+	@Override
 	public byte[] getFilteredDefinitionArray()
 	{
-		return config.toString().getBytes( StandardCharsets.UTF_8 );
+		return config.toString( false ).getBytes( StandardCharsets.UTF_8 );
 	}
 
 	@Override
 	public boolean addHddTemplate( String diskImage, String hddMode, String redoDir )
 	{
-		config.changeAttribute( "HardDisk", "location", diskImage );
-		config.changeAttribute( "Machine", "snapshotFolder", redoDir );
+		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk[@location='" + PlaceHolder.HDDLOCATION.toString() + "']", "location", diskImage );
+		config.changeAttribute( "/VirtualBox/Machine", "snapshotFolder", redoDir );
 		return true;
 	}
 
@@ -147,14 +157,14 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	public boolean addHddTemplate( File diskImage, String hddMode, String redoDir )
 	{
 		String diskImagePath = diskImage.getName();
-		config.changeAttribute( "HardDisk", "location", diskImagePath );
+		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "location", diskImagePath );
 
 		UUID newhdduuid = UUID.randomUUID();
 
 		// patching the new uuid in the vbox config file here
 		String vboxUUid = "{" + newhdduuid.toString() + "}";
-		config.changeAttribute( "HardDisk", "uuid", vboxUUid );
-		config.changeAttribute( "Image", "uuid", vboxUUid );
+		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "uuid", vboxUUid );
+		config.changeAttribute( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image", "uuid", vboxUUid );
 
 		// the order of the UUID is BIG_ENDIAN but we need to change the order of the first 8 Bytes
 		// to be able to write them to the vdi file... the PROBLEM here is that the first 8 
@@ -187,46 +197,45 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 			newMachineUuid = UUID.randomUUID();
 		}
 		String machineUUid = "{" + newMachineUuid.toString() + "}";
-		config.changeAttribute( "Machine", "uuid", machineUUid );
+		config.changeAttribute( "/VirtualBox/Machine", "uuid", machineUUid );
 		return true;
 	}
 
 	@Override
 	public boolean addDefaultNat()
 	{
-		config.addNewNode( "Adapter", "NAT", true );
-		config.changeAttribute( "Adapter", "MACAddress", "080027B86D12" );
+		config.addNewNode( "/VirtualBox/Machine/Hardware/Network/Adapter", "NAT" );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter", "MACAddress", "080027B86D12" );
 		return true;
 	}
 
 	@Override
 	public void setOs( String vendorOsId )
 	{
-		config.changeAttribute( "Machine", "OSType", vendorOsId );
+		config.changeAttribute( "/VirtualBox/Machine", "OSType", vendorOsId );
 		setOs( TConst.VIRT_VIRTUALBOX, vendorOsId );
 	}
 
 	@Override
 	public boolean addDisplayName( String name )
 	{
-		config.changeAttribute( "Machine", "name", name );
+		config.changeAttribute( "/VirtualBox/Machine", "name", name );
 		return true;
 	}
 
 	@Override
 	public boolean addRam( int mem )
 	{
-		config.changeAttribute( "Memory", "RAMSize", Integer.toString( mem ) );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/Memory", "RAMSize", Integer.toString( mem ) );
 		return true;
 	}
 
 	@Override
 	public void addFloppy( int index, String image, boolean readOnly )
 	{
-
-		Node somenode = config.findNode( "StorageController", "name", "Floppy" );
-		if ( somenode == null ) {
-			Element controller = (Element)config.addNewNode( "StorageControllers", "StorageController", false );
+		NodeList matches = (NodeList)config.findNodes( "/VirtualBox/Machine/StorageControllers/StorageController[@name='Floppy']" );
+		if ( matches == null || matches.getLength() == 0 ) {
+			Element controller = (Element)config.addNewNode( "/VirtualBox/Machine/StorageControllers", "StorageController" );
 			controller.setAttribute( "name", "Floppy" );
 			controller.setAttribute( "type", "I82078" );
 			controller.setAttribute( "PortCount", "1" );
@@ -234,26 +243,21 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 			controller.setAttribute( "Bootable", "true" );
 		}
 
-		Element attachedDev = null;
-
-		if ( image == null ) {
-			attachedDev = (Element)config.addNewNode( "StorageController", "AttachedDevice", true, "name", "Floppy" );
-			LOGGER.warn( "Floppy controller has no image attached" );
-		} else {
-			attachedDev = (Element)config.addNewNode( "StorageController", "AttachedDevice", false, "name", "Floppy" );
-
-			Element imageTag = (Element)config.addNewNode( "AttachedDevice", "Image", true, "type", "Floppy" );
-			imageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
-			config.addNewNode( "MediaRegistry", "FloppyImages", false );
-			Element floppyImageTag = (Element)config.addNewNode( "FloppyImages", "Image", true );
-			floppyImageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
-			floppyImageTag.setAttribute( "location", VboxConfig.PlaceHolder.FLOPPYLOCATION.toString() );
-		}
-
+		Element attachedDev = (Element)config.addNewNode( "/VirtualBox/Machine/StorageControllers/StorageController[@name='Floppy']", "AttachedDevice" );
 		attachedDev.setAttribute( "type", "Floppy" );
 		attachedDev.setAttribute( "hotpluggable", "false" );
 		attachedDev.setAttribute( "port", "0" );
 		attachedDev.setAttribute( "device", Integer.toString( index ) );
+
+		// now add the image to it, if one was given
+		if ( image != null ) {
+			Element imageTag = (Element)config.addNewNode( "/VirtualBox/Machine/StorageControllers/StorageController[@name='Floppy']", "Image" );
+			imageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
+			config.addNewNode( "/VirtualBox/Machine/MediaRegistry", "FloppyImages" );
+			Element floppyImageTag = (Element)config.addNewNode( "/VirtualBox/Machine/MediaRegistry/FloppyImages", "Image" );
+			floppyImageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
+			floppyImageTag.setAttribute( "location", VboxConfig.PlaceHolder.FLOPPYLOCATION.toString() );
+		}
 	}
 
 	@Override
@@ -265,7 +269,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	@Override
 	public boolean addCpuCoreCount( int nrOfCores )
 	{
-		config.changeAttribute( "CPU", "count", Integer.toString( nrOfCores ) );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/CPU", "count", Integer.toString( nrOfCores ) );
 		return true;
 	}
 
@@ -273,9 +277,8 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	public void setSoundCard( org.openslx.util.vm.VmMetaData.SoundCardType type )
 	{
 		VBoxSoundCardMeta sound = soundCards.get( type );
-
-		config.changeAttribute( "AudioAdapter", "enabled", Boolean.toString( sound.isPresent ) );
-		config.changeAttribute( "AudioAdapter", "controller", sound.value );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", Boolean.toString( sound.isPresent ) );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "controller", sound.value );
 	}
 
 	@Override
@@ -283,7 +286,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	{
 		// initialize here to type None to avoid all null pointer exceptions thrown for unknown user written sound cards
 		VmMetaData.SoundCardType returnsct = VmMetaData.SoundCardType.NONE;
-		Element x = (Element)config.findNodes( "AudioAdapter" ).item( 0 );
+		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/AudioAdapter" ).item( 0 );
 		if ( !x.hasAttribute( "enabled" ) || ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
 			return returnsct;
 		} else {
@@ -310,14 +313,14 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	public void setDDAcceleration( VmMetaData.DDAcceleration type )
 	{
 		VBoxDDAccelMeta accel = ddacc.get( type );
-		config.changeAttribute( "Display", "accelerate3D", Boolean.toString( accel.isPresent ) );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/Display", "accelerate3D", Boolean.toString( accel.isPresent ) );
 	}
 
 	@Override
 	public VmMetaData.DDAcceleration getDDAcceleration()
 	{
 		VmMetaData.DDAcceleration returndda = null;
-		Element x = (Element)config.findNodes( "Display" ).item( 0 );
+		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/Display" ).item( 0 );
 		if ( x.hasAttribute( "accelerate3D" ) ) {
 			if ( x.getAttribute( "accelerate3D" ).equals( "true" ) ) {
 				returndda = VmMetaData.DDAcceleration.ON;
@@ -330,11 +333,11 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 		return returndda;
 	}
 
-	@Override
 	/**
 	 * Function does nothing for Virtual Box;
 	 * Virtual Box accepts per default only one hardware version and is hidden from the user
 	 */
+	@Override
 	public void setHWVersion( HWVersion type )
 	{
 	}
@@ -352,17 +355,17 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	public void setEthernetDevType( int cardIndex, EthernetDevType type )
 	{
 		String index = "0";
-		VBoxEthernetDevTypeMeta networkc = networkCards.get( type );
+		VBoxEthernetDevTypeMeta nic = networkCards.get( type );
 		// cardIndex is not used yet...maybe later needed for different network cards
-		config.changeAttribute( "Adapter", "enabled", Boolean.toString( networkc.isPresent ), "slot", index );
-		config.changeAttribute( "Adapter", "type", networkc.value, "slot", index );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "enabled", Boolean.toString( nic.isPresent ) );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "type", nic.value );
 	}
 
 	@Override
 	public VmMetaData.EthernetDevType getEthernetDevType( int cardIndex )
 	{
 		VmMetaData.EthernetDevType returnedt = VmMetaData.EthernetDevType.NONE;
-		Element x = (Element)config.findNodes( "Adapter" ).item( 0 );
+		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/Network/Adapter" ).item( 0 );
 		if ( !x.hasAttribute( "enabled" ) || ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
 			return returnedt;
 		} else {
@@ -383,12 +386,6 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 			}
 		}
 		return returnedt;
-	}
-
-	@Override
-	public byte[] getDefinitionArray()
-	{
-		return config.toString().getBytes( StandardCharsets.UTF_8 );
 	}
 
 	public void registerVirtualHW()
@@ -417,7 +414,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	@Override
 	public boolean addEthernet( VmMetaData.EtherType type )
 	{
-		Node hostOnlyInterfaceNode = config.addNewNode( "Adapter", "HostOnlyInterface", true, "slot", "0" );
+		Node hostOnlyInterfaceNode = config.addNewNode( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']", "HostOnlyInterface" );
 		if ( hostOnlyInterfaceNode == null ) {
 			LOGGER.error( "Failed to create node for HostOnlyInterface." );
 			return false;

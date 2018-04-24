@@ -32,31 +32,52 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Class representing a .vbox machine description file
+ * Class handling the parsing of a .vbox machine description file
  */
 public class VboxConfig
 {
 	private static final Logger LOGGER = Logger.getLogger( VboxConfig.class );
-	XPath xPath = XPathFactory.newInstance().newXPath();
 
-	private Document doc = null;
-	private String displayNameExpression = "/VirtualBox/Machine/@name";
+	// key information set during initial parsing of the XML file
 	private String displayName = new String();
-
-	private String osTypeExpression = "/VirtualBox/Machine/@OSType";
 	private String osName = new String();
-
-	private String hddsExpression = "/VirtualBox/Machine/MediaRegistry/HardDisks/*";
 	private ArrayList<HardDisk> hddsArray = new ArrayList<HardDisk>();
-	private boolean isMachineSnapshot = false;
+
+	// XPath and DOM parsing related members
+	private final XPath xPath = XPathFactory.newInstance().newXPath();
+	private Document doc = null;
+	private static DocumentBuilder dBuilder;
+	static {
+		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		dbFactory.setIgnoringComments( true );
+		try {
+			dBuilder = dbFactory.newDocumentBuilder();
+		} catch ( ParserConfigurationException e ) {
+			LOGGER.error( "Failed to initalize DOM parser with default configurations." );
+		}
+	}
+
 	// list of nodes to automatically remove when reading the vbox file
-	private static String[] blackList = { "SharedFolders", "HID", "USB", "ExtraData", "Adapter", "GuestProperties", "LPT", "StorageController", "FloppyImages", "DVDImages",
-			"AttachedDevice", "RemoteDisplay", "VideoCapture" };
+	private static String[] blacklist = {
+			"/VirtualBox/Machine/Hardware/GuestProperties",
+			"/VirtualBox/Machine/Hardware/RemoteDisplay",
+			"/VirtualBox/Machine/Hardware/VideoCapture",
+			"/VirtualBox/Machine/Hardware/HID",
+			"/VirtualBox/Machine/Hardware/USB",
+			"/VirtualBox/Machine/Hardware/LPT",
+			"/VirtualBox/Machine/Hardware/Boot",
+			"/VirtualBox/Machine/Hardware/SharedFolders",
+			"/VirtualBox/Machine/Hardware/Network/Adapter[@enabled='true']/*",
+			"/VirtualBox/Machine/ExtraData",
+			"/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice[not(@type='HardDisk')]",
+			"/VirtualBox/Machine/MediaRegistry/FloppyImages",
+			"/VirtualBox/Machine/MediaRegistry/DVDImages" };
 
 	public static enum PlaceHolder
 	{
-		FLOPPYUUID( "%VM_FLOPPY_UUID%" ), FLOPPYLOCATION( "%VM_FLOPPY_LOCATION%" ), CPU( "%VM_CPU_CORES%" ), MEMORY( "%VM_RAM%" ), MACHINEUUID(
-				"%VM_MACHINE_UUID%" ), NETWORKMAC( "%VM_NIC_MAC%" ), HDDLOCATION( "%VM_HDD_LOCATION%" ), HDDUUID( "%VM_HDD_UUID_" );
+		FLOPPYUUID( "%VM_FLOPPY_UUID%" ), FLOPPYLOCATION( "%VM_FLOPPY_LOCATION%" ), CPU( "%VM_CPU_CORES%" ), MEMORY( "%VM_RAM%" ), MACHINEUUID( "%VM_MACHINE_UUID%" ), NETWORKMAC(
+				"%VM_NIC_MAC%" ), HDDLOCATION( "%VM_HDD_LOCATION%" ), HDDUUID( "%VM_HDD_UUID_" );
+
 		private final String holderName;
 
 		private PlaceHolder( String name )
@@ -72,87 +93,68 @@ public class VboxConfig
 	}
 
 	/**
-	 * constructor with input xml file
-	 * used to set the doc variable of this class when creating vm
+	 * Creates an vbox configuration by constructing a DOM from the given XML file.
 	 * 
-	 * @param file as File - the input xml File
-	 * @throws IOException
-	 * @throws UnsupportedVirtualizerFormatException
+	 * @param file the input XML file
+	 * @throws IOException if an error occurs while reading the file
+	 * @throws UnsupportedVirtualizerFormatException if the given file is not a valid VirtualBox configuration file. 
 	 */
 	public VboxConfig( File file ) throws IOException, UnsupportedVirtualizerFormatException
 	{
 		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-
 			doc = dBuilder.parse( file );
+			doc.getDocumentElement().normalize();
+			// prune empty text nodes, essentially removing all formatting
+			NodeList empty = (NodeList)xPath.evaluate( "//text()[normalize-space(.) = '']",
+					doc, XPathConstants.NODESET );
 
-			// TODO - does this test suffice??
+			for ( int i = 0; i < empty.getLength(); i++ ) {
+				Node node = empty.item( i );
+				node.getParentNode().removeChild( node );
+			}
+			// TODO - validate against XML schema:
+			// https://www.virtualbox.org/svn/vbox/trunk/src/VBox/Main/xml/VirtualBox-settings.xsd
 			if ( !doc.getDocumentElement().getNodeName().equals( "VirtualBox" ) ) {
 				throw new UnsupportedVirtualizerFormatException( "No <VirtualBox> root node." );
 			}
 
-		} catch ( ParserConfigurationException | SAXException | IOException e ) {
-			LOGGER.warn( "Could not parse .Vbox", e );
+		} catch ( SAXException | IOException | XPathExpressionException e ) {
+			LOGGER.warn( "Could not parse .vbox", e );
 			throw new UnsupportedVirtualizerFormatException( "Could not create VBoxConfig!" );
 		}
 	}
 
 	/**
-	 * constructor with input string from server
-	 * used to set the doc variable of this class when rebuilding the doc
+	 * Creates an vbox configuration by constructing a DOM from the XML content given as a byte array.
 	 * 
-	 * @param filtered as String - sent from server
-	 * @param length
-	 * @throws IOException
+	 * @param machineDescription content of the XML file saved as a byte array.
+	 * @param length of the machine description byte array.
+	 * @throws IOException if an 
 	 */
-	public VboxConfig( byte[] filtered, int length ) throws IOException
+	public VboxConfig( byte[] machineDescription, int length )
 	{
 		try {
-			String filteredString = new String( filtered );
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			// TODO following two settings should handle the formatting of the xml
-			// but did not work correctly according to Victor... to test.
-			//dbFactory.setValidating( true );
-			//dbFactory.setIgnoringElementContentWhitespace( true );
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			InputSource is = new InputSource( new StringReader( filteredString ) );
-
+			InputSource is = new InputSource( new StringReader( new String( machineDescription ) ) );
 			doc = dBuilder.parse( is );
-
-		} catch ( ParserConfigurationException | SAXException e ) {
-			LOGGER.warn( "Could not recreate the dom", e );
+		} catch ( SAXException | IOException e ) {
+			LOGGER.error( "Failed to create a DOM from " + machineDescription + "\nTrace: ", e );
 		}
 	}
 
 	/**
-	 * getter for the xmldoc
-	 * 
-	 * @return definition document
-	 */
-	public Document getConfigDoc()
-	{
-		return doc;
-	}
-
-	/**
-	 * Main initialization functions parsing the XML document.
+	 * Main initialization functions parsing the document created during the constructor.
 	 */
 	public void init()
 	{
-		if ( doc.getChildNodes().item( 0 ).getNodeType() == 8 ) {
-			doc.removeChild( doc.getChildNodes().item( 0 ) );
-		}
 		try {
 			setMachineName();
-			checkForMachineSnapshots();
 			ensureHardwareUuid();
 			setOsType();
 			if ( checkForPlaceholders() ) {
 				return;
 			}
 			setHdds();
-			removeBlackListedTags();
+			removeBlacklistedElements();
 			addPlaceHolders();
 		} catch ( XPathExpressionException e ) {
 			LOGGER.debug( "Could not initialize VBoxConfig", e );
@@ -160,14 +162,12 @@ public class VboxConfig
 		}
 	}
 
-	private void checkForMachineSnapshots() throws XPathExpressionException
-	{
-		// check if the vbox configuration file contains some machine snapshots.
-		// by looking at the existance of /VirtualBox/Machine/Snapshot
-		NodeList machineSnapshots = findNodes( "/VirtualBox/Machine/Snapshot" );
-		isMachineSnapshot = ( machineSnapshots != null && machineSnapshots.getLength() > 0 );
-	}
-
+	/**
+	 * Saves the machine's uuid as hardware uuid to prevent VMs from
+	 * believing in a hardware change.
+	 *
+	 * @throws XPathExpressionException
+	 */
 	private void ensureHardwareUuid() throws XPathExpressionException
 	{
 		// we will need the machine uuid, so get it
@@ -199,13 +199,54 @@ public class VboxConfig
 	}
 
 	/**
+	 * Self-explanatory.
+	 */
+	public void addPlaceHolders()
+	{
+		// placeholder for the machine uuid
+		changeAttribute( "/VirtualBox/Machine", "uuid", PlaceHolder.MACHINEUUID.toString() );
+
+		// placeholder for the location of the virtual hdd
+		changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "location", PlaceHolder.HDDLOCATION.toString() );
+
+		// placeholder for the memory
+		changeAttribute( "/VirtualBox/Machine/Hardware/Memory", "RAMSize", PlaceHolder.MEMORY.toString() );
+
+		// placeholder for the CPU
+		changeAttribute( "/VirtualBox/Machine/Hardware/CPU", "count", PlaceHolder.CPU.toString() );
+
+		// placeholder for the MACAddress
+		changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter", "MACAddress", PlaceHolder.NETWORKMAC.toString() );
+
+		NodeList hdds = findNodes( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk" );
+		for ( int i = 0; i < hdds.getLength(); i++ ) {
+			Element hdd = (Element)hdds.item( i );
+			if ( hdd == null )
+				continue;
+			String hddUuid = hdd.getAttribute( "uuid" );
+			hdd.setAttribute( "uuid", PlaceHolder.HDDUUID.toString() + i + "%" );
+			NodeList images = findNodes( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image" );
+			for ( int j = 0; j < images.getLength(); j++ ) {
+				Element image = (Element)images.item( j );
+				if ( image == null )
+					continue;
+				if ( hddUuid.equals( image.getAttribute( "uuid" ) ) ) {
+					image.setAttribute( "uuid", PlaceHolder.HDDUUID.toString() + i + "%" );
+					break;
+				}
+			}
+		}
+	}
+
+	/**
 	 * Function checks if the placeholders are present
 	 * 
 	 * @return true if the placeholders are present, false otherwise
 	 */
 	private boolean checkForPlaceholders()
 	{
-		NodeList hdds = findNodes( "HardDisk" );
+		// TODO this should be more robust...
+		NodeList hdds = findNodes( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk" );
 		for ( int i = 0; i < hdds.getLength(); i++ ) {
 			Element hdd = (Element)hdds.item( i );
 			if ( hdd == null )
@@ -218,71 +259,99 @@ public class VboxConfig
 	}
 
 	/**
-	 * Function finds and saves the name of the machine
+	 * Called during init(), prunes the DOM from the elements blacklisted defined
+	 * in the member blacklist, a list of XPath expressions as String
+	 * 
+	 * @throws XPathExpressionException
+	 */
+	private void removeBlacklistedElements() throws XPathExpressionException
+	{
+		// iterate over the blackList
+		for ( String blackedTag : blacklist ) {
+			XPathExpression blackedExpr = xPath.compile( blackedTag );
+			NodeList blackedNodes = (NodeList)blackedExpr.evaluate( this.doc, XPathConstants.NODESET );
+			for ( int i = 0; i < blackedNodes.getLength(); i++ ) {
+				// go through the child nodes of the blacklisted ones -> why?
+				Element child = (Element)blackedNodes.item( i );
+				LOGGER.debug( "REMOVING: " + child.getNodeName() + " -> " + child.getNodeValue() );
+				removeNode( child );
+			}
+		}
+	}
+
+	/**
+	 * Sets the display name set within the DOM expected at the
+	 * given XPath path.
 	 * 
 	 * @throws XPathExpressionException
 	 */
 	public void setMachineName() throws XPathExpressionException
 	{
-		String name = xPath.compile( displayNameExpression ).evaluate( this.doc );
+		String name = xPath.compile( "/VirtualBox/Machine/@name" ).evaluate( this.doc );
 		if ( name != null && !name.isEmpty() ) {
 			displayName = name;
 		}
 	}
 
+	public String getDisplayName()
+	{
+		return displayName;
+	}
+
 	/**
-	 * Function finds and saves the name of the os
+	 * Function finds and saves the name of the guest OS
 	 * 
 	 * @throws XPathExpressionException
 	 */
 	public void setOsType() throws XPathExpressionException
 	{
-		String os = xPath.compile( osTypeExpression ).evaluate( this.doc );
+		String os = xPath.compile( "/VirtualBox/Machine/@OSType" ).evaluate( this.doc );
 		if ( os != null && !os.isEmpty() ) {
 			osName = os;
 		}
 	}
 
+	/**
+	 * Getter for the parsed guest OS name
+	 *
+	 * @return name of the guest OS
+	 */
+	public String getOsName()
+	{
+		return osName;
+	}
+
+	/**
+	 * Search disk drives within the DOM using this class
+	 *
+	 * @throws XPathExpressionException
+	 */
 	public void setHdds() throws XPathExpressionException
 	{
-		XPathExpression hddsExpr = xPath.compile( hddsExpression );
-		Object result = hddsExpr.evaluate( this.doc, XPathConstants.NODESET );
-		// take all the hdd nodes
-		NodeList nodes = (NodeList)result;
-		// foreach hdd in the hddnodes do:
+		XPathExpression hddsExpr = xPath.compile( "/VirtualBox/Machine/MediaRegistry/HardDisks/*" );
+		NodeList nodes = (NodeList)hddsExpr.evaluate( this.doc, XPathConstants.NODESET );
 		for ( int i = 0; i < nodes.getLength(); i++ ) {
-			// have the node
-			// take the uuid
-			// look under <AttachedDevice if found and do stuff with it
 			Element hddElement = (Element)nodes.item( i );
 			if ( hddElement == null )
 				continue;
-			// read the filePath
 			String fileName = hddElement.getAttribute( "location" );
-			// take the uuid
-			String uuid = hddElement.getAttribute( "uuid" );
-			// search in the xml object and give back the parent of the parent of the node that is called Image and has the given uuid
 			String type = hddElement.getAttribute( "type" );
 			if ( !type.equals( "Normal" ) && !type.equals( "Writethrough" ) ) {
 				LOGGER.warn( "Type of the disk file is neither 'Normal' nor 'Writethrough' but: " + type );
 				LOGGER.warn( "This makes the image not directly modificable, which might lead to problems when editing it locally." );
 			}
-			String pathToParent = "//Image[contains(@uuid, \'" + uuid + "\')]/../..";
-			XPathExpression attachedDevicesExpr = xPath.compile( pathToParent );
-			Object devicesResult = attachedDevicesExpr.evaluate( this.doc, XPathConstants.NODESET );
-			NodeList devicesNodes = (NodeList)devicesResult;
-			// TODO -- ehm...should only have 1 element...what do when there are more?
-			if ( devicesNodes.getLength() > 1 ) {
-				LOGGER.error( "There can not be more HDDs with the same UUID!" );
-				return;
+			Node hddDevice = hddElement.getParentNode();
+			if ( hddDevice == null ) {
+				LOGGER.error( "HDD node had a null parent, shouldn't happen" );
+				continue;
 			}
-			if ( devicesNodes.getLength() == 0 ) {
-				LOGGER.error( "Image with UUID '" + uuid + "' does not seem connected to any storage controller. Is it a snapshot?" );
-				return;
+			Element hddController = (Element)hddDevice.getParentNode();
+			if ( hddController == null ) {
+				LOGGER.error( "HDD node had a null parent, shouldn't happen" );
+				continue;
 			}
-			Element deviceElement = (Element)devicesNodes.item( 0 );
-			String controllerDevice = deviceElement.getAttribute( "type" );
-			String bus = deviceElement.getAttribute( "name" );
+			String controllerDevice = hddController.getAttribute( "type" );
+			String bus = hddController.getAttribute( "name" );
 			DriveBusType busType = null;
 			if ( bus.equals( "IDE" ) ) {
 				busType = DriveBusType.IDE;
@@ -296,65 +365,70 @@ public class VboxConfig
 		}
 	}
 
-	public void addPlaceHolders()
+	/**
+	 * Getter for the list of detected hard drives.
+	 *
+	 * @return list of disk drives.
+	 */
+	public ArrayList<HardDisk> getHdds()
 	{
-		// placeholder for the MACAddress
-		changeAttribute( "Adapter", "MACAddress", PlaceHolder.NETWORKMAC.toString() );
+		return hddsArray;
+	}
 
-		// placeholder for the machine uuid
-		changeAttribute( "Machine", "uuid", PlaceHolder.MACHINEUUID.toString() );
+	/**
+	 * Enable USB by adding the element /VirtualBox/Machine/Hardware/USB
+	 * and adding controllers for OHCI and EHCI (thus enabling USB 2.0).
+	 */
+	public void enableUsb()
+	{
+		addNewNode( "/VirtualBox/Machine/Hardware", "USB" );
+		addNewNode( "/VirtualBox/Machine/Hardware/USB", "Controllers" );
+		// OHCI for USB 1.0
+		Node ohci = addNewNode( "/VirtualBox/Machine/Hardware/USB/Controllers", "Controller" );
+		addAttributeToNode( ohci, "name", "OHCI" );
+		addAttributeToNode( ohci, "type", "OHCI" );
+		// EHCI for USB 2.0
+		Node ehci = addNewNode( "/VirtualBox/Machine/Hardware/USB/Controllers", "Controller" );
+		addAttributeToNode( ehci, "name", "EHCI" );
+		addAttributeToNode( ehci, "type", "EHCI" );
+	}
 
-		// placeholder for the location of the virtual hdd
-		changeAttribute( "HardDisk", "location", PlaceHolder.HDDLOCATION.toString() );
-
-		// placeholder for the memory
-		changeAttribute( "Memory", "RAMSize", PlaceHolder.MEMORY.toString() );
-
-		// placeholder for the CPU
-		changeAttribute( "CPU", "count", PlaceHolder.CPU.toString() );
-
-		// add placeholder for the uuid of the virtual harddrive.
-		// must be added on 2 positions...in the HardDisk tag and the attachedDevice tag
-		// first find the uuid
-		NodeList hdds = findNodes( "HardDisk" );
-		for ( int i = 0; i < hdds.getLength(); i++ ) {
-			Element hdd = (Element)findNodes( "HardDisk" ).item( i );
-			if ( hdd == null )
-				continue;
-			String uuid = hdd.getAttribute( "uuid" );
-			hdd.setAttribute( "uuid", PlaceHolder.HDDUUID.toString() + i + "%" );
-			NodeList images = findNodes( "Image" );
-			Element image;
-			for ( int j = 0; j < images.getLength(); j++ ) {
-				if ( ( (Element)images.item( j ) ).getAttribute( "uuid" ).equals( uuid ) ) {
-					image = (Element)images.item( j );
-					image.setAttribute( "uuid", PlaceHolder.HDDUUID.toString() + i + "%" );
-					break;
-				}
-			}
+	/**
+	 * Removes all USB elements
+	 */
+	public void disableUsb()
+	{
+		NodeList usbList = findNodes( "/VirtualBox/Machine/Hardware/USB" );
+		for ( int i = 0; i < usbList.getLength(); i++ ) {
+			removeNode( usbList.item( 0 ) );
 		}
 	}
 
 	/**
-	 * Search through the doc for nodes with the given name.
-	 * If the given name starts with '/', assume a full XPath was
-	 * given and do not do a full search
+	 * Detect if the vbox file has any machine snapshot by looking at
+	 * the existance of '/VirtualBox/Machine/Snapshot' elements.
 	 * 
-	 * @param identifier
-	 * @return nodes as NodeList
+	 * @return true if a machine snapshot is present, false otherwise.
 	 */
-	public NodeList findNodes( String identifier )
+	public boolean isMachineSnapshot()
 	{
-		String path;
-		if ( identifier.startsWith( "/", 0 ) )
-			path = identifier;
-		else
-			path = ".//" + identifier;
+		// check if the vbox configuration file contains some machine snapshots.
+		// by looking at the existance of /VirtualBox/Machine/Snapshot
+		NodeList machineSnapshots = findNodes( "/VirtualBox/Machine/Snapshot" );
+		return machineSnapshots != null && machineSnapshots.getLength() > 0;
+	}
 
-		XPathExpression expr;
+	/**
+	 * Searches the DOM for the elements matching the given XPath expression.
+	 * 
+	 * @param xpath expression to search the DOM with
+	 * @return nodes found by evaluating given XPath expression
+	 */
+	public NodeList findNodes( String xpath )
+	{
 		NodeList nodes = null;
 		try {
-			expr = xPath.compile( path );
+			XPathExpression expr = xPath.compile( xpath );
 			Object nodesObject = expr.evaluate( this.doc, XPathConstants.NODESET );
 			nodes = (NodeList)nodesObject;
 		} catch ( XPathExpressionException e ) {
@@ -364,265 +438,120 @@ public class VboxConfig
 	}
 
 	/**
-	 * Function uses the findNodes function to narrow down the wanted node using 1 attribute and
-	 * its value
+	 * Function used to change the value of an attribute of given element.
 	 * 
-	 * @param targetTag
-	 * @param targetAttr0
-	 * @param value0
-	 * @return
-	 */
-	public Node findNode( String targetTag, String targetAttr0, String value0 )
-	{
-		Node returnNode = null;
-
-		NodeList foundNodes = findNodes( targetTag );
-
-		for ( int i = 0; i < foundNodes.getLength(); i++ ) {
-			Element node = (Element)foundNodes.item( i );
-			if ( node != null && node.hasAttribute( targetAttr0 ) && node.getAttribute( targetAttr0 ).equals( value0 ) ) {
-				returnNode = foundNodes.item( i );
-			}
-		}
-		return returnNode;
-	}
-
-	/**
-	 * Function used to change the value of an attribute
-	 * Use this function if you know the targetNode is unique
+	 * NOTE: If more than one element is found, this function will update them all!
+	 * TODO: Do we want this?
 	 * 
-	 * @param targetTag
+	 * @param element
 	 * @param attribute
-	 * @param newValue
+	 * @param value
 	 */
-	public void changeAttribute( String targetTag, String attribute, String newValue )
+	public void changeAttribute( String element, String attribute, String value )
 	{
-		changeAttribute( targetTag, attribute, newValue, null, null );
-	}
-
-	/**
-	 * Function used to change the value of an attribute
-	 * Use this function if you are not sure if the targetNode is unique
-	 * Use refAttr and refVal to address the right node
-	 * 
-	 * @param targetTag
-	 * @param targetAttr
-	 * @param newValue
-	 * @param refAttr
-	 * @param refVal
-	 */
-	public void changeAttribute( String targetTag, String targetAttr, String newValue, String refAttr, String refVal )
-	{
-		NodeList nodes = findNodes( targetTag );
-
+		NodeList nodes = findNodes( element );
+		LOGGER.debug( "Found: " + nodes.getLength() + " for : " + element );
 		for ( int i = 0; i < nodes.getLength(); i++ ) {
-			Element element = (Element)nodes.item( i );
-			if ( element == null )
+			Element current = (Element)nodes.item( i );
+			if ( current == null )
 				return;
-			if ( refAttr != null && refVal != null ) {
-				if ( element.getAttribute( refAttr ).equals( refVal ) ) {
-					element.setAttribute( targetAttr, newValue );
-					break;
-				}
-			} else {
-				if ( nodes.getLength() > 1 ) {
-					LOGGER.error( "Action would change values of more than one node; stopped!" );
-					return;
-				}
-				element.setAttribute( targetAttr, newValue );
-			}
+			current.setAttribute( attribute, value );
 		}
 	}
 
-	public boolean addAttributeToNode( Node targetNode, String attrName, String value )
+	/**
+	 * Add given attribute with given value to the given node.
+	 * NOTE: this will overwrite the attribute of the node if it already exists.
+	 *
+	 * @param node to add the attribute to
+	 * @param attribute attribute to add to the node
+	 * @param value of the attribute
+	 * @return true if successful, false otherwise
+	 */
+	public boolean addAttributeToNode( Node node, String attribute, String value )
 	{
-		if ( targetNode == null ) {
+		if ( node == null ) {
 			LOGGER.warn( "Node is null; stopped!" );
 			return false;
 		}
 		try {
-			( (Element)targetNode ).setAttribute( attrName, value );
+			( (Element)node ).setAttribute( attribute, value );
 		} catch ( DOMException e ) {
-			LOGGER.error( "Failed set '" + attrName + "' to '" + value + "' of xml node '" + targetNode.getNodeName() + "': ", e );
+			LOGGER.error( "Failed set '" + attribute + "' to '" + value + "' of xml node '" + node.getNodeName() + "': ", e );
 			return false;
 		}
 		return true;
 	}
 
-	public Node addNewNode( String nameOfParent, String nameOfnewNode, boolean oneLiner )
+	/**
+	 * Adds a new node named nameOfNewNode to the given parent found by parentXPath.
+	 *
+	 * @param parentXPath XPath expression to the parent
+	 * @param nameOfnewNode name of the node to be added
+	 * @return the newly added Node
+	 */
+	public Node addNewNode( String parentXPath, String nameOfnewNode )
 	{
-		return addNewNode( nameOfParent, nameOfnewNode, oneLiner, null, null );
-	}
-
-	public Node addNewNode( String nameOfParent, String nameOfnewNode, boolean oneLiner, String refAttr, String refVal )
-	{
-		Node parent = null;
-		NodeList posibleParents = findNodes( nameOfParent );
-		Element newNode;
-		try {
-			if ( posibleParents.getLength() > 1 ) {
-				// if we have more then 1 parent we need to have an sanityArg s.t. we insert our new attribute in the right tag
-				if ( refAttr == null ) {
-					LOGGER.warn( "Action would change values of more than one node; stopped!" );
-					return null;
-				}
-				for ( int i = 1; i < posibleParents.getLength(); i++ ) {
-					if ( ( (Element)posibleParents.item( i ) ).getAttribute( refAttr ).equals( refVal ) ) {
-						parent = posibleParents.item( i );
-						break;
-					}
-				}
-			} else {
-				parent = posibleParents.item( 0 );
-			}
-
-			if ( parent == null ) {
-				LOGGER.warn( "Node: '" + nameOfParent + "' could not be found" );
-				return null;
-			}
-			newNode = doc.createElement( nameOfnewNode );
-
-			if ( !oneLiner ) {
-				org.w3c.dom.Text a = doc.createTextNode( "\n" );
-				newNode.appendChild( a );
-			}
-			parent.appendChild( newNode );
-		} catch ( DOMException e ) {
-			LOGGER.error( "Something went wrong: ", e );
+		NodeList possibleParents = findNodes( parentXPath );
+		if ( possibleParents == null || possibleParents.getLength() == 0 ) {
+			LOGGER.error( "Could not find any parent node to add new node to: " + parentXPath );
 			return null;
 		}
-
+		LOGGER.debug( "Possible parents: " + possibleParents.getLength() );
+		// warn if we have more than two, which we should never have
+		if ( possibleParents.getLength() > 2 ) {
+			LOGGER.error( "SKIPPING: Multiple nodes found named: '" + parentXPath );
+			return null;
+		}
+		Node parent = possibleParents.item( 0 );
+		Element newNode;
+		try {
+			newNode = doc.createElement( nameOfnewNode );
+			parent.appendChild( newNode );
+		} catch ( DOMException e ) {
+			LOGGER.error( "Could not append '" + nameOfnewNode + "' to '" + parent.getNodeName() + "': ", e );
+			return null;
+		}
 		return newNode;
 	}
 
 	/**
-	 * USB will be enabled
+	 * Helper to remove given node from the DOM.
+	 *
+	 * @param node Node object to remove.
 	 */
-	public void enableUsb()
+	private void removeNode( Node node )
 	{
-		addNewNode( "Hardware", "USB", false );
-		addNewNode( "USB", "Controllers", false );
-		// OHCI for USB 1.0
-		Node controller1 = addNewNode( "Controllers", "Controller", true );
-		addAttributeToNode( controller1, "name", "OHCI" );
-		addAttributeToNode( controller1, "type", "OHCI" );
-		// EHCI for USB 2.0
-		Node controller2 = addNewNode( "Controllers", "Controller", true );
-		addAttributeToNode( controller2, "name", "EHCI" );
-		addAttributeToNode( controller2, "type", "EHCI" );
+		if ( node == null )
+			return;
+		Node parent = node.getParentNode();
+		if ( parent != null )
+			parent.removeChild( node );
 	}
 
 	/**
-	 * Disable usb by removing the USB tag
+	 * Helper to output the DOM as a String.
+	 *
+	 * @param prettyPrint sets whether to indent the output
+	 * @return (un-)formatted XML
 	 */
-	public void disableUsb()
-	{
-		NodeList usbList = findNodes( "USB" );
-		removeNode( usbList.item( 0 ) );
-	}
-
-	// function removes a given child and the format childNode 
-	private void removeNode( Node node )
-	{
-		if ( node == null ) {
-			return;
-		}
-		Node parent = node.getParentNode();
-		// this node here is usually a type3 Node used only for the formating of the vbox file
-		Node previousSibling = node.getPreviousSibling();
-
-		parent.removeChild( node );
-
-		// HACK remove empty lines
-		// format children (\n or \t) have type 3
-		if ( previousSibling.getNodeType() == 3 ) {
-			// the value of these Nodes are characters
-			String tmp = previousSibling.getNodeValue();
-			boolean shouldDelete = true;
-			for ( int i = 0; i < tmp.length(); i++ ) {
-				if ( !Character.isWhitespace( tmp.charAt( i ) ) ) {
-					shouldDelete = false;
-					break;
-				}
-			}
-			if ( shouldDelete )
-				parent.removeChild( previousSibling );
-		}
-	}
-
-	// cleanup part here
-	private void removeBlackListedTags() throws XPathExpressionException
-	{
-		// iterate over the blackList
-		for ( String blackedTag : blackList ) {
-			String blackedExpression = ".//" + blackedTag;
-			XPathExpression blackedExpr = xPath.compile( blackedExpression );
-
-			NodeList blackedNodes = (NodeList)blackedExpr.evaluate( this.doc, XPathConstants.NODESET );
-			for ( int i = 0; i < blackedNodes.getLength(); i++ ) {
-				// get the child node
-				Element child = (Element)blackedNodes.item( i );
-				// remove child
-				if ( child.getTagName().equals( "Adapter" ) && child.getAttribute( "enabled" ).equals( "true" ) ) {
-					// we need to remove the children of the active network adapter
-					// these are the mode of network connection and disabled modes...they go together -> see wiki
-					Node firstChild = child.getChildNodes().item( 0 );
-					Node secondChild = child.getChildNodes().item( 1 );
-					if ( firstChild != null && secondChild != null ) {
-						if ( firstChild.getNodeName().equals( "#text" ) && !secondChild.getNodeName().equals( "#text" ) ) {
-							removeNode( child.getChildNodes().item( 1 ) );
-						}
-					}
-					LOGGER.warn( "possible problem while removing formating node" );
-					continue;
-				}
-
-				if ( ( child.getTagName().equals( "StorageController" ) && !child.getAttribute( "name" ).equals( "Floppy" ) )
-						|| ( child.getTagName().equals( "AttachedDevice" ) && child.getAttribute( "type" ).equals( "HardDisk" ) ) ) {
-					continue;
-				}
-				// the structure of the xml Document is achieved through children nodes that are made up of just /n and spaces
-				// when a child node is deleted we get an empty line there the old child node used to be
-				removeNode( child );
-			}
-		}
-	}
-
-	public String getDisplayName()
-	{
-		return displayName;
-	}
-
-	public String getOsName()
-	{
-		return osName;
-	}
-
-	public ArrayList<HardDisk> getHdds()
-	{
-		return hddsArray;
-	}
-
-	public String toString()
+	public String toString( boolean prettyPrint )
 	{
 		try {
-			StringWriter sw = new StringWriter();
+			StringWriter writer = new StringWriter();
 			TransformerFactory tf = TransformerFactory.newInstance();
 			Transformer transformer = tf.newTransformer();
 			transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "no" );
-			transformer.setOutputProperty( OutputKeys.METHOD, "xml" );
-			transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
 			transformer.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
-
-			transformer.transform( new DOMSource( doc ), new StreamResult( sw ) );
-			return sw.toString();
+			transformer.setOutputProperty( OutputKeys.METHOD, "xml" );
+			if ( prettyPrint ) {
+				transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
+				transformer.setOutputProperty( "{http://xml.apache.org/xslt}indent-amount", "2" );
+			}
+			transformer.transform( new DOMSource( doc ), new StreamResult( writer ) );
+			return writer.toString();
 		} catch ( Exception ex ) {
 			throw new RuntimeException( "Error converting to String", ex );
 		}
-	}
-
-	public boolean isMachineSnapshot()
-	{
-		return isMachineSnapshot;
 	}
 }
