@@ -1,26 +1,17 @@
 package org.openslx.util.vm;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
+import org.openslx.util.XmlHelper;
 import org.openslx.util.vm.VmMetaData.DriveBusType;
 import org.openslx.util.vm.VmMetaData.HardDisk;
 import org.w3c.dom.DOMException;
@@ -28,8 +19,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * Class handling the parsing of a .vbox machine description file
@@ -44,18 +33,7 @@ public class VboxConfig
 	private ArrayList<HardDisk> hddsArray = new ArrayList<HardDisk>();
 
 	// XPath and DOM parsing related members
-	private static final XPath xPath = XPathFactory.newInstance().newXPath();
 	private Document doc = null;
-	private static DocumentBuilder dBuilder;
-	static {
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		dbFactory.setIgnoringComments( true );
-		try {
-			dBuilder = dbFactory.newDocumentBuilder();
-		} catch ( ParserConfigurationException e ) {
-			LOGGER.error( "Failed to initalize DOM parser with default configurations." );
-		}
-	}
 
 	// list of nodes to automatically remove when reading the vbox file
 	private static String[] blacklist = {
@@ -102,26 +80,20 @@ public class VboxConfig
 	public VboxConfig( File file ) throws IOException, UnsupportedVirtualizerFormatException
 	{
 		try {
-			doc = dBuilder.parse( file );
-			doc.getDocumentElement().normalize();
-			// prune empty text nodes, essentially removing all formatting
-			NodeList empty = (NodeList)xPath.evaluate( "//text()[normalize-space(.) = '']",
-					doc, XPathConstants.NODESET );
+			doc = XmlHelper.parseDocumentFromStream( new FileInputStream( file ) );
+			doc = XmlHelper.removeFormattingNodes( doc );
 
-			for ( int i = 0; i < empty.getLength(); i++ ) {
-				Node node = empty.item( i );
-				node.getParentNode().removeChild( node );
-			}
 			// TODO - validate against XML schema:
 			// https://www.virtualbox.org/svn/vbox/trunk/src/VBox/Main/xml/VirtualBox-settings.xsd
 			if ( !doc.getDocumentElement().getNodeName().equals( "VirtualBox" ) ) {
 				throw new UnsupportedVirtualizerFormatException( "No <VirtualBox> root node." );
 			}
 
-		} catch ( SAXException | IOException | XPathExpressionException e ) {
+		} catch ( IOException e ) {
 			LOGGER.warn( "Could not parse .vbox", e );
-			throw new UnsupportedVirtualizerFormatException( "Could not create VBoxConfig!" );
 		}
+		if ( doc == null )
+			throw new UnsupportedVirtualizerFormatException( "Could not create VBoxConfig!" );
 	}
 
 	/**
@@ -132,13 +104,13 @@ public class VboxConfig
 	 * @param length of the machine description byte array.
 	 * @throws IOException if an
 	 */
-	public VboxConfig( byte[] machineDescription, int length )
+	public VboxConfig( byte[] machineDescription, int length ) throws UnsupportedVirtualizerFormatException
 	{
-		try {
-			InputSource is = new InputSource( new StringReader( new String( machineDescription ) ) );
-			doc = dBuilder.parse( is );
-		} catch ( SAXException | IOException e ) {
-			LOGGER.error( "Failed to create a DOM from give machine description: ", e );
+		ByteArrayInputStream is = new ByteArrayInputStream( machineDescription );
+		doc = XmlHelper.parseDocumentFromStream( is );
+		if ( doc == null ) {
+			LOGGER.error( "Failed to create a DOM from given machine description." );
+			throw new UnsupportedVirtualizerFormatException( "Could not create VBoxConfig from byte array." );
 		}
 	}
 
@@ -172,7 +144,7 @@ public class VboxConfig
 	private void ensureHardwareUuid() throws XPathExpressionException
 	{
 		// we will need the machine uuid, so get it
-		String machineUuid = xPath.compile( "/VirtualBox/Machine/@uuid" ).evaluate( this.doc );
+		String machineUuid = XmlHelper.XPath.compile( "/VirtualBox/Machine/@uuid" ).evaluate( this.doc );
 		if ( machineUuid.isEmpty() ) {
 			LOGGER.error( "Machine UUID empty, should never happen!" );
 			return;
@@ -269,12 +241,11 @@ public class VboxConfig
 	{
 		// iterate over the blackList
 		for ( String blackedTag : blacklist ) {
-			XPathExpression blackedExpr = xPath.compile( blackedTag );
+			XPathExpression blackedExpr = XmlHelper.XPath.compile( blackedTag );
 			NodeList blackedNodes = (NodeList)blackedExpr.evaluate( this.doc, XPathConstants.NODESET );
 			for ( int i = 0; i < blackedNodes.getLength(); i++ ) {
 				// go through the child nodes of the blacklisted ones -> why?
 				Element child = (Element)blackedNodes.item( i );
-				LOGGER.debug( "REMOVING: " + child.getNodeName() + " -> " + child.getNodeValue() );
 				removeNode( child );
 			}
 		}
@@ -288,7 +259,7 @@ public class VboxConfig
 	 */
 	public void setMachineName() throws XPathExpressionException
 	{
-		String name = xPath.compile( "/VirtualBox/Machine/@name" ).evaluate( this.doc );
+		String name = XmlHelper.XPath.compile( "/VirtualBox/Machine/@name" ).evaluate( this.doc );
 		if ( name != null && !name.isEmpty() ) {
 			displayName = name;
 		}
@@ -311,7 +282,7 @@ public class VboxConfig
 	 */
 	public void setOsType() throws XPathExpressionException
 	{
-		String os = xPath.compile( "/VirtualBox/Machine/@OSType" ).evaluate( this.doc );
+		String os = XmlHelper.XPath.compile( "/VirtualBox/Machine/@OSType" ).evaluate( this.doc );
 		if ( os != null && !os.isEmpty() ) {
 			osName = os;
 		}
@@ -334,7 +305,7 @@ public class VboxConfig
 	 */
 	public void setHdds() throws XPathExpressionException
 	{
-		XPathExpression hddsExpr = xPath.compile( "/VirtualBox/Machine/MediaRegistry/HardDisks/*" );
+		XPathExpression hddsExpr = XmlHelper.XPath.compile( "/VirtualBox/Machine/MediaRegistry/HardDisks/*" );
 		NodeList nodes = (NodeList)hddsExpr.evaluate( this.doc, XPathConstants.NODESET );
 		for ( int i = 0; i < nodes.getLength(); i++ ) {
 			Element hddElement = (Element)nodes.item( i );
@@ -434,7 +405,7 @@ public class VboxConfig
 	{
 		NodeList nodes = null;
 		try {
-			XPathExpression expr = xPath.compile( xpath );
+			XPathExpression expr = XmlHelper.XPath.compile( xpath );
 			Object nodesObject = expr.evaluate( this.doc, XPathConstants.NODESET );
 			nodes = (NodeList)nodesObject;
 		} catch ( XPathExpressionException e ) {
@@ -549,21 +520,6 @@ public class VboxConfig
 	 */
 	public String toString( boolean prettyPrint )
 	{
-		try {
-			StringWriter writer = new StringWriter();
-			TransformerFactory tf = TransformerFactory.newInstance();
-			Transformer transformer = tf.newTransformer();
-			transformer.setOutputProperty( OutputKeys.OMIT_XML_DECLARATION, "no" );
-			transformer.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
-			transformer.setOutputProperty( OutputKeys.METHOD, "xml" );
-			if ( prettyPrint ) {
-				transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
-				transformer.setOutputProperty( "{http://xml.apache.org/xslt}indent-amount", "2" );
-			}
-			transformer.transform( new DOMSource( doc ), new StreamResult( writer ) );
-			return writer.toString();
-		} catch ( Exception ex ) {
-			throw new RuntimeException( "Error converting to String", ex );
-		}
+		return XmlHelper.getXmlFromDocument( doc, prettyPrint );
 	}
 }

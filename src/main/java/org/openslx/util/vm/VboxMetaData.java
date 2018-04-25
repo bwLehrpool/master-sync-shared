@@ -134,7 +134,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	@Override
 	public byte[] getDefinitionArray()
 	{
-		return config.toString( true ).getBytes( StandardCharsets.UTF_8 );
+		return config.toString( false ).getBytes( StandardCharsets.UTF_8 );
 	}
 
 	@Override
