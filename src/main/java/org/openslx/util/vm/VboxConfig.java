@@ -44,7 +44,7 @@ public class VboxConfig
 	private ArrayList<HardDisk> hddsArray = new ArrayList<HardDisk>();
 
 	// XPath and DOM parsing related members
-	private final XPath xPath = XPathFactory.newInstance().newXPath();
+	private static final XPath xPath = XPathFactory.newInstance().newXPath();
 	private Document doc = null;
 	private static DocumentBuilder dBuilder;
 	static {
@@ -65,7 +65,6 @@ public class VboxConfig
 			"/VirtualBox/Machine/Hardware/HID",
 			"/VirtualBox/Machine/Hardware/USB",
 			"/VirtualBox/Machine/Hardware/LPT",
-			"/VirtualBox/Machine/Hardware/Boot",
 			"/VirtualBox/Machine/Hardware/SharedFolders",
 			"/VirtualBox/Machine/Hardware/Network/Adapter[@enabled='true']/*",
 			"/VirtualBox/Machine/ExtraData",
@@ -97,7 +96,8 @@ public class VboxConfig
 	 * 
 	 * @param file the input XML file
 	 * @throws IOException if an error occurs while reading the file
-	 * @throws UnsupportedVirtualizerFormatException if the given file is not a valid VirtualBox configuration file. 
+	 * @throws UnsupportedVirtualizerFormatException if the given file is not a valid VirtualBox
+	 *            configuration file.
 	 */
 	public VboxConfig( File file ) throws IOException, UnsupportedVirtualizerFormatException
 	{
@@ -125,11 +125,12 @@ public class VboxConfig
 	}
 
 	/**
-	 * Creates an vbox configuration by constructing a DOM from the XML content given as a byte array.
+	 * Creates an vbox configuration by constructing a DOM from the XML content given as a byte
+	 * array.
 	 * 
 	 * @param machineDescription content of the XML file saved as a byte array.
 	 * @param length of the machine description byte array.
-	 * @throws IOException if an 
+	 * @throws IOException if an
 	 */
 	public VboxConfig( byte[] machineDescription, int length )
 	{
@@ -137,7 +138,7 @@ public class VboxConfig
 			InputSource is = new InputSource( new StringReader( new String( machineDescription ) ) );
 			doc = dBuilder.parse( is );
 		} catch ( SAXException | IOException e ) {
-			LOGGER.error( "Failed to create a DOM from " + machineDescription + "\nTrace: ", e );
+			LOGGER.error( "Failed to create a DOM from give machine description: ", e );
 		}
 	}
 
@@ -293,6 +294,11 @@ public class VboxConfig
 		}
 	}
 
+	/**
+	 * Getter for the parsed display name
+	 *
+	 * @return the display name of this VM
+	 */
 	public String getDisplayName()
 	{
 		return displayName;
@@ -439,24 +445,23 @@ public class VboxConfig
 
 	/**
 	 * Function used to change the value of an attribute of given element.
-	 * 
-	 * NOTE: If more than one element is found, this function will update them all!
-	 * TODO: Do we want this?
-	 * 
-	 * @param element
-	 * @param attribute
-	 * @param value
+	 * The given xpath to the element needs to find a single node, or this function will return
+	 * false. If only one element was found, it will return the result of calling addAttributeToNode.
+	 * Note that due to the way setAttribute() works, this function to create the attribute if it
+	 * doesn't exists.
+	 *
+	 * @param elementXPath given as an xpath expression
+	 * @param attribute attribute to change
+	 * @param value to set the attribute to
 	 */
-	public void changeAttribute( String element, String attribute, String value )
+	public boolean changeAttribute( String elementXPath, String attribute, String value )
 	{
-		NodeList nodes = findNodes( element );
-		LOGGER.debug( "Found: " + nodes.getLength() + " for : " + element );
-		for ( int i = 0; i < nodes.getLength(); i++ ) {
-			Element current = (Element)nodes.item( i );
-			if ( current == null )
-				return;
-			current.setAttribute( attribute, value );
+		NodeList nodes = findNodes( elementXPath );
+		if ( nodes == null || nodes.getLength() != 1 ) {
+			LOGGER.error( "No unique node could be found for: " + elementXPath );
+			return false;
 		}
+		return addAttributeToNode( nodes.item( 0 ), attribute, value );
 	}
 
 	/**
@@ -470,8 +475,8 @@ public class VboxConfig
 	 */
 	public boolean addAttributeToNode( Node node, String attribute, String value )
 	{
-		if ( node == null ) {
-			LOGGER.warn( "Node is null; stopped!" );
+		if ( node == null || node.getNodeType() != Node.ELEMENT_NODE ) {
+			LOGGER.error( "Trying to change attribute of a non element node!" );
 			return false;
 		}
 		try {
@@ -490,27 +495,34 @@ public class VboxConfig
 	 * @param nameOfnewNode name of the node to be added
 	 * @return the newly added Node
 	 */
-	public Node addNewNode( String parentXPath, String nameOfnewNode )
+	public Node addNewNode( String parentXPath, String childName )
 	{
 		NodeList possibleParents = findNodes( parentXPath );
-		if ( possibleParents == null || possibleParents.getLength() == 0 ) {
-			LOGGER.error( "Could not find any parent node to add new node to: " + parentXPath );
+		if ( possibleParents == null || possibleParents.getLength() != 1 ) {
+			LOGGER.error( "Could not find unique parent node to add new node to: " + parentXPath );
 			return null;
 		}
-		LOGGER.debug( "Possible parents: " + possibleParents.getLength() );
-		// warn if we have more than two, which we should never have
-		if ( possibleParents.getLength() > 2 ) {
-			LOGGER.error( "SKIPPING: Multiple nodes found named: '" + parentXPath );
+		return addNewNode( possibleParents.item( 0 ), childName );
+	}
+
+	/**
+	 * Creates a new element to the given parent node.
+	 *
+	 * @param parent to add the new element to
+	 * @param childName name of the new element to create
+	 * @return the newly created node
+	 */
+	public Node addNewNode( Node parent, String childName )
+	{
+		if ( parent == null || parent.getNodeType() != Node.ELEMENT_NODE ) {
 			return null;
 		}
-		Node parent = possibleParents.item( 0 );
-		Element newNode;
+		Node newNode = null;
 		try {
-			newNode = doc.createElement( nameOfnewNode );
+			newNode = doc.createElement( childName );
 			parent.appendChild( newNode );
 		} catch ( DOMException e ) {
-			LOGGER.error( "Could not append '" + nameOfnewNode + "' to '" + parent.getNodeName() + "': ", e );
-			return null;
+			LOGGER.error( "Failed to add '" + childName + "' to '" + parent.getNodeName() + "'." );
 		}
 		return newNode;
 	}

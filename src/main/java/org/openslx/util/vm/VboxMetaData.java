@@ -101,8 +101,6 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 		registerVirtualHW();
 
 		this.config.init();
-		LOGGER.debug( "DUMPING CONFIG: " );
-		LOGGER.debug( this.config.toString( true ) );
 		displayName = config.getDisplayName();
 		setOs( config.getOsName() );
 		this.isMachineSnapshot = config.isMachineSnapshot();
@@ -197,16 +195,17 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 			newMachineUuid = UUID.randomUUID();
 		}
 		String machineUUid = "{" + newMachineUuid.toString() + "}";
-		config.changeAttribute( "/VirtualBox/Machine", "uuid", machineUUid );
-		return true;
+		return config.changeAttribute( "/VirtualBox/Machine", "uuid", machineUUid );
 	}
 
 	@Override
 	public boolean addDefaultNat()
 	{
-		config.addNewNode( "/VirtualBox/Machine/Hardware/Network/Adapter", "NAT" );
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter", "MACAddress", "080027B86D12" );
-		return true;
+		if ( config.addNewNode( "/VirtualBox/Machine/Hardware/Network/Adapter", "NAT" ) == null ) {
+			LOGGER.error( "Failed to set network adapter to NAT." );
+			return false;
+		}
+		return config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter", "MACAddress", "080027B86D12" );
 	}
 
 	@Override
@@ -219,58 +218,87 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	@Override
 	public boolean addDisplayName( String name )
 	{
-		config.changeAttribute( "/VirtualBox/Machine", "name", name );
-		return true;
+		return config.changeAttribute( "/VirtualBox/Machine", "name", name );
 	}
 
 	@Override
 	public boolean addRam( int mem )
 	{
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/Memory", "RAMSize", Integer.toString( mem ) );
-		return true;
+		return config.changeAttribute( "/VirtualBox/Machine/Hardware/Memory", "RAMSize", Integer.toString( mem ) );
 	}
 
 	@Override
 	public void addFloppy( int index, String image, boolean readOnly )
 	{
+		Element floppyController = null;
 		NodeList matches = (NodeList)config.findNodes( "/VirtualBox/Machine/StorageControllers/StorageController[@name='Floppy']" );
 		if ( matches == null || matches.getLength() == 0 ) {
-			Element controller = (Element)config.addNewNode( "/VirtualBox/Machine/StorageControllers", "StorageController" );
-			controller.setAttribute( "name", "Floppy" );
-			controller.setAttribute( "type", "I82078" );
-			controller.setAttribute( "PortCount", "1" );
-			controller.setAttribute( "useHostIOCache", "true" );
-			controller.setAttribute( "Bootable", "true" );
+			floppyController = (Element)config.addNewNode( "/VirtualBox/Machine/StorageControllers", "StorageController" );
+			if ( floppyController == null ) {
+				LOGGER.error( "Failed to add <Image> to floppy device." );
+				return;
+			}
+			floppyController.setAttribute( "name", "Floppy" );
+			floppyController.setAttribute( "type", "I82078" );
+			floppyController.setAttribute( "PortCount", "1" );
+			floppyController.setAttribute( "useHostIOCache", "true" );
+			floppyController.setAttribute( "Bootable", "false" );
 		}
+		// virtualbox only allows one controller per type
+		if ( matches.getLength() > 1 ) {
+			LOGGER.error( "Multiple floppy controllers detected, this should never happen! " );
+			return;
+		}
+		// so if we had any matches, we know we have exactly one
+		if ( floppyController == null )
+			floppyController = (Element)matches.item( 0 );
 
-		Element attachedDev = (Element)config.addNewNode( "/VirtualBox/Machine/StorageControllers/StorageController[@name='Floppy']", "AttachedDevice" );
-		attachedDev.setAttribute( "type", "Floppy" );
-		attachedDev.setAttribute( "hotpluggable", "false" );
-		attachedDev.setAttribute( "port", "0" );
-		attachedDev.setAttribute( "device", Integer.toString( index ) );
+		// add the floppy device
+		Element floppyDevice = (Element)config.addNewNode( floppyController, "AttachedDevice" );
+		if ( floppyDevice == null ) {
+			LOGGER.error( "Failed to add <Image> to floppy device." );
+			return;
+		}
+		floppyDevice.setAttribute( "type", "Floppy" );
+		floppyDevice.setAttribute( "hotpluggable", "false" );
+		floppyDevice.setAttribute( "port", "0" );
+		floppyDevice.setAttribute( "device", Integer.toString( index ) );
 
-		// now add the image to it, if one was given
+		// finally add the image to it, if one was given
 		if ( image != null ) {
-			Element imageTag = (Element)config.addNewNode( "/VirtualBox/Machine/StorageControllers/StorageController[@name='Floppy']", "Image" );
-			imageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
-			config.addNewNode( "/VirtualBox/Machine/MediaRegistry", "FloppyImages" );
-			Element floppyImageTag = (Element)config.addNewNode( "/VirtualBox/Machine/MediaRegistry/FloppyImages", "Image" );
-			floppyImageTag.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
-			floppyImageTag.setAttribute( "location", VboxConfig.PlaceHolder.FLOPPYLOCATION.toString() );
+			Element floppyImage = (Element)config.addNewNode( floppyDevice, "Image" );
+			if ( floppyImage == null ) {
+				LOGGER.error( "Failed to add <Image> to floppy device." );
+				return;
+			}
+			floppyImage.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
+			// register the image in the media registry
+			Element floppyImages = (Element)config.addNewNode( "/VirtualBox/Machine/MediaRegistry", "FloppyImages" );
+			if ( floppyImages == null ) {
+				LOGGER.error( "Failed to add <FloppyImages> to media registry." );
+				return;
+			}
+			Element floppyImageReg = (Element)config.addNewNode( "/VirtualBox/Machine/MediaRegistry/FloppyImages", "Image" );
+			if ( floppyImageReg == null ) {
+				LOGGER.error( "Failed to add <Image> to floppy images in the media registry." );
+				return;
+			}
+			floppyImageReg.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
+			floppyImageReg.setAttribute( "location", VboxConfig.PlaceHolder.FLOPPYLOCATION.toString() );
 		}
 	}
 
 	@Override
 	public boolean addCdrom( String image )
 	{
+		// TODO - done in run-virt currently
 		return false;
 	}
 
 	@Override
 	public boolean addCpuCoreCount( int nrOfCores )
 	{
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/CPU", "count", Integer.toString( nrOfCores ) );
-		return true;
+		return config.changeAttribute( "/VirtualBox/Machine/Hardware/CPU", "count", Integer.toString( nrOfCores ) );
 	}
 
 	@Override
