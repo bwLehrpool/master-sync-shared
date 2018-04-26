@@ -38,7 +38,6 @@ public class VboxConfig
 	// list of nodes to automatically remove when reading the vbox file
 	private static String[] blacklist = {
 			"/VirtualBox/Machine/Hardware/GuestProperties",
-			"/VirtualBox/Machine/Hardware/RemoteDisplay",
 			"/VirtualBox/Machine/Hardware/VideoCapture",
 			"/VirtualBox/Machine/Hardware/HID",
 			"/VirtualBox/Machine/Hardware/USB",
