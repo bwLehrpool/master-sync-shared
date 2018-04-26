@@ -373,10 +373,8 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	@Override
 	public VmMetaData.HWVersion getHWVersion()
 	{
-		VmMetaData.HWVersion returnhwv = null;
 		// Virtual Box uses only one virtual hardware version and can't be changed
-		returnhwv = VmMetaData.HWVersion.DEFAULT;
-		return returnhwv;
+		return VmMetaData.HWVersion.DEFAULT;
 	}
 
 	@Override
