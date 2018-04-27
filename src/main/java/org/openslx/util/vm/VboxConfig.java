@@ -6,11 +6,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
+import org.openslx.util.ResourceLoader;
 import org.openslx.util.XmlHelper;
 import org.openslx.util.vm.VmMetaData.DriveBusType;
 import org.openslx.util.vm.VmMetaData.HardDisk;
@@ -19,6 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Class handling the parsing of a .vbox machine description file
@@ -69,30 +76,33 @@ public class VboxConfig
 	}
 
 	/**
-	 * Creates an vbox configuration by constructing a DOM from the given XML file.
-	 * 
-	 * @param file the input XML file
+	 * Creates a vbox configuration by constructing a DOM from the given VirtualBox machine
+	 * configuration file.
+	 * Will validate the given file against the VirtualBox XSD schema and only proceed if it is
+	 * valid.
+	 *
+	 * @param file the VirtualBox machine configuration file
 	 * @throws IOException if an error occurs while reading the file
 	 * @throws UnsupportedVirtualizerFormatException if the given file is not a valid VirtualBox
 	 *            configuration file.
 	 */
 	public VboxConfig( File file ) throws IOException, UnsupportedVirtualizerFormatException
 	{
+		// first validate xml
 		try {
-			doc = XmlHelper.parseDocumentFromStream( new FileInputStream( file ) );
-			doc = XmlHelper.removeFormattingNodes( doc );
-
-			// TODO - validate against XML schema:
-			// https://www.virtualbox.org/svn/vbox/trunk/src/VBox/Main/xml/VirtualBox-settings.xsd
-			if ( !doc.getDocumentElement().getNodeName().equals( "VirtualBox" ) ) {
-				throw new UnsupportedVirtualizerFormatException( "No <VirtualBox> root node." );
-			}
-
-		} catch ( IOException e ) {
-			LOGGER.warn( "Could not parse .vbox", e );
+			SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+			Schema schema = factory.newSchema( new StreamSource( ResourceLoader.getStream( "/xml/VirtualBox-settings.xsd" ) ) );
+			Validator validator = schema.newValidator();
+			validator.validate( new StreamSource( file ) );
+		} catch ( SAXException e ) {
+			LOGGER.error( "Selected vbox file was not validated against the XSD schema: " + e.getMessage() );
+			throw new UnsupportedVirtualizerFormatException( "Invalid VirtualBox machine configuration file!" );
 		}
+		// valid xml, try to create the DOM
+		doc = XmlHelper.parseDocumentFromStream( new FileInputStream( file ) );
+		doc = XmlHelper.removeFormattingNodes( doc );
 		if ( doc == null )
-			throw new UnsupportedVirtualizerFormatException( "Could not create VBoxConfig!" );
+			throw new UnsupportedVirtualizerFormatException( "Could not create DOM from given VirtualBox machine configuration file!" );
 	}
 
 	/**
@@ -109,7 +119,7 @@ public class VboxConfig
 		doc = XmlHelper.parseDocumentFromStream( is );
 		if ( doc == null ) {
 			LOGGER.error( "Failed to create a DOM from given machine description." );
-			throw new UnsupportedVirtualizerFormatException( "Could not create VBoxConfig from byte array." );
+			throw new UnsupportedVirtualizerFormatException( "Could not create DOM from given machine description as. byte array." );
 		}
 	}
 
