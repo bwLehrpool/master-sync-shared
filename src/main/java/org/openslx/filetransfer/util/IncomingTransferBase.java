@@ -206,6 +206,8 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				chunks.markFailed( chunk );
 				chunkStatusChanged( chunk );
 				continue;
+			} catch ( Exception e ) {
+				LOGGER.warn( "unexpected fail while loading chunk from disk", e );
 			}
 			if ( data == null ) {
 				LOGGER.warn( "blockhash update: Will mark unloadable unhashed chunk as valid :-(" );
@@ -284,17 +286,26 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		@Override
 		public FileRange get()
 		{
+			boolean needNewBuffer = false;
 			if ( currentChunk != null ) {
-				chunkReceived( currentChunk, buffer );
+				needNewBuffer = chunkReceived( currentChunk, buffer );
 				if ( hashChecker != null && currentChunk.getSha1Sum() != null ) {
 					try {
 						hashChecker.queue( currentChunk, buffer, IncomingTransferBase.this, HashChecker.BLOCKING | HashChecker.CALC_HASH );
+						needNewBuffer = true;
 					} catch ( InterruptedException e ) {
 						chunks.markCompleted( currentChunk, false );
 						currentChunk = null;
 						Thread.currentThread().interrupt();
 						return null;
 					}
+				} else {
+					// We have no hash checker or the hash for the current chunk is unknown - flush to disk
+					writeFileData( currentChunk.range.startOffset, currentChunk.range.getLength(), buffer );
+					chunks.markCompleted( currentChunk, false );
+					chunkStatusChanged( currentChunk );
+				}
+				if ( needNewBuffer ) {
 					try {
 						buffer = new byte[ buffer.length ];
 					} catch ( OutOfMemoryError e ) {
@@ -313,15 +324,11 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 						try {
 							buffer = new byte[ buffer.length ];
 						} catch ( OutOfMemoryError e2 ) {
+							LOGGER.warn( "Out of JVM memory - aborting incoming " + IncomingTransferBase.this.getId() );
 							downloader.sendErrorCode( "Out of RAM" );
 							cancel();
 						}
 					}
-				} else {
-					// We have no hash checker or the hash for the current chunk is unknown - flush to disk
-					writeFileData( currentChunk.range.startOffset, currentChunk.range.getLength(), buffer );
-					chunks.markCompleted( currentChunk, false );
-					chunkStatusChanged( currentChunk );
 				}
 				currentChunk = null;
 			}
@@ -571,9 +578,11 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 
 	/**
 	 * Called when a chunk has been received -- no validation has taken place yet
+	 * @return whether we want to use the buffered data later on and it must not be written to
 	 */
-	protected void chunkReceived( FileChunk chunk, byte[] data )
+	protected boolean chunkReceived( FileChunk chunk, byte[] data )
 	{
+		return false;
 	}
 
 }
