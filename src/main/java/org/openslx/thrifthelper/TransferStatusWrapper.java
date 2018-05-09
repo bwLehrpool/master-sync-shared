@@ -60,7 +60,7 @@ public class TransferStatusWrapper
 			}
 		}
 		progress.done = ((float)done / (float)blocks.length);
-		progress.potentiallyDone = ((float)(done + potentialDone) / (float)blocks.length);
+		progress.potentiallyDone = ((float)potentialDone / (float)blocks.length);
 	}
 	
 	public float getPercentComplete() {
