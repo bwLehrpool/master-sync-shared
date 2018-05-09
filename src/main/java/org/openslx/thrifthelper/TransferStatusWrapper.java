@@ -36,6 +36,33 @@ public class TransferStatusWrapper
 		return ((float)done / (float)blocks.length);
 	}
 	
+	public static class Progress {
+		public float done;
+		public float potentiallyDone;
+	}
+	
+	/**
+	 * Return completeness of transfer, guaranteed and estimated.
+	 * .done will be what is known to be completed and good,
+	 * .potentiallyDone will be what is queued for copying and still
+	 * hashing, so can be considered and optimistic estimate.
+	 * Values are returned as float between 0 and 1.
+	 * .done + .potentiallyDone will never be > 1.
+	 * @param progress array with length >= 2
+	 */
+	public void getCompleteEx(Progress progress) {
+		int done = 0, potentialDone = 0;
+		for (byte block : blocks) {
+			if (block == 0) {
+				done++;
+			} else if (block == 3 || block == 4 || block == 5) {
+				potentialDone++;
+			}
+		}
+		progress.done = ((float)done / (float)blocks.length);
+		progress.potentiallyDone = ((float)(done + potentialDone) / (float)blocks.length);
+	}
+	
 	public float getPercentComplete() {
 		 return getComplete() * 100f;
 	}
