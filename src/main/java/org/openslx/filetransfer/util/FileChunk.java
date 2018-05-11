@@ -4,10 +4,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.CRC32;
 
+import org.apache.log4j.Logger;
 import org.openslx.filetransfer.FileRange;
+import org.openslx.filetransfer.LocalChunkSource.ChunkSource;
 
 public class FileChunk
 {
+	
+	private static final Logger LOGGER = Logger.getLogger( FileChunk.class );
 	
 	/**
 	 * Length in bytes of binary sha1 representation
@@ -22,6 +26,7 @@ public class FileChunk
 	protected CRC32 crc32;
 	protected ChunkStatus status = ChunkStatus.MISSING;
 	private boolean writtenToDisk = false;
+	private ChunkSource localSource = null;
 
 	public FileChunk( long startOffset, long endOffset, byte[] sha1sum )
 	{
@@ -33,14 +38,15 @@ public class FileChunk
 		}
 	}
 
-	synchronized void setSha1Sum( byte[] sha1sum )
+	synchronized boolean setSha1Sum( byte[] sha1sum )
 	{
 		if ( this.sha1sum != null || sha1sum == null || sha1sum.length != SHA1_LENGTH )
-			return;
+			return false;
 		this.sha1sum = sha1sum;
 		if ( this.status == ChunkStatus.COMPLETE ) {
 			this.status = ChunkStatus.HASHING;
 		}
+		return true;
 	}
 
 	/**
@@ -79,18 +85,28 @@ public class FileChunk
 	{
 		// As this is usually called before we validated the sha1, handle the case where
 		// this gets called multiple times and only remember the last result
+		long old = Long.MAX_VALUE;
 		if ( crc32 == null ) {
 			crc32 = new CRC32();
 		} else {
+			LOGGER.info( "Redoing CRC32 of Chunk " + getChunkIndex() );
+			old = crc32.getValue();
 			crc32.reset();
 		}
-		int chunkLength = range.getLength();
-		crc32.update( data, 0, chunkLength );
-		if ( ( chunkLength % 4096 ) != 0 ) {
+		int expectedLength = range.getLength();
+		if ( expectedLength > data.length ) {
+			LOGGER.error( "Chunk #" + getChunkIndex() + ": " + data.length + " instead of " + expectedLength + " for " + getChunkIndex() );
+		}
+		crc32.update( data, 0, expectedLength );
+		if ( ( expectedLength % 4096 ) != 0 ) {
 			// DNBD3 virtually pads all images to be a multiple of 4KiB in size,
 			// so simulate that here too
-			byte[] padding = new byte[ 4096 - ( chunkLength % 4096 ) ];
+			LOGGER.debug( "Block " + getChunkIndex() + " not multiple of 4k." );
+			byte[] padding = new byte[ 4096 - ( expectedLength % 4096 ) ];
 			crc32.update( padding );
+		}
+		if ( old != Long.MAX_VALUE && old != crc32.getValue() ) {
+			LOGGER.warn( String.format( "Changed from %x to %x", old, crc32.getValue() ) );
 		}
 	}
 
@@ -119,7 +135,7 @@ public class FileChunk
 		if ( status != null ) {
 			if ( status == ChunkStatus.COMPLETE ) {
 				this.writtenToDisk = true;
-			} else if ( status == ChunkStatus.MISSING ) {
+			} else if ( status == ChunkStatus.MISSING || status == ChunkStatus.QUEUED_FOR_COPY ) {
 				this.writtenToDisk = false;
 			}
 			this.status = status;
@@ -161,4 +177,15 @@ public class FileChunk
 	{
 		return failCount;
 	}
+
+	public void setSource( ChunkSource src )
+	{
+		this.localSource = src;
+	}
+	
+	public ChunkSource getSources()
+	{
+		return this.localSource;
+	}
+
 }

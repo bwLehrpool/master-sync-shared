@@ -352,6 +352,10 @@ struct TransferStatus {
 	2: TransferState state,
 }
 
+struct UploadOptions {
+	1: bool serverSideCopying,
+}
+
 struct SatelliteConfig {
 	// Get number of items returned per page (for calls that have a page parameter)
 	1: i32 pageSize,
@@ -440,8 +444,12 @@ service SatelliteServer {
 		throws (1:TTransferRejectedException rejection, 2:TAuthorizationException authError, 3:TInvocationException ffff, 4:TNotFoundException sdf),
 
 	// Client updates block hashes of an upload
-	void updateBlockHashes(1: Token uploadToken, 2: list<binary> blockHashes)
+	void updateBlockHashes(1: Token uploadToken, 2: list<binary> blockHashes, 3: Token userToken)
 		throws (1:TInvalidTokenException ex1),
+
+	// Change settings for a specific upload
+	UploadOptions setUploadOptions(1: Token userToken, 2: Token uploadToken, 3: UploadOptions options)
+		throws (1:TAuthorizationException frootloops, 2:TInvalidTokenException imcyborgbutthatsok),
 
 	// Client cancels an upload
 	void cancelUpload(1: Token uploadToken)

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.zip.CRC32;
 
 import org.apache.log4j.Logger;
+import org.openslx.filetransfer.LocalChunkSource.ChunkSource;
 import org.openslx.util.ThriftUtil;
 
 public class ChunkList
@@ -26,7 +27,7 @@ public class ChunkList
 	/**
 	 * Chunks that are missing from the file
 	 */
-	private final List<FileChunk> missingChunks = new LinkedList<>();
+	private final LinkedList<FileChunk> missingChunks = new LinkedList<>();
 
 	/**
 	 * Chunks that are currently being uploaded or hash-checked
@@ -58,21 +59,26 @@ public class ChunkList
 	 * upload, but periodically update it while the upload is running.
 	 * 
 	 * @param sha1Sums list of sums
+	 * @return lowest index of chunk that didn't have a sha1sum before, -1 if no new ones  
 	 */
-	public synchronized void updateSha1Sums( List<byte[]> sha1Sums )
+	public synchronized int updateSha1Sums( List<byte[]> sha1Sums )
 	{
 		int index = 0;
+		int firstNew = -1;
 		for ( byte[] sum : sha1Sums ) {
 			if ( index >= allChunks.size() )
 				break;
 			if ( sum != null ) {
-				allChunks.get( index ).setSha1Sum( sum );
+				if ( allChunks.get( index ).setSha1Sum( sum ) && firstNew == -1 ) {
+					firstNew = index;
+				}
 				if ( !hasChecksum ) {
 					hasChecksum = true;
 				}
 			}
 			index++;
 		}
+		return firstNew;
 	}
 
 	/**
@@ -120,10 +126,81 @@ public class ChunkList
 			if ( missingChunks.isEmpty() )
 				return null;
 		}
-		FileChunk c = missingChunks.remove( 0 );
+		FileChunk c = missingChunks.removeFirst();
 		c.setStatus( ChunkStatus.UPLOADING );
 		pendingChunks.add( c );
 		return c;
+	}
+
+	/**
+	 * Returns true if this list contains a chunk with state MISSING,
+	 * which means the chunk doesn't have a sha1 known to exist in
+	 * another image.
+	 * @return
+	 */
+	public synchronized boolean hasLocallyMissingChunk()
+	{
+		return !missingChunks.isEmpty() && missingChunks.peekFirst().status == ChunkStatus.MISSING;
+	}
+
+	/**
+	 * Get a chunk that is marked as candidate for copying.
+	 * Returns null if none are available.
+	 */
+	public synchronized FileChunk getCopyCandidate()
+	{
+		if ( missingChunks.isEmpty() )
+			return null;
+		FileChunk last = missingChunks.removeLast();
+		if ( last.status != ChunkStatus.QUEUED_FOR_COPY ) {
+			// Put back
+			missingChunks.add( last );
+			return null;
+		}
+		// Is a candidate
+		last.setStatus( ChunkStatus.COPYING );
+		pendingChunks.add( last );
+		return last;
+	}
+
+	/**
+	 * Mark the given chunks for potential local copying instead of receiving them
+	 * from peer.
+	 * @param firstNew 
+	 * @param sources
+	 */
+	public synchronized void markLocalCopyCandidates( List<ChunkSource> sources )
+	{
+		for ( ChunkSource src : sources ) {
+			try {
+				if ( src.sourceCandidates.isEmpty() )
+					continue;
+				List<FileChunk> append = null;
+				for ( Iterator<FileChunk> it = missingChunks.iterator(); it.hasNext(); ) {
+					FileChunk chunk = it.next();
+					if ( !Arrays.equals( chunk.sha1sum, src.sha1sum ) )
+						continue;
+					if ( chunk.status == ChunkStatus.QUEUED_FOR_COPY )
+						continue;
+					// Bingo
+					if ( append == null ) {
+						append = new ArrayList<>( 20 );
+					}
+					it.remove();
+					chunk.setStatus( ChunkStatus.QUEUED_FOR_COPY );
+					chunk.setSource( src );
+					append.add( chunk );
+				}
+				if ( append != null ) {
+					// Move all the chunks queued for copying to the end of the list, so when
+					// we getMissing() a chunk for upload from client, these ones would only
+					// come last, in case reading from storage and writing back is really slow
+					missingChunks.addAll( append );
+				}
+			} catch ( Exception e ) {
+				LOGGER.warn( "chunk clone list if messed up", e );
+			}
+		}
 	}
 
 	/**
@@ -235,7 +312,7 @@ public class ChunkList
 		}
 		// Add as first element so it will be re-transmitted immediately
 		c.setStatus( ChunkStatus.MISSING );
-		missingChunks.add( 0, c );
+		missingChunks.addFirst( c );
 		this.notifyAll();
 		return c.incFailed();
 	}

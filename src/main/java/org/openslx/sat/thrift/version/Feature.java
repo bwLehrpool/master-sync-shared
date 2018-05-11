@@ -20,4 +20,10 @@ public enum Feature {
 	 * multiple components needs to be compatible to fully support them.
 	 */
 	MULTIPLE_HYPERVISORS,
+	
+	/**
+	 * Server supports copying existing blocks server side.
+	 */
+	SERVER_SIDE_COPY,
+	
 }
