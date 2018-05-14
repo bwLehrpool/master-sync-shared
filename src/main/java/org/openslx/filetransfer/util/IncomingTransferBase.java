@@ -267,7 +267,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		if ( localChunkSource == null || hashList == null || hashList.isEmpty() )
 			return;
 		List<byte[]> sums;
-		if ( firstNew == 0 ) {
+		if ( firstNew <= 0 ) {
 			sums = hashList;
 		} else {
 			sums = hashList.subList( firstNew, hashList.size() );
