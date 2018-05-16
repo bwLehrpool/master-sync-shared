@@ -643,6 +643,13 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		if ( state == TransferState.FINISHED ) {
 			return;
 		}
+		try {
+			if ( tmpFileHandle.length() < fileSize && chunks.lastChunkIsZero() ) {
+   			tmpFileHandle.setLength( fileSize );
+			}
+		} catch ( IOException e) {
+			LOGGER.warn( "Cannot extend file size to " + fileSize );
+		}
 		safeClose( tmpFileHandle );
 		if ( localCopyManager != null ) {
 			localCopyManager.interrupt();

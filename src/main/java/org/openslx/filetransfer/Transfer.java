@@ -13,6 +13,8 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
+import net.jpountz.lz4.LZ4Factory;
+
 import org.apache.log4j.Logger;
 import org.openslx.util.Util;
 
@@ -23,8 +25,11 @@ public abstract class Transfer
 	protected final DataInputStream dataFromServer;
 	protected String ERROR = null;
 	private boolean shouldGetToken;
+	protected boolean useCompression = true;
 
 	protected final Logger log;
+
+	protected final static LZ4Factory lz4factory = LZ4Factory.fastestInstance();
 
 	/**
 	 * Actively initiated transfer.
@@ -78,6 +83,15 @@ public abstract class Transfer
 			return false;
 		}
 		return true;
+	}
+	
+	protected void sendUseCompression()
+	{
+		try {
+			sendKeyValuePair( "COMPRESS", "true" );
+		} catch ( IOException e ) {
+			e.printStackTrace();
+		}
 	}
 
 	/***********************************************************************/
@@ -281,6 +295,9 @@ public abstract class Transfer
 		MetaData meta = readMetaData();
 		if ( meta == null )
 			return null;
+		if (meta.peerWantsCompression()) {
+			useCompression = true;
+		}
 		return meta.getToken();
 	}
 
@@ -379,6 +396,14 @@ public abstract class Transfer
 				return null;
 			}
 			return new FileRange( start, end );
+		}
+
+		/**
+		 * Peer indicated that it wants to use snappy compression.
+		 */
+		public boolean peerWantsCompression()
+		{
+			return meta.containsKey( "COMPRESS" );
 		}
 
 	}

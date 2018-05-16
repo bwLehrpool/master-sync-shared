@@ -69,8 +69,14 @@ public class ChunkList
 			if ( index >= allChunks.size() )
 				break;
 			if ( sum != null ) {
-				if ( allChunks.get( index ).setSha1Sum( sum ) && firstNew == -1 ) {
-					firstNew = index;
+				FileChunk chunk = allChunks.get( index );
+				if ( chunk.setSha1Sum( sum ) ) {
+					if ( firstNew == -1 ) {
+						firstNew = index;
+					}
+					if ( chunk.status == ChunkStatus.MISSING && Arrays.equals( FileChunk.NULL_BLOCK_SHA1, sum ) ) {
+						markMissingAsComplete( index );
+					}
 				}
 				if ( !hasChecksum ) {
 					hasChecksum = true;
@@ -471,6 +477,18 @@ public class ChunkList
 				return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Returns true if the last chunk is exactly 16MiB and all zeros
+	 * @return
+	 */
+	public boolean lastChunkIsZero()
+	{
+		if ( allChunks.isEmpty() )
+			return false;
+		FileChunk chunk = allChunks.get( allChunks.size() - 1 );
+		return chunk.sha1sum != null && Arrays.equals( FileChunk.NULL_BLOCK_SHA1, chunk.sha1sum );
 	}
 
 }

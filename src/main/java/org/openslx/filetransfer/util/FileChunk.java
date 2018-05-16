@@ -1,5 +1,6 @@
 package org.openslx.filetransfer.util;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.CRC32;
@@ -28,6 +29,13 @@ public class FileChunk
 	private boolean writtenToDisk = false;
 	private ChunkSource localSource = null;
 
+	static final byte[] NULL_BLOCK_SHA1 = new byte[] {
+			0x3b, 0x44, 0x17, (byte)0xfc, 0x42, 0x1c, (byte)0xee, 0x30, (byte)0xa9, (byte)0xad, 0x0f,
+			(byte)0xd9, 0x31, (byte)0x92, 0x20, (byte)0xa8, (byte)0xda, (byte)0xe3, 0x2d, (byte)0xa2
+	};
+	
+	static final long NULL_BLOCK_CRC32 = 2759631178l;
+
 	public FileChunk( long startOffset, long endOffset, byte[] sha1sum )
 	{
 		this.range = new FileRange( startOffset, endOffset );
@@ -43,6 +51,20 @@ public class FileChunk
 		if ( this.sha1sum != null || sha1sum == null || sha1sum.length != SHA1_LENGTH )
 			return false;
 		this.sha1sum = sha1sum;
+		if ( Arrays.equals( sha1sum, NULL_BLOCK_SHA1 ) ) {
+			// 
+			writtenToDisk = true;
+			if ( crc32 == null ) {
+				crc32 = new CRC32() {
+					@Override
+					public long getValue()
+					{
+						return NULL_BLOCK_CRC32;
+					}
+				};
+			}
+			return true;
+		}
 		if ( this.status == ChunkStatus.COMPLETE ) {
 			this.status = ChunkStatus.HASHING;
 		}

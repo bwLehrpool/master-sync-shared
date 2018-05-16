@@ -14,6 +14,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
 import org.apache.log4j.Logger;
+import org.openslx.util.PrioThreadFactory;
 
 public class Listener
 {
@@ -23,7 +24,8 @@ public class Listener
 	private ServerSocket listenSocket = null;
 	private Thread acceptThread = null;
 	private final int readTimeoutMs;
-	private final ExecutorService processingPool = new ThreadPoolExecutor( 0, 8, 5, TimeUnit.MINUTES, new SynchronousQueue<Runnable>() );
+	private final ExecutorService processingPool = new ThreadPoolExecutor( 0, 8, 5, TimeUnit.MINUTES, new SynchronousQueue<Runnable>(),
+			new PrioThreadFactory( "BFTP-Init" ) );
 
 	private static final byte CONNECTING_PEER_WANTS_TO_UPLOAD = 85; // hex - code 'U' = 85.
 	private static final byte CONNECTING_PEER_WANTS_TO_DOWNLOAD = 68; // hex - code 'D' = 68.
