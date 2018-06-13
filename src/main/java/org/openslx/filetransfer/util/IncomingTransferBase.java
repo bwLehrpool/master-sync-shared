@@ -645,9 +645,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		}
 		try {
 			if ( tmpFileHandle.length() < fileSize && chunks.lastChunkIsZero() ) {
-   			tmpFileHandle.setLength( fileSize );
+				tmpFileHandle.setLength( fileSize );
 			}
-		} catch ( IOException e) {
+		} catch ( IOException e ) {
 			LOGGER.warn( "Cannot extend file size to " + fileSize );
 		}
 		safeClose( tmpFileHandle );
