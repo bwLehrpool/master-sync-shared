@@ -26,4 +26,9 @@ public enum Feature {
 	 */
 	SERVER_SIDE_COPY,
 	
+	/**
+	 * Server supports filtering lectures by LDAP/AD attributes 
+	 */
+	LECTURE_FILTER_LDAP,
+	
 }

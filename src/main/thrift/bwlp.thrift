@@ -251,6 +251,11 @@ struct NetShare {
 	3: optional string password,
 }
 
+struct LdapFilter {
+	1: string attribute,
+	2: string value,
+}
+
 // Write lecture to sat. if optional fields are not set or null, their value stays unchanged
 struct LectureWrite {
 	1: string lectureName,
@@ -273,6 +278,7 @@ struct LectureWrite {
 	19: bool limitToAllowedUsers,
 	20: bool hasUsbAccess,
 	21: optional list<NetShare> networkShares,
+	22: optional list<LdapFilter> ldapFilters,
 }
 
 struct LectureSummary {
@@ -324,6 +330,7 @@ struct LectureRead {
 	27: bool limitToAllowedUsers,
 	28: bool hasUsbAccess,
 	29: optional list<NetShare> networkShares,
+	30: optional list<LdapFilter> ldapFilters,
 }
 
 struct MasterTag {
