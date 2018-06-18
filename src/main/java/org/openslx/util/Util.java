@@ -1,6 +1,6 @@
 package org.openslx.util;
 
-import java.io.Closeable;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -17,10 +17,8 @@ public class Util
 	 * friendly output. A perfect example would be reading settings from a
 	 * config file. You can use this on mandatory fields.
 	 * 
-	 * @param something
-	 *           the object to compare to null
-	 * @param message
-	 *           the message to be printed if something is null
+	 * @param something the object to compare to null
+	 * @param message the message to be printed if something is null
 	 */
 	public static void notNullFatal( Object something, String message )
 	{
@@ -32,9 +30,35 @@ public class Util
 		}
 	}
 
+	private static Pattern nonprintableExp = Pattern.compile( "[\\p{C}\\p{Zl}\\p{Zp}]" );
+	private static Pattern nonSpaceExp = Pattern.compile( "[^\\p{C}\\p{Z}]" );
+
+	/**
+	 * Whether the given string contains only printable characters.
+	 */
+	public static boolean isPrintable( String string )
+	{
+		return !nonprintableExp.matcher( string ).find();
+	}
+
+	/**
+	 * Whether given string is null, empty, or only matches space-like
+	 * characters.
+	 */
+	public static boolean isEmptyString( String string )
+	{
+		return string == null || !nonSpaceExp.matcher( string ).find();
+	}
+
+	/**
+	 * Check if given string is null or empty and abort program if so.
+	 * 
+	 * @param something String to check
+	 * @param message Error message to display on abort
+	 */
 	public static void notNullOrEmptyFatal( String something, String message )
 	{
-		if ( something == null || something.isEmpty() ) {
+		if ( isEmptyString( something ) ) {
 			if ( message != null )
 				log.fatal( "[NOTNULL] " + message );
 			log.warn( Thread.currentThread().getStackTrace().toString() );
@@ -57,18 +81,6 @@ public class Util
 			return Integer.parseInt( value );
 		} catch ( Exception e ) {
 			return defaultValue;
-		}
-	}
-
-	public static void safeClose( Closeable... closeable )
-	{
-		for ( Closeable c : closeable ) {
-			if ( c == null )
-				continue;
-			try {
-				c.close();
-			} catch ( Throwable t ) {
-			}
 		}
 	}
 
