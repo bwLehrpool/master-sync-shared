@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.xml.XMLConstants;
@@ -16,7 +17,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
-import org.openslx.util.ResourceLoader;
 import org.openslx.util.XmlHelper;
 import org.openslx.util.vm.VmMetaData.DriveBusType;
 import org.openslx.util.vm.VmMetaData.HardDisk;
@@ -80,7 +80,7 @@ public class VboxConfig
 	 * configuration file.
 	 * Will validate the given file against the VirtualBox XSD schema and only proceed if it is
 	 * valid.
-	 *
+	 * 
 	 * @param file the VirtualBox machine configuration file
 	 * @throws IOException if an error occurs while reading the file
 	 * @throws UnsupportedVirtualizerFormatException if the given file is not a valid VirtualBox
@@ -91,9 +91,14 @@ public class VboxConfig
 		// first validate xml
 		try {
 			SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-			Schema schema = factory.newSchema( new StreamSource( ResourceLoader.getStream( "/xml/VirtualBox-settings.xsd" ) ) );
-			Validator validator = schema.newValidator();
-			validator.validate( new StreamSource( file ) );
+			InputStream xsdStream = VboxConfig.class.getResourceAsStream( "/master-sync-shared/xml/VirtualBox-settings.xsd" );
+			if ( xsdStream == null ) {
+				LOGGER.warn( "Cannot validate Vbox XML: No XSD found in JAR" );
+			} else {
+				Schema schema = factory.newSchema( new StreamSource( xsdStream ) );
+				Validator validator = schema.newValidator();
+				validator.validate( new StreamSource( file ) );
+			}
 		} catch ( SAXException e ) {
 			LOGGER.error( "Selected vbox file was not validated against the XSD schema: " + e.getMessage() );
 			throw new UnsupportedVirtualizerFormatException( "Invalid VirtualBox machine configuration file!" );
