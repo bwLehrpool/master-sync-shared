@@ -50,10 +50,18 @@ public class FileRange
 	@Override
 	public boolean equals( Object other )
 	{
+		if ( other == this )
+			return true;
 		if ( other == null || ! ( other instanceof FileRange ) )
 			return false;
 		FileRange o = (FileRange)other;
 		return o.startOffset == this.startOffset && o.endOffset == this.endOffset;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return (int)startOffset ^ Integer.rotateLeft( (int)endOffset, 16 ) ^ (int)(startOffset >> 32);
 	}
 
 }

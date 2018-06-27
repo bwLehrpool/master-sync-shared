@@ -125,7 +125,7 @@ public class VmwareConfig
 			ret = ret.replace( "|22", "\"" );
 		}
 		if ( ret.contains( "|7C" ) ) {
-			ret.replace( "|7C", "|" );
+			ret = ret.replace( "|7C", "|" );
 		}
 		return ret;
 	}

@@ -25,7 +25,7 @@ public class Util
 		if ( something == null ) {
 			if ( message != null )
 				log.fatal( "[NOTNULL] " + message );
-			log.warn( Thread.currentThread().getStackTrace().toString() );
+			log.warn( "Fatal null pointer exception", new NullPointerException() );
 			System.exit( 2 );
 		}
 	}
@@ -61,7 +61,7 @@ public class Util
 		if ( isEmptyString( something ) ) {
 			if ( message != null )
 				log.fatal( "[NOTNULL] " + message );
-			log.warn( Thread.currentThread().getStackTrace().toString() );
+			log.warn( "Fatal null pointer or empty exception", new NullPointerException() );
 			System.exit( 2 );
 		}
 	}

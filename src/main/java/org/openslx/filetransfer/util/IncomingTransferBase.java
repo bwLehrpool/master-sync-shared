@@ -117,7 +117,6 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		chunks = new ChunkList( fileSize, blockHashes );
 		if ( this.localChunkSource != null ) {
 			this.localCopyManager = new LocalCopyManager( this, this.chunks );
-			this.localCopyManager.start();
 			checkLocalCopyCandidates( blockHashes, 0 );
 		} else {
 			this.localCopyManager = null;

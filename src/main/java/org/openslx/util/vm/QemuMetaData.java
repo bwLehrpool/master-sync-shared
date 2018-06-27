@@ -14,9 +14,9 @@ import org.openslx.thrifthelper.TConst;
 public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta>
 {
 
-	private Map<String, String> arguments = new HashMap<String, String>();
+	private final Map<String, String> arguments = new HashMap<String, String>();
 	// the above map's elements will take the place of <args> in the config string
-	private static String config = "qemu-system-i386 <args> <image> -enable-kvm \n\r qemu-system-x86_64 <args> <image> -enable-kvm";
+	private String config;
 	private static final Logger LOGGER = Logger.getLogger( QemuMetaData.class );
 
 	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_QEMU, "QEMU-KVM" );
@@ -24,6 +24,7 @@ public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	public QemuMetaData( List<OperatingSystem> osList, File file )
 	{
 		super( osList );
+		config = "qemu-system-i386 <args> <image> -enable-kvm \n\r qemu-system-x86_64 <args> <image> -enable-kvm";
 		displayName = file.getName().substring( 0, file.getName().indexOf( "." ) );
 		setOs( "anyOs" );
 		hdds.add( new HardDisk( "anychipset", DriveBusType.IDE, file.getAbsolutePath() ) );

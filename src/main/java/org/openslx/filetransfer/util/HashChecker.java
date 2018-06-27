@@ -39,9 +39,6 @@ public class HashChecker
 		this.algorithm = algorithm;
 		this.queueCapacity = queueLen;
 		this.queue = new LinkedBlockingQueue<>( queueLen );
-		CheckThread thread = new CheckThread( false );
-		thread.start();
-		threads.add( thread );
 	}
 
 	private void threadFailed( CheckThread thread )
@@ -108,6 +105,19 @@ public class HashChecker
 			if ( invalid ) {
 				execCallback( task, HashResult.FAILURE );
 				return true;
+			}
+			if ( queue.isEmpty() ) {
+				CheckThread thread;
+				try {
+					thread = new CheckThread( false );
+					thread.start();
+					threads.add( thread );
+				} catch ( NoSuchAlgorithmException e1 ) {
+					LOGGER.warn( "Cannot spawn hash thread", e1 );
+					invalid = true;
+					execCallback( task, HashResult.FAILURE );
+					return true;
+				}
 			}
 			if ( queue.remainingCapacity() <= 1 && threads.size() < Runtime.getRuntime().availableProcessors() ) {
 				try {

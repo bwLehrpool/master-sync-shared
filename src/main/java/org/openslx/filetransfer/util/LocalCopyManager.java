@@ -47,6 +47,16 @@ public class LocalCopyManager extends Thread
 	{
 		if ( this.paused )
 			return;
+		if ( this.getState() == State.NEW ) {
+			start();
+		}
+		triggerInternal();
+	}
+	
+	private synchronized void triggerInternal()
+	{
+		if ( this.paused )
+			return;
 		if ( !isAlive() ) {
 			LOGGER.warn( "Cannot be triggered when Thread is not running." );
 			if ( currentChunk != null ) {
@@ -77,7 +87,7 @@ public class LocalCopyManager extends Thread
 					} else if ( !transfer.isActive() ) {
 						break;
 					} else {
-						trigger();
+						triggerInternal();
 					}
 				}
 			}
@@ -149,7 +159,7 @@ public class LocalCopyManager extends Thread
 						currentChunk = null;
 					}
 					copyCount.incrementAndGet();
-					trigger();
+					triggerInternal();
 					return;
 				}
 				// Reaching here means failure
