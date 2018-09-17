@@ -140,7 +140,7 @@ public class DiskImage
 				byte[] parentUuid = new byte[ 16 ];
 				file.readFully( parentUuid );
 				byte[] zeroUuid = new byte[ 16 ];
-				Arrays.fill( new byte[ 16 ], (byte)0 );
+				Arrays.fill( zeroUuid, (byte)0 );
 				this.isSnapshot = !Arrays.equals( parentUuid, zeroUuid );
 				// VDI does not seem to support split VDI files so always standalone
 				this.isStandalone = true;
