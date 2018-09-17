@@ -1,6 +1,8 @@
 package org.openslx.util.vm;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +12,8 @@ import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.util.vm.DiskImage.ImageFormat;
+import org.openslx.util.vm.DiskImage.UnknownImageFormatException;
 
 public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta>
 {
@@ -21,22 +25,23 @@ public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 
 	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_QEMU, "QEMU-KVM" );
 
-	public QemuMetaData( List<OperatingSystem> osList, File file )
+	public QemuMetaData( List<OperatingSystem> osList, File file ) throws FileNotFoundException, IOException, UnsupportedVirtualizerFormatException
 	{
 		super( osList );
+		DiskImage di;
+		try {
+			di = new DiskImage( file );
+		} catch ( UnknownImageFormatException e ) {
+			di = null;
+		}
+		if ( di == null || di.format != ImageFormat.QCOW2 ) {
+			throw new UnsupportedVirtualizerFormatException( "This is not a qcow2 disk image" );
+		}
 		config = "qemu-system-i386 <args> <image> -enable-kvm \n\r qemu-system-x86_64 <args> <image> -enable-kvm";
 		displayName = file.getName().substring( 0, file.getName().indexOf( "." ) );
 		setOs( "anyOs" );
 		hdds.add( new HardDisk( "anychipset", DriveBusType.IDE, file.getAbsolutePath() ) );
 		makeStartSequence();
-	}
-
-	public QemuMetaData( List<OperatingSystem> osList, byte[] vmContent )
-	{
-		super( osList );
-		config = new String( vmContent );
-		displayName = "QemuVM";
-		setOs( "anyOs" );
 	}
 
 	// initiates the arguments map with a default working sequence that will later be used in the definition array

@@ -17,6 +17,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
+import org.openslx.util.Util;
 import org.openslx.util.XmlHelper;
 import org.openslx.util.vm.VmMetaData.DriveBusType;
 import org.openslx.util.vm.VmMetaData.HardDisk;
@@ -35,7 +36,6 @@ public class VboxConfig
 	private static final Logger LOGGER = Logger.getLogger( VboxConfig.class );
 
 	// key information set during initial parsing of the XML file
-	private String displayName = new String();
 	private String osName = new String();
 	private ArrayList<HardDisk> hddsArray = new ArrayList<HardDisk>();
 
@@ -101,13 +101,13 @@ public class VboxConfig
 			}
 		} catch ( SAXException e ) {
 			LOGGER.error( "Selected vbox file was not validated against the XSD schema: " + e.getMessage() );
-			throw new UnsupportedVirtualizerFormatException( "Invalid VirtualBox machine configuration file!" );
 		}
 		// valid xml, try to create the DOM
 		doc = XmlHelper.parseDocumentFromStream( new FileInputStream( file ) );
 		doc = XmlHelper.removeFormattingNodes( doc );
 		if ( doc == null )
 			throw new UnsupportedVirtualizerFormatException( "Could not create DOM from given VirtualBox machine configuration file!" );
+		init();
 	}
 
 	/**
@@ -126,15 +126,19 @@ public class VboxConfig
 			LOGGER.error( "Failed to create a DOM from given machine description." );
 			throw new UnsupportedVirtualizerFormatException( "Could not create DOM from given machine description as. byte array." );
 		}
+		init();
 	}
 
 	/**
 	 * Main initialization functions parsing the document created during the constructor.
+	 * @throws UnsupportedVirtualizerFormatException 
 	 */
-	public void init()
+	private void init() throws UnsupportedVirtualizerFormatException
 	{
+		if ( Util.isEmptyString( getDisplayName() ) ) {
+			throw new UnsupportedVirtualizerFormatException( "Machine doesn't have a name" );
+		}
 		try {
-			setMachineName();
 			ensureHardwareUuid();
 			setOsType();
 			if ( checkForPlaceholders() ) {
@@ -154,34 +158,33 @@ public class VboxConfig
 	 * believing in a hardware change.
 	 *
 	 * @throws XPathExpressionException
+	 * @throws UnsupportedVirtualizerFormatException 
 	 */
-	private void ensureHardwareUuid() throws XPathExpressionException
+	private void ensureHardwareUuid() throws XPathExpressionException, UnsupportedVirtualizerFormatException
 	{
 		// we will need the machine uuid, so get it
 		String machineUuid = XmlHelper.XPath.compile( "/VirtualBox/Machine/@uuid" ).evaluate( this.doc );
 		if ( machineUuid.isEmpty() ) {
 			LOGGER.error( "Machine UUID empty, should never happen!" );
-			return;
+			throw new UnsupportedVirtualizerFormatException( "XML doesn't contain a machine uuid" );
 		}
 
 		NodeList hwNodes = findNodes( "/VirtualBox/Machine/Hardware" );
 		int count = hwNodes.getLength();
-		if ( count == 1 ) {
-			Element hw = (Element)hwNodes.item( 0 );
-			String hwUuid = hw.getAttribute( "uuid" );
-			if ( !hwUuid.isEmpty() ) {
-				LOGGER.info( "Found hardware uuid: " + hwUuid );
-				return;
-			} else {
-				if ( !addAttributeToNode( hw, "uuid", machineUuid ) ) {
-					LOGGER.error( "Failed to set machine UUID '" + machineUuid + "' as hardware UUID." );
-					return;
-				}
-				LOGGER.info( "Saved machine UUID as hardware UUID." );
-			}
+		if ( count != 1 ) {
+			throw new UnsupportedVirtualizerFormatException( "Zero or more '/VirtualBox/Machine/Hardware' node were found, should never happen!" );
+		}
+		Element hw = (Element)hwNodes.item( 0 );
+		String hwUuid = hw.getAttribute( "uuid" );
+		if ( !hwUuid.isEmpty() ) {
+			LOGGER.info( "Found hardware uuid: " + hwUuid );
+			return;
 		} else {
-			// HACK: hijack XPathExpressionException ...
-			throw new XPathExpressionException( "Zero or more '/VirtualBox/Machine/Hardware' node were found, should never happen!" );
+			if ( !addAttributeToNode( hw, "uuid", machineUuid ) ) {
+				LOGGER.error( "Failed to set machine UUID '" + machineUuid + "' as hardware UUID." );
+				return;
+			}
+			LOGGER.info( "Saved machine UUID as hardware UUID." );
 		}
 	}
 
@@ -266,27 +269,17 @@ public class VboxConfig
 	}
 
 	/**
-	 * Sets the display name set within the DOM expected at the
-	 * given XPath path.
-	 * 
-	 * @throws XPathExpressionException
-	 */
-	public void setMachineName() throws XPathExpressionException
-	{
-		String name = XmlHelper.XPath.compile( "/VirtualBox/Machine/@name" ).evaluate( this.doc );
-		if ( name != null && !name.isEmpty() ) {
-			displayName = name;
-		}
-	}
-
-	/**
-	 * Getter for the parsed display name
+	 * Getter for the display name
 	 *
 	 * @return the display name of this VM
 	 */
 	public String getDisplayName()
 	{
-		return displayName;
+		try {
+			return XmlHelper.XPath.compile( "/VirtualBox/Machine/@name" ).evaluate( this.doc );
+		} catch ( XPathExpressionException e ) {
+			return "";
+		}
 	}
 
 	/**

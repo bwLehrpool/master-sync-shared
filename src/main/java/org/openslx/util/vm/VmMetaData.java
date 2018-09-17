@@ -259,33 +259,27 @@ public abstract class VmMetaData<T, U, V, W>
 	 *
 	 * @param osList List of supported operating systems
 	 * @param file VM's machine description file to get the metadata instance from
-	 * @return VmMetaData object representing the relevant parts of the given machine description
-	 * @throws IOException
+	 * @return VmMetaData object representing the relevant parts of the given machine description 
 	 */
-	public static VmMetaData<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file ) throws IOException
+	public static VmMetaData<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
+			throws IOException
 	{
-		Exception errEx = null;
 		try {
 			return new VmwareMetaData( osList, file );
 		} catch ( UnsupportedVirtualizerFormatException e ) {
-			LOGGER.debug( "Disk file not .vmdk" );
-			errEx = e;
+			LOGGER.info( "Not a VMware file", e );
 		}
 		try {
 			return new VboxMetaData( osList, file );
 		} catch ( UnsupportedVirtualizerFormatException e ) {
-			LOGGER.debug( "Disk file not .vdi" );
-			errEx = e;
+			LOGGER.info( "Not a VirtualBox file", e );
 		}
 		try {
 			return new QemuMetaData( osList, file );
 		} catch ( Exception e ) {
-			LOGGER.debug( "Disk file not qemu supported format" );
-			errEx = e;
+			LOGGER.info( "Not a QEmu file", e );
 		}
-		if ( errEx != null ) {
-			LOGGER.error( "Unsupported disk file format!", errEx );
-		}
+		LOGGER.error( "Could not detect any known virtualizer format" );
 		return null;
 	}
 
@@ -300,29 +294,18 @@ public abstract class VmMetaData<T, U, V, W>
 	 */
 	public static VmMetaData<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length ) throws IOException
 	{
-		Exception errEx = null;
 		try {
 			return new VmwareMetaData( osList, vmContent, length );
 		} catch ( UnsupportedVirtualizerFormatException e ) {
-			LOGGER.debug( "Machine description not in .vmx format." );
-			errEx = e;
+			LOGGER.info( "Not a VMware file", e );
 		}
 		try {
 			return new VboxMetaData( osList, vmContent, length );
-		} catch ( UnsupportedVirtualizerFormatException | NullPointerException e ) {
-			LOGGER.debug( "Machine description not in .vbox format." );
-			errEx = e;
+		} catch ( UnsupportedVirtualizerFormatException e ) {
+			LOGGER.info( "Not a VirtualBox file", e );
 		}
-		// how to do this check ??
-		try {
-			return new QemuMetaData( osList, vmContent );
-		} catch ( Exception e ) {
-			LOGGER.debug( "Machine description not in qemu supported format" );
-			errEx = e;
-		}
-		if ( errEx != null ) {
-			LOGGER.error( "Machine description has an unknown format!", errEx );
-		}
+		// TODO QEmu -- hack above expects qcow2 file, so we can't do anything here yet
+		LOGGER.error( "Could not detect any known virtualizer format" );
 		return null;
 	}
 
