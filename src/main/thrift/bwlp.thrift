@@ -249,11 +249,19 @@ struct NetShare {
 	6: optional string mountpoint,
 	2: optional string username,
 	3: optional string password,
+	7: optional i32 shareId,
 }
 
 struct LdapFilter {
 	1: string attribute,
 	2: string value,
+	3: optional i32 filterId,
+	4: optional string title,
+}
+
+struct PredefinedData {
+	1: list<NetShare> netShares,
+	2: list<LdapFilter> ldapFilter,
 }
 
 // Write lecture to sat. if optional fields are not set or null, their value stays unchanged
@@ -614,6 +622,11 @@ service SatelliteServer {
 	// Set new owner of lecture
 	void setLectureOwner(1: Token userToken, 2: UUID lectureId 3: UUID newOwnerId)
 		throws (1:TAuthorizationException authError, 2:TNotFoundException notFound, 3:TInvocationException serverError),
+
+	// Get predefined stuff
+	PredefinedData getPredefinedData(1: Token userToken)
+		throws (1:TAuthorizationException authError, 2:TInvocationException serverError),
+
 }
 
 // Central master server
