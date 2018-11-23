@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if ! thrift --version | grep -q "0\.9\.3"; then
 	echo -n "Warning! You should be using Thrift 0.9.3, but you have $(thrift --version), do you still want to continue? [y/N]: "
@@ -13,19 +13,22 @@ fi
 echo "1) Masterserver + Satellite RPC"
 [ -e gen-java ] && rm -r gen-java
 if thrift --gen java src/main/thrift/bwlp.thrift; then
-	[ -e "src/main/java/org/openslx/bwlp/thrift/iface" ] && rm -rf src/main/java/org/openslx/bwlp/thrift/iface
-	if ! cp -r gen-java/org src/main/java/; then
-		echo "Error copying compiled files! Aborting!"
-		exit 1
-	fi
 	# reset all files where only the @Generated line changed, so we don't pollute the git history too much
-	for file in src/main/java/org/openslx/bwlp/thrift/iface/*.java; do
-		TOTAL=$(git diff "$file" | wc -l)
-		GENS=$(git diff "$file" | grep -E '^[\+\-]@Gen' | wc -l)
-		if [ "$TOTAL" = "13" -a "$GENS" = "2" ]; then
-			# Nothing but @Generated annotation changed
-			git checkout "$file"
+	for file in gen-java/org/openslx/bwlp/thrift/iface/*.java; do
+		bn=$(basename "$file")
+		if [ -e "src/main/java/org/openslx/bwlp/thrift/iface/$bn" ]; then
+			diff -q \
+				<(sed -r 's/_i[0-9]+/_ix/g;s/_iter[0-9]+/_iterx/g;s/_elem[0-9]+/_elemx/g;s/_list[0-9]+/_listx/g;/@Generated/d' "$file") \
+				<(sed -r 's/_i[0-9]+/_ix/g;s/_iter[0-9]+/_iterx/g;s/_elem[0-9]+/_elemx/g;s/_list[0-9]+/_listx/g;/@Generated/d' "src/main/java/org/openslx/bwlp/thrift/iface/$bn")
+			ret=$?
+			[ "$ret" = 0 ] && continue
 		fi
+		cp -f "$file" "src/main/java/org/openslx/bwlp/thrift/iface/$bn"
+		git add "src/main/java/org/openslx/bwlp/thrift/iface/$bn"
+	done
+	for file in src/main/java/org/openslx/bwlp/thrift/iface/*.java; do
+		bn=$(basename "$file")
+		[ -e "gen-java/org/openslx/bwlp/thrift/iface/$bn" ] || git rm "$file"
 	done
 fi
 
