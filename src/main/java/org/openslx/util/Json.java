@@ -1,10 +1,12 @@
 package org.openslx.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.log4j.Logger;
 import org.apache.thrift.TBase;
@@ -16,6 +18,9 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 
 public class Json {
@@ -25,14 +30,47 @@ public class Json {
 	/**
 	 * Global static instance. The Gson object is thread-safe.
 	 */
-	private static final Gson gson = new Gson();
+	private static final AtomicReference<Gson> gsonRef = new AtomicReference<>();
 
 	private static final GsonBuilder gsonThriftBuilder = new GsonBuilder();
-
-	public static <T> void registerThriftClass(Class<T> thriftClass) {
-		if (!TBase.class.isAssignableFrom(thriftClass))
-			throw new IllegalArgumentException(thriftClass.getName() + " is not a thrift struct.");
-		gsonThriftBuilder.registerTypeAdapter(thriftClass, new ThriftDeserializer<T>(thriftClass));
+	
+	public static <T extends TBase<?, ?>> void registerThriftClass(Class<T> thriftClass) {
+		// Determine all relevant fields
+		Field[] fieldArray = thriftClass.getFields();
+		List<ThriftField> fields = new ArrayList<>(fieldArray.length);
+		for ( Field field : fieldArray ) {
+			if ( "__isset_bitfield".equals( field.getName() ) )
+				continue;
+			if ( Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())
+					|| Modifier.isTransient( field.getModifiers() ))
+				continue;
+			String upperName = field.getName().substring(0, 1).toUpperCase()
+					+ field.getName().substring(1);
+			try {
+				fields.add( new ThriftField( field,
+						thriftClass.getMethod( "get" + upperName ),
+						thriftClass.getMethod( "set" + upperName, field.getType() ),
+						thriftClass.getMethod( "isSet" + upperName) ) );
+			} catch (NoSuchMethodException e) {
+				// Not a thrift field, apparently
+			}
+		}
+		synchronized ( Json.class ) {
+			gsonThriftBuilder.registerTypeAdapter(thriftClass, new JsonThriftHandler<T>(thriftClass, fields));
+			gsonRef.set( null );
+		}
+	}
+	
+	private static Gson getInstance()
+	{
+		Gson gson = gsonRef.get();
+		if (gson == null) {
+			synchronized ( Json.class ) {
+   			gson = gsonThriftBuilder.create();
+   			gsonRef.set( gson );
+			}
+		}
+		return gson;
 	}
 
 	/**
@@ -45,18 +83,9 @@ public class Json {
 	 */
 	public static <T> T deserialize(String data, Class<T> classOfData) {
 		try {
-			return gson.fromJson(data, classOfData);
+			return getInstance().fromJson(data, classOfData);
 		} catch (JsonSyntaxException e) {
 			LOGGER.warn("Cannot deserialize to " + classOfData.getSimpleName(), e);
-			return null;
-		}
-	}
-
-	public static <T> T deserializeThrift(String data, Class<T> thriftClass) {
-		try {
-			return gsonThriftBuilder.create().fromJson(data, thriftClass);
-		} catch (JsonSyntaxException e) {
-			LOGGER.warn("Cannot deserialize to " + thriftClass.getSimpleName(), e);
 			return null;
 		}
 	}
@@ -69,14 +98,16 @@ public class Json {
 	 * @return JSON formatted represenatation of <code>object</code>
 	 */
 	public static String serialize(Object object) {
-		return gson.toJson(object);
+		return getInstance().toJson(object);
 	}
 
-	private static class ThriftDeserializer<T> implements JsonDeserializer<T> {
+	private static class JsonThriftHandler<T> implements JsonDeserializer<T>, JsonSerializer<T> {
 		private final Class<T> clazz;
+		private final List<ThriftField> fields;
 
-		public ThriftDeserializer(Class<T> classOfData) {
+		public JsonThriftHandler(Class<T> classOfData, List<ThriftField> fields) {
 			this.clazz = classOfData;
+			this.fields = fields;
 		}
 
 		@Override
@@ -88,34 +119,68 @@ public class Json {
 			final T inst;
 			try {
 				inst = clazz.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
+			} catch (Exception e) {
 				LOGGER.warn("Could not deserialize to class " + clazz.getName(), e);
 				throw new JsonParseException("Cannot instantiate class " + clazz.getSimpleName());
 			}
-			for (Field field : clazz.getFields()) {
-				if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers()))
-					continue;
-				final String methodName = "set" + field.getName().substring(0, 1).toUpperCase()
-						+ field.getName().substring(1);
-				final Method setter;
-				try {
-					setter = clazz.getMethod(methodName, field.getType());
-				} catch (NoSuchMethodException e) {
-					LOGGER.warn(clazz.getSimpleName() + " has no method " + methodName);
-					continue;
-				}
-				JsonElement element = obj.get(field.getName());
+			for (ThriftField field : fields) {
+				JsonElement element = obj.get(field.field.getName());
 				if (element == null || element.isJsonNull())
 					continue;
 				try {
-					setter.invoke(inst, context.deserialize(element, field.getType()));
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					LOGGER.warn("Could not call " + methodName + " on " + clazz.getSimpleName(), e);
+					field.setter.invoke(inst, context.deserialize(element, field.field.getType()));
+				} catch (Exception e) {
+					LOGGER.warn("Could not call " + field.setter.getName() + " on " + clazz.getSimpleName(), e);
 				}
 			}
 			return inst;
 		}
 
+		@Override
+		public JsonElement serialize( T thriftClass, Type typeOfT, JsonSerializationContext context )
+		{
+			JsonObject o = new JsonObject();
+			for ( ThriftField thrift : fields ) {
+				try {
+					if ( !(Boolean)thrift.isset.invoke( thriftClass ) )
+						continue;
+					Object value = thrift.getter.invoke( thriftClass );
+					if ( value == null )
+						continue;
+					JsonElement jo = null;
+					if ( value instanceof Number ) {
+						jo = new JsonPrimitive( (Number)value );
+					} else if ( value instanceof String ) {
+						jo = new JsonPrimitive( (String)value );
+					} else if ( value instanceof Character ) {
+						jo = new JsonPrimitive( (Character)value );
+					} else if ( value instanceof Boolean ) {
+						jo = new JsonPrimitive( (Boolean)value );
+					} else {
+						jo = context.serialize( value );
+					}
+					o.add( thrift.field.getName(), jo );
+				} catch ( Exception e ) {
+					LOGGER.warn( "Cannot serialize field " + thrift.field.getName() + " of thift class "
+							+ thriftClass.getClass().getSimpleName(), e );
+				}
+			}
+			return o;
+		}
+
+	}
+	
+	private static class ThriftField
+	{
+		public final Method getter, setter, isset;
+		public final Field field;
+		ThriftField(Field field, Method getter, Method setter, Method isset)
+		{
+			this.field = field;
+			this.getter = getter;
+			this.setter = setter;
+			this.isset = isset;
+		}
 	}
 
 }
