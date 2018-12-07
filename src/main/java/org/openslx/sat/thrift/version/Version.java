@@ -8,8 +8,8 @@ package org.openslx.sat.thrift.version;
  */
 public class Version {
 	
-	public static final long MIN_VERSION = 2;
+	public static final long MIN_VERSION = 5;
 
-	public static final long VERSION = 4;
+	public static final long VERSION = 5;
 	
 }

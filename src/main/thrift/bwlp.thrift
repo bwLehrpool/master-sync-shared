@@ -186,6 +186,8 @@ struct ImageSummaryRead {
 	17: bool isTemplate,
 	18: ImagePermissions defaultPermissions,
 	19: optional ImagePermissions userPermissions,
+	21: optional i64 fileSizeSum,
+	22: optional i32 versionCount,
 }
 
 struct ImageVersionDetails {
