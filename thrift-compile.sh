@@ -18,8 +18,8 @@ if thrift --gen java src/main/thrift/bwlp.thrift; then
 		bn=$(basename "$file")
 		if [ -e "src/main/java/org/openslx/bwlp/thrift/iface/$bn" ]; then
 			diff -q \
-				<(sed -r 's/_i[0-9]+/_ix/g;s/_iter[0-9]+/_iterx/g;s/_elem[0-9]+/_elemx/g;s/_list[0-9]+/_listx/g;/@Generated/d' "$file") \
-				<(sed -r 's/_i[0-9]+/_ix/g;s/_iter[0-9]+/_iterx/g;s/_elem[0-9]+/_elemx/g;s/_list[0-9]+/_listx/g;/@Generated/d' "src/main/java/org/openslx/bwlp/thrift/iface/$bn")
+				<(sed -r 's/_(i|iter|elem|list|map|key|val)[0-9]+/\1x/g;/@Generated/d' "$file") \
+				<(sed -r 's/_(i|iter|elem|list|map|key|val)[0-9]+/\1x/g;/@Generated/d' "src/main/java/org/openslx/bwlp/thrift/iface/$bn")
 			ret=$?
 			[ "$ret" = 0 ] && continue
 		fi
