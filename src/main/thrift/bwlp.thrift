@@ -261,9 +261,16 @@ struct LdapFilter {
 	4: optional string title,
 }
 
+struct PresetRunScript {
+	1: i32 scriptId,
+	2: string displayname,
+	3: list<i32> osIds,
+}
+
 struct PredefinedData {
 	1: list<NetShare> netShares,
 	2: list<LdapFilter> ldapFilter,
+	3: list<PresetRunScript> runScripts,
 }
 
 // Write lecture to sat. if optional fields are not set or null, their value stays unchanged
@@ -289,6 +296,7 @@ struct LectureWrite {
 	20: bool hasUsbAccess,
 	21: optional list<NetShare> networkShares,
 	22: optional list<LdapFilter> ldapFilters,
+	23: optional list<i32> presetScriptIds,
 }
 
 struct LectureSummary {
@@ -341,6 +349,7 @@ struct LectureRead {
 	28: bool hasUsbAccess,
 	29: optional list<NetShare> networkShares,
 	30: optional list<LdapFilter> ldapFilters,
+	31: optional list<i32> presetScriptIds,
 }
 
 struct MasterTag {
