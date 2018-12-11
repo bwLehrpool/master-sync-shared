@@ -348,7 +348,9 @@ struct LectureRead {
 	27: bool limitToAllowedUsers,
 	28: bool hasUsbAccess,
 	29: optional list<NetShare> networkShares,
+	32: optional list<i32> presetNetworkShares,
 	30: optional list<LdapFilter> ldapFilters,
+	33: optional list<i32> presetLdapFilters,
 	31: optional list<i32> presetScriptIds,
 }
 
