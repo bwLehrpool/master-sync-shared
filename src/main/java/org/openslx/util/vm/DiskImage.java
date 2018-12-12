@@ -71,9 +71,14 @@ public class DiskImage
 		LOGGER.debug( "Validating disk file: " + disk.getAbsolutePath() );
 		try ( RandomAccessFile file = new RandomAccessFile( disk, "r" ) ) {
 			// vmdk
-			if ( file.readInt() == VMDK_MAGIC ) {
-				file.seek( 512 );
-				byte[] buffer = new byte[ 2048 ];
+			boolean isVmdkMagic = ( file.readInt() == VMDK_MAGIC );
+			if ( isVmdkMagic || file.length() < 4096 ) {
+				if ( isVmdkMagic ) {
+					file.seek( 512 );
+				} else {
+					file.seek( 0 );
+				}
+				byte[] buffer = new byte[ (int)Math.min( 2048, file.length() ) ];
 				file.readFully( buffer );
 				VmwareConfig config;
 				try {
@@ -82,20 +87,23 @@ public class DiskImage
 					config = null;
 				}
 				if ( config != null ) {
-					subFormat = config.get( "createType" );
+					String sf = config.get( "createType" );
 					String parent = config.get( "parentCID" );
-					this.isStandalone = isStandaloneCreateType( subFormat, parent );
-					this.isCompressed = subFormat != null && subFormat.equalsIgnoreCase( "streamOptimized" );
-					this.isSnapshot = parent != null && !parent.equalsIgnoreCase( "ffffffff" );
-					this.format = ImageFormat.VMDK;
-					String hwv = config.get( "ddb.virtualHWVersion" );
-					if ( hwv == null ) {
-						this.hwVersion = 10;
-					} else {
-						this.hwVersion = Util.parseInt( hwv, 10 );
+					if ( sf != null || parent != null ) {
+						subFormat = sf;
+						this.isStandalone = isStandaloneCreateType( subFormat, parent );
+						this.isCompressed = subFormat != null && subFormat.equalsIgnoreCase( "streamOptimized" );
+						this.isSnapshot = parent != null && !parent.equalsIgnoreCase( "ffffffff" );
+						this.format = ImageFormat.VMDK;
+						String hwv = config.get( "ddb.virtualHWVersion" );
+						if ( hwv == null ) {
+							this.hwVersion = 10;
+						} else {
+							this.hwVersion = Util.parseInt( hwv, 10 );
+						}
+						this.diskDescription = null;
+						return;
 					}
-					this.diskDescription = null;
-					return;
 				}
 			}
 			// Format spec from: https://forums.virtualbox.org/viewtopic.php?t=8046
