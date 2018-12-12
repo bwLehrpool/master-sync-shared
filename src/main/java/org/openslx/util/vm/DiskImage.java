@@ -19,7 +19,10 @@ public class DiskImage
 	 */
 	private static final int VMDK_MAGIC = 0x4b444d56;
 	private static final int VDI_MAGIC = 0x7f10dabe;
-	private static final String QEMU = "QFI";
+	/**
+	 * Big endian representation of the 4 bytes 'QFI\xFB'
+	 */
+	private static final int QEMU_MAGIC = 0x514649fb;
 
 	public enum ImageFormat
 	{
@@ -162,10 +165,7 @@ public class DiskImage
 
 			// TODO: qcow
 			file.seek( 0 );
-			byte[] qcowBuffer = new byte[ QEMU.length() ];
-			file.readFully( qcowBuffer );
-			String qcowString = new String( qcowBuffer );
-			if ( QEMU.equals( qcowString ) ) {
+			if ( file.readInt() == QEMU_MAGIC ) {
 				// dummy values
 				this.isStandalone = true;
 				this.isCompressed = false;
