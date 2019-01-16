@@ -106,7 +106,8 @@ public class HashChecker
 				execCallback( task, HashResult.FAILURE );
 				return true;
 			}
-			if ( queue.isEmpty() ) {
+			if ( threads.isEmpty() ) {
+				// This is the first thread -- keep it around
 				CheckThread thread;
 				try {
 					thread = new CheckThread( false );
@@ -120,6 +121,7 @@ public class HashChecker
 				}
 			}
 			if ( queue.remainingCapacity() <= 1 && threads.size() < Runtime.getRuntime().availableProcessors() ) {
+				// Queue starts to fill up -- add more temporary threads
 				try {
 					CheckThread thread = new CheckThread( true );
 					thread.start();
