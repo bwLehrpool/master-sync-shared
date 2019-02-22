@@ -76,6 +76,13 @@ enum NetShareAuth {
 	OTHER_USER
 }
 
+enum SscMode {
+	OFF,
+	ON,
+	AUTO,
+	USER,
+}
+
 // ############## STRUCT ###############
 
 struct UserInfo {
@@ -403,6 +410,8 @@ struct SatelliteConfig {
 	8: optional i32 maxLocationsPerLecture,
 	// Whether users connecting to the sat for the first time are allowed to login
 	9: optional bool allowLoginByDefault,
+	// ServerSide Copy on, off, auto or controlled by user
+	10: optional SscMode serverSideCopy,
 }
 
 struct SatelliteStatus {
