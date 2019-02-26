@@ -274,10 +274,17 @@ struct PresetRunScript {
 	3: list<i32> osIds,
 }
 
+struct PresetNetRule {
+	1: i32 ruleId,
+	2: string displayName,
+	3: list<NetRule> netRules,
+}
+
 struct PredefinedData {
 	1: list<NetShare> netShares,
 	2: list<LdapFilter> ldapFilter,
 	3: list<PresetRunScript> runScripts,
+	4: list<PresetNetRule> networkExceptions,
 }
 
 // Write lecture to sat. if optional fields are not set or null, their value stays unchanged
@@ -304,6 +311,7 @@ struct LectureWrite {
 	21: optional list<NetShare> networkShares,
 	22: optional list<LdapFilter> ldapFilters,
 	23: optional list<i32> presetScriptIds,
+	24: optional list<i32> presetNetworkExceptionIds,
 }
 
 struct LectureSummary {
@@ -355,10 +363,11 @@ struct LectureRead {
 	27: bool limitToAllowedUsers,
 	28: bool hasUsbAccess,
 	29: optional list<NetShare> networkShares,
-	32: optional list<i32> presetNetworkShares,
 	30: optional list<LdapFilter> ldapFilters,
-	33: optional list<i32> presetLdapFilters,
 	31: optional list<i32> presetScriptIds,
+	32: optional list<i32> presetNetworkShares,
+	33: optional list<i32> presetLdapFilters,
+	34: optional list<i32> presetNetworkExceptionIds,
 }
 
 struct MasterTag {
