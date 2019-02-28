@@ -306,24 +306,42 @@ public class VboxConfig
 	}
 
 	/**
-	 * Search disk drives within the DOM using this class
+	 * Search for attached hard drives and determine their controller and their path.
 	 *
 	 * @throws XPathExpressionException
 	 */
 	public void setHdds() throws XPathExpressionException
 	{
-		XPathExpression hddsExpr = XmlHelper.XPath.compile( "/VirtualBox/Machine/MediaRegistry/HardDisks/*" );
+		XPathExpression hddsExpr = XmlHelper.XPath.compile( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice[@type='HardDisk']/Image" );
 		NodeList nodes = (NodeList)hddsExpr.evaluate( this.doc, XPathConstants.NODESET );
+		if ( nodes == null ) {
+			LOGGER.error( "Failed to find attached hard drives." );
+			return;
+		}
 		for ( int i = 0; i < nodes.getLength(); i++ ) {
 			Element hddElement = (Element)nodes.item( i );
 			if ( hddElement == null )
 				continue;
-			String fileName = hddElement.getAttribute( "location" );
-			String type = hddElement.getAttribute( "type" );
+			String uuid = hddElement.getAttribute( "uuid" );
+			if ( uuid.isEmpty() )
+				continue;
+			// got uuid, check if it was registered
+			XPathExpression hddsRegistered = XmlHelper.XPath.compile( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk[@uuid='" + uuid + "']" );
+			NodeList hddsRegisteredNodes = (NodeList)hddsRegistered.evaluate( this.doc, XPathConstants.NODESET );
+			if ( hddsRegisteredNodes == null || hddsRegisteredNodes.getLength() != 1 ) {
+				LOGGER.error( "Found hard disk with uuid '" + uuid + "' which does not appear (unique) in the Media Registry. Skipping." );
+				continue;
+			}
+			Element hddElementReg = (Element)hddsRegisteredNodes.item( 0 );
+			if ( hddElementReg == null )
+				continue;
+			String fileName = hddElementReg.getAttribute( "location" );
+			String type = hddElementReg.getAttribute( "type" );
 			if ( !type.equals( "Normal" ) && !type.equals( "Writethrough" ) ) {
 				LOGGER.warn( "Type of the disk file is neither 'Normal' nor 'Writethrough' but: " + type );
 				LOGGER.warn( "This makes the image not directly modificable, which might lead to problems when editing it locally." );
 			}
+			// search if it is also attached to a controller
 			Node hddDevice = hddElement.getParentNode();
 			if ( hddDevice == null ) {
 				LOGGER.error( "HDD node had a null parent, shouldn't happen" );
@@ -334,18 +352,19 @@ public class VboxConfig
 				LOGGER.error( "HDD node had a null parent, shouldn't happen" );
 				continue;
 			}
-			String controllerDevice = hddController.getAttribute( "type" );
-			String bus = hddController.getAttribute( "name" );
+			String controllerMode = hddController.getAttribute( "type" );
+			String controllerType = hddController.getAttribute( "name" );
 			DriveBusType busType = null;
-			if ( bus.equals( "IDE" ) ) {
+			if ( controllerType.equals( "IDE" ) ) {
 				busType = DriveBusType.IDE;
-			} else if ( bus.equals( "SCSI" ) ) {
+			} else if ( controllerType.equals( "SCSI" ) ) {
 				busType = DriveBusType.SCSI;
-			} else if ( bus.equals( "SATA" ) ) {
+			} else if ( controllerType.equals( "SATA" ) ) {
 				busType = DriveBusType.SATA;
-			}
-			// add them together
-			hddsArray.add( new HardDisk( controllerDevice, busType, fileName ) );
+			} else
+				continue;
+			LOGGER.info( "Adding hard disk with controller: " + busType + " (" + controllerMode + ") from file '" + fileName + "'." );
+			hddsArray.add( new HardDisk( controllerMode, busType, fileName ) );
 		}
 	}
 
