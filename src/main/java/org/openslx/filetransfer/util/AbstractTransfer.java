@@ -78,7 +78,7 @@ public abstract class AbstractTransfer
 
 	public final boolean countsTowardsConnectionLimit( long now )
 	{
-		return getActiveConnectionCount() > 0 || lastActivityTime.get() + HOT_IDLE_TIMEOUT > now;
+		return isActive() && ( getActiveConnectionCount() > 0 || lastActivityTime.get() + HOT_IDLE_TIMEOUT > now );
 	}
 	
 	public final int connectFailCount()

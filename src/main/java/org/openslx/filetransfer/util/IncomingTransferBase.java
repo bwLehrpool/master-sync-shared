@@ -145,6 +145,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			localCopyManager.interrupt();
 		}
 		safeClose( tmpFileHandle );
+		if ( getTransferInfo() != null && getTransferInfo().token != null ) {
+			LOGGER.debug( "Cancelled upload " + getTransferInfo().token );
+		}
 	}
 
 	@Override
@@ -460,34 +463,37 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				@Override
 				public void run()
 				{
-					CbHandler cbh = new CbHandler( connection );
-					if ( connection.download( cbh, cbh ) ) {
-						connectFails.set( 0 );
-					} else {
-						connectFails.incrementAndGet();
-						if ( cbh.currentChunk != null ) {
-							// If the download failed and we have a current chunk, put it back into
-							// the queue, so it will be handled again later...
-							chunks.markFailed( cbh.currentChunk );
-							// Possibly queue for local copy
-							if ( localCopyManager != null && cbh.currentChunk.sha1sum != null ) {
-								List<byte[]> lst = new ArrayList<>( 1 );
-								lst.add( cbh.currentChunk.sha1sum );
-								checkLocalCopyCandidates( lst, 0 );
+					try {
+						CbHandler cbh = new CbHandler( connection );
+						if ( connection.download( cbh, cbh ) ) {
+							connectFails.set( 0 );
+						} else {
+							connectFails.incrementAndGet();
+							if ( cbh.currentChunk != null ) {
+								// If the download failed and we have a current chunk, put it back into
+								// the queue, so it will be handled again later...
+								chunks.markFailed( cbh.currentChunk );
+								// Possibly queue for local copy
+								if ( localCopyManager != null && cbh.currentChunk.sha1sum != null ) {
+									List<byte[]> lst = new ArrayList<>( 1 );
+									lst.add( cbh.currentChunk.sha1sum );
+									checkLocalCopyCandidates( lst, 0 );
+								}
+								chunkStatusChanged( cbh.currentChunk );
 							}
-							chunkStatusChanged( cbh.currentChunk );
+							LOGGER.debug( "Connection for " + getTmpFileName().getAbsolutePath() + " dropped" );
 						}
-						LOGGER.debug( "Connection for " + getTmpFileName().getAbsolutePath() + " dropped" );
-					}
-					if ( state != TransferState.FINISHED && state != TransferState.ERROR ) {
-						lastActivityTime.set( System.currentTimeMillis() );
-					}
-					synchronized ( downloads ) {
-						downloads.remove( connection );
+						if ( state != TransferState.FINISHED && state != TransferState.ERROR ) {
+							lastActivityTime.set( System.currentTimeMillis() );
+						}
+					} finally {
+						synchronized ( downloads ) {
+							downloads.remove( connection );
+						}
 					}
 					if ( chunks.isComplete() ) {
 						finishUploadInternal();
-					} else {
+					} else if ( state == TransferState.WORKING ) {
 						// Keep pumping unhashed chunks into the hasher
 						queueUnhashedChunk( true );
 						if ( localCopyManager != null ) {
