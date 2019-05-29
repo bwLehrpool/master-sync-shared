@@ -65,10 +65,19 @@ public abstract class VmMetaData<T, U, V, W>
 	 */
 	public static enum HWVersion
 	{
-		NONE( "(invalid)" ), THREE( "  3 (Workstation 4/5, Player 1)" ), FOUR( "  4 (Workstation 4/5, Player 1/2, Fusion 1)" ), SIX( "  6 (Workstation 6)" ), SEVEN(
-				"  7 (Workstation 6.5/7, Player 3, Fusion 2/3)" ), EIGHT( "  8 (Workstation 8, Player/Fusion 4)" ), NINE( "  9 (Workstation 9, Player/Fusion 5)" ), TEN(
-						"10 (Workstation 10, Player/Fusion 6)" ), ELEVEN(
-								"11 (Workstation 11, Player/Fusion 7)" ), TWELVE( "12 (Workstation/Player 12, Fusion 8)" ), DEFAULT( "default" );
+		NONE(  "(invalid)" ),
+		THREE( "  3 (Workstation 4/5, Player 1)" ),
+		FOUR(  "  4 (Workstation 4/5, Player 1/2, Fusion 1)" ),
+		SIX(   "  6 (Workstation 6)" ),
+		SEVEN( "  7 (Workstation 6.5/7, Player 3, Fusion 2/3)" ),
+		EIGHT( "  8 (Workstation 8, Player/Fusion 4)" ),
+		NINE( "  9 (Workstation 9, Player/Fusion 5)" ),
+		TEN( "10 (Workstation 10, Player/Fusion 6)" ),
+		ELEVEN( "11 (Workstation 11, Player/Fusion 7)" ),
+		TWELVE( "12 (Workstation/Player 12, Fusion 8)" ),
+		FOURTEEN( "14 (Workstation/Player 14, Fusion 10)"),
+		FIFTEEN( "15 (Workstation/Player 15, Fusion 11)"),
+		DEFAULT( "default" );
 
 		public final String displayName;
 
