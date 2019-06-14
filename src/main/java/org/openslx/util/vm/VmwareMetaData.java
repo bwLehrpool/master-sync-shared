@@ -75,9 +75,9 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 
 	// Init static members
 	static {
-		String[] list = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci\\.", "^mks\\.enable3d", "^virtualhw\\.",
-				"^sound\\.", "\\.pcislotnumber$", "^pcibridge", "\\.virtualdev$", "^tools\\.syncTime$", "^time\\.synchronize",
-				"^bios\\.bootDelay", "^rtc\\.", "^xhci\\.", "^usb_xhci\\.", "\\.deviceType$", "\\.port$", "\\.parent$" };
+		String[] list = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci[.:]", "^mks\\.enable3d", "^virtualhw\\.",
+				"^sound[.:]", "\\.pcislotnumber$", "^pcibridge", "\\.virtualdev$", "^tools\\.syncTime$", "^time\\.synchronize",
+				"^bios\\.bootDelay", "^rtc\\.", "^xhci[.:]", "^usb_xhci[.:]", "\\.deviceType$", "\\.port$", "\\.parent$", "^usb[.:]" };
 		whitelist = new Pattern[ list.length ];
 		for ( int i = 0; i < list.length; ++i ) {
 			whitelist[i] = Pattern.compile( list[i].toLowerCase() );
