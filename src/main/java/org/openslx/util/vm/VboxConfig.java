@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -47,7 +48,6 @@ public class VboxConfig
 			"/VirtualBox/Machine/Hardware/GuestProperties",
 			"/VirtualBox/Machine/Hardware/VideoCapture",
 			"/VirtualBox/Machine/Hardware/HID",
-			"/VirtualBox/Machine/Hardware/USB",
 			"/VirtualBox/Machine/Hardware/LPT",
 			"/VirtualBox/Machine/Hardware/SharedFolders",
 			"/VirtualBox/Machine/Hardware/Network/Adapter[@enabled='true']/*",
@@ -141,6 +141,7 @@ public class VboxConfig
 		try {
 			ensureHardwareUuid();
 			setOsType();
+			fixUsb(); // Since we now support selecting specific speed
 			if ( checkForPlaceholders() ) {
 				return;
 			}
@@ -151,6 +152,33 @@ public class VboxConfig
 			LOGGER.debug( "Could not initialize VBoxConfig", e );
 			return;
 		}
+	}
+	
+	private void fixUsb()
+	{
+		NodeList list = findNodes( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller" );
+		if ( list != null && list.getLength() != 0 ) {
+			LOGGER.info( "USB present, not fixing anything" );
+			return;
+		}
+		// If there's no USB section, this can mean two things:
+		// 1) Old config that would always default to USB 2.0 for "USB enabled" or nothing for disabled
+		// 2) New config with USB disabled
+		list = findNodes( "/VirtualBox/OpenSLX/USB[@disabled]" );
+		if ( list != null && list.getLength() != 0 ) {
+			LOGGER.info( "USB explicitly disabled" );
+			return; // Explicitly marked as disabled, do nothing
+		}
+		// We assume case 1) and add USB 2.0
+		LOGGER.info( "Fixing USB: Adding USB 2.0" );
+		Element controller;
+		Element node = createNodeRecursive( "/VirtualBox/Machine/Hardware/USB/Controllers" );
+		controller = addNewNode( node, "Controller" );
+		controller.setAttribute( "name", "OHCI" );
+		controller.setAttribute( "type", "OHCI" );
+		controller = addNewNode( node, "Controller" );
+		controller.setAttribute( "name", "EHCI" );
+		controller.setAttribute( "type", "EHCI" );
 	}
 
 	/**
@@ -379,35 +407,6 @@ public class VboxConfig
 	}
 
 	/**
-	 * Enable USB by adding the element /VirtualBox/Machine/Hardware/USB
-	 * and adding controllers for OHCI and EHCI (thus enabling USB 2.0).
-	 */
-	public void enableUsb()
-	{
-		addNewNode( "/VirtualBox/Machine/Hardware", "USB" );
-		addNewNode( "/VirtualBox/Machine/Hardware/USB", "Controllers" );
-		// OHCI for USB 1.0
-		Node ohci = addNewNode( "/VirtualBox/Machine/Hardware/USB/Controllers", "Controller" );
-		addAttributeToNode( ohci, "name", "OHCI" );
-		addAttributeToNode( ohci, "type", "OHCI" );
-		// EHCI for USB 2.0
-		Node ehci = addNewNode( "/VirtualBox/Machine/Hardware/USB/Controllers", "Controller" );
-		addAttributeToNode( ehci, "name", "EHCI" );
-		addAttributeToNode( ehci, "type", "EHCI" );
-	}
-
-	/**
-	 * Removes all USB elements
-	 */
-	public void disableUsb()
-	{
-		NodeList usbList = findNodes( "/VirtualBox/Machine/Hardware/USB" );
-		for ( int i = 0; i < usbList.getLength(); i++ ) {
-			removeNode( usbList.item( 0 ) );
-		}
-	}
-
-	/**
 	 * Detect if the vbox file has any machine snapshot by looking at
 	 * the existance of '/VirtualBox/Machine/Snapshot' elements.
 	 * 
@@ -502,6 +501,39 @@ public class VboxConfig
 		return addNewNode( possibleParents.item( 0 ), childName );
 	}
 
+	public Element createNodeRecursive( String xPath )
+	{
+		String[] nodeNames = xPath.split( "/" );
+		Node parent = this.doc;
+		Element latest = null;
+		for ( int nodeIndex = 0; nodeIndex < nodeNames.length; ++nodeIndex ) {
+			if ( nodeNames[nodeIndex].length() == 0 )
+				continue;
+			Node node = skipNonElementNodes( parent.getFirstChild() );
+			while ( node != null ) {
+				if ( node.getNodeType() == Node.ELEMENT_NODE && nodeNames[nodeIndex].equals( node.getNodeName() ) )
+					break; // Found existing
+				// Check next on same level
+				node = skipNonElementNodes( node.getNextSibling() );
+			}
+			if ( node == null ) {
+				node = doc.createElement( nodeNames[nodeIndex] );
+				parent.appendChild( node );
+			}
+			parent = node;
+			latest = (Element)node;
+		}
+		return latest;
+	}
+	
+	private Element skipNonElementNodes( Node nn )
+	{
+		while ( nn != null && nn.getNodeType() != Node.ELEMENT_NODE ) {
+			nn = nn.getNextSibling();
+		}
+		return (Element)nn;
+	}
+
 	/**
 	 * Creates a new element to the given parent node.
 	 *
@@ -509,12 +541,12 @@ public class VboxConfig
 	 * @param childName name of the new element to create
 	 * @return the newly created node
 	 */
-	public Node addNewNode( Node parent, String childName )
+	public Element addNewNode( Node parent, String childName )
 	{
 		if ( parent == null || parent.getNodeType() != Node.ELEMENT_NODE ) {
 			return null;
 		}
-		Node newNode = null;
+		Element newNode = null;
 		try {
 			newNode = doc.createElement( childName );
 			parent.appendChild( newNode );
@@ -547,5 +579,31 @@ public class VboxConfig
 	public String toString( boolean prettyPrint )
 	{
 		return XmlHelper.getXmlFromDocument( doc, prettyPrint );
+	}
+
+	/**
+	 * Remove all nodes with name childName from parentPath
+	 * @param parentPath XPath to parent node of where child nodes are to be deleted
+	 * @param childName Name of nodes to delete
+	 */
+	public void removeNodes( String parentPath, String childName )
+	{
+		NodeList parentNodes = findNodes( parentPath );
+		// XPath might match multiple nodes
+		for ( int i = 0; i < parentNodes.getLength(); ++i ) {
+			Node parent = parentNodes.item( i );
+			List<Node> delList = new ArrayList<>( 0 );
+			// Iterate over child nodes
+			for ( Node child = parent.getFirstChild(); child != null; child = child.getNextSibling() ) {
+				if ( childName.equals( child.getNodeName() ) ) {
+					// Remember all to be deleted (don't delete while iterating)
+					delList.add( child );
+				}
+			}
+			// Now delete them all
+			for ( Node child : delList ) {
+				parent.removeChild( child );
+			}
+		}
 	}
 }

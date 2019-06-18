@@ -18,7 +18,7 @@ import org.openslx.bwlp.thrift.iface.Virtualizer;
  * Describes a configured virtual machine. This class is parsed from a machine
  * description, like a *.vmx for VMware machines.
  */
-public abstract class VmMetaData<T, U, V, W>
+public abstract class VmMetaData<T, U, V, W, X>
 {
 	private static final Logger LOGGER = Logger.getLogger( VmMetaData.class );
 
@@ -29,6 +29,7 @@ public abstract class VmMetaData<T, U, V, W>
 	protected Map<DDAcceleration, U> ddacc = new HashMap<>();
 	protected Map<HWVersion, V> hwversion = new HashMap<>();
 	protected Map<EthernetDevType, W> networkCards = new HashMap<>();
+	protected Map<UsbSpeed, X> usbSpeeds = new HashMap<>();
 
 	/**
 	 * Virtual sound cards types
@@ -103,6 +104,21 @@ public abstract class VmMetaData<T, U, V, W>
 			this.displayName = dName;
 		}
 	}
+	
+	public static enum UsbSpeed
+	{
+		NONE( "None" ),
+		USB1_1( "USB 1.1" ),
+		USB2_0( "USB 2.0" ),
+		USB3_0( "USB 3.0" );
+		
+		public final String displayName;
+		
+		private UsbSpeed( String dName )
+		{
+			this.displayName = dName;
+		}
+	}
 
 	public static enum DriveBusType
 	{
@@ -168,6 +184,13 @@ public abstract class VmMetaData<T, U, V, W>
 	public List<EthernetDevType> getSupportedEthernetDevices()
 	{
 		ArrayList<EthernetDevType> availables = new ArrayList<EthernetDevType>( networkCards.keySet() );
+		Collections.sort( availables );
+		return availables;
+	}
+
+	public List<UsbSpeed> getSupportedUsbSpeeds()
+	{
+		ArrayList<UsbSpeed> availables = new ArrayList<>( usbSpeeds.keySet() );
 		Collections.sort( availables );
 		return availables;
 	}
@@ -270,7 +293,7 @@ public abstract class VmMetaData<T, U, V, W>
 	 * @param file VM's machine description file to get the metadata instance from
 	 * @return VmMetaData object representing the relevant parts of the given machine description 
 	 */
-	public static VmMetaData<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
+	public static VmMetaData<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
 			throws IOException
 	{
 		try {
@@ -301,20 +324,24 @@ public abstract class VmMetaData<T, U, V, W>
 	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 * @throws IOException
 	 */
-	public static VmMetaData<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length ) throws IOException
+	public static VmMetaData<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length ) throws IOException
 	{
+		Map<String, Exception> exceptions = new HashMap<>();
 		try {
 			return new VmwareMetaData( osList, vmContent, length );
 		} catch ( UnsupportedVirtualizerFormatException e ) {
-			LOGGER.info( "Not a VMware file", e );
+			exceptions.put( "Not a VMware file", e );
 		}
 		try {
 			return new VboxMetaData( osList, vmContent, length );
 		} catch ( UnsupportedVirtualizerFormatException e ) {
-			LOGGER.info( "Not a VirtualBox file", e );
+			exceptions.put( "Not a VirtualBox file", e );
 		}
 		// TODO QEmu -- hack above expects qcow2 file, so we can't do anything here yet
 		LOGGER.error( "Could not detect any known virtualizer format" );
+		for ( Entry<String, Exception> e : exceptions.entrySet() ) {
+			LOGGER.error( e.getKey(), e.getValue() );
+		}
 		return null;
 	}
 
@@ -352,13 +379,15 @@ public abstract class VmMetaData<T, U, V, W>
 
 	public abstract EthernetDevType getEthernetDevType( int cardIndex );
 
+	public abstract void setMaxUsbSpeed( UsbSpeed speed );
+
+	public abstract UsbSpeed getMaxUsbSpeed();
+
 	public abstract byte[] getDefinitionArray();
 
 	public abstract boolean addEthernet( EtherType type );
 
 	public abstract Virtualizer getVirtualizer();
-
-	public abstract void enableUsb( boolean enabled );
 
 	public abstract boolean disableSuspend();
 

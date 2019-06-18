@@ -59,7 +59,19 @@ class VmWareEthernetDevTypeMeta
 	}
 }
 
-public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareHWVersionMeta, VmWareEthernetDevTypeMeta>
+class VmwareUsbSpeed
+{
+	public final String keyName;
+	public final int speedNumeric;
+	
+	public VmwareUsbSpeed( int speed, String key )
+	{
+		this.keyName = key + ".present";
+		this.speedNumeric = speed;
+	}
+}
+
+public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareHWVersionMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
 {
 
 	private static final Logger LOGGER = Logger.getLogger( VmwareMetaData.class );
@@ -156,6 +168,11 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 			if ( hdd.chipsetDriver != null ) {
 				addFiltered( "#SLX_HDD_CHIP", hdd.chipsetDriver );
 			}
+		}
+		
+		// Fix accidentally filtered USB config if we see EHCI is present
+		if ( isSetAndTrue( "ehci.present" ) && !isSetAndTrue( "usb.present" ) ) {
+			addFiltered( "usb.present", "TRUE" );
 		}
 	}
 
@@ -449,13 +466,6 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 	}
 
 	@Override
-	public void enableUsb( boolean enabled )
-	{
-		addFiltered( "usb.present", vmBoolean( enabled ) );
-		addFiltered( "ehci.present", vmBoolean( enabled ) );
-	}
-
-	@Override
 	public void applySettingsForLocalEdit()
 	{
 		addFiltered( "gui.applyHostDisplayScalingToGuest", "FALSE" );
@@ -544,12 +554,12 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		}
 	}
 
-	public EthernetDevType getEthernetDevType( int cardIndex )
+	public VmMetaData.EthernetDevType getEthernetDevType( int cardIndex )
 	{
 		String temp = config.get( "ethernet" + cardIndex + ".virtualDev" );
 		if ( temp != null ) {
 			VmWareEthernetDevTypeMeta ethernetDevTypeMeta = null;
-			for ( EthernetDevType type : VmMetaData.EthernetDevType.values() ) {
+			for ( VmMetaData.EthernetDevType type : VmMetaData.EthernetDevType.values() ) {
 				ethernetDevTypeMeta = networkCards.get( type );
 				if ( ethernetDevTypeMeta == null ) {
 					continue;
@@ -559,7 +569,47 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 				}
 			}
 		}
-		return EthernetDevType.AUTO;
+		return VmMetaData.EthernetDevType.AUTO;
+	}
+
+	@Override
+	public void setMaxUsbSpeed( VmMetaData.UsbSpeed newSpeed )
+	{
+		if ( newSpeed == null ) {
+			newSpeed = VmMetaData.UsbSpeed.NONE;
+		}
+		VmwareUsbSpeed newSpeedMeta = usbSpeeds.get( newSpeed );
+		if ( newSpeedMeta == null ) {
+			throw new RuntimeException( "USB Speed " + newSpeed.name() + " not registered with VMware" );
+		}
+		for ( VmwareUsbSpeed meta : usbSpeeds.values() ) {
+			if ( meta == null )
+				continue; // Should not happen
+			if ( meta.keyName == null )
+				continue; // "No USB" has no config entry, obviously
+			if ( meta.speedNumeric <= newSpeedMeta.speedNumeric ) {
+				// Enable desired speed class, plus all lower ones
+				addFiltered( meta.keyName, "TRUE" );
+			} else {
+				// This one is higher – remove
+				config.remove( meta.keyName );
+			}
+		}
+	}
+
+	@Override
+	public VmMetaData.UsbSpeed getMaxUsbSpeed()
+	{
+		int max = 0;
+		VmMetaData.UsbSpeed maxEnum = VmMetaData.UsbSpeed.NONE;
+		for ( Entry<VmMetaData.UsbSpeed, VmwareUsbSpeed> entry : usbSpeeds.entrySet() ) {
+			VmwareUsbSpeed v = entry.getValue();
+			if ( v.speedNumeric > max && isSetAndTrue( v.keyName ) ) {
+				max = v.speedNumeric;
+				maxEnum = entry.getKey();
+			}
+		}
+		return maxEnum;
 	}
 
 	@Override
@@ -599,5 +649,11 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		networkCards.put( VmMetaData.EthernetDevType.E1000E, new VmWareEthernetDevTypeMeta( "e1000e" ) );
 		networkCards.put( VmMetaData.EthernetDevType.VMXNET, new VmWareEthernetDevTypeMeta( "vmxnet" ) );
 		networkCards.put( VmMetaData.EthernetDevType.VMXNET3, new VmWareEthernetDevTypeMeta( "vmxnet3" ) );
+		
+		usbSpeeds.put( VmMetaData.UsbSpeed.NONE, new VmwareUsbSpeed( 0, null ));
+		usbSpeeds.put( VmMetaData.UsbSpeed.USB1_1, new VmwareUsbSpeed( 1, "usb" ) );
+		usbSpeeds.put( VmMetaData.UsbSpeed.USB2_0, new VmwareUsbSpeed( 2, "ehci" ) );
+		usbSpeeds.put( VmMetaData.UsbSpeed.USB3_0, new VmwareUsbSpeed( 3, "usb_xhci" ) );
 	}
+
 }

@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -14,6 +15,7 @@ import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.vm.VboxConfig.PlaceHolder;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -62,7 +64,18 @@ class VBoxEthernetDevTypeMeta
 	}
 }
 
-public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta>
+class VBoxUsbSpeedMeta
+{
+	public final String value;
+	public final int speed;
+	public VBoxUsbSpeedMeta( String value, int speed )
+	{
+		this.value = value;
+		this.speed = speed;
+	}
+}
+
+public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
 {
 	private static final Logger LOGGER = Logger.getLogger( VboxMetaData.class );
 
@@ -111,16 +124,6 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	public Virtualizer getVirtualizer()
 	{
 		return virtualizer;
-	}
-
-	@Override
-	public void enableUsb( boolean enabled )
-	{
-		if ( !enabled ) {
-			config.disableUsb();
-		} else {
-			config.enableUsb();
-		}
 	}
 
 	@Override
@@ -415,6 +418,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	public void registerVirtualHW()
 	{
 		// none type needs to have a valid value; it takes the value of AC97; if value is left null or empty vm will not start because value is not valid
+		// TODO: Maybe just remove the entire section from the XML? Same for ethernet...
 		soundCards.put( VmMetaData.SoundCardType.NONE, new VBoxSoundCardMeta( false, "AC97" ) );
 		soundCards.put( VmMetaData.SoundCardType.SOUND_BLASTER, new VBoxSoundCardMeta( true, "SB16" ) );
 		soundCards.put( VmMetaData.SoundCardType.HD_AUDIO, new VBoxSoundCardMeta( true, "HDA" ) );
@@ -433,6 +437,11 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 		networkCards.put( VmMetaData.EthernetDevType.PRO1000TS, new VBoxEthernetDevTypeMeta( true, "82543GC" ) );
 		networkCards.put( VmMetaData.EthernetDevType.PRO1000MTS, new VBoxEthernetDevTypeMeta( true, "82545EM" ) );
 		networkCards.put( VmMetaData.EthernetDevType.PARAVIRT, new VBoxEthernetDevTypeMeta( true, "virtio" ) );
+		
+		usbSpeeds.put( VmMetaData.UsbSpeed.NONE, new VBoxUsbSpeedMeta( null, 0 ) );
+		usbSpeeds.put( VmMetaData.UsbSpeed.USB1_1, new VBoxUsbSpeedMeta( "OHCI", 1 ) );
+		usbSpeeds.put( VmMetaData.UsbSpeed.USB2_0, new VBoxUsbSpeedMeta( "EHCI", 2 ) );
+		usbSpeeds.put( VmMetaData.UsbSpeed.USB3_0, new VBoxUsbSpeedMeta( "XHCI", 3 ) );
 	}
 
 	@Override
@@ -454,5 +463,51 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 		// https://forums.virtualbox.org/viewtopic.php?f=6&t=77169
 		// https://forums.virtualbox.org/viewtopic.php?f=8&t=80338
 		return true;
+	}
+
+	@Override
+	public void setMaxUsbSpeed( VmMetaData.UsbSpeed speed )
+	{
+		// Wipe existing ones
+		config.removeNodes( "/VirtualBox/Machine/Hardware", "USB" );
+		if ( speed == null || speed == VmMetaData.UsbSpeed.NONE ) {
+			// Add marker so we know it's not an old config and we really want no USB
+			Element node = config.createNodeRecursive( "/VirtualBox/OpenSLX/USB" );
+			if ( node != null ) {
+				node.setAttribute( "disabled", "true" );
+			}
+			return; // NO USB
+		}
+		Element node = config.createNodeRecursive( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller" );
+		VBoxUsbSpeedMeta vboxSpeed = usbSpeeds.get( speed );
+		node.setAttribute( "type", vboxSpeed.value );
+		node.setAttribute( "name", vboxSpeed.value );
+		if ( speed == UsbSpeed.USB2_0 ) {
+			// If EHCI (2.0) is selected, VBox adds an OHCI controller too...
+			node.setAttribute( "type", "OHCI" );
+			node.setAttribute( "name", "OHCI" );
+		}
+	}
+
+	@Override
+	public VmMetaData.UsbSpeed getMaxUsbSpeed()
+	{
+		NodeList nodes = config.findNodes( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller/@type" );
+		int maxSpeed = 0;
+		VmMetaData.UsbSpeed maxItem = VmMetaData.UsbSpeed.NONE;
+		for ( int i = 0; i < nodes.getLength(); ++i ) {
+			if ( nodes.item( i ).getNodeType() != Node.ATTRIBUTE_NODE ) {
+				LOGGER.info( "Not ATTRIBUTE type" );
+				continue;
+			}
+			String type = ((Attr)nodes.item( i )).getValue();
+			for ( Entry<VmMetaData.UsbSpeed, VBoxUsbSpeedMeta> s : usbSpeeds.entrySet() ) {
+				if ( s.getValue().speed > maxSpeed && type.equals( s.getValue().value ) ) {
+					maxSpeed = s.getValue().speed;
+					maxItem = s.getKey();
+				}
+			}
+		}
+		return maxItem;
 	}
 }

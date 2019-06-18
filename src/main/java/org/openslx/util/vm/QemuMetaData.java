@@ -15,7 +15,7 @@ import org.openslx.thrifthelper.TConst;
 import org.openslx.util.vm.DiskImage.ImageFormat;
 import org.openslx.util.vm.DiskImage.UnknownImageFormatException;
 
-public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta>
+public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
 {
 
 	private final Map<String, String> arguments = new HashMap<String, String>();
@@ -37,7 +37,7 @@ public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 		if ( di == null || di.format != ImageFormat.QCOW2 ) {
 			throw new UnsupportedVirtualizerFormatException( "This is not a qcow2 disk image" );
 		}
-		config = "qemu-system-i386 <args> <image> -enable-kvm \n\r qemu-system-x86_64 <args> <image> -enable-kvm";
+		config = "qemu-system-i386 <args> <image> -enable-kvm\nqemu-system-x86_64 <args> <image> -enable-kvm";
 		displayName = file.getName().substring( 0, file.getName().indexOf( "." ) );
 		setOs( "anyOs" );
 		hdds.add( new HardDisk( "anychipset", DriveBusType.IDE, file.getAbsolutePath() ) );
@@ -201,17 +201,6 @@ public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public void enableUsb( boolean enabled )
-	{
-		// TODO test this properly
-		if ( enabled ) {
-			arguments.put( "usb", "" );
-		} else {
-			arguments.remove( "usb" );
-		}
-	}
-
-	@Override
 	public boolean disableSuspend()
 	{
 		return false;
@@ -220,6 +209,25 @@ public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	@Override
 	public void registerVirtualHW()
 	{
+	}
+
+	@Override
+	public void setMaxUsbSpeed( VmMetaData.UsbSpeed speed )
+	{
+		// TODO: Actual speed setting?
+		if ( speed == null || speed == VmMetaData.UsbSpeed.NONE ) {
+			arguments.remove( "usb" );
+		} else {
+			arguments.put( "usb", "" );
+		}
+	}
+
+	@Override
+	public VmMetaData.UsbSpeed getMaxUsbSpeed()
+	{
+		if ( arguments.containsKey( "usb" ) )
+			return VmMetaData.UsbSpeed.USB2_0; // TODO
+		return VmMetaData.UsbSpeed.NONE;
 	}
 
 }
