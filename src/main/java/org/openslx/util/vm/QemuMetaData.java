@@ -201,7 +201,7 @@ public class QemuMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public boolean disableSuspend()
+	public boolean tweakForNonPersistent()
 	{
 		return false;
 	}

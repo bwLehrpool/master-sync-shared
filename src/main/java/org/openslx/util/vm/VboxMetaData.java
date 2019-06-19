@@ -456,12 +456,20 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public boolean disableSuspend()
+	public boolean tweakForNonPersistent()
 	{
-		// TODO how??
-		// short answer is: you can't
+		// Cannot disable suspend
 		// https://forums.virtualbox.org/viewtopic.php?f=6&t=77169
 		// https://forums.virtualbox.org/viewtopic.php?f=8&t=80338
+		// But some other stuff that won't make sense in non-persistent mode
+		config.setExtraData( "GUI/LastCloseAction", "PowerOff" );
+		// Could use "Default" instead of "Last" above, but you won't get any confirmation dialog in that case
+		config.setExtraData( "GUI/RestrictedRuntimeHelpMenuActions", "All" );
+		config.setExtraData( "GUI/RestrictedRuntimeMachineMenuActions", "TakeSnapshot,Pause,SaveState" );
+		config.setExtraData( "GUI/RestrictedRuntimeMenus", "Help" );
+		config.setExtraData( "GUI/PreventSnapshotOperations", "true" );
+		config.setExtraData( "GUI/PreventApplicationUpdate", "true" );
+		config.setExtraData( "GUI/RestrictedCloseActions", "SaveState,PowerOffRestoringSnapshot,Detach" );
 		return true;
 	}
 

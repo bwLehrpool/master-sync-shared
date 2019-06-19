@@ -533,6 +533,25 @@ public class VboxConfig
 		}
 		return (Element)nn;
 	}
+	
+	public void setExtraData( String key, String value )
+	{
+		NodeList nl = findNodes( "/VirtualBox/Machine/ExtraData/ExtraDataItem[@name='" + key + "']" );
+		Element e = null;
+		for ( int i = 0; i < nl.getLength(); ++i ) {
+			Node n = nl.item( i );
+			if ( n.getNodeType() == Node.ELEMENT_NODE ) {
+				e = (Element)n;
+				break;
+			}
+		}
+		if ( e == null ) {
+			Element p = createNodeRecursive( "/VirtualBox/Machine/ExtraData" );
+			e = addNewNode( p, "ExtraDataItem" );
+			e.setAttribute( "name", key );
+		}
+		e.setAttribute( "value", value );
+	}
 
 	/**
 	 * Creates a new element to the given parent node.

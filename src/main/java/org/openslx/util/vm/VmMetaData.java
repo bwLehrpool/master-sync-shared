@@ -389,7 +389,7 @@ public abstract class VmMetaData<T, U, V, W, X>
 
 	public abstract Virtualizer getVirtualizer();
 
-	public abstract boolean disableSuspend();
+	public abstract boolean tweakForNonPersistent();
 
 	/**
 	 * Function used to register virtual devices

@@ -396,7 +396,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 	}
 
 	@Override
-	public boolean disableSuspend()
+	public boolean tweakForNonPersistent()
 	{
 		addFiltered( "suspend.disabled", "TRUE" );
 		return true;
