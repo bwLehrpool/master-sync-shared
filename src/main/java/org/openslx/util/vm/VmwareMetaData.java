@@ -89,7 +89,8 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 	static {
 		String[] list = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci[.:]", "^mks\\.enable3d", "^virtualhw\\.",
 				"^sound[.:]", "\\.pcislotnumber$", "^pcibridge", "\\.virtualdev$", "^tools\\.syncTime$", "^time\\.synchronize",
-				"^bios\\.bootDelay", "^rtc\\.", "^xhci[.:]", "^usb_xhci[.:]", "\\.deviceType$", "\\.port$", "\\.parent$", "^usb[.:]" };
+				"^bios\\.bootDelay", "^rtc\\.", "^xhci[.:]", "^usb_xhci[.:]", "\\.deviceType$", "\\.port$", "\\.parent$", "^usb[.:]",
+				"^firmware" };
 		whitelist = new Pattern[ list.length ];
 		for ( int i = 0; i < list.length; ++i ) {
 			whitelist[i] = Pattern.compile( list[i].toLowerCase() );
@@ -642,6 +643,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		hwversion.put( VmMetaData.HWVersion.TWELVE, new VmWareHWVersionMeta( 12 ) );
 		hwversion.put( VmMetaData.HWVersion.FOURTEEN, new VmWareHWVersionMeta( 14 ) );
 		hwversion.put( VmMetaData.HWVersion.FIFTEEN, new VmWareHWVersionMeta( 15 ) );
+		hwversion.put( VmMetaData.HWVersion.FIFTEEN_ONE, new VmWareHWVersionMeta( 16 ) );
 
 		networkCards.put( VmMetaData.EthernetDevType.AUTO, new VmWareEthernetDevTypeMeta( null ) );
 		networkCards.put( VmMetaData.EthernetDevType.PCNET32, new VmWareEthernetDevTypeMeta( "vlance" ) );
