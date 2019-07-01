@@ -31,4 +31,9 @@ public enum Feature {
 	 */
 	LECTURE_FILTER_LDAP,
 	
+	/**
+	 * Allow editing of USB speed
+	 */
+	CONFIGURE_USB,
+	
 }
