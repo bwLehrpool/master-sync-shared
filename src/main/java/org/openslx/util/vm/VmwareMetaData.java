@@ -596,6 +596,10 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 				config.remove( meta.keyName );
 			}
 		}
+		// VMware 14+ needs this to use USB 3.0 devices at USB 3.0 ports in VMs configured for < 3.0
+		if ( newSpeedMeta.speedNumeric > 0 && newSpeedMeta.speedNumeric < 3 ) {
+			addFiltered( "usb.mangleUsb3Speed", "TRUE" );
+		}
 	}
 
 	@Override
