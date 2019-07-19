@@ -132,6 +132,10 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		for ( Entry<String, ConfigEntry> entry : config.entrySet() ) {
 			handleLoadEntry( entry );
 		}
+		// Fix accidentally filtered USB config if we see EHCI is present
+		if ( isSetAndTrue( "ehci.present" ) && !isSetAndTrue( "usb.present" ) ) {
+			addFiltered( "usb.present", "TRUE" );
+		}
 		// if we find this tag, we already went through the hdd's - so we're done.
 		if ( config.get( "#SLX_HDD_BUS" ) != null ) {
 			return;
@@ -169,11 +173,6 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 			if ( hdd.chipsetDriver != null ) {
 				addFiltered( "#SLX_HDD_CHIP", hdd.chipsetDriver );
 			}
-		}
-		
-		// Fix accidentally filtered USB config if we see EHCI is present
-		if ( isSetAndTrue( "ehci.present" ) && !isSetAndTrue( "usb.present" ) ) {
-			addFiltered( "usb.present", "TRUE" );
 		}
 	}
 
