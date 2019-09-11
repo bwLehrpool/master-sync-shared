@@ -47,12 +47,18 @@ public class Json {
 			String upperName = field.getName().substring(0, 1).toUpperCase()
 					+ field.getName().substring(1);
 			try {
+				Method getter;
+				try {
+					getter = thriftClass.getMethod( "get" + upperName );
+				} catch (NoSuchMethodException e) {
+					getter = thriftClass.getMethod( "is" + upperName );
+				}
 				fields.add( new ThriftField( field,
-						thriftClass.getMethod( "get" + upperName ),
+						getter,
 						thriftClass.getMethod( "set" + upperName, field.getType() ),
 						thriftClass.getMethod( "isSet" + upperName) ) );
 			} catch (NoSuchMethodException e) {
-				// Not a thrift field, apparently
+				LOGGER.warn( "Nein", e );
 			}
 		}
 		synchronized ( Json.class ) {
@@ -115,7 +121,9 @@ public class Json {
 				throws JsonParseException {
 			if (!(json instanceof JsonObject))
 				throw new JsonParseException("Need a json object, have " + json.getClass().getSimpleName());
+			// We're deserializing a json object {..} here
 			JsonObject obj = (JsonObject) json;
+			// Create the Thrift object we want to deserialize into
 			final T inst;
 			try {
 				inst = clazz.newInstance();
@@ -123,6 +131,7 @@ public class Json {
 				LOGGER.warn("Could not deserialize to class " + clazz.getName(), e);
 				throw new JsonParseException("Cannot instantiate class " + clazz.getSimpleName());
 			}
+			// Iterate over all fields in the Thrift object
 			for (ThriftField field : fields) {
 				JsonElement element = obj.get(field.field.getName());
 				if (element == null || element.isJsonNull())
@@ -142,7 +151,8 @@ public class Json {
 			JsonObject o = new JsonObject();
 			for ( ThriftField thrift : fields ) {
 				try {
-					if ( !(Boolean)thrift.isset.invoke( thriftClass ) )
+					Object ret = thrift.isset.invoke( thriftClass );
+					if ( !(ret instanceof Boolean) || !(Boolean)ret )
 						continue;
 					Object value = thrift.getter.invoke( thriftClass );
 					if ( value == null )
