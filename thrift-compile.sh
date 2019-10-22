@@ -30,6 +30,7 @@ if thrift --gen java src/main/thrift/bwlp.thrift; then
 		bn=$(basename "$file")
 		[ -e "gen-java/org/openslx/bwlp/thrift/iface/$bn" ] || git rm "$file"
 	done
+	[ -e gen-java ] && rm -r gen-java
 fi
 
 echo "All done!"
