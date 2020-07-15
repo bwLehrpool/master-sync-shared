@@ -1,0 +1,124 @@
+package org.openslx.util.vm;
+
+import org.apache.log4j.Logger;
+import org.openslx.bwlp.thrift.iface.Virtualizer;
+import org.openslx.thrifthelper.TConst;
+
+import java.io.File;
+import java.util.List;
+
+public class DockerMetaDataDummy extends VmMetaData {
+	// TODO Define DOCKER CONSTANT
+
+	private static final Logger LOGGER = Logger.getLogger( DockerMetaDataDummy.class );
+
+	private final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_DOCKER, "Docker" );
+
+	public DockerMetaDataDummy(List osList) {
+		super(osList);
+	}
+
+	@Override public byte[] getFilteredDefinitionArray() {
+		return new byte[0];
+	}
+
+	@Override public void applySettingsForLocalEdit() {
+
+	}
+
+	@Override public boolean addHddTemplate(File diskImage, String hddMode, String redoDir) {
+		return false;
+	}
+
+	@Override public boolean addHddTemplate(String diskImagePath, String hddMode, String redoDir) {
+		return false;
+	}
+
+	@Override public boolean addDefaultNat() {
+		return false;
+	}
+
+	@Override public void setOs(String vendorOsId) {
+
+	}
+
+	@Override public boolean addDisplayName(String name) {
+		return false;
+	}
+
+	@Override public boolean addRam(int mem) {
+		return false;
+	}
+
+	@Override public void addFloppy(int index, String image, boolean readOnly) {
+
+	}
+
+	@Override public boolean addCdrom(String image) {
+		return false;
+	}
+
+	@Override public boolean addCpuCoreCount(int nrOfCores) {
+		return false;
+	}
+
+	@Override public void setSoundCard(SoundCardType type) {
+
+	}
+
+	@Override public SoundCardType getSoundCard() {
+		return SoundCardType.NONE;
+	}
+
+	@Override public void setDDAcceleration(DDAcceleration type) {
+
+	}
+
+	@Override public DDAcceleration getDDAcceleration() {
+		return DDAcceleration.OFF;
+	}
+
+	@Override public void setHWVersion(HWVersion type) {
+
+	}
+
+	@Override public HWVersion getHWVersion() {
+		return HWVersion.DEFAULT;
+	}
+
+	@Override public void setEthernetDevType(int cardIndex, EthernetDevType type) {
+
+	}
+
+	@Override public EthernetDevType getEthernetDevType(int cardIndex) {
+		return EthernetDevType.NONE;
+	}
+
+	@Override public void setMaxUsbSpeed(UsbSpeed speed) {
+
+	}
+
+	@Override public UsbSpeed getMaxUsbSpeed() {
+		return UsbSpeed.NONE;
+	}
+
+	@Override public byte[] getDefinitionArray() {
+		return new byte[0];
+	}
+
+	@Override public boolean addEthernet(EtherType type) {
+		return false;
+	}
+
+	@Override public Virtualizer getVirtualizer() {
+		return virtualizer;
+	}
+
+	@Override public boolean tweakForNonPersistent() {
+		return false;
+	}
+
+	@Override public void registerVirtualHW() {
+
+	}
+}

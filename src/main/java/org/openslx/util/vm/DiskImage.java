@@ -26,7 +26,8 @@ public class DiskImage
 
 	public enum ImageFormat
 	{
-		VMDK( "vmdk" ), QCOW2( "qcow2" ), VDI( "vdi" );
+		VMDK( "vmdk" ), QCOW2( "qcow2" ), VDI( "vdi" ),
+		DOCKER("dockerfile");
 
 		public final String extension;
 
@@ -52,6 +53,8 @@ public class DiskImage
 				return VDI;
 			if ( virtId.equals( TConst.VIRT_QEMU ) )
 				return QCOW2;
+			if ( virtId.equals( TConst.VIRT_DOCKER) )
+				return DOCKER;
 			return null;
 		}
 	}

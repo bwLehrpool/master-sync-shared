@@ -312,6 +312,11 @@ public abstract class VmMetaData<T, U, V, W, X>
 		} catch ( Exception e ) {
 			LOGGER.info( "Not a QEmu file", e );
 		}
+		try {
+			return new DockerMetaDataDummy(osList);
+		} catch ( Exception e ) {
+			LOGGER.info( "Not a docker file", e );
+		}
 		LOGGER.error( "Could not detect any known virtualizer format" );
 		return null;
 	}

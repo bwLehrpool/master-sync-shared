@@ -9,5 +9,6 @@ public class TConst
 	public static final String VIRT_VMWARE = "vmware";
 	public static final String VIRT_VIRTUALBOX = "virtualbox";
 	public static final String VIRT_QEMU  = "qemukvm";
+	public static final String VIRT_DOCKER = "docker";
 	
 }
