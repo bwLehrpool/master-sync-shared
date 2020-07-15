@@ -6,3 +6,7 @@
 /gen-java
 *~
 *.swp
+
+# Ignore IntelliJ Project Files
+/.idea
+*.iml
