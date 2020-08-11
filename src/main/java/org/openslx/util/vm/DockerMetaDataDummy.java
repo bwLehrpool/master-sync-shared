@@ -4,22 +4,38 @@ import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 
-import java.io.File;
+import java.io.*;
 import java.util.List;
 
 public class DockerMetaDataDummy extends VmMetaData {
 	// TODO Define DOCKER CONSTANT
 
-	private static final Logger LOGGER = Logger.getLogger( DockerMetaDataDummy.class );
+	private static final Logger LOGGER = Logger.getLogger( DockerMetaDataDummy.class);
 
 	private final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_DOCKER, "Docker" );
 
-	public DockerMetaDataDummy(List osList) {
+	private byte[] dockerfile;
+
+	public DockerMetaDataDummy(List osList, File file) {
 		super(osList);
+
+		try {
+			BufferedInputStream  bis = new BufferedInputStream(new FileInputStream(file));
+			dockerfile = new byte[(int) file.length()];
+			bis.read(dockerfile);
+		} catch (IOException e) {
+			LOGGER.error("Couldn't read dockerfile",e);
+		}
+	}
+
+	public DockerMetaDataDummy(List osList, byte[] vmContent, int length) {
+		super(osList);
+
+		dockerfile = vmContent;
 	}
 
 	@Override public byte[] getFilteredDefinitionArray() {
-		return new byte[0];
+		return dockerfile;
 	}
 
 	@Override public void applySettingsForLocalEdit() {

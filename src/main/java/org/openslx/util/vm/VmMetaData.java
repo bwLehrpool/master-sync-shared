@@ -313,7 +313,7 @@ public abstract class VmMetaData<T, U, V, W, X>
 			LOGGER.info( "Not a QEmu file", e );
 		}
 		try {
-			return new DockerMetaDataDummy(osList);
+			return new DockerMetaDataDummy(osList, file);
 		} catch ( Exception e ) {
 			LOGGER.info( "Not a docker file", e );
 		}
