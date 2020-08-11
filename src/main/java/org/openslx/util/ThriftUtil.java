@@ -2,6 +2,7 @@ package org.openslx.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,9 @@ public class ThriftUtil {
 		List<byte[]> hashList = new ArrayList<>(blockHashes.size());
 		for (ByteBuffer hash : blockHashes) {
 			byte[] buffer = new byte[hash.remaining()];
-			hash.mark();
+			((Buffer)hash).mark();
 			hash.get(buffer);
-			hash.reset();
+			((Buffer)hash).reset();
 			hashList.add(buffer);
 		}
 		return hashList;
@@ -28,9 +29,9 @@ public class ThriftUtil {
 		byte[] byteArray = null;
 		if (buffer != null) {
 			byteArray = new byte[buffer.remaining()];
-			buffer.mark();
+			((Buffer)buffer).mark();
 			buffer.get(byteArray);
-			buffer.reset();
+			((Buffer)buffer).reset();
 		}
 		return byteArray;
 	}
