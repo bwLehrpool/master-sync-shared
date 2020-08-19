@@ -313,6 +313,8 @@ public abstract class VmMetaData<T, U, V, W, X>
 			LOGGER.info( "Not a QEmu file", e );
 		}
 		try {
+			// TODO This will work for each file because simple read as byte array
+			// TODO No checks if file is a dockerfile ---  THIS SHOOULD NOT BE IN PRODUCTION
 			return new DockerMetaDataDummy(osList, file);
 		} catch ( Exception e ) {
 			LOGGER.info( "Not a docker file", e );
@@ -342,6 +344,14 @@ public abstract class VmMetaData<T, U, V, W, X>
 			return new VboxMetaData( osList, vmContent, length );
 		} catch ( UnsupportedVirtualizerFormatException e ) {
 			exceptions.put( "Not a VirtualBox file", e );
+		}
+		try {
+			// TODO This should work in each case, because no checks if vmContent is dockerfile
+			// TODO --- THIS SHOULD NOT BE IN PRODUCTION
+			LOGGER.info("Creating DockerMetaDataDummy from vmContent");
+			return new DockerMetaDataDummy(osList, vmContent, length);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		// TODO QEmu -- hack above expects qcow2 file, so we can't do anything here yet
 		LOGGER.error( "Could not detect any known virtualizer format" );

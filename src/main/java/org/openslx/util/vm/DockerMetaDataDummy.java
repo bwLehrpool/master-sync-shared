@@ -14,6 +14,10 @@ public class DockerMetaDataDummy extends VmMetaData {
 
 	private final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_DOCKER, "Docker" );
 
+	/* this field is in vm context the machine description
+	e.g. vmware = vmx.
+	This field will be stored in table  imageversion.virtualizerconfig
+	*/
 	private byte[] dockerfile;
 
 	public DockerMetaDataDummy(List osList, File file) {
