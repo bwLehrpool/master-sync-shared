@@ -36,13 +36,13 @@ public class OvfConfig {
 	private Document doc = null;
 
 	public OvfConfig(File file) throws IOException, UnsupportedVirtualizerFormatException {
-		LOGGER.info("Entering OvfConfig class creation");
+		LOGGER.debug("Entering OvfConfig class creation");
 		doc = XmlHelper.parseDocumentFromStream(new FileInputStream(file));
 		doc = XmlHelper.removeFormattingNodes(doc);
 		if (doc == null)
 			throw new UnsupportedVirtualizerFormatException(
 					"Could not create DOM from given ovf machine configuration file!");
-		LOGGER.info("DOM creation worked");
+		LOGGER.debug("DOM creation worked");
 		init();
 	}
 
@@ -53,11 +53,11 @@ public class OvfConfig {
 	 * @throws UnsupportedVirtualizerFormatException
 	 */
 	private void init() throws UnsupportedVirtualizerFormatException {
-		LOGGER.info("Entering OvfConfig init");
+		LOGGER.debug("Entering OvfConfig init");
 		if (Util.isEmptyString(getDisplayName())) {
 			throw new UnsupportedVirtualizerFormatException("Machine doesn't have a name");
 		}
-		LOGGER.info(getDisplayName());
+		LOGGER.debug(getDisplayName());
 		// try {
 		// 	setHdds();
 		// } catch ( XPathExpressionException e ) {

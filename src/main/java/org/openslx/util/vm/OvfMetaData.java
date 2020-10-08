@@ -33,11 +33,11 @@ public class OvfMetaData extends VmMetaData {
     public OvfMetaData(List<OperatingSystem> osList, File file)
             throws IOException, UnsupportedVirtualizerFormatException {
         super(osList);
-        LOGGER.info("Constructor worked");
+        LOGGER.debug("Constructor worked");
         this.config = new OvfConfig(file);
-        LOGGER.info("Creating config worked");
+        LOGGER.debug("Creating config worked");
         init();
-        LOGGER.info("Init worked");
+        LOGGER.debug("Init worked");
     }
 
     private void init() {
