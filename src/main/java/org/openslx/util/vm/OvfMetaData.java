@@ -20,33 +20,35 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
+/**
+ * Class handling the metadata of ovf images. Only needed
+ * until the ovf has been converted into a vmx.
+ */
 public class OvfMetaData extends VmMetaData {
 
-    private static final Logger LOGGER = Logger.getLogger( OvfMetaData.class );
+    private static final Logger LOGGER = Logger.getLogger(OvfMetaData.class);
 
     private final OvfConfig config;
 
-    public OvfMetaData( List<OperatingSystem> osList, File file ) throws IOException, UnsupportedVirtualizerFormatException
-	{
-        super( osList );
+    public OvfMetaData(List<OperatingSystem> osList, File file)
+            throws IOException, UnsupportedVirtualizerFormatException {
+        super(osList);
         LOGGER.info("Constructor worked");
-        this.config = new OvfConfig( file );
+        this.config = new OvfConfig(file);
         LOGGER.info("Creating config worked");
         init();
         LOGGER.info("Init worked");
     }
-    
-    private void init()
-	{
-		registerVirtualHW();
-		displayName = config.getDisplayName();
-		// setOs( config.getOsName() );
-		// this.isMachineSnapshot = config.isMachineSnapshot();
-		// for ( HardDisk hardDisk : config.getHdds() ) {
-		// 	hdds.add( hardDisk );
-		// }
-	}
+
+    private void init() {
+        registerVirtualHW();
+        displayName = config.getDisplayName();
+        // setOs( config.getOsName() );
+        // this.isMachineSnapshot = config.isMachineSnapshot();
+        // for ( HardDisk hardDisk : config.getHdds() ) {
+        // 	hdds.add( hardDisk );
+        // }
+    }
 
     @Override
     public byte[] getFilteredDefinitionArray() {
@@ -203,5 +205,5 @@ public class OvfMetaData extends VmMetaData {
         // TODO Auto-generated method stub
 
     }
-    
+
 }
