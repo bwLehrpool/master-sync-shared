@@ -83,8 +83,11 @@ public class VmwareConfig
 			while ( ( line = reader.readLine() ) != null ) {
 				KeyValuePair entry = parse( line );
 
-				if ( entry != null ) {
-					if ( entry.key.equals( "virtualHW.version" ) || entry.key.equals( "ddb.virtualHWVersion" ) ) {
+				if ( entry != null ) { 
+					if ( entry.key.equals( "virtualHW.version" ) || entry.key.equals( "ddb.virtualHWVersion" )
+						// TODO: This is supposed to be case insensitive.
+						// Check if there are other consequences from lowercase entries in converted vmx files. 
+						|| entry.key.equals( "virtualhw.version" )) {
 						isValid = true;
 					}
 					set( entry.key, unescape( entry.value ) );
