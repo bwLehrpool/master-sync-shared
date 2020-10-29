@@ -3,14 +3,8 @@ package org.openslx.util.vm;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.log4j.Logger;
@@ -18,7 +12,6 @@ import org.openslx.util.Util;
 import org.openslx.util.XmlHelper;
 import org.openslx.util.vm.VmMetaData.HardDisk;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 /**
  * Class handling the parsing of a .ovf machine description file For now only a

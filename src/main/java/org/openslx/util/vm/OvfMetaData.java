@@ -2,23 +2,11 @@ package org.openslx.util.vm;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
-import org.openslx.thrifthelper.TConst;
-import org.openslx.util.vm.VboxConfig.PlaceHolder;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Class handling the metadata of ovf images. Only needed until the ovf has been
