@@ -21,8 +21,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Class handling the metadata of ovf images. Only needed
- * until the ovf has been converted into a vmx.
+ * Class handling the metadata of ovf images. Only needed until the ovf has been
+ * converted into a vmx.
  */
 public class OvfMetaData extends VmMetaData {
 
@@ -33,21 +33,13 @@ public class OvfMetaData extends VmMetaData {
     public OvfMetaData(List<OperatingSystem> osList, File file)
             throws IOException, UnsupportedVirtualizerFormatException {
         super(osList);
-        LOGGER.debug("Constructor worked");
         this.config = new OvfConfig(file);
-        LOGGER.debug("Creating config worked");
         init();
-        LOGGER.debug("Init worked");
     }
 
     private void init() {
         registerVirtualHW();
         displayName = config.getDisplayName();
-        // setOs( config.getOsName() );
-        // this.isMachineSnapshot = config.isMachineSnapshot();
-        // for ( HardDisk hardDisk : config.getHdds() ) {
-        // 	hdds.add( hardDisk );
-        // }
     }
 
     @Override

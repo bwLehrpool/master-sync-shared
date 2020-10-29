@@ -21,9 +21,9 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 /**
- * Class handling the parsing of a .ovf machine description file
- * For now only a dummy for conversion and will be replaced in
- * the image upload flow after converting the ovf to vmx.
+ * Class handling the parsing of a .ovf machine description file For now only a
+ * dummy for conversion and will be replaced in the image upload flow after
+ * converting the ovf to vmx.
  */
 public class OvfConfig {
 	private static final Logger LOGGER = Logger.getLogger(OvfConfig.class);
@@ -36,13 +36,11 @@ public class OvfConfig {
 	private Document doc = null;
 
 	public OvfConfig(File file) throws IOException, UnsupportedVirtualizerFormatException {
-		LOGGER.debug("Entering OvfConfig class creation");
 		doc = XmlHelper.parseDocumentFromStream(new FileInputStream(file));
 		doc = XmlHelper.removeFormattingNodes(doc);
 		if (doc == null)
 			throw new UnsupportedVirtualizerFormatException(
 					"Could not create DOM from given ovf machine configuration file!");
-		LOGGER.debug("DOM creation worked");
 		init();
 	}
 
@@ -53,17 +51,9 @@ public class OvfConfig {
 	 * @throws UnsupportedVirtualizerFormatException
 	 */
 	private void init() throws UnsupportedVirtualizerFormatException {
-		LOGGER.debug("Entering OvfConfig init");
 		if (Util.isEmptyString(getDisplayName())) {
 			throw new UnsupportedVirtualizerFormatException("Machine doesn't have a name");
 		}
-		LOGGER.debug(getDisplayName());
-		// try {
-		// 	setHdds();
-		// } catch ( XPathExpressionException e ) {
-		// 	LOGGER.debug( "Could not initialize VBoxConfig", e );
-		// 	return;
-		// }
 	}
 
 	/**

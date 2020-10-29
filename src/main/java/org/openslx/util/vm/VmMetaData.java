@@ -315,7 +315,7 @@ public abstract class VmMetaData<T, U, V, W, X>
 		try {
 			return new OvfMetaData( osList, file );
 		} catch ( Exception e ) {
-			LOGGER.info( "Not an ovf file", e );
+			LOGGER.info( "Not an OVF file", e );
 		}
 		try {
 			// TODO This will work for each file because simple read as byte array
