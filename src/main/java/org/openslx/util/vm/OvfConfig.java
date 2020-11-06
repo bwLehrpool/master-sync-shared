@@ -18,8 +18,9 @@ import org.w3c.dom.Document;
  * dummy for conversion and will be replaced in the image upload flow after
  * converting the ovf to vmx.
  */
-public class OvfConfig {
-	private static final Logger LOGGER = Logger.getLogger(OvfConfig.class);
+public class OvfConfig
+{
+	private static final Logger LOGGER = Logger.getLogger( OvfConfig.class );
 
 	// key information set during initial parsing of the XML file
 	private String osName = new String();
@@ -28,12 +29,13 @@ public class OvfConfig {
 	// XPath and DOM parsing related members
 	private Document doc = null;
 
-	public OvfConfig(File file) throws IOException, UnsupportedVirtualizerFormatException {
-		doc = XmlHelper.parseDocumentFromStream(new FileInputStream(file));
-		doc = XmlHelper.removeFormattingNodes(doc);
-		if (doc == null)
+	public OvfConfig( File file ) throws IOException, UnsupportedVirtualizerFormatException
+	{
+		doc = XmlHelper.parseDocumentFromStream( new FileInputStream( file ) );
+		doc = XmlHelper.removeFormattingNodes( doc );
+		if ( doc == null )
 			throw new UnsupportedVirtualizerFormatException(
-					"Could not create DOM from given ovf machine configuration file!");
+					"Could not create DOM from given ovf machine configuration file!" );
 		init();
 	}
 
@@ -43,9 +45,10 @@ public class OvfConfig {
 	 * 
 	 * @throws UnsupportedVirtualizerFormatException
 	 */
-	private void init() throws UnsupportedVirtualizerFormatException {
-		if (Util.isEmptyString(getDisplayName())) {
-			throw new UnsupportedVirtualizerFormatException("Machine doesn't have a name");
+	private void init() throws UnsupportedVirtualizerFormatException
+	{
+		if ( Util.isEmptyString( getDisplayName() ) ) {
+			throw new UnsupportedVirtualizerFormatException( "Machine doesn't have a name" );
 		}
 	}
 
@@ -54,10 +57,11 @@ public class OvfConfig {
 	 *
 	 * @return the display name of this VM
 	 */
-	public String getDisplayName() {
+	public String getDisplayName()
+	{
 		try {
-			return XmlHelper.XPath.compile("/Envelope/VirtualSystem/Name").evaluate(this.doc);
-		} catch (XPathExpressionException e) {
+			return XmlHelper.XPath.compile( "/Envelope/VirtualSystem/Name" ).evaluate( this.doc );
+		} catch ( XPathExpressionException e ) {
 			return "";
 		}
 	}
