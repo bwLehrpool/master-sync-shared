@@ -177,6 +177,7 @@ struct ImageSummaryRead {
 	1: UUID imageBaseId,
 	3: UUID latestVersionId,
 	4: string imageName,
+	23: string description,
 	5: i32 osId,
 	6: string virtId,
 	7: UnixTimestamp createTime,
@@ -317,6 +318,7 @@ struct LectureWrite {
 struct LectureSummary {
 	1: UUID lectureId,
 	2: string lectureName,
+	18: string description,
 	3: UUID imageVersionId,
 	4: UUID imageBaseId,
 	5: bool isEnabled,
