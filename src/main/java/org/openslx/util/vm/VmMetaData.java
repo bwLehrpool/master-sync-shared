@@ -313,11 +313,6 @@ public abstract class VmMetaData<T, U, V, W, X>
 			LOGGER.info( "Not a QEmu file", e );
 		}
 		try {
-			return new OvfMetaData( osList, file );
-		} catch ( Exception e ) {
-			LOGGER.info( "Not an OVF file", e );
-		}
-		try {
 			// TODO This will work for each file because simple read as byte array
 			// TODO No checks if file is a dockerfile ---  THIS SHOOULD NOT BE IN PRODUCTION
 			return new DockerMetaDataDummy(osList, file);
