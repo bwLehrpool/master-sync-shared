@@ -26,8 +26,7 @@ public class DiskImage
 
 	public enum ImageFormat
 	{
-		VMDK( "vmdk" ), QCOW2( "qcow2" ), VDI( "vdi" ),
-		DOCKER("dockerfile");
+		VMDK( "vmdk" ), QCOW2( "qcow2" ), VDI( "vdi" ), DOCKER( "dockerfile" );
 
 		public final String extension;
 
@@ -53,7 +52,7 @@ public class DiskImage
 				return VDI;
 			if ( virtId.equals( TConst.VIRT_QEMU ) )
 				return QCOW2;
-			if ( virtId.equals( TConst.VIRT_DOCKER) )
+			if ( virtId.equals( TConst.VIRT_DOCKER ) )
 				return DOCKER;
 			return null;
 		}
@@ -166,17 +165,154 @@ public class DiskImage
 				return;
 			}
 
-			// TODO: qcow
+			// qcow2 disk image
 			file.seek( 0 );
 			if ( file.readInt() == QEMU_MAGIC ) {
-				// dummy values
-				this.isStandalone = true;
-				this.isCompressed = false;
-				this.isSnapshot = false;
+				// 
+				// qcow2 (version 2 and 3) header format:
+				//
+				// magic                   (4 byte)
+				// version                 (4 byte)
+				// backing_file_offset     (8 byte)
+				// backing_file_size       (4 byte)
+				// cluster_bits            (4 byte)
+				// size                    (8 byte)
+				// crypt_method            (4 byte)
+				// l1_size                 (4 byte)
+				// l1_table_offset         (8 byte)
+				// refcount_table_offset   (8 byte)
+				// refcount_table_clusters (4 byte)
+				// nb_snapshots            (4 byte)
+				// snapshots_offset        (8 byte)
+				// incompatible_features   (8 byte)  [*]
+				// compatible_features     (8 byte)  [*]
+				// autoclear_features      (8 byte)  [*]
+				// refcount_order          (8 byte)  [*]
+				// header_length           (4 byte)  [*]
+				//
+				// [*] these fields are only available in the qcow2 version 3 header format
+				// 
+
+				//
+				// check qcow2 file format version
+				//
+				file.seek( 4 );
+				final int qcowVersion = file.readInt();
+				if ( qcowVersion < 2 || qcowVersion > 3 ) {
+					// disk image format is not a qcow2 disk format
+					throw new UnknownImageFormatException();
+				} else {
+					// disk image format is a valid qcow2 disk format
+					this.hwVersion = qcowVersion;
+					this.subFormat = null;
+				}
+
+				//
+				// check if qcow2 image does not refer to any backing file
+				//
+				file.seek( 8 );
+				this.isStandalone = ( file.readLong() == 0 ) ? true : false;
+
+				//
+				// check if qcow2 image does not contain any snapshot
+				//
+				file.seek( 56 );
+				this.isSnapshot = ( file.readInt() == 0 ) ? true : false;
+
+				//
+				// check if qcow2 image uses extended L2 tables
+				//
+				boolean qcowUseExtendedL2 = false;
+
+				// extended L2 tables are only possible in qcow2 version 3 header format
+				if ( qcowVersion == 3 ) {
+					// read incompatible feature bits
+					file.seek( 72 );
+					final long qcowIncompatibleFeatures = file.readLong();
+
+					// support for extended L2 tables is enabled if bit 4 is set
+					qcowUseExtendedL2 = ( ( ( qcowIncompatibleFeatures & 0x000000000010 ) >>> 4 ) == 1 );
+				}
+
+				//
+				// check if qcow2 image contains compressed clusters
+				//
+				boolean qcowCompressed = false;
+
+				// get number of entries in L1 table
+				file.seek( 36 );
+				final int qcowL1TableSize = file.readInt();
+
+				// check if a valid L1 table is present
+				if ( qcowL1TableSize > 0 ) {
+					// qcow2 image contains active L1 table with more than 0 entries: l1_size > 0
+					// search for first L2 table and its first entry to get compression bit
+
+					// get cluster bits to calculate the cluster size
+					file.seek( 20 );
+					final int qcowClusterBits = file.readInt();
+					final int qcowClusterSize = ( 1 << qcowClusterBits );
+
+					// entries of a L1 table have always the size of 8 byte (64 bit)
+					final int qcowL1TableEntrySize = 8;
+
+					// entries of a L2 table have either the size of 8 or 16 byte (64 or 128 bit)
+					final int qcowL2TableEntrySize = ( qcowUseExtendedL2 ) ? 16 : 8;
+
+					// calculate number of L2 table entries
+					final int qcowL2TableSize = qcowClusterSize / qcowL2TableEntrySize;
+
+					// get offset of L1 table
+					file.seek( 40 );
+					long qcowL1TableOffset = file.readLong();
+
+					// check for each L2 table referenced from an L1 table its entries
+					// until a compressed cluster descriptor is found
+					for ( long i = 0; i < qcowL1TableSize; i++ ) {
+						// get offset of current L2 table from the current L1 table entry
+						long qcowL1TableEntryOffset = qcowL1TableOffset + ( i * qcowL1TableEntrySize );
+						file.seek( qcowL1TableEntryOffset );
+						long qcowL1TableEntry = file.readLong();
+
+						// extract offset (bits 9 - 55) from L1 table entry
+						long qcowL2TableOffset = ( qcowL1TableEntry & 0x00fffffffffffe00L );
+
+						if ( qcowL2TableOffset == 0 ) {
+							// L2 table and all clusters described by this L2 table are unallocated
+							continue;
+						}
+
+						// get each L2 table entry and check if it is a compressed cluster descriptor
+						for ( long j = 0; j < qcowL2TableSize; j++ ) {
+							// get current L2 table entry
+							long qcowL2TableEntryOffset = qcowL2TableOffset + ( j * qcowL2TableEntrySize );
+							file.seek( qcowL2TableEntryOffset );
+							long qcowL2TableEntry = file.readLong();
+
+							// extract cluster type (standard or compressed) (bit 62)
+							boolean qcowClusterCompressed = ( ( ( qcowL2TableEntry & 0x4000000000000000L ) >>> 62 ) == 1 );
+
+							// check if qcow2 disk image contains at least one compressed cluster descriptor
+							if ( qcowClusterCompressed ) {
+								qcowCompressed = true;
+								break;
+							}
+						}
+
+						// terminate if one compressed cluster descriptor is already found
+						if ( qcowCompressed ) {
+							break;
+						}
+					}
+				} else {
+					// qcow2 image does not contain an active L1 table with any entry: l1_size = 0
+					qcowCompressed = false;
+				}
+
+				this.isCompressed = qcowCompressed;
 				this.format = ImageFormat.QCOW2;
-				this.subFormat = null;
 				this.diskDescription = null;
-				this.hwVersion = 0;
+
 				return;
 			}
 		}
