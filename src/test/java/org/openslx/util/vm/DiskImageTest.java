@@ -8,7 +8,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openslx.util.vm.DiskImage.ImageFormat;
@@ -16,6 +19,13 @@ import org.openslx.util.vm.DiskImage.UnknownImageFormatException;
 
 public class DiskImageTest
 {
+	@BeforeAll
+	public static void setUp()
+	{
+		// disable logging with log4j
+		LogManager.getRootLogger().setLevel( Level.OFF );
+	}
+
 	@Test
 	@DisplayName( "Test detection of VMDK disk image" )
 	public void testVmdkDiskImage() throws FileNotFoundException, IOException, UnknownImageFormatException
