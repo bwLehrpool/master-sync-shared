@@ -3,13 +3,23 @@ package org.openslx.util.vm;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.util.vm.DiskImage.ImageFormat;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class DockerMetaDataDummy extends VmMetaData {
 	// TODO Define DOCKER CONSTANT
 
+	/**
+	 * List of supported image formats by the Docker hypervisor.
+	 */
+	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
+			Arrays.asList( ImageFormat.DOCKER ) );
+	
 	private static final Logger LOGGER = Logger.getLogger( DockerMetaDataDummy.class);
 
 	private final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_DOCKER, "Docker" );
@@ -40,6 +50,12 @@ public class DockerMetaDataDummy extends VmMetaData {
 
 	@Override public byte[] getFilteredDefinitionArray() {
 		return dockerfile;
+	}
+	
+	@Override
+	public List<DiskImage.ImageFormat> getSupportedImageFormats()
+	{
+		return DockerMetaDataDummy.SUPPORTED_IMAGE_FORMATS;
 	}
 
 	@Override public void applySettingsForLocalEdit() {

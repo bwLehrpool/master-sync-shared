@@ -3,6 +3,8 @@ package org.openslx.util.vm;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
+import org.openslx.util.vm.DiskImage.ImageFormat;
 import org.openslx.util.vm.VmwareConfig.ConfigEntry;
 
 class VmWareSoundCardMeta
@@ -73,7 +76,12 @@ class VmwareUsbSpeed
 
 public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareHWVersionMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
 {
-
+	/**
+	 * List of supported image formats by the VMware hypervisor.
+	 */
+	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
+			Arrays.asList( ImageFormat.VMDK ) );
+	
 	private static final Logger LOGGER = Logger.getLogger( VmwareMetaData.class );
 
 	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_VMWARE, "VMware" );
@@ -245,6 +253,12 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		}
 	}
 
+	@Override
+	public List<DiskImage.ImageFormat> getSupportedImageFormats()
+	{
+		return VmwareMetaData.SUPPORTED_IMAGE_FORMATS;
+	}
+	
 	@Override
 	public boolean addHddTemplate( File diskImage, String hddMode, String redoDir )
 	{

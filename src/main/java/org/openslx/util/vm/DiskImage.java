@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
+import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
@@ -318,7 +320,40 @@ public class DiskImage
 		}
 		throw new UnknownImageFormatException();
 	}
+	
+	/**
+	 * Creates new disk image and checks if image is supported by hypervisor's image formats.
+	 * 
+	 * @param disk file to a disk storing the virtual machine content.
+	 * @param supportedImageTypes list of supported image types of a hypervisor's image format.
+	 * @throws FileNotFoundException cannot find virtual machine image file.
+	 * @throws IOException cannot access the virtual machine image file.
+	 * @throws UnknownImageFormatException virtual machine image file has an unknown image format.
+	 */
+	public DiskImage( File disk, List<ImageFormat> supportedImageTypes )
+			throws FileNotFoundException, IOException, UnknownImageFormatException
+	{
+		this( disk );
 
+		if ( !this.isSupportedByHypervisor( supportedImageTypes ) ) {
+			throw new UnknownImageFormatException();
+		}
+	}
+	
+	/**
+	 * Checks if image format is supported by a list of supported hypervisor image formats.
+	 * 
+	 * @param supportedImageTypes list of supported image types of a hypervisor.
+	 * @return <code>true</code> if image type is supported by the hypervisor; otherwise
+	 *         <code>false</code>.
+	 */
+	public boolean isSupportedByHypervisor( List<ImageFormat> supportedImageTypes )
+	{
+		Predicate<ImageFormat> matchDiskFormat = supportedImageType -> supportedImageType.toString()
+				.equalsIgnoreCase( this.getImageFormat().toString() );
+		return supportedImageTypes.stream().anyMatch( matchDiskFormat );
+	}
+	
 	private int findNull( byte[] buffer )
 	{
 		for ( int i = 0; i < buffer.length; ++i ) {

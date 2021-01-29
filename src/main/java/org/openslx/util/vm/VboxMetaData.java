@@ -6,6 +6,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.util.vm.DiskImage.ImageFormat;
 import org.openslx.util.vm.VboxConfig.PlaceHolder;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -77,6 +79,12 @@ class VBoxUsbSpeedMeta
 
 public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
 {
+	/**
+	 * List of supported image formats by the VirtualBox hypervisor.
+	 */
+	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
+			Arrays.asList( ImageFormat.VDI ) );
+	
 	private static final Logger LOGGER = Logger.getLogger( VboxMetaData.class );
 
 	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_VIRTUALBOX, "VirtualBox" );
@@ -124,6 +132,12 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	public Virtualizer getVirtualizer()
 	{
 		return virtualizer;
+	}
+	
+	@Override
+	public List<DiskImage.ImageFormat> getSupportedImageFormats()
+	{
+		return VboxMetaData.SUPPORTED_IMAGE_FORMATS;
 	}
 
 	@Override

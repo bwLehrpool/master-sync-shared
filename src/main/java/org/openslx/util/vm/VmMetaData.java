@@ -282,6 +282,13 @@ public abstract class VmMetaData<T, U, V, W, X>
 	}
 
 	/**
+	 * Returns list of image formats supported by the VM's hypervisor.
+	 * 
+	 * @return list of image formats.
+	 */
+	public abstract List<DiskImage.ImageFormat> getSupportedImageFormats();
+	
+	/**
 	 * Apply config options that are desired when locally editing a VM. for vmware,
 	 * this disables automatic DPI scaling of the guest.
 	 */
@@ -310,7 +317,7 @@ public abstract class VmMetaData<T, U, V, W, X>
 		try {
 			return new QemuMetaData( osList, file );
 		} catch ( Exception e ) {
-			LOGGER.info( "Not a QEmu file", e );
+			LOGGER.info( "Not a Qemu file", e );
 		}
 		try {
 			// TODO This will work for each file because simple read as byte array
