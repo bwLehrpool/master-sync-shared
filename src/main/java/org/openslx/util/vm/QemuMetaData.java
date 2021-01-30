@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.libvirt.domain.Domain;
