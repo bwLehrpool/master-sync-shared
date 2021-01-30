@@ -9,10 +9,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
@@ -30,7 +28,7 @@ class LibvirtXmlDocumentStub extends LibvirtXmlDocument
 		super( xml );
 	}
 
-	public LibvirtXmlDocumentStub( File xml, Source rngSchema )
+	public LibvirtXmlDocumentStub( File xml, InputStream rngSchema )
 			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
 	{
 		super( xml, rngSchema );
@@ -70,8 +68,8 @@ public class LibvirtXmlDocumentTest
 
 		try {
 			File xmlFile = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-			Source rngSchemaSource = new StreamSource( LibvirtXmlResources.getLibvirtRng( rngSchemaFileName ) );
-			document = new LibvirtXmlDocumentStub( xmlFile, rngSchemaSource );
+			InputStream rngSchema = LibvirtXmlResources.getLibvirtRng( rngSchemaFileName );
+			document = new LibvirtXmlDocumentStub( xmlFile, rngSchema );
 		} catch ( LibvirtXmlDocumentException | LibvirtXmlSerializationException e ) {
 			String errorMsg = new String( "Cannot prepare requested Libvirt XML file from the resources folder" );
 			fail( errorMsg );

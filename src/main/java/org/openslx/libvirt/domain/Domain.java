@@ -33,6 +33,7 @@ import org.openslx.libvirt.domain.device.Video;
 import org.openslx.libvirt.xml.LibvirtXmlDocument;
 import org.openslx.libvirt.xml.LibvirtXmlDocumentException;
 import org.openslx.libvirt.xml.LibvirtXmlNode;
+import org.openslx.libvirt.xml.LibvirtXmlResources;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlValidationException;
 import org.w3c.dom.Node;
@@ -61,7 +62,7 @@ public class Domain extends LibvirtXmlDocument
 	public Domain( String xml )
 			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
 	{
-		super( xml );
+		super( xml, LibvirtXmlResources.getLibvirtRng( "domain.rng" ) );
 	}
 
 	/**
@@ -76,7 +77,7 @@ public class Domain extends LibvirtXmlDocument
 	public Domain( File xml )
 			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
 	{
-		super( xml );
+		super( xml, LibvirtXmlResources.getLibvirtRng( "domain.rng" ) );
 	}
 
 	/**
@@ -92,7 +93,7 @@ public class Domain extends LibvirtXmlDocument
 	public Domain( InputStream xml )
 			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
 	{
-		super( xml );
+		super( xml, LibvirtXmlResources.getLibvirtRng( "domain.rng" ) );
 	}
 
 	/**
@@ -108,7 +109,7 @@ public class Domain extends LibvirtXmlDocument
 	public Domain( InputSource xml )
 			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
 	{
-		super( xml );
+		super( xml, LibvirtXmlResources.getLibvirtRng( "domain.rng" ) );
 	}
 
 	/**

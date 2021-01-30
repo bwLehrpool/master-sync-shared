@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.Reader;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -200,7 +199,7 @@ public class LibvirtXmlSchemaValidator
 	 * @param rngSchema
 	 * @throws SAXException
 	 */
-	public LibvirtXmlSchemaValidator( Source rngSchema ) throws SAXException
+	public LibvirtXmlSchemaValidator( InputStream rngSchema ) throws SAXException
 	{
 		this.createValidationContext( rngSchema );
 	}
@@ -212,7 +211,7 @@ public class LibvirtXmlSchemaValidator
 	 * 
 	 * @throws SAXException Loading, creation and processing of <code>rngSchema</code> has failed.
 	 */
-	private void createValidationContext( Source rngSchema ) throws SAXException
+	private void createValidationContext( InputStream rngSchema ) throws SAXException
 	{
 		// use hack to load specific schema factory implementation for RelaxNG schemas
 		System.setProperty( SchemaFactory.class.getName() + ":" + XMLConstants.RELAXNG_NS_URI,
@@ -224,7 +223,7 @@ public class LibvirtXmlSchemaValidator
 		// create schema factory to be able to create a RelaxNG schema validator
 		SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.RELAXNG_NS_URI );
 		factory.setResourceResolver( schemaResolver );
-		Schema schema = factory.newSchema( rngSchema );
+		Schema schema = factory.newSchema( new StreamSource( rngSchema ) );
 
 		// create the RelaxNG schema validator
 		this.rngSchemaValidator = schema.newValidator();
