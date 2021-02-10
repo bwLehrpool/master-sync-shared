@@ -4,42 +4,72 @@ import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class DockerMetaDataDummy extends VmMetaData {
-	// TODO Define DOCKER CONSTANT
 
-	private static final Logger LOGGER = Logger.getLogger( DockerMetaDataDummy.class);
+	private static final Logger LOGGER = Logger.getLogger(DockerMetaDataDummy.class);
 
-	private final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_DOCKER, "Docker" );
+	private final Virtualizer virtualizer = new Virtualizer(TConst.VIRT_DOCKER, "Docker");
 
-	/* this field is in vm context the machine description
-	e.g. vmware = vmx.
-	This field will be stored in table  imageversion.virtualizerconfig
-	*/
-	private byte[] dockerfile;
+	/**
+	 * containerDefinition is a serialized tar.gz archive and represents a
+	 * ContainerDefinition. This archive contains a serialized Container Recipe (e.g. Dockerfile)
+	 * and a ContainerMeta witch is serialized as a json file.
+	 * <p>
+	 * See ContainerDefintion in tutor-module (bwsuite).
+	 * <p>
+	 * This field is in vm context the machine description e.g. vmware = vmx.
+	 * This field will be stored in table  imageversion.virtualizerconfig
+	 */
+	private byte[] containerDefinition;
 
-	public DockerMetaDataDummy(List osList, File file) {
+	public DockerMetaDataDummy(List osList, File file) throws UnsupportedVirtualizerFormatException {
 		super(osList);
 
 		try {
-			BufferedInputStream  bis = new BufferedInputStream(new FileInputStream(file));
-			dockerfile = new byte[(int) file.length()];
-			bis.read(dockerfile);
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+			containerDefinition = new byte[(int) file.length()];
+			bis.read(containerDefinition);
+
+			checkIsTarGz();
 		} catch (IOException e) {
-			LOGGER.error("Couldn't read dockerfile",e);
+			LOGGER.error("Couldn't read dockerfile", e);
 		}
 	}
 
-	public DockerMetaDataDummy(List osList, byte[] vmContent, int length) {
+	public DockerMetaDataDummy(List osList, byte[] vmContent, int length)
+			throws UnsupportedVirtualizerFormatException {
 		super(osList);
 
-		dockerfile = vmContent;
+		containerDefinition = vmContent;
+
+		checkIsTarGz();
+	}
+
+	/*
+	TODO This is just a simple check to prevent the workflow from considering any content as acceptable.
+	 */
+	/**
+	 * Checks if the first two bytes of the content identifies a tar.gz archive.
+	 * The first byte is 31 == 0x1f, the second byte has to be -117 == 0x8b.
+	 *
+	 * @throws UnsupportedVirtualizerFormatException
+	 */
+	private void checkIsTarGz() throws UnsupportedVirtualizerFormatException {
+		if (!((31 == containerDefinition[0]) && (-117 == containerDefinition[1]))) {
+			LOGGER.warn("Not Supported Content.");
+			throw new UnsupportedVirtualizerFormatException(
+					"DockerMetaDataDummy: Not tar.gz encoded content!");
+		}
 	}
 
 	@Override public byte[] getFilteredDefinitionArray() {
-		return dockerfile;
+		return containerDefinition;
 	}
 
 	@Override public void applySettingsForLocalEdit() {

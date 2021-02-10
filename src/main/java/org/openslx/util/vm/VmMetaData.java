@@ -105,16 +105,16 @@ public abstract class VmMetaData<T, U, V, W, X>
 			this.displayName = dName;
 		}
 	}
-	
+
 	public static enum UsbSpeed
 	{
 		NONE( "None" ),
 		USB1_1( "USB 1.1" ),
 		USB2_0( "USB 2.0" ),
 		USB3_0( "USB 3.0" );
-		
+
 		public final String displayName;
-		
+
 		private UsbSpeed( String dName )
 		{
 			this.displayName = dName;
@@ -254,7 +254,7 @@ public abstract class VmMetaData<T, U, V, W, X>
 	/**
 	 * Called from subclass to set the OS. If the OS cannot be determined from the
 	 * given parameters, it will not be set.
-	 * 
+	 *
 	 * @param virtId
 	 *           virtualizer, eg "vmware" for VMware
 	 * @param virtOsId
@@ -292,7 +292,7 @@ public abstract class VmMetaData<T, U, V, W, X>
 	 *
 	 * @param osList List of supported operating systems
 	 * @param file VM's machine description file to get the metadata instance from
-	 * @return VmMetaData object representing the relevant parts of the given machine description 
+	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 */
 	public static VmMetaData<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
 			throws IOException
@@ -313,11 +313,9 @@ public abstract class VmMetaData<T, U, V, W, X>
 			LOGGER.info( "Not a QEmu file", e );
 		}
 		try {
-			// TODO This will work for each file because simple read as byte array
-			// TODO No checks if file is a dockerfile ---  THIS SHOOULD NOT BE IN PRODUCTION
 			return new DockerMetaDataDummy(osList, file);
 		} catch ( Exception e ) {
-			LOGGER.info( "Not a docker file", e );
+			LOGGER.info( "Not a tar.gz file, for docker container", e );
 		}
 		LOGGER.error( "Could not detect any known virtualizer format" );
 		return null;
@@ -346,12 +344,9 @@ public abstract class VmMetaData<T, U, V, W, X>
 			exceptions.put( "Not a VirtualBox file", e );
 		}
 		try {
-			// TODO This should work in each case, because no checks if vmContent is dockerfile
-			// TODO --- THIS SHOULD NOT BE IN PRODUCTION
-			LOGGER.info("Creating DockerMetaDataDummy from vmContent");
 			return new DockerMetaDataDummy(osList, vmContent, length);
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (UnsupportedVirtualizerFormatException e) {
+			exceptions.put( "Not tar.gz file for DockerMetaDataDummy ", e);
 		}
 		// TODO QEmu -- hack above expects qcow2 file, so we can't do anything here yet
 		LOGGER.error( "Could not detect any known virtualizer format" );
