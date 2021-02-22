@@ -1,6 +1,8 @@
 package org.openslx.util.vm;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.vm.DiskImage.ImageFormat;
@@ -13,7 +15,27 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class DockerMetaDataDummy extends VmMetaData {
+class DockerSoundCardMeta
+{
+}
+
+class DockerDDAccelMeta
+{
+}
+
+class DockerHWVersionMeta
+{
+}
+
+class DockerEthernetDevTypeMeta
+{
+}
+
+class DockerUsbSpeedMeta
+{
+}
+
+public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerDDAccelMeta, DockerHWVersionMeta, DockerEthernetDevTypeMeta, DockerUsbSpeedMeta> {
 
 	/**
 	 * List of supported image formats by the Docker hypervisor.
@@ -37,21 +59,26 @@ public class DockerMetaDataDummy extends VmMetaData {
 	 */
 	private byte[] containerDefinition;
 
-	public DockerMetaDataDummy(List osList, File file) throws UnsupportedVirtualizerFormatException {
+	@SuppressWarnings( "deprecation" )
+	public DockerMetaDataDummy(List<OperatingSystem> osList, File file) throws UnsupportedVirtualizerFormatException {
 		super(osList);
 
+		BufferedInputStream bis = null;
+		
 		try {
-			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+			bis = new BufferedInputStream(new FileInputStream(file));
 			containerDefinition = new byte[(int) file.length()];
 			bis.read(containerDefinition);
 
 			checkIsTarGz();
-		} catch (IOException e) {
+		} catch (IOException | UnsupportedVirtualizerFormatException e) {
 			LOGGER.error("Couldn't read dockerfile", e);
+		} finally {
+			IOUtils.closeQuietly( bis );
 		}
 	}
 
-	public DockerMetaDataDummy(List osList, byte[] vmContent, int length)
+	public DockerMetaDataDummy(List<OperatingSystem> osList, byte[] vmContent, int length)
 			throws UnsupportedVirtualizerFormatException {
 		super(osList);
 
