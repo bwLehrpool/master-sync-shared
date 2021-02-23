@@ -17,7 +17,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -311,7 +310,6 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	}
 
 	@Override
-	@SuppressWarnings( "deprecation" )
 	public String toXml() throws LibvirtXmlSerializationException
 	{
 		StringWriter xmlWriter = null;
@@ -327,14 +325,17 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 		} catch ( TransformerException | IOException e ) {
 			throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );
 		} finally {
-			IOUtils.closeQuietly( xmlWriter );
+			try {
+				xmlWriter.close();
+			} catch ( IOException e ) {
+				throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );
+			}
 		}
 
 		return xml;
 	}
 
 	@Override
-	@SuppressWarnings( "deprecation" )
 	public void toXml( File xml ) throws LibvirtXmlSerializationException
 	{
 		FileWriter xmlWriter = null;
@@ -349,7 +350,11 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 		} catch ( TransformerException | IOException e ) {
 			throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );
 		} finally {
-			IOUtils.closeQuietly( xmlWriter );
+			try {
+				xmlWriter.close();
+			} catch ( IOException e ) {
+				throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );
+			}
 		}
 	}
 

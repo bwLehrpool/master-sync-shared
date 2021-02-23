@@ -1,6 +1,5 @@
 package org.openslx.vm;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
@@ -60,7 +59,6 @@ public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerD
 	 */
 	private byte[] containerDefinition;
 
-	@SuppressWarnings( "deprecation" )
 	public DockerMetaDataDummy(List<OperatingSystem> osList, File file) throws UnsupportedVirtualizerFormatException {
 		super(osList);
 
@@ -75,7 +73,11 @@ public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerD
 		} catch (IOException | UnsupportedVirtualizerFormatException e) {
 			LOGGER.error("Couldn't read dockerfile", e);
 		} finally {
-			IOUtils.closeQuietly( bis );
+			try {
+				bis.close();
+			} catch ( IOException e ) {
+				LOGGER.warn( "Could not close the input stream!" );
+			}
 		}
 	}
 

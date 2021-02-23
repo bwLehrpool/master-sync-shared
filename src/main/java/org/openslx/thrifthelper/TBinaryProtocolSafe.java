@@ -21,9 +21,13 @@ public class TBinaryProtocolSafe extends TBinaryProtocol
 	/**
 	 * Factory
 	 */
-	@SuppressWarnings( "serial" )
 	public static class Factory implements TProtocolFactory
 	{
+
+		/**
+		 * Version for serialization.
+		 */
+		private static final long serialVersionUID = 6896537370338823740L;
 
 		protected boolean strictRead_ = false;
 		protected boolean strictWrite_ = true;

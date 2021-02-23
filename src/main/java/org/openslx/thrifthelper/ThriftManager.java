@@ -40,14 +40,13 @@ public class ThriftManager<T>
 
 	private final T client;
 
-	@SuppressWarnings( "unchecked" )
 	private ThriftManager( Class<T> ifClazz, Class<? extends TServiceClient> clientClazz,
 			WantClientCallback<? extends TServiceClient> internalCallback, ErrorCallback errorCb )
 	{
-		this.client = (T)Proxy.newProxyInstance(
+		this.client = ifClazz.cast( Proxy.newProxyInstance(
 				ifClazz.getClassLoader(),
 				new Class[] { ifClazz }, new ThriftHandler<TServiceClient>(
-						clientClazz, internalCallback, errorCb ) );
+						clientClazz, internalCallback, errorCb ) ) );
 	}
 
 	private static ThriftManager<MasterServer.Iface> masterManager = null;

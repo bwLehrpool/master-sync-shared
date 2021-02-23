@@ -121,7 +121,6 @@ public class Uploader extends Transfer
 
 	}
 
-	@SuppressWarnings( "resource" )
 	public boolean upload( String filename, UploadStatusCallback callback )
 	{
 		if ( shouldGetToken() ) {
