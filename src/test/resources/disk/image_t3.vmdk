@@ -1,0 +1,21 @@
+# Disk DescriptorFile
+version=1
+CID=f879aea6
+parentCID=ffffffff
+createType="twoGbMaxExtentFlat"
+
+# Extent description
+RW 20480 FLAT "image_t3-f001.vmdk" 0
+
+# The Disk Data Base 
+#DDB
+
+ddb.adapterType = "ide"
+ddb.deletable = "true"
+ddb.encoding = "UTF-8"
+ddb.geometry.cylinders = "20"
+ddb.geometry.heads = "16"
+ddb.geometry.sectors = "63"
+ddb.longContentID = "1d2f0fc53996e4dd85d6348a9cb54a70"
+ddb.uuid = "60 00 C2 92 6f 18 ff eb-66 28 54 8e f4 fb 0d e6"
+ddb.virtualHWVersion = "18"

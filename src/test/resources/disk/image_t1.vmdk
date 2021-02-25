@@ -1,0 +1,21 @@
+# Disk DescriptorFile
+version=1
+CID=f879aea6
+parentCID=ffffffff
+createType="twoGbMaxExtentSparse"
+
+# Extent description
+RW 20480 SPARSE "image_t1-s001.vmdk"
+
+# The Disk Data Base 
+#DDB
+
+ddb.adapterType = "ide"
+ddb.deletable = "true"
+ddb.encoding = "UTF-8"
+ddb.geometry.cylinders = "20"
+ddb.geometry.heads = "16"
+ddb.geometry.sectors = "63"
+ddb.longContentID = "a586da03e45ef91444741b5e03dd9850"
+ddb.uuid = "60 00 C2 95 f2 fc 95 8b-59 71 f0 58 a4 63 3d d9"
+ddb.virtualHWVersion = "18"

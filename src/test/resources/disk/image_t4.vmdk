@@ -1,0 +1,22 @@
+# Disk DescriptorFile
+version=1
+CID=f879aea6
+parentCID=ffffffff
+createType="vmfs"
+
+# Extent description
+RW 20480 VMFS "image_t4-flat.vmdk" 0
+
+# The Disk Data Base 
+#DDB
+
+ddb.adapterType = "ide"
+ddb.deletable = "true"
+ddb.encoding = "UTF-8"
+ddb.geometry.cylinders = "20"
+ddb.geometry.heads = "16"
+ddb.geometry.sectors = "63"
+ddb.longContentID = "c1c7f78748a6d9a7f9233c312a8362c6"
+ddb.thinProvisioned = "1"
+ddb.uuid = "60 00 C2 9a 0f 63 7a 30-b4 d5 1c 32 b3 3c e6 bb"
+ddb.virtualHWVersion = "18"
