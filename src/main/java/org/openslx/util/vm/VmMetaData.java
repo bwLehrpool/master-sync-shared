@@ -79,6 +79,8 @@ public abstract class VmMetaData<T, U, V, W, X>
 		FOURTEEN( "14 (Workstation/Player 14, Fusion 10)"),
 		FIFTEEN( "15 (Workstation/Player 15, Fusion 11)"),
 		FIFTEEN_ONE( "16 (Workstation/Player 15.1, Fusion 11.1)"),
+		SIXTEEN( "17 (Workstation/Player 16, Fusion 12)"),
+		SIXTEEN_ONE( "18 (Workstation/Player 16.1, Fusion 12.1)"),
 		DEFAULT( "default" );
 
 		public final String displayName;

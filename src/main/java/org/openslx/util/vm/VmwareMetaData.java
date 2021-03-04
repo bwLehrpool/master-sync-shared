@@ -661,6 +661,8 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		hwversion.put( VmMetaData.HWVersion.FOURTEEN, new VmWareHWVersionMeta( 14 ) );
 		hwversion.put( VmMetaData.HWVersion.FIFTEEN, new VmWareHWVersionMeta( 15 ) );
 		hwversion.put( VmMetaData.HWVersion.FIFTEEN_ONE, new VmWareHWVersionMeta( 16 ) );
+		hwversion.put( VmMetaData.HWVersion.SIXTEEN, new VmWareHWVersionMeta( 17 ) );
+		hwversion.put( VmMetaData.HWVersion.SIXTEEN_ONE, new VmWareHWVersionMeta( 18 ) );
 
 		networkCards.put( VmMetaData.EthernetDevType.AUTO, new VmWareEthernetDevTypeMeta( null ) );
 		networkCards.put( VmMetaData.EthernetDevType.PCNET32, new VmWareEthernetDevTypeMeta( "vlance" ) );
