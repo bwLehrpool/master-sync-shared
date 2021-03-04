@@ -137,7 +137,7 @@ public class Json {
 				if (element == null || element.isJsonNull())
 					continue;
 				try {
-					field.setter.invoke(inst, context.deserialize(element, field.field.getType()));
+					field.setter.invoke(inst, new Object[] { context.deserialize(element, field.field.getType()) });
 				} catch (Exception e) {
 					LOGGER.warn("Could not call " + field.setter.getName() + " on " + clazz.getSimpleName(), e);
 				}
