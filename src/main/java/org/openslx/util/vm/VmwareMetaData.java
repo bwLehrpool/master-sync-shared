@@ -69,7 +69,7 @@ class VmwareUsbSpeed
 	
 	public VmwareUsbSpeed( int speed, String key )
 	{
-		this.keyName = key + ".present";
+		this.keyName = key == null ? null : ( key + ".present" );
 		this.speedNumeric = speed;
 	}
 }
