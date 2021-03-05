@@ -86,7 +86,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 
 	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_VMWARE, "VMware" );
 
-	private static final Pattern hddKey = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d):?(\\d)?\\.(.*)", Pattern.CASE_INSENSITIVE );
+	private static final Pattern hddKey = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d|nvme\\d):?(\\d)?\\.(.*)", Pattern.CASE_INSENSITIVE );
 
 	// Lowercase list of allowed settings for upload (as regex)
 	private static final Pattern[] whitelist;
@@ -98,7 +98,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		String[] list = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci[.:]", "^mks\\.enable3d", "^virtualhw\\.",
 				"^sound[.:]", "\\.pcislotnumber$", "^pcibridge", "\\.virtualdev$", "^tools\\.syncTime$", "^time\\.synchronize",
 				"^bios\\.bootDelay", "^rtc\\.", "^xhci[.:]", "^usb_xhci[.:]", "\\.deviceType$", "\\.port$", "\\.parent$", "^usb[.:]",
-				"^firmware", "^hpet" };
+				"^firmware", "^hpet", "^vm\\.genid" };
 		whitelist = new Pattern[ list.length ];
 		for ( int i = 0; i < list.length; ++i ) {
 			whitelist[i] = Pattern.compile( list[i].toLowerCase() );
@@ -167,6 +167,8 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 					bus = DriveBusType.SCSI;
 				} else if ( controllerType.startsWith( "sata" ) ) {
 					bus = DriveBusType.SATA;
+				} else if ( controllerType.startsWith( "nvme" ) ) {
+					bus = DriveBusType.NVME;
 				}
 				hdds.add( new HardDisk( controller.virtualDev, bus, device.filename ) );
 			}
@@ -282,18 +284,15 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		String chipset = config.get( "#SLX_HDD_CHIP" );
 		String prefix;
 		switch ( bus ) {
-		case IDE:
-			prefix = "ide0:0";
-			addFiltered( "ide0.present", "TRUE" );
-			break;
 		case SATA:
 			// Cannot happen?... use lsisas1068
+			prefix = "scsi0";
+			chipset = "lsisas1068";
+			break;
+		case IDE:
 		case SCSI:
-			prefix = "scsi0:0";
-			addFiltered( "scsi0.present", "TRUE" );
-			if ( chipset != null ) {
-				addFiltered( "scsi0.virtualDev", chipset );
-			}
+		case NVME:
+			prefix = bus.name().toLowerCase() + "0";
 			break;
 		default:
 			LOGGER.warn( "Unknown HDD bus type: " + bus.toString() );
@@ -301,12 +300,16 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		}
 		// Gen
 		addFiltered( prefix + ".present", "TRUE" );
-		addFiltered( prefix + ".deviceType", "disk" );
-		addFiltered( prefix + ".fileName", diskImagePath );
+		if ( chipset != null ) {
+			addFiltered( prefix + ".virtualDev", chipset );
+		}
+		addFiltered( prefix + ":0.present", "TRUE" );
+		addFiltered( prefix + ":0.deviceType", "disk" );
+		addFiltered( prefix + ":0.fileName", diskImagePath );
 		if ( hddMode != null ) {
-			addFiltered( prefix + ".mode", hddMode );
-			addFiltered( prefix + ".redo", "" );
-			addFiltered( prefix + ".redoLogDir", redoDir );
+			addFiltered( prefix + ":0.mode", hddMode );
+			addFiltered( prefix + ":0.redo", "" );
+			addFiltered( prefix + ":0.redoLogDir", redoDir );
 		}
 		config.remove( "#SLX_HDD_BUS" );
 		config.remove( "#SLX_HDD_CHIP" );

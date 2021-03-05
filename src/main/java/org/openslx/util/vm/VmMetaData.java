@@ -125,7 +125,7 @@ public abstract class VmMetaData<T, U, V, W, X>
 
 	public static enum DriveBusType
 	{
-		SCSI, IDE, SATA;
+		SCSI, IDE, SATA, NVME;
 	}
 
 	public static class HardDisk

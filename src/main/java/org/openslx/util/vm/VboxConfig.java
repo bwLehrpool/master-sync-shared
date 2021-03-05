@@ -382,15 +382,18 @@ public class VboxConfig
 			}
 			String controllerMode = hddController.getAttribute( "type" );
 			String controllerType = hddController.getAttribute( "name" );
-			DriveBusType busType = null;
-			if ( controllerType.equals( "IDE" ) ) {
-				busType = DriveBusType.IDE;
-			} else if ( controllerType.equals( "SCSI" ) ) {
-				busType = DriveBusType.SCSI;
-			} else if ( controllerType.equals( "SATA" ) ) {
-				busType = DriveBusType.SATA;
-			} else
-				continue;
+			DriveBusType busType;
+			if ( controllerType.equals( "NVMe" ) ) {
+				busType = DriveBusType.NVME;
+			} else {
+				try {
+					// This assumes the type in the xml matches our enum constants.
+					busType = DriveBusType.valueOf( controllerType );
+				} catch (Exception e) {
+					LOGGER.warn( "Skipping unknown HDD controller type '" + controllerType + "'" );
+					continue;
+				}
+			}
 			LOGGER.info( "Adding hard disk with controller: " + busType + " (" + controllerMode + ") from file '" + fileName + "'." );
 			hddsArray.add( new HardDisk( controllerMode, busType, fileName ) );
 		}
