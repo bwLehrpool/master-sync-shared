@@ -60,6 +60,9 @@ public class QemuMetaDataUtils
 		case IDE:
 			type = BusType.IDE;
 			break;
+		case NVME:
+			type = null;
+			break;
 		case SATA:
 			type = BusType.SATA;
 			break;
