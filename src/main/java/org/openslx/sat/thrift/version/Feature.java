@@ -35,5 +35,9 @@ public enum Feature {
 	 * Allow editing of USB speed
 	 */
 	CONFIGURE_USB,
-	
+
+	/**
+	 * Allow uploading of Docker Images
+	 */
+	DOCKER_CONTAINER,
 }
