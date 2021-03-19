@@ -353,6 +353,122 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns OS type defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS type of the virtual machine.
+	 */
+	public OsType getOsType()
+	{
+		final String osType = this.getRootXmlNode().getXmlElementValue( "os/type" );
+		return OsType.fromString( osType );
+	}
+
+	/**
+	 * Set OS type in the Libvirt domain XML document.
+	 * 
+	 * @param type OS type for the virtual machine.
+	 */
+	public void setOsType( OsType type )
+	{
+		this.getRootXmlNode().setXmlElementValue( "os/type", type.toString() );
+	}
+
+	/**
+	 * Returns OS architecture defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS architecture of the virtual machine.
+	 */
+	public String getOsArch()
+	{
+		return this.getRootXmlNode().getXmlElementAttributeValue( "os/type", "arch" );
+	}
+
+	/**
+	 * Set OS architecture in the Libvirt domain XML document.
+	 * 
+	 * @param arch OS architecture for the virtual machine.
+	 */
+	public void setOsArch( String arch )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "os/type", "arch", arch );
+	}
+
+	/**
+	 * Returns OS machine defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS machine of the virtual machine.
+	 */
+	public String getOsMachine()
+	{
+		return this.getRootXmlNode().getXmlElementAttributeValue( "os/type", "machine" );
+	}
+
+	/**
+	 * Set OS machine in the Libvirt domain XML document.
+	 * 
+	 * @param machine OS machine for the virtual machine.
+	 */
+	public void setOsMachine( String machine )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "os/type", "machine", machine );
+	}
+
+	/**
+	 * Operating system types specifiable for a virtual machine in the Libvirt domain XML document.
+	 * 
+	 * @author Manuel Bentele
+	 * @version 1.0
+	 */
+	public enum OsType
+	{
+		// @formatter:off
+		XEN  ( "xen" ),
+		LINUX( "linux" ),
+		HVM  ( "hvm" ),
+		EXE  ( "exe" ),
+		UML  ( "uml" );
+		// @formatter:on
+
+		/**
+		 * Name of the OS type in a Libvirt domain XML document.
+		 */
+		private final String osType;
+
+		/**
+		 * Creates an OS type.
+		 * 
+		 * @param osType valid name of the OS type in the Libvirt domain XML document.
+		 */
+		OsType( String osType )
+		{
+			this.osType = osType;
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.osType;
+		}
+
+		/**
+		 * Creates an OS type from its name with error check.
+		 * 
+		 * @param osType name of the OS type in the Libvirt domain XML document.
+		 * @return valid OS type.
+		 */
+		public static OsType fromString( String osType )
+		{
+			for ( OsType t : OsType.values() ) {
+				if ( t.osType.equalsIgnoreCase( osType ) ) {
+					return t;
+				}
+			}
+
+			return null;
+		}
+	}
+
+	/**
 	 * Returns virtual machine CPU model defined in the Libvirt domain XML document.
 	 * 
 	 * @return CPU model of virtual machine.

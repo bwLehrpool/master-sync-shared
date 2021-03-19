@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openslx.libvirt.domain.Domain.CpuCheck;
 import org.openslx.libvirt.domain.Domain.CpuMode;
+import org.openslx.libvirt.domain.Domain.OsType;
 import org.openslx.libvirt.xml.LibvirtXmlDocumentException;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlTestResources;
@@ -175,6 +176,57 @@ public class DomainTest
 		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setVCpu( 4 );
 		assertEquals( 4, vm.getVCpu() );
+	}
+
+	@Test
+	@DisplayName( "Get VM's OS type from libvirt XML file" )
+	public void testGetOsType()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( OsType.HVM.toString(), vm.getOsType().toString() );
+	}
+
+	@Test
+	@DisplayName( "Set VM's OS type in libvirt XML file" )
+	public void testSetOsType()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		vm.setOsType( OsType.XEN );
+		assertEquals( OsType.XEN.toString(), vm.getOsType().toString() );
+	}
+
+	@Test
+	@DisplayName( "Get VM's OS architecture from libvirt XML file" )
+	public void testGetOsArch()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( "x86_64", vm.getOsArch() );
+	}
+
+	@Test
+	@DisplayName( "Set VM's OS architecture in libvirt XML file" )
+	public void testSetOsArch()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		vm.setOsArch( "aarch" );
+		assertEquals( "aarch", vm.getOsArch() );
+	}
+
+	@Test
+	@DisplayName( "Get VM's OS machine from libvirt XML file" )
+	public void testGetOsMachine()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( "pc-q35-5.1", vm.getOsMachine() );
+	}
+
+	@Test
+	@DisplayName( "Set VM's OS machine in libvirt XML file" )
+	public void testSetOsMachine()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		vm.setOsMachine( "pc" );
+		assertEquals( "pc", vm.getOsMachine() );
 	}
 
 	@Test
