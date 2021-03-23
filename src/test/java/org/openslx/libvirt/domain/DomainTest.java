@@ -281,6 +281,23 @@ public class DomainTest
 	}
 
 	@Test
+	@DisplayName( "Get VM emulator binary from libvirt XML file" )
+	public void testGetDevicesEmulator()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( "/usr/bin/qemu-system-x86_64", vm.getDevicesEmulator() );
+	}
+
+	@Test
+	@DisplayName( "Set VM emulator binary in libvirt XML file" )
+	public void testSetDevicesEmulator()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		vm.setDevicesEmulator( "/usr/bin/qemu-system-i386" );
+		assertEquals( "/usr/bin/qemu-system-i386", vm.getDevicesEmulator() );
+	}
+
+	@Test
 	@DisplayName( "Get all VM devices from libvirt XML file" )
 	public void testGetDevices()
 	{

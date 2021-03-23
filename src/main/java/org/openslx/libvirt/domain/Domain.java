@@ -637,6 +637,26 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns the file name of the emulator binary defined in the Libvirt domain XML document.
+	 * 
+	 * @return file name of the emulator binary.
+	 */
+	public String getDevicesEmulator()
+	{
+		return this.getRootXmlNode().getXmlElementValue( "devices/emulator" );
+	}
+
+	/**
+	 * Sets the file name of the emulator binary in the Libvirt domain XML document.
+	 * 
+	 * @param emulator file name of the emulator binary.
+	 */
+	public void setDevicesEmulator( String emulator )
+	{
+		this.getRootXmlNode().setXmlElementValue( "devices/emulator", emulator );
+	}
+
+	/**
 	 * Returns virtual machine devices defined in the Libvirt domain XML document.
 	 * 
 	 * @return devices of the virtual machine.
