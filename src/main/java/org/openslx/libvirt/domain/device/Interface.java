@@ -59,16 +59,16 @@ public class Interface extends Device
 	{
 		return Type.fromString( this.getXmlElementAttributeValue( "type" ) );
 	}
-	
+
 	/**
 	 * Sets type of the network device.
 	 * 
 	 * @return type of the network device.
 	 */
-	public void setType(Type type)
+	public void setType( Type type )
 	{
 		String source = this.getSource();
-		
+
 		// change type and set source again
 		this.setXmlElementAttributeValue( "type", type.toString() );
 		this.setSource( source );
@@ -119,6 +119,26 @@ public class Interface extends Device
 	}
 
 	/**
+	 * Returns MAC address of the network device.
+	 *
+	 * @return MAC address of the network device.
+	 */
+	public String getMacAddress()
+	{
+		return this.getXmlElementAttributeValue( "mac", "address" );
+	}
+
+	/**
+	 * Sets MAC address of the network device.
+	 *
+	 * @param macAddress MAC address for the network device.
+	 */
+	public void setMacAddress( String macAddress )
+	{
+		this.setXmlElementAttributeValue( "mac", "address", macAddress );
+	}
+
+	/**
 	 * Removes boot oder entry of the network interface device.
 	 */
 	public void removeBootOrder()
@@ -132,6 +152,14 @@ public class Interface extends Device
 	public void removeSource()
 	{
 		this.removeXmlElement( "source" );
+	}
+
+	/**
+	 * Removes MAC address of the network interface device.
+	 */
+	public void removeMacAddress()
+	{
+		this.removeXmlElement( "mac" );
 	}
 
 	/**
