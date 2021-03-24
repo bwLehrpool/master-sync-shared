@@ -322,6 +322,14 @@ public class DomainTest
 	}
 
 	@Test
+	@DisplayName( "Get all VM file system devices from libvirt XML file" )
+	public void testGetFileSystemDevices()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( 0, vm.getFileSystemDevices().size() );
+	}
+
+	@Test
 	@DisplayName( "Get all VM hostdev devices from libvirt XML file" )
 	public void testGetHostdevDevices()
 	{

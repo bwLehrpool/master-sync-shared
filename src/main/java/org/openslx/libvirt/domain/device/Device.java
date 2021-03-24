@@ -77,6 +77,9 @@ public class Device extends LibvirtXmlNode
 		} else if ( device instanceof Disk ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.DISK );
 			createdDevice = Disk.createInstance( Disk.class.cast( device ), xmlNode );
+		} else if ( device instanceof FileSystem ) {
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.FILESYSTEM );
+			createdDevice = FileSystem.createInstance( FileSystem.class.cast( device ), xmlNode );
 		} else if ( device instanceof Hostdev ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.HOSTDEV );
 			createdDevice = Hostdev.createInstance( Hostdev.class.cast( device ), xmlNode );
@@ -131,6 +134,9 @@ public class Device extends LibvirtXmlNode
 			case DISK:
 				device = Disk.newInstance( xmlNode );
 				break;
+			case FILESYSTEM:
+				device = FileSystem.newInstance( xmlNode );
+				break;
 			case HOSTDEV:
 				device = Hostdev.newInstance( xmlNode );
 				break;
@@ -169,6 +175,7 @@ public class Device extends LibvirtXmlNode
 		// @formatter:off
 		CONTROLLER( "controller" ),
 		DISK      ( "disk" ),
+		FILESYSTEM( "filesystem" ),
 		HOSTDEV   ( "hostdev" ),
 		INTERFACE ( "interface" ),
 		GRAPHICS  ( "graphics" ),

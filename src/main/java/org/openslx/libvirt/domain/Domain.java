@@ -20,6 +20,7 @@ import org.openslx.libvirt.domain.device.Disk;
 import org.openslx.libvirt.domain.device.DiskCdrom;
 import org.openslx.libvirt.domain.device.DiskFloppy;
 import org.openslx.libvirt.domain.device.DiskStorage;
+import org.openslx.libvirt.domain.device.FileSystem;
 import org.openslx.libvirt.domain.device.Graphics;
 import org.openslx.libvirt.domain.device.GraphicsSdl;
 import org.openslx.libvirt.domain.device.GraphicsSpice;
@@ -825,6 +826,17 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns list of virtual machine file system devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine file system devices.
+	 */
+	public ArrayList<FileSystem> getFileSystemDevices()
+	{
+		return Domain.filterDevices( FileSystem.class, this.getDevices() );
+	}
+
+	/**
 	 * Returns list of virtual machine hostdev devices specified in the Libvirt domain XML document.
 	 * 
 	 * @return list of virtual machine hostdev devices.
@@ -1028,6 +1040,16 @@ public class Domain extends LibvirtXmlDocument
 	public DiskStorage addDiskStorageDevice()
 	{
 		return DiskStorage.class.cast( this.addDevice( new DiskStorage() ) );
+	}
+
+	/**
+	 * Adds a virtual machine file system device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added file system device if creation was successful.
+	 */
+	public FileSystem addFileSystemDevice()
+	{
+		return FileSystem.class.cast( this.addDevice( new FileSystem() ) );
 	}
 
 	/**
