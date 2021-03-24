@@ -302,7 +302,7 @@ public class DomainTest
 	public void testGetDevices()
 	{
 		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
-		assertEquals( 21, vm.getDevices().size() );
+		assertEquals( 22, vm.getDevices().size() );
 	}
 
 	@Test
@@ -343,6 +343,22 @@ public class DomainTest
 	{
 		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getGraphicDevices().size() );
+	}
+
+	@Test
+	@DisplayName( "Get all VM parallel port devices from libvirt XML file" )
+	public void testGetParallelDevices()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( 0, vm.getParallelDevices().size() );
+	}
+
+	@Test
+	@DisplayName( "Get all VM serial port devices from libvirt XML file" )
+	public void testGetSerialDevices()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( 1, vm.getSerialDevices().size() );
 	}
 
 	@Test

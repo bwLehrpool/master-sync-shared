@@ -28,6 +28,8 @@ import org.openslx.libvirt.domain.device.Hostdev;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.InterfaceBridge;
 import org.openslx.libvirt.domain.device.InterfaceNetwork;
+import org.openslx.libvirt.domain.device.Parallel;
+import org.openslx.libvirt.domain.device.Serial;
 import org.openslx.libvirt.domain.device.Sound;
 import org.openslx.libvirt.domain.device.Video;
 import org.openslx.libvirt.xml.LibvirtXmlDocument;
@@ -854,6 +856,28 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns list of virtual machine parallel port devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine parallel port devices.
+	 */
+	public ArrayList<Parallel> getParallelDevices()
+	{
+		return Domain.filterDevices( Parallel.class, this.getDevices() );
+	}
+
+	/**
+	 * Returns list of virtual machine serial port devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine serial port devices.
+	 */
+	public ArrayList<Serial> getSerialDevices()
+	{
+		return Domain.filterDevices( Serial.class, this.getDevices() );
+	}
+
+	/**
 	 * Returns list of virtual machine sound devices specified in the Libvirt domain XML document.
 	 * 
 	 * @return list of virtual machine sound devices.
@@ -1084,6 +1108,26 @@ public class Domain extends LibvirtXmlDocument
 	public GraphicsVnc addGraphicsVncDevice()
 	{
 		return GraphicsVnc.class.cast( this.addDevice( new GraphicsVnc() ) );
+	}
+
+	/**
+	 * Adds a virtual machine parallel port device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added parallel port device if creation was successful.
+	 */
+	public Parallel addParallelDevice()
+	{
+		return Parallel.class.cast( this.addDevice( new Parallel() ) );
+	}
+
+	/**
+	 * Adds a virtual machine serial port device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added serial port device if creation was successful.
+	 */
+	public Serial addSerialDevice()
+	{
+		return Serial.class.cast( this.addDevice( new Serial() ) );
 	}
 
 	/**
