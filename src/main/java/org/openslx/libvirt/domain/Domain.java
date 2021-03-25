@@ -674,12 +674,14 @@ public class Domain extends LibvirtXmlDocument
 			NodeList devicesElements = devicesNode.getChildNodes();
 
 			for ( int i = 0; i < devicesElements.getLength(); i++ ) {
-				LibvirtXmlNode deviceNode = null;
-				deviceNode = new LibvirtXmlNode( this.getRootXmlNode().getXmlDocument(), devicesElements.item( i ) );
-				Device device = Device.newInstance( deviceNode );
+				final Node childNode = devicesElements.item( i );
+				if ( childNode.getNodeType() == Node.ELEMENT_NODE ) {
+					LibvirtXmlNode deviceNode = new LibvirtXmlNode( this.getRootXmlNode().getXmlDocument(), childNode );
+					Device device = Device.newInstance( deviceNode );
 
-				if ( device != null ) {
-					devices.add( device );
+					if ( device != null ) {
+						devices.add( device );
+					}
 				}
 			}
 		}
