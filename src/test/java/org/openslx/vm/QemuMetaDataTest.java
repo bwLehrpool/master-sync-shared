@@ -1,5 +1,6 @@
 package org.openslx.vm;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,6 +20,7 @@ import org.apache.log4j.LogManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -58,34 +60,50 @@ public class QemuMetaDataTest
 
 	@Test
 	@DisplayName( "Test display name from VM configuration" )
-	public void testQemuMetaDataGetDisplayName() throws UnsupportedVirtualizerFormatException, IOException
+	public void testQemuMetaDataGetDisplayName()
+			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
+
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final String displayName = vmConfig.getDisplayName();
 
 		assertEquals( "archlinux", displayName );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
 	@DisplayName( "Test machine snapshot state from VM configuration" )
-	public void testQemuMetaDataIsMachineSnapshot() throws UnsupportedVirtualizerFormatException, IOException
+	public void testQemuMetaDataIsMachineSnapshot()
+			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
+
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final boolean isVmSnapshot = vmConfig.isMachineSnapshot();
 
 		assertEquals( false, isVmSnapshot );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
 	@DisplayName( "Test supported image formats from VM configuration" )
-	public void testQemuMetaDataGetSupportedImageFormats() throws UnsupportedVirtualizerFormatException, IOException
+	public void testQemuMetaDataGetSupportedImageFormats()
+			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
+
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final List<DiskImage.ImageFormat> supportedImageFormats = vmConfig.getSupportedImageFormats();
 
@@ -93,28 +111,42 @@ public class QemuMetaDataTest
 		assertEquals( 3, supportedImageFormats.size() );
 		assertEquals( true, supportedImageFormats
 				.containsAll( Arrays.asList( ImageFormat.QCOW2, ImageFormat.VMDK, ImageFormat.VDI ) ) );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
 	@DisplayName( "Test output of HDDs from VM configuration" )
-	public void testQemuMetaDataGetHdds() throws UnsupportedVirtualizerFormatException, IOException
+	public void testQemuMetaDataGetHdds()
+			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
+
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final List<VmMetaData.HardDisk> hdds = vmConfig.getHdds();
 
 		assertNotNull( hdds );
 		assertEquals( 1, hdds.size() );
 		assertEquals( "/var/lib/libvirt/images/archlinux.qcow2", hdds.get( 0 ).diskImage );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
 	@DisplayName( "Test output of unfiltered VM configuration" )
-	public void testQemuMetaDataGetDefinitionArray() throws UnsupportedVirtualizerFormatException, IOException
+	public void testQemuMetaDataGetDefinitionArray()
+			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
+
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+
+		final int numberOfDeletedElements = 1;
 
 		final String unfilteredXmlConfig = new String( vmConfig.getDefinitionArray(), StandardCharsets.UTF_8 );
 		final String originalXmlConfig = FileUtils.readFileToString( file, StandardCharsets.UTF_8 );
@@ -124,17 +156,23 @@ public class QemuMetaDataTest
 		final int lengthUnfilteredXmlConfig = unfilteredXmlConfig.split( System.lineSeparator() ).length;
 		final int lengthOriginalXmlConfig = originalXmlConfig.split( System.lineSeparator() ).length;
 
-		assertEquals( lengthOriginalXmlConfig, lengthUnfilteredXmlConfig );
+		assertEquals( lengthOriginalXmlConfig, lengthUnfilteredXmlConfig + numberOfDeletedElements );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
 	@DisplayName( "Test output of filtered VM configuration" )
-	public void testQemuMetaDataGetFilteredDefinitionArray() throws UnsupportedVirtualizerFormatException, IOException
+	public void testQemuMetaDataGetFilteredDefinitionArray()
+			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		final int numberOfDeletedElements = 4;
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+
+		final int numberOfDeletedElements = 2;
 
 		final String filteredXmlConfig = new String( vmConfig.getFilteredDefinitionArray(), StandardCharsets.UTF_8 );
 		final String originalXmlConfig = FileUtils.readFileToString( file, StandardCharsets.UTF_8 );
@@ -145,6 +183,8 @@ public class QemuMetaDataTest
 		final int lengthOriginalXmlConfig = originalXmlConfig.split( System.lineSeparator() ).length;
 
 		assertEquals( lengthOriginalXmlConfig, lengthFilteredXmlConfig + numberOfDeletedElements );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -158,7 +198,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numHddsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getDiskStorageDevices().size();
 		final int numHddsQemuMetaDataBeforeAdd = vmConfig.hdds.size();
@@ -184,6 +224,8 @@ public class QemuMetaDataTest
 
 		DiskStorage addedStorageDevice = vmLibvirtDomainConfig.getDiskStorageDevices().get( 0 );
 		assertEquals( diskFile.getAbsolutePath(), addedStorageDevice.getStorageSource() );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -197,7 +239,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numCdromsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getDiskCdromDevices().size();
 
@@ -210,6 +252,8 @@ public class QemuMetaDataTest
 
 		DiskCdrom addedCdromDevice = vmLibvirtDomainConfig.getDiskCdromDevices().get( 0 );
 		assertEquals( diskFile.getAbsolutePath(), addedCdromDevice.getStorageSource() );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -222,7 +266,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numCdromsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getDiskCdromDevices().size();
 
@@ -235,6 +279,8 @@ public class QemuMetaDataTest
 
 		DiskCdrom addedCdromDevice = vmLibvirtDomainConfig.getDiskCdromDevices().get( 0 );
 		assertEquals( QemuMetaData.CDROM_DEFAULT_PHYSICAL_DRIVE, addedCdromDevice.getStorageSource() );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -248,7 +294,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numFloppiesLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getDiskFloppyDevices().size();
 
@@ -262,6 +308,8 @@ public class QemuMetaDataTest
 		DiskFloppy addedFloppyDevice = vmLibvirtDomainConfig.getDiskFloppyDevices().get( 0 );
 		assertTrue( addedFloppyDevice.isReadOnly() );
 		assertEquals( diskFile.getAbsolutePath(), addedFloppyDevice.getStorageSource() );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -274,11 +322,13 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		vmConfig.addCpuCoreCount( coreCount );
 
 		assertEquals( coreCount, vmLibvirtDomainConfig.getVCpu() );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -291,7 +341,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		SoundCardType soundCardType = vmConfig.getSoundCard();
 
@@ -300,6 +350,8 @@ public class QemuMetaDataTest
 		} else {
 			assertEquals( SoundCardType.HD_AUDIO, soundCardType );
 		}
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -312,7 +364,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numSoundDevsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getSoundDevices().size();
 
@@ -325,6 +377,8 @@ public class QemuMetaDataTest
 
 		Sound addedSoundDevice = vmLibvirtDomainConfig.getSoundDevices().get( 0 );
 		assertEquals( Sound.Model.SB16, addedSoundDevice.getModel() );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -337,7 +391,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		EthernetDevType ethernetDeviceType = vmConfig.getEthernetDevType( 0 );
 
@@ -346,6 +400,8 @@ public class QemuMetaDataTest
 		} else {
 			assertEquals( EthernetDevType.PARAVIRT, ethernetDeviceType );
 		}
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -358,7 +414,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		vmConfig.setEthernetDevType( 0, EthernetDevType.E1000E );
 
@@ -366,6 +422,8 @@ public class QemuMetaDataTest
 			Interface addedEthernetDevice = vmLibvirtDomainConfig.getInterfaceDevices().get( 0 );
 			assertEquals( Interface.Model.E1000E, addedEthernetDevice.getModel() );
 		}
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -378,7 +436,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		UsbSpeed maxUsbSpeed = vmConfig.getMaxUsbSpeed();
 
@@ -387,6 +445,8 @@ public class QemuMetaDataTest
 		} else {
 			assertEquals( UsbSpeed.USB3_0, maxUsbSpeed );
 		}
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -399,7 +459,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numUsbControllersLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getUsbControllerDevices().size();
 
@@ -412,6 +472,8 @@ public class QemuMetaDataTest
 
 		ControllerUsb addedUsbControllerDevice = vmLibvirtDomainConfig.getUsbControllerDevices().get( 0 );
 		assertEquals( ControllerUsb.Model.ICH9_EHCI1, addedUsbControllerDevice.getModel() );
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	static Stream<Arguments> configAndEthernetTypeProvider()
@@ -435,7 +497,7 @@ public class QemuMetaDataTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
 		QemuMetaData vmConfig = new QemuMetaData( null, file );
 
-		Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numEthernetDevsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getInterfaceDevices().size();
 
@@ -464,5 +526,7 @@ public class QemuMetaDataTest
 			assertEquals( QemuMetaData.NETWORK_DEFAULT_NAT, addedEthernetDevice.getSource() );
 			break;
 		}
+
+		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 }

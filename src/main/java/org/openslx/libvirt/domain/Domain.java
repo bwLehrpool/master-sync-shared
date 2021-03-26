@@ -1216,7 +1216,8 @@ public class Domain extends LibvirtXmlDocument
 	public void removeInterfaceDevicesSource()
 	{
 		for ( Interface interfaceDevice : this.getInterfaceDevices() ) {
-			interfaceDevice.removeSource();
+			// set empty source to preserve the XML attribute (to prevent XML validation errors)
+			interfaceDevice.setSource( "" );
 		}
 	}
 }
