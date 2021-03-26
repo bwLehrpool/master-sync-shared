@@ -333,9 +333,6 @@ public class QemuMetaData extends
 	@Override
 	public byte[] getFilteredDefinitionArray()
 	{
-		// remove UUID in Libvirt domain XML configuration
-		this.vmConfig.removeUuid();
-
 		// removes all specified boot order entries
 		this.vmConfig.removeBootOrder();
 
