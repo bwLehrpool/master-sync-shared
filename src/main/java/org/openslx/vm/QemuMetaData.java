@@ -313,6 +313,10 @@ public class QemuMetaData extends
 		for ( DiskStorage storageDiskDevice : this.vmConfig.getDiskStorageDevices() ) {
 			this.addHddMetaData( storageDiskDevice );
 		}
+
+		// start of privacy filters to filter out sensitive information like name of users in absolute paths, ...
+		// removes all referenced storage files of all specified CDROMs, Floppy drives and HDDs
+		this.vmConfig.removeDiskDevicesStorage();
 	}
 
 	/**
@@ -335,9 +339,6 @@ public class QemuMetaData extends
 	{
 		// removes all specified boot order entries
 		this.vmConfig.removeBootOrder();
-
-		// removes all referenced storage files of all specified CDROMs, Floppy drives and HDDs
-		this.vmConfig.removeDiskDevicesStorage();
 
 		// removes all source networks of all specified network interfaces
 		this.vmConfig.removeInterfaceDevicesSource();
