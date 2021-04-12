@@ -227,19 +227,19 @@ public class QemuMetaData extends
 		VmMetaData<QemuSoundCardMeta, QemuDDAccelMeta, QemuHWVersionMeta, QemuEthernetDevTypeMeta, QemuUsbSpeedMeta>
 {
 	/**
-	 * Default bridge name of the network bridge connected to the LAN.
+	 * Name of the network bridge for the LAN.
 	 */
-	public static final String NETWORK_DEFAULT_BRIDGE = "brBwLehrpool";
+	public static final String NETWORK_BRIDGE_LAN_DEFAULT = "br0";
 
 	/**
-	 * Default network name of the isolated host network (host only).
+	 * Name of the network bridge for the default NAT network.
 	 */
-	public static final String NETWORK_DEFAULT_HOST_ONLY = "host";
+	public static final String NETWORK_BRIDGE_NAT_DEFAULT = "nat1";
 
 	/**
-	 * Default network name of the NAT network.
+	 * Name of the network for the isolated host network (host only).
 	 */
-	public static final String NETWORK_DEFAULT_NAT = "nat";
+	public static final String NETWORK_BRIDGE_HOST_ONLY_DEFAULT = "vsw2";
 
 	/**
 	 * Default physical CDROM drive of the hypervisor host.
@@ -799,19 +799,19 @@ public class QemuMetaData extends
 				// add network bridge interface device
 				interfaceDevice = this.vmConfig.addInterfaceBridgeDevice();
 				interfaceDevice.setModel( defaultNetworkDeviceModel );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_DEFAULT_BRIDGE );
+				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_LAN_DEFAULT );
 				break;
 			case HOST_ONLY:
 				// add network interface device with link to the isolated host network
-				interfaceDevice = this.vmConfig.addInterfaceNetworkDevice();
+				interfaceDevice = this.vmConfig.addInterfaceBridgeDevice();
 				interfaceDevice.setModel( defaultNetworkDeviceModel );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_DEFAULT_HOST_ONLY );
+				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_HOST_ONLY_DEFAULT );
 				break;
 			case NAT:
 				// add network interface device with link to the NAT network
-				interfaceDevice = this.vmConfig.addInterfaceNetworkDevice();
+				interfaceDevice = this.vmConfig.addInterfaceBridgeDevice();
 				interfaceDevice.setModel( defaultNetworkDeviceModel );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_DEFAULT_NAT );
+				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_NAT_DEFAULT );
 				break;
 			}
 		} else {
@@ -819,15 +819,15 @@ public class QemuMetaData extends
 			switch ( type ) {
 			case BRIDGED:
 				interfaceDevice.setType( Interface.Type.BRIDGE );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_DEFAULT_BRIDGE );
+				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_LAN_DEFAULT );
 				break;
 			case HOST_ONLY:
-				interfaceDevice.setType( Interface.Type.NETWORK );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_DEFAULT_HOST_ONLY );
+				interfaceDevice.setType( Interface.Type.BRIDGE );
+				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_HOST_ONLY_DEFAULT );
 				break;
 			case NAT:
-				interfaceDevice.setType( Interface.Type.NETWORK );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_DEFAULT_NAT );
+				interfaceDevice.setType( Interface.Type.BRIDGE );
+				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_NAT_DEFAULT );
 				break;
 			}
 		}

@@ -512,17 +512,17 @@ public class QemuMetaDataTest
 		case BRIDGED:
 			assertEquals( Interface.Type.BRIDGE, addedEthernetDevice.getType() );
 			assertEquals( Interface.Model.VIRTIO, addedEthernetDevice.getModel() );
-			assertEquals( QemuMetaData.NETWORK_DEFAULT_BRIDGE, addedEthernetDevice.getSource() );
+			assertEquals( QemuMetaData.NETWORK_BRIDGE_LAN_DEFAULT, addedEthernetDevice.getSource() );
 			break;
 		case HOST_ONLY:
-			assertEquals( Interface.Type.NETWORK, addedEthernetDevice.getType() );
+			assertEquals( Interface.Type.BRIDGE, addedEthernetDevice.getType() );
 			assertEquals( Interface.Model.VIRTIO, addedEthernetDevice.getModel() );
-			assertEquals( QemuMetaData.NETWORK_DEFAULT_HOST_ONLY, addedEthernetDevice.getSource() );
+			assertEquals( QemuMetaData.NETWORK_BRIDGE_HOST_ONLY_DEFAULT, addedEthernetDevice.getSource() );
 			break;
 		case NAT:
-			assertEquals( Interface.Type.NETWORK, addedEthernetDevice.getType() );
+			assertEquals( Interface.Type.BRIDGE, addedEthernetDevice.getType() );
 			assertEquals( Interface.Model.VIRTIO, addedEthernetDevice.getModel() );
-			assertEquals( QemuMetaData.NETWORK_DEFAULT_NAT, addedEthernetDevice.getSource() );
+			assertEquals( QemuMetaData.NETWORK_BRIDGE_NAT_DEFAULT, addedEthernetDevice.getSource() );
 			break;
 		}
 
