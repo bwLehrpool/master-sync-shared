@@ -20,7 +20,6 @@ import org.apache.log4j.LogManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -73,7 +72,7 @@ public class QemuMetaDataTest
 
 		assertEquals( "archlinux", displayName );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
@@ -91,7 +90,7 @@ public class QemuMetaDataTest
 
 		assertEquals( false, isVmSnapshot );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
@@ -112,7 +111,7 @@ public class QemuMetaDataTest
 		assertEquals( true, supportedImageFormats
 				.containsAll( Arrays.asList( ImageFormat.QCOW2, ImageFormat.VMDK, ImageFormat.VDI ) ) );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
@@ -132,7 +131,7 @@ public class QemuMetaDataTest
 		assertEquals( 1, hdds.size() );
 		assertEquals( "/var/lib/libvirt/images/archlinux.qcow2", hdds.get( 0 ).diskImage );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
@@ -158,7 +157,7 @@ public class QemuMetaDataTest
 
 		assertEquals( lengthOriginalXmlConfig, lengthUnfilteredXmlConfig + numberOfDeletedElements );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@Test
@@ -184,7 +183,7 @@ public class QemuMetaDataTest
 
 		assertEquals( lengthOriginalXmlConfig, lengthFilteredXmlConfig + numberOfDeletedElements );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -225,7 +224,7 @@ public class QemuMetaDataTest
 		DiskStorage addedStorageDevice = vmLibvirtDomainConfig.getDiskStorageDevices().get( 0 );
 		assertEquals( diskFile.getAbsolutePath(), addedStorageDevice.getStorageSource() );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -253,7 +252,7 @@ public class QemuMetaDataTest
 		DiskCdrom addedCdromDevice = vmLibvirtDomainConfig.getDiskCdromDevices().get( 0 );
 		assertEquals( diskFile.getAbsolutePath(), addedCdromDevice.getStorageSource() );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -280,7 +279,7 @@ public class QemuMetaDataTest
 		DiskCdrom addedCdromDevice = vmLibvirtDomainConfig.getDiskCdromDevices().get( 0 );
 		assertEquals( QemuMetaData.CDROM_DEFAULT_PHYSICAL_DRIVE, addedCdromDevice.getStorageSource() );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -309,7 +308,7 @@ public class QemuMetaDataTest
 		assertTrue( addedFloppyDevice.isReadOnly() );
 		assertEquals( diskFile.getAbsolutePath(), addedFloppyDevice.getStorageSource() );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -328,7 +327,7 @@ public class QemuMetaDataTest
 
 		assertEquals( coreCount, vmLibvirtDomainConfig.getVCpu() );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -351,7 +350,7 @@ public class QemuMetaDataTest
 			assertEquals( SoundCardType.HD_AUDIO, soundCardType );
 		}
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -378,7 +377,7 @@ public class QemuMetaDataTest
 		Sound addedSoundDevice = vmLibvirtDomainConfig.getSoundDevices().get( 0 );
 		assertEquals( Sound.Model.SB16, addedSoundDevice.getModel() );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -401,7 +400,7 @@ public class QemuMetaDataTest
 			assertEquals( EthernetDevType.PARAVIRT, ethernetDeviceType );
 		}
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -423,7 +422,7 @@ public class QemuMetaDataTest
 			assertEquals( Interface.Model.E1000E, addedEthernetDevice.getModel() );
 		}
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -446,7 +445,7 @@ public class QemuMetaDataTest
 			assertEquals( UsbSpeed.USB3_0, maxUsbSpeed );
 		}
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	@ParameterizedTest
@@ -473,7 +472,7 @@ public class QemuMetaDataTest
 		ControllerUsb addedUsbControllerDevice = vmLibvirtDomainConfig.getUsbControllerDevices().get( 0 );
 		assertEquals( ControllerUsb.Model.ICH9_EHCI1, addedUsbControllerDevice.getModel() );
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 
 	static Stream<Arguments> configAndEthernetTypeProvider()
@@ -527,6 +526,6 @@ public class QemuMetaDataTest
 			break;
 		}
 
-		assertDoesNotThrow​( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
 }
