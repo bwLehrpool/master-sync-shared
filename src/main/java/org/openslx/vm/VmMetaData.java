@@ -252,6 +252,9 @@ public abstract class VmMetaData<T, U, V, W, X>
 	public VmMetaData( List<OperatingSystem> osList )
 	{
 		this.osList = osList;
+
+		// register virtual hardware models for graphical editing of virtual devices (GPU, sound, USB, ...)
+		this.registerVirtualHW();
 	}
 
 	/**
@@ -319,14 +322,15 @@ public abstract class VmMetaData<T, U, V, W, X>
 		}
 		try {
 			return new QemuMetaData( osList, file );
-		} catch ( Exception e ) {
-			LOGGER.info( "Not a Qemu file", e );
+		} catch ( UnsupportedVirtualizerFormatException e ) {
+			LOGGER.info( "Not a Libvirt file", e );
 		}
 		try {
 			return new DockerMetaDataDummy(osList, file);
 		} catch ( Exception e ) {
 			LOGGER.info( "Not a tar.gz file, for docker container", e );
 		}
+
 		LOGGER.error( "Could not detect any known virtualizer format" );
 		return null;
 	}
@@ -340,29 +344,31 @@ public abstract class VmMetaData<T, U, V, W, X>
 	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 * @throws IOException
 	 */
-	public static VmMetaData<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length ) throws IOException
+	public static VmMetaData<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length )
+			throws IOException
 	{
-		Map<String, Exception> exceptions = new HashMap<>();
 		try {
 			return new VmwareMetaData( osList, vmContent, length );
 		} catch ( UnsupportedVirtualizerFormatException e ) {
-			exceptions.put( "Not a VMware file", e );
+			LOGGER.info( "Not a VMware file", e );
 		}
 		try {
 			return new VboxMetaData( osList, vmContent, length );
 		} catch ( UnsupportedVirtualizerFormatException e ) {
-			exceptions.put( "Not a VirtualBox file", e );
+			LOGGER.info( "Not a VirtualBox file", e );
 		}
 		try {
-			return new DockerMetaDataDummy(osList, vmContent, length);
-		} catch (UnsupportedVirtualizerFormatException e) {
-			exceptions.put( "Not tar.gz file for DockerMetaDataDummy ", e);
+			return new QemuMetaData( osList, vmContent, length );
+		} catch ( UnsupportedVirtualizerFormatException e ) {
+			LOGGER.info( "Not a Libvirt file", e );
 		}
-		// TODO QEmu -- hack above expects qcow2 file, so we can't do anything here yet
+		try {
+			return new DockerMetaDataDummy( osList, vmContent, length );
+		} catch ( UnsupportedVirtualizerFormatException e ) {
+			LOGGER.info( "Not a tar.gz file, for docker container", e );
+		}
+
 		LOGGER.error( "Could not detect any known virtualizer format" );
-		for ( Entry<String, Exception> e : exceptions.entrySet() ) {
-			LOGGER.error( e.getKey(), e.getValue() );
-		}
 		return null;
 	}
 

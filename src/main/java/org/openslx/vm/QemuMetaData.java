@@ -282,6 +282,7 @@ public class QemuMetaData extends
 	 * 
 	 * @param osList list of operating systems.
 	 * @param file image file for the QEMU hypervisor.
+	 * 
 	 * @throws UnsupportedVirtualizerFormatException Libvirt XML configuration cannot be processed.
 	 */
 	public QemuMetaData( List<OperatingSystem> osList, File file ) throws UnsupportedVirtualizerFormatException
@@ -291,17 +292,44 @@ public class QemuMetaData extends
 		try {
 			// read and parse Libvirt domain XML configuration document
 			this.vmConfig = new Domain( file );
-		} catch ( LibvirtXmlDocumentException e ) {
-			throw new UnsupportedVirtualizerFormatException( e.getLocalizedMessage() );
-		} catch ( LibvirtXmlSerializationException e ) {
-			throw new UnsupportedVirtualizerFormatException( e.getLocalizedMessage() );
-		} catch ( LibvirtXmlValidationException e ) {
+		} catch ( LibvirtXmlDocumentException | LibvirtXmlSerializationException | LibvirtXmlValidationException e ) {
 			throw new UnsupportedVirtualizerFormatException( e.getLocalizedMessage() );
 		}
 
-		// register virtual hardware models for graphical editing of virtual devices (GPU, sound, USB, ...)
-		this.registerVirtualHW();
+		// parse VM config and initialize fields of QemuMetaData class
+		this.parseVmConfig();
+	}
 
+	/**
+	 * Creates new virtual machine configuration (managed by Libvirt) for the QEMU hypervisor.
+	 * 
+	 * @param osList list of operating systems.
+	 * @param vmContent file content for the QEMU hypervisor.
+	 * @param length number of bytes of the file content.
+	 * 
+	 * @throws UnsupportedVirtualizerFormatException Libvirt XML configuration cannot be processed.
+	 */
+	public QemuMetaData( List<OperatingSystem> osList, byte[] vmContent, int length )
+			throws UnsupportedVirtualizerFormatException
+	{
+		super( osList );
+
+		try {
+			// read and parse Libvirt domain XML configuration document
+			this.vmConfig = new Domain( new String( vmContent ) );
+		} catch ( LibvirtXmlDocumentException | LibvirtXmlSerializationException | LibvirtXmlValidationException e ) {
+			throw new UnsupportedVirtualizerFormatException( e.getLocalizedMessage() );
+		}
+
+		// parse VM config and initialize fields of QemuMetaData class
+		this.parseVmConfig();
+	}
+
+	/**
+	 * Parses Libvirt domain XML configuration to initialize QEMU metadata.
+	 */
+	private void parseVmConfig()
+	{
 		// set display name of VM
 		this.displayName = vmConfig.getName();
 

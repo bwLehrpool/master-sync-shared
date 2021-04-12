@@ -120,7 +120,6 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 
 	private void init()
 	{
-		registerVirtualHW();
 		displayName = config.getDisplayName();
 		setOs( config.getOsName() );
 		this.isMachineSnapshot = config.isMachineSnapshot();

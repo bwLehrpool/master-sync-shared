@@ -136,8 +136,6 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 
 	private void init()
 	{
-		registerVirtualHW();
-
 		for ( Entry<String, ConfigEntry> entry : config.entrySet() ) {
 			handleLoadEntry( entry );
 		}
