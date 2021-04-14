@@ -1,5 +1,6 @@
 package org.openslx.vm.disk;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,6 +10,7 @@ import java.util.function.Predicate;
 
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.util.Util;
 
 /**
  * Disk image for virtual machines.
@@ -19,7 +21,7 @@ import org.openslx.thrifthelper.TConst;
  * @author Manuel Bentele
  * @version 1.0
  */
-public abstract class DiskImage
+public abstract class DiskImage implements Closeable
 {
 	/**
 	 * Stores the image file of the disk.
@@ -31,29 +33,11 @@ public abstract class DiskImage
 	 * 
 	 * @param diskImage file to a disk storing the image content.
 	 * 
-	 * @throws FileNotFoundException cannot find specified disk image file.
-	 * @throws IOException cannot access the content of the disk image file.
-	 * 
 	 * @implNote Do not use this constructor to create a new disk image from an image file with
 	 *           unknown disk image format. Instead, use the factory method
 	 *           {@link #newInstance(File)} to probe unknown disk image files before creation.
 	 */
-	public DiskImage( File diskImage ) throws FileNotFoundException, IOException
-	{
-		final RandomAccessFile diskFile = new RandomAccessFile( diskImage, "r" );
-		this.diskImage = diskFile;
-	}
-
-	/**
-	 * Creates a new disk image from an existing image file with a known disk image format.
-	 * 
-	 * @param diskImage file to a disk storing the image content.
-	 * 
-	 * @implNote Do not use this constructor to create a new disk image from an image file with
-	 *           unknown disk image format. Instead, use the factory method
-	 *           {@link #newInstance(File)} to probe unknown disk image files before creation.
-	 */
-	public DiskImage( RandomAccessFile diskImage )
+	protected DiskImage( RandomAccessFile diskImage )
 	{
 		this.diskImage = diskImage;
 	}
@@ -124,30 +108,46 @@ public abstract class DiskImage
 	/**
 	 * Creates a new disk image from an existing image file with an unknown disk image format.
 	 * 
-	 * @param diskImage file to a disk storing the image content.
+	 * @param diskImagePath file to a disk storing the image content.
 	 * @return concrete disk image instance.
 	 * 
 	 * @throws FileNotFoundException cannot find specified disk image file.
 	 * @throws IOException cannot access the content of the disk image file.
 	 * @throws DiskImageException disk image file has an invalid and unknown disk image format.
 	 */
-	public static DiskImage newInstance( File diskImage ) throws FileNotFoundException, IOException, DiskImageException
+	public static DiskImage newInstance( File diskImagePath ) throws FileNotFoundException, IOException, DiskImageException
 	{
-		final RandomAccessFile diskFile = new RandomAccessFile( diskImage, "r" );
-		final DiskImage diskImageInstance;
+		// Make sure this doesn't escape the scope, in case instantiation fails - we can't know when the GC
+		// would come along and close this file, which is problematic on Windows (blocking rename/delete)
+		final RandomAccessFile fileHandle = new RandomAccessFile( diskImagePath, "r" );
 
-		if ( DiskImageQcow2.probe( diskFile ) ) {
-			diskImageInstance = new DiskImageQcow2( diskFile );
-		} else if ( DiskImageVdi.probe( diskFile ) ) {
-			diskImageInstance = new DiskImageVdi( diskFile );
-		} else if ( DiskImageVmdk.probe( diskFile ) ) {
-			diskImageInstance = new DiskImageVmdk( diskFile );
-		} else {
-			final String errorMsg = new String( "File '" + diskImage.getAbsolutePath() + "' is not a valid disk image!" );
-			throw new DiskImageException( errorMsg );
+		try {
+			if ( DiskImageQcow2.probe( fileHandle ) ) {
+				return new DiskImageQcow2( fileHandle );
+			} else if ( DiskImageVdi.probe( fileHandle ) ) {
+				return new DiskImageVdi( fileHandle );
+			} else if ( DiskImageVmdk.probe( fileHandle ) ) {
+				return new DiskImageVmdk( fileHandle );
+			}
+		} catch ( Exception e ) {
+			Util.safeClose( fileHandle );
+			throw e;
 		}
+		Util.safeClose( fileHandle );
+		final String errorMsg = new String( "File '" + diskImagePath.getAbsolutePath() + "' is not a valid disk image!" );
+		throw new DiskImageException( errorMsg );
+	}
 
-		return diskImageInstance;
+	@Override
+	public void close() throws IOException
+	{
+		Util.safeClose( diskImage );
+	}
+
+	@Override
+	protected void finalize() throws Throwable
+	{
+		close();
 	}
 
 	/**

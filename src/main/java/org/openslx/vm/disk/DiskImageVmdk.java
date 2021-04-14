@@ -1,8 +1,5 @@
 package org.openslx.vm.disk;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.openslx.util.Util;
@@ -43,24 +40,8 @@ public class DiskImageVmdk extends DiskImage
 	 * @param diskImage file to a VMDK disk storing the image content.
 	 * 
 	 * @throws DiskImageException parsing of the VMDK's embedded descriptor file failed.
-	 * @throws FileNotFoundException cannot find specified VMDK disk image file.
-	 * @throws IOException cannot access the content of the VMDK disk image file.
 	 */
-	public DiskImageVmdk( File diskImage ) throws DiskImageException, FileNotFoundException, IOException
-	{
-		super( diskImage );
-
-		this.vmdkConfig = this.parseVmdkConfig();
-	}
-
-	/**
-	 * Creates a new VMDK disk image from an existing VMDK image file.
-	 * 
-	 * @param diskImage file to a VMDK disk storing the image content.
-	 * 
-	 * @throws DiskImageException parsing of the VMDK's embedded descriptor file failed.
-	 */
-	public DiskImageVmdk( RandomAccessFile diskImage ) throws DiskImageException
+	DiskImageVmdk( RandomAccessFile diskImage ) throws DiskImageException
 	{
 		super( diskImage );
 

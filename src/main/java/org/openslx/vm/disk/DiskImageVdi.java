@@ -1,8 +1,5 @@
 package org.openslx.vm.disk;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
@@ -22,21 +19,8 @@ public class DiskImageVdi extends DiskImage
 	 * Creates a new VDI disk image from an existing VDI image file.
 	 * 
 	 * @param diskImage file to a VDI disk storing the image content.
-	 * 
-	 * @throws FileNotFoundException cannot find specified VDI disk image file.
-	 * @throws IOException cannot access the content of the VDI disk image file.
 	 */
-	public DiskImageVdi( File diskImage ) throws FileNotFoundException, IOException
-	{
-		super( diskImage );
-	}
-
-	/**
-	 * Creates a new VDI disk image from an existing VDI image file.
-	 * 
-	 * @param diskImage file to a VDI disk storing the image content.
-	 */
-	public DiskImageVdi( RandomAccessFile diskImage )
+	DiskImageVdi( RandomAccessFile diskImage )
 	{
 		super( diskImage );
 	}
