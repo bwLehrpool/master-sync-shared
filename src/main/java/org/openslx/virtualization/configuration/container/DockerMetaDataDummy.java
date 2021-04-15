@@ -1,9 +1,11 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration.container;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
+import org.openslx.virtualization.configuration.VmMetaData;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 

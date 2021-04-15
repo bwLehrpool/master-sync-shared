@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.openslx.util.Util;
-import org.openslx.vm.UnsupportedVirtualizerFormatException;
-import org.openslx.vm.VmwareConfig;
+import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
+import org.openslx.virtualization.configuration.machine.VmwareConfig;
 
 /**
  * VMDK (sparse extent) disk image for virtual machines.

@@ -1,4 +1,4 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration.machine;
 
 class KeyValuePair
 {

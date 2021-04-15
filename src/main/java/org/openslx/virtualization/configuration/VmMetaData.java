@@ -1,4 +1,4 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +13,10 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
+import org.openslx.virtualization.configuration.container.DockerMetaDataDummy;
+import org.openslx.virtualization.configuration.machine.QemuMetaData;
+import org.openslx.virtualization.configuration.machine.VboxMetaData;
+import org.openslx.virtualization.configuration.machine.VmwareMetaData;
 import org.openslx.vm.disk.DiskImage;
 
 /**
@@ -151,7 +155,7 @@ public abstract class VmMetaData<T, U, V, W, X>
 	 * Members
 	 */
 
-	protected final List<HardDisk> hdds = new ArrayList<>();
+	protected final List<HardDisk> hdds = new ArrayList<HardDisk>();
 
 	private final List<OperatingSystem> osList;
 

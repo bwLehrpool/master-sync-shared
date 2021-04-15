@@ -1,4 +1,4 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration.machine;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,10 +32,12 @@ import org.openslx.libvirt.domain.device.DiskStorage;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.Sound;
 import org.openslx.libvirt.xml.LibvirtXmlTestResources;
-import org.openslx.vm.VmMetaData.EtherType;
-import org.openslx.vm.VmMetaData.EthernetDevType;
-import org.openslx.vm.VmMetaData.SoundCardType;
-import org.openslx.vm.VmMetaData.UsbSpeed;
+import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
+import org.openslx.virtualization.configuration.VmMetaData;
+import org.openslx.virtualization.configuration.VmMetaData.EtherType;
+import org.openslx.virtualization.configuration.VmMetaData.EthernetDevType;
+import org.openslx.virtualization.configuration.VmMetaData.SoundCardType;
+import org.openslx.virtualization.configuration.VmMetaData.UsbSpeed;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImageTestResources;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
@@ -200,12 +202,12 @@ public class QemuMetaDataTest
 		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numHddsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getDiskStorageDevices().size();
-		final int numHddsQemuMetaDataBeforeAdd = vmConfig.hdds.size();
+		final int numHddsQemuMetaDataBeforeAdd = vmConfig.getHdds().size();
 
 		vmConfig.addHddTemplate( diskFile, null, null );
 
 		final int numHddsLibvirtDomainXmlAfterAdd = vmLibvirtDomainConfig.getDiskStorageDevices().size();
-		final int numHddsQemuMetaDataAfterAdd = vmConfig.hdds.size();
+		final int numHddsQemuMetaDataAfterAdd = vmConfig.getHdds().size();
 
 		assertTrue( numHddsLibvirtDomainXmlBeforeAdd == numHddsQemuMetaDataBeforeAdd );
 		assertTrue( numHddsLibvirtDomainXmlAfterAdd == numHddsQemuMetaDataAfterAdd );

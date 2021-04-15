@@ -1,13 +1,13 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration.machine;
 
 import java.util.ArrayList;
 
 import org.openslx.libvirt.domain.device.Disk;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.Disk.BusType;
-import org.openslx.vm.VmMetaData.DriveBusType;
-import org.openslx.vm.VmMetaData.EthernetDevType;
-import org.openslx.vm.VmMetaData.SoundCardType;
+import org.openslx.virtualization.configuration.VmMetaData.DriveBusType;
+import org.openslx.virtualization.configuration.VmMetaData.EthernetDevType;
+import org.openslx.virtualization.configuration.VmMetaData.SoundCardType;
 import org.openslx.libvirt.domain.device.Sound;
 
 /**

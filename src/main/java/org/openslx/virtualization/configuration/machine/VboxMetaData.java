@@ -1,4 +1,4 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration.machine;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,9 @@ import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
-import org.openslx.vm.VboxConfig.PlaceHolder;
+import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
+import org.openslx.virtualization.configuration.VmMetaData;
+import org.openslx.virtualization.configuration.machine.VboxConfig.PlaceHolder;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 import org.w3c.dom.Attr;
@@ -317,7 +319,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public void setSoundCard( org.openslx.vm.VmMetaData.SoundCardType type )
+	public void setSoundCard( org.openslx.virtualization.configuration.VmMetaData.SoundCardType type )
 	{
 		VBoxSoundCardMeta sound = soundCards.get( type );
 		config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", Boolean.toString( sound.isPresent ) );

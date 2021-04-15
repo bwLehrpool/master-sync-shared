@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openslx.vm.VmwareConfig;
+import org.openslx.virtualization.configuration.machine.VmwareConfig;
 
 public class ThriftUtil {
 

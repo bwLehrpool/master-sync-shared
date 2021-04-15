@@ -1,4 +1,4 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration.machine;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,9 @@ import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
-import org.openslx.vm.VmwareConfig.ConfigEntry;
+import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
+import org.openslx.virtualization.configuration.VmMetaData;
+import org.openslx.virtualization.configuration.machine.VmwareConfig.ConfigEntry;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 

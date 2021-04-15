@@ -1,4 +1,4 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration.machine;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -27,6 +27,8 @@ import org.openslx.libvirt.xml.LibvirtXmlDocumentException;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlValidationException;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
+import org.openslx.virtualization.configuration.VmMetaData;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 

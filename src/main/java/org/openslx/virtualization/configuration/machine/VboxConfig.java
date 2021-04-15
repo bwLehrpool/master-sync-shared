@@ -1,4 +1,4 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration.machine;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -20,8 +20,9 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.log4j.Logger;
 import org.openslx.util.Util;
 import org.openslx.util.XmlHelper;
-import org.openslx.vm.VmMetaData.DriveBusType;
-import org.openslx.vm.VmMetaData.HardDisk;
+import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
+import org.openslx.virtualization.configuration.VmMetaData.DriveBusType;
+import org.openslx.virtualization.configuration.VmMetaData.HardDisk;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

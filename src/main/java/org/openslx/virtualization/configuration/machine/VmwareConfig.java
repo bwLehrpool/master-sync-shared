@@ -1,4 +1,4 @@
-package org.openslx.vm;
+package org.openslx.virtualization.configuration.machine;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openslx.util.Util;
+import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
 
 public class VmwareConfig
 {
