@@ -1,4 +1,4 @@
-package org.openslx.virtualization.configuration.machine;
+package org.openslx.virtualization.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,22 +32,20 @@ import org.openslx.libvirt.domain.device.DiskStorage;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.Sound;
 import org.openslx.libvirt.xml.LibvirtXmlTestResources;
-import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
-import org.openslx.virtualization.configuration.VmMetaData;
-import org.openslx.virtualization.configuration.VmMetaData.EtherType;
-import org.openslx.virtualization.configuration.VmMetaData.EthernetDevType;
-import org.openslx.virtualization.configuration.VmMetaData.SoundCardType;
-import org.openslx.virtualization.configuration.VmMetaData.UsbSpeed;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.EtherType;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.EthernetDevType;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.UsbSpeed;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImageTestResources;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
-public class QemuMetaDataTest
+public class VirtualizationConfigurationQemuTest
 {
-	private static Domain getPrivateDomainFromQemuMetaData( QemuMetaData qemuMetadata )
+	private static Domain getPrivateDomainFromQemuMetaData( VirtualizationConfigurationQemu qemuMetadata )
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
 	{
-		Field privateDomainField = QemuMetaData.class.getDeclaredField( "vmConfig" );
+		Field privateDomainField = VirtualizationConfigurationQemu.class.getDeclaredField( "vmConfig" );
 		privateDomainField.setAccessible( true );
 		return Domain.class.cast( privateDomainField.get( qemuMetadata ) );
 	}
@@ -62,13 +60,14 @@ public class QemuMetaDataTest
 	@Test
 	@DisplayName( "Test display name from VM configuration" )
 	public void testQemuMetaDataGetDisplayName()
-			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, IOException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final String displayName = vmConfig.getDisplayName();
 
@@ -80,13 +79,14 @@ public class QemuMetaDataTest
 	@Test
 	@DisplayName( "Test machine snapshot state from VM configuration" )
 	public void testQemuMetaDataIsMachineSnapshot()
-			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, IOException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final boolean isVmSnapshot = vmConfig.isMachineSnapshot();
 
@@ -98,13 +98,14 @@ public class QemuMetaDataTest
 	@Test
 	@DisplayName( "Test supported image formats from VM configuration" )
 	public void testQemuMetaDataGetSupportedImageFormats()
-			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, IOException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final List<DiskImage.ImageFormat> supportedImageFormats = vmConfig.getSupportedImageFormats();
 
@@ -119,15 +120,16 @@ public class QemuMetaDataTest
 	@Test
 	@DisplayName( "Test output of HDDs from VM configuration" )
 	public void testQemuMetaDataGetHdds()
-			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, IOException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
-		final List<VmMetaData.HardDisk> hdds = vmConfig.getHdds();
+		final List<VirtualizationConfiguration.HardDisk> hdds = vmConfig.getHdds();
 
 		assertNotNull( hdds );
 		assertEquals( 1, hdds.size() );
@@ -139,13 +141,14 @@ public class QemuMetaDataTest
 	@Test
 	@DisplayName( "Test output of unfiltered VM configuration" )
 	public void testQemuMetaDataGetDefinitionArray()
-			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, IOException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numberOfDeletedElements = 1;
 
@@ -165,13 +168,14 @@ public class QemuMetaDataTest
 	@Test
 	@DisplayName( "Test output of filtered VM configuration" )
 	public void testQemuMetaDataGetFilteredDefinitionArray()
-			throws UnsupportedVirtualizerFormatException, IOException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, IOException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numberOfDeletedElements = 2;
 
@@ -192,14 +196,15 @@ public class QemuMetaDataTest
 	@DisplayName( "Test add HDD to VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-hdd.xml" } )
 	public void testQemuMetaDataAddHdd( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File diskFile = DiskImageTestResources.getDiskFile( "image-default.qcow2" );
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numHddsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getDiskStorageDevices().size();
 		final int numHddsQemuMetaDataBeforeAdd = vmConfig.getHdds().size();
@@ -233,14 +238,15 @@ public class QemuMetaDataTest
 	@DisplayName( "Test add CDROM to VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-cdrom.xml" } )
 	public void testQemuMetaDataAddCdrom( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File diskFile = DiskImageTestResources.getDiskFile( "image-default.qcow2" );
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numCdromsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getDiskCdromDevices().size();
 
@@ -261,13 +267,14 @@ public class QemuMetaDataTest
 	@DisplayName( "Test add physical CDROM drive to VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-cdrom.xml" } )
 	public void testQemuMetaDataAddPhysicalCdromDrive( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numCdromsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getDiskCdromDevices().size();
 
@@ -279,7 +286,7 @@ public class QemuMetaDataTest
 		assertTrue( numCdromsLibvirtDomainXmlAfterAdd > 0 );
 
 		DiskCdrom addedCdromDevice = vmLibvirtDomainConfig.getDiskCdromDevices().get( 0 );
-		assertEquals( QemuMetaData.CDROM_DEFAULT_PHYSICAL_DRIVE, addedCdromDevice.getStorageSource() );
+		assertEquals( VirtualizationConfigurationQemu.CDROM_DEFAULT_PHYSICAL_DRIVE, addedCdromDevice.getStorageSource() );
 
 		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}
@@ -288,14 +295,15 @@ public class QemuMetaDataTest
 	@DisplayName( "Test add floppy to VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-floppy.xml" } )
 	public void testQemuMetaDataAddFloppy( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File diskFile = DiskImageTestResources.getDiskFile( "image-default.qcow2" );
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numFloppiesLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getDiskFloppyDevices().size();
 
@@ -317,13 +325,14 @@ public class QemuMetaDataTest
 	@DisplayName( "Test add CPU core count to VM configuration" )
 	@ValueSource( ints = { 2, 4, 6, 8 } )
 	public void testQemuMetaDataAddCpuCoreCount( int coreCount )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		vmConfig.addCpuCoreCount( coreCount );
 
@@ -336,13 +345,14 @@ public class QemuMetaDataTest
 	@DisplayName( "Test get sound card from VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-sound.xml" } )
 	public void testQemuMetaDataGetSoundCardType( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		SoundCardType soundCardType = vmConfig.getSoundCard();
 
@@ -359,13 +369,14 @@ public class QemuMetaDataTest
 	@DisplayName( "Test set sound card in VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-sound.xml" } )
 	public void testQemuMetaDataSetSoundCardType( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numSoundDevsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getSoundDevices().size();
 
@@ -386,13 +397,14 @@ public class QemuMetaDataTest
 	@DisplayName( "Test get ethernet device type from VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-nic.xml" } )
 	public void testQemuMetaDataGetEthernetDevType( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		EthernetDevType ethernetDeviceType = vmConfig.getEthernetDevType( 0 );
 
@@ -409,13 +421,14 @@ public class QemuMetaDataTest
 	@DisplayName( "Test set ethernet device type in VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-nic.xml" } )
 	public void testQemuMetaDataSetEthernetDevType( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		vmConfig.setEthernetDevType( 0, EthernetDevType.E1000E );
 
@@ -431,13 +444,14 @@ public class QemuMetaDataTest
 	@DisplayName( "Test get maximal USB speed from VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-usb.xml" } )
 	public void testQemuMetaDataGetMaxUsbSpeed( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		UsbSpeed maxUsbSpeed = vmConfig.getMaxUsbSpeed();
 
@@ -454,13 +468,14 @@ public class QemuMetaDataTest
 	@DisplayName( "Test set maximal USB speed in VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-usb.xml" } )
 	public void testQemuMetaDataSetMaxUsbSpeed( String xmlFileName )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numUsbControllersLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getUsbControllerDevices().size();
 
@@ -492,13 +507,14 @@ public class QemuMetaDataTest
 	@DisplayName( "Test add ethernet device to VM configuration" )
 	@MethodSource( "configAndEthernetTypeProvider" )
 	public void testQemuMetaDataAddEthernet( String xmlFileName, EtherType ethernetType )
-			throws UnsupportedVirtualizerFormatException, NoSuchFieldException, SecurityException,
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
 			IllegalArgumentException, IllegalAccessException
 	{
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		QemuMetaData vmConfig = new QemuMetaData( null, file );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = QemuMetaDataTest.getPrivateDomainFromQemuMetaData( vmConfig );
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
 
 		final int numEthernetDevsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getInterfaceDevices().size();
 
@@ -514,17 +530,18 @@ public class QemuMetaDataTest
 		case BRIDGED:
 			assertEquals( Interface.Type.BRIDGE, addedEthernetDevice.getType() );
 			assertEquals( Interface.Model.VIRTIO, addedEthernetDevice.getModel() );
-			assertEquals( QemuMetaData.NETWORK_BRIDGE_LAN_DEFAULT, addedEthernetDevice.getSource() );
+			assertEquals( VirtualizationConfigurationQemu.NETWORK_BRIDGE_LAN_DEFAULT, addedEthernetDevice.getSource() );
 			break;
 		case HOST_ONLY:
 			assertEquals( Interface.Type.BRIDGE, addedEthernetDevice.getType() );
 			assertEquals( Interface.Model.VIRTIO, addedEthernetDevice.getModel() );
-			assertEquals( QemuMetaData.NETWORK_BRIDGE_HOST_ONLY_DEFAULT, addedEthernetDevice.getSource() );
+			assertEquals( VirtualizationConfigurationQemu.NETWORK_BRIDGE_HOST_ONLY_DEFAULT,
+					addedEthernetDevice.getSource() );
 			break;
 		case NAT:
 			assertEquals( Interface.Type.BRIDGE, addedEthernetDevice.getType() );
 			assertEquals( Interface.Model.VIRTIO, addedEthernetDevice.getModel() );
-			assertEquals( QemuMetaData.NETWORK_BRIDGE_NAT_DEFAULT, addedEthernetDevice.getSource() );
+			assertEquals( VirtualizationConfigurationQemu.NETWORK_BRIDGE_NAT_DEFAULT, addedEthernetDevice.getSource() );
 			break;
 		}
 

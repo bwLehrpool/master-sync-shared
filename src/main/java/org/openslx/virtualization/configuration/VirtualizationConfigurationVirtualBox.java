@@ -1,4 +1,4 @@
-package org.openslx.virtualization.configuration.machine;
+package org.openslx.virtualization.configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +15,7 @@ import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
-import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
-import org.openslx.virtualization.configuration.VmMetaData;
-import org.openslx.virtualization.configuration.machine.VboxConfig.PlaceHolder;
+import org.openslx.virtualization.configuration.VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 import org.w3c.dom.Attr;
@@ -80,7 +78,7 @@ class VBoxUsbSpeedMeta
 	}
 }
 
-public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
+public class VirtualizationConfigurationVirtualBox extends VirtualizationConfiguration<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
 {
 	/**
 	 * List of supported image formats by the VirtualBox hypervisor.
@@ -88,11 +86,11 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
 			Arrays.asList( ImageFormat.VDI ) );
 	
-	private static final Logger LOGGER = Logger.getLogger( VboxMetaData.class );
+	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVirtualBox.class );
 
 	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_VIRTUALBOX, "VirtualBox" );
 
-	private final VboxConfig config;
+	private final VirtualizationConfigurationVirtualboxFileFormat config;
 
 	public static enum EthernetType
 	{
@@ -106,17 +104,17 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 		}
 	}
 
-	public VboxMetaData( List<OperatingSystem> osList, File file ) throws IOException, UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationVirtualBox( List<OperatingSystem> osList, File file ) throws IOException, VirtualizationConfigurationException
 	{
 		super( osList );
-		this.config = new VboxConfig( file );
+		this.config = new VirtualizationConfigurationVirtualboxFileFormat( file );
 		init();
 	}
 
-	public VboxMetaData( List<OperatingSystem> osList, byte[] vmContent, int length ) throws IOException, UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationVirtualBox( List<OperatingSystem> osList, byte[] vmContent, int length ) throws IOException, VirtualizationConfigurationException
 	{
 		super( osList );
-		this.config = new VboxConfig( vmContent, length );
+		this.config = new VirtualizationConfigurationVirtualboxFileFormat( vmContent, length );
 		init();
 	}
 
@@ -139,7 +137,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	@Override
 	public List<DiskImage.ImageFormat> getSupportedImageFormats()
 	{
-		return VboxMetaData.SUPPORTED_IMAGE_FORMATS;
+		return VirtualizationConfigurationVirtualBox.SUPPORTED_IMAGE_FORMATS;
 	}
 
 	@Override
@@ -288,7 +286,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 				LOGGER.error( "Failed to add <Image> to floppy device." );
 				return;
 			}
-			floppyImage.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
+			floppyImage.setAttribute( "uuid", VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYUUID.toString() );
 			// register the image in the media registry
 			Element floppyImages = (Element)config.addNewNode( "/VirtualBox/Machine/MediaRegistry", "FloppyImages" );
 			if ( floppyImages == null ) {
@@ -300,8 +298,8 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 				LOGGER.error( "Failed to add <Image> to floppy images in the media registry." );
 				return;
 			}
-			floppyImageReg.setAttribute( "uuid", VboxConfig.PlaceHolder.FLOPPYUUID.toString() );
-			floppyImageReg.setAttribute( "location", VboxConfig.PlaceHolder.FLOPPYLOCATION.toString() );
+			floppyImageReg.setAttribute( "uuid", VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYUUID.toString() );
+			floppyImageReg.setAttribute( "location", VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYLOCATION.toString() );
 		}
 	}
 
@@ -319,7 +317,7 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public void setSoundCard( org.openslx.virtualization.configuration.VmMetaData.SoundCardType type )
+	public void setSoundCard( org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType type )
 	{
 		VBoxSoundCardMeta sound = soundCards.get( type );
 		config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", Boolean.toString( sound.isPresent ) );
@@ -327,21 +325,21 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public VmMetaData.SoundCardType getSoundCard()
+	public VirtualizationConfiguration.SoundCardType getSoundCard()
 	{
 		// initialize here to type None to avoid all null pointer exceptions thrown for unknown user written sound cards
-		VmMetaData.SoundCardType returnsct = VmMetaData.SoundCardType.NONE;
+		VirtualizationConfiguration.SoundCardType returnsct = VirtualizationConfiguration.SoundCardType.NONE;
 		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/AudioAdapter" ).item( 0 );
 		if ( !x.hasAttribute( "enabled" ) || ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
 			return returnsct;
 		} else {
 			// extra separate case for the non-existing argument}
 			if ( !x.hasAttribute( "controller" ) ) {
-				returnsct = VmMetaData.SoundCardType.AC;
+				returnsct = VirtualizationConfiguration.SoundCardType.AC;
 			} else {
 				String controller = x.getAttribute( "controller" );
 				VBoxSoundCardMeta soundMeta = null;
-				for ( VmMetaData.SoundCardType type : VmMetaData.SoundCardType.values() ) {
+				for ( VirtualizationConfiguration.SoundCardType type : VirtualizationConfiguration.SoundCardType.values() ) {
 					soundMeta = soundCards.get( type );
 					if ( soundMeta != null ) {
 						if ( controller.equals( soundMeta.value ) ) {
@@ -355,25 +353,25 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public void setDDAcceleration( VmMetaData.DDAcceleration type )
+	public void setDDAcceleration( VirtualizationConfiguration.DDAcceleration type )
 	{
 		VBoxDDAccelMeta accel = ddacc.get( type );
 		config.changeAttribute( "/VirtualBox/Machine/Hardware/Display", "accelerate3D", Boolean.toString( accel.isPresent ) );
 	}
 
 	@Override
-	public VmMetaData.DDAcceleration getDDAcceleration()
+	public VirtualizationConfiguration.DDAcceleration getDDAcceleration()
 	{
-		VmMetaData.DDAcceleration returndda = null;
+		VirtualizationConfiguration.DDAcceleration returndda = null;
 		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/Display" ).item( 0 );
 		if ( x.hasAttribute( "accelerate3D" ) ) {
 			if ( x.getAttribute( "accelerate3D" ).equals( "true" ) ) {
-				returndda = VmMetaData.DDAcceleration.ON;
+				returndda = VirtualizationConfiguration.DDAcceleration.ON;
 			} else {
-				returndda = VmMetaData.DDAcceleration.OFF;
+				returndda = VirtualizationConfiguration.DDAcceleration.OFF;
 			}
 		} else {
-			returndda = VmMetaData.DDAcceleration.OFF;
+			returndda = VirtualizationConfiguration.DDAcceleration.OFF;
 		}
 		return returndda;
 	}
@@ -388,10 +386,10 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public VmMetaData.HWVersion getHWVersion()
+	public VirtualizationConfiguration.HWVersion getHWVersion()
 	{
 		// Virtual Box uses only one virtual hardware version and can't be changed
-		return VmMetaData.HWVersion.DEFAULT;
+		return VirtualizationConfiguration.HWVersion.DEFAULT;
 	}
 
 	@Override
@@ -405,20 +403,20 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public VmMetaData.EthernetDevType getEthernetDevType( int cardIndex )
+	public VirtualizationConfiguration.EthernetDevType getEthernetDevType( int cardIndex )
 	{
-		VmMetaData.EthernetDevType returnedt = VmMetaData.EthernetDevType.NONE;
+		VirtualizationConfiguration.EthernetDevType returnedt = VirtualizationConfiguration.EthernetDevType.NONE;
 		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/Network/Adapter" ).item( 0 );
 		if ( !x.hasAttribute( "enabled" ) || ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
 			return returnedt;
 		} else {
 			// extra separate case for the non-existing argument}
 			if ( !x.hasAttribute( "type" ) ) {
-				returnedt = VmMetaData.EthernetDevType.PCNETFAST3;
+				returnedt = VirtualizationConfiguration.EthernetDevType.PCNETFAST3;
 			} else {
 				String temp = x.getAttribute( "type" );
 				VBoxEthernetDevTypeMeta etherMeta = null;
-				for ( VmMetaData.EthernetDevType type : VmMetaData.EthernetDevType.values() ) {
+				for ( VirtualizationConfiguration.EthernetDevType type : VirtualizationConfiguration.EthernetDevType.values() ) {
 					etherMeta = networkCards.get( type );
 					if ( etherMeta != null ) {
 						if ( temp.equals( etherMeta.value ) ) {
@@ -435,33 +433,33 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	{
 		// none type needs to have a valid value; it takes the value of AC97; if value is left null or empty vm will not start because value is not valid
 		// TODO: Maybe just remove the entire section from the XML? Same for ethernet...
-		soundCards.put( VmMetaData.SoundCardType.NONE, new VBoxSoundCardMeta( false, "AC97" ) );
-		soundCards.put( VmMetaData.SoundCardType.SOUND_BLASTER, new VBoxSoundCardMeta( true, "SB16" ) );
-		soundCards.put( VmMetaData.SoundCardType.HD_AUDIO, new VBoxSoundCardMeta( true, "HDA" ) );
-		soundCards.put( VmMetaData.SoundCardType.AC, new VBoxSoundCardMeta( true, "AC97" ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.NONE, new VBoxSoundCardMeta( false, "AC97" ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.SOUND_BLASTER, new VBoxSoundCardMeta( true, "SB16" ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.HD_AUDIO, new VBoxSoundCardMeta( true, "HDA" ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.AC, new VBoxSoundCardMeta( true, "AC97" ) );
 
-		ddacc.put( VmMetaData.DDAcceleration.OFF, new VBoxDDAccelMeta( false ) );
-		ddacc.put( VmMetaData.DDAcceleration.ON, new VBoxDDAccelMeta( true ) );
+		ddacc.put( VirtualizationConfiguration.DDAcceleration.OFF, new VBoxDDAccelMeta( false ) );
+		ddacc.put( VirtualizationConfiguration.DDAcceleration.ON, new VBoxDDAccelMeta( true ) );
 
-		hwversion.put( VmMetaData.HWVersion.DEFAULT, new VBoxHWVersionMeta( 0 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.DEFAULT, new VBoxHWVersionMeta( 0 ) );
 
 		// none type needs to have a valid value; it takes the value of pcnetcpi2; if value is left null or empty vm will not start because value is not valid
-		networkCards.put( VmMetaData.EthernetDevType.NONE, new VBoxEthernetDevTypeMeta( false, "Am79C970A" ) );
-		networkCards.put( VmMetaData.EthernetDevType.PCNETPCI2, new VBoxEthernetDevTypeMeta( true, "Am79C970A" ) );
-		networkCards.put( VmMetaData.EthernetDevType.PCNETFAST3, new VBoxEthernetDevTypeMeta( true, "Am79C973" ) );
-		networkCards.put( VmMetaData.EthernetDevType.PRO1000MTD, new VBoxEthernetDevTypeMeta( true, "82540EM" ) );
-		networkCards.put( VmMetaData.EthernetDevType.PRO1000TS, new VBoxEthernetDevTypeMeta( true, "82543GC" ) );
-		networkCards.put( VmMetaData.EthernetDevType.PRO1000MTS, new VBoxEthernetDevTypeMeta( true, "82545EM" ) );
-		networkCards.put( VmMetaData.EthernetDevType.PARAVIRT, new VBoxEthernetDevTypeMeta( true, "virtio" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.NONE, new VBoxEthernetDevTypeMeta( false, "Am79C970A" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETPCI2, new VBoxEthernetDevTypeMeta( true, "Am79C970A" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETFAST3, new VBoxEthernetDevTypeMeta( true, "Am79C973" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000MTD, new VBoxEthernetDevTypeMeta( true, "82540EM" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000TS, new VBoxEthernetDevTypeMeta( true, "82543GC" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000MTS, new VBoxEthernetDevTypeMeta( true, "82545EM" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PARAVIRT, new VBoxEthernetDevTypeMeta( true, "virtio" ) );
 		
-		usbSpeeds.put( VmMetaData.UsbSpeed.NONE, new VBoxUsbSpeedMeta( null, 0 ) );
-		usbSpeeds.put( VmMetaData.UsbSpeed.USB1_1, new VBoxUsbSpeedMeta( "OHCI", 1 ) );
-		usbSpeeds.put( VmMetaData.UsbSpeed.USB2_0, new VBoxUsbSpeedMeta( "EHCI", 2 ) );
-		usbSpeeds.put( VmMetaData.UsbSpeed.USB3_0, new VBoxUsbSpeedMeta( "XHCI", 3 ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.NONE, new VBoxUsbSpeedMeta( null, 0 ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB1_1, new VBoxUsbSpeedMeta( "OHCI", 1 ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB2_0, new VBoxUsbSpeedMeta( "EHCI", 2 ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB3_0, new VBoxUsbSpeedMeta( "XHCI", 3 ) );
 	}
 
 	@Override
-	public boolean addEthernet( VmMetaData.EtherType type )
+	public boolean addEthernet( VirtualizationConfiguration.EtherType type )
 	{
 		Node hostOnlyInterfaceNode = config.addNewNode( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']", "HostOnlyInterface" );
 		if ( hostOnlyInterfaceNode == null ) {
@@ -490,11 +488,11 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public void setMaxUsbSpeed( VmMetaData.UsbSpeed speed )
+	public void setMaxUsbSpeed( VirtualizationConfiguration.UsbSpeed speed )
 	{
 		// Wipe existing ones
 		config.removeNodes( "/VirtualBox/Machine/Hardware", "USB" );
-		if ( speed == null || speed == VmMetaData.UsbSpeed.NONE ) {
+		if ( speed == null || speed == VirtualizationConfiguration.UsbSpeed.NONE ) {
 			// Add marker so we know it's not an old config and we really want no USB
 			Element node = config.createNodeRecursive( "/VirtualBox/OpenSLX/USB" );
 			if ( node != null ) {
@@ -514,18 +512,18 @@ public class VboxMetaData extends VmMetaData<VBoxSoundCardMeta, VBoxDDAccelMeta,
 	}
 
 	@Override
-	public VmMetaData.UsbSpeed getMaxUsbSpeed()
+	public VirtualizationConfiguration.UsbSpeed getMaxUsbSpeed()
 	{
 		NodeList nodes = config.findNodes( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller/@type" );
 		int maxSpeed = 0;
-		VmMetaData.UsbSpeed maxItem = VmMetaData.UsbSpeed.NONE;
+		VirtualizationConfiguration.UsbSpeed maxItem = VirtualizationConfiguration.UsbSpeed.NONE;
 		for ( int i = 0; i < nodes.getLength(); ++i ) {
 			if ( nodes.item( i ).getNodeType() != Node.ATTRIBUTE_NODE ) {
 				LOGGER.info( "Not ATTRIBUTE type" );
 				continue;
 			}
 			String type = ((Attr)nodes.item( i )).getValue();
-			for ( Entry<VmMetaData.UsbSpeed, VBoxUsbSpeedMeta> s : usbSpeeds.entrySet() ) {
+			for ( Entry<VirtualizationConfiguration.UsbSpeed, VBoxUsbSpeedMeta> s : usbSpeeds.entrySet() ) {
 				if ( s.getValue().speed > maxSpeed && type.equals( s.getValue().value ) ) {
 					maxSpeed = s.getValue().speed;
 					maxItem = s.getKey();

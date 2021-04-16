@@ -1,4 +1,4 @@
-package org.openslx.virtualization.configuration.machine;
+package org.openslx.virtualization.configuration;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -27,8 +27,6 @@ import org.openslx.libvirt.xml.LibvirtXmlDocumentException;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlValidationException;
 import org.openslx.thrifthelper.TConst;
-import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
-import org.openslx.virtualization.configuration.VmMetaData;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
@@ -225,8 +223,8 @@ class QemuUsbSpeedMeta
  * @author Manuel Bentele
  * @version 1.0
  */
-public class QemuMetaData extends
-		VmMetaData<QemuSoundCardMeta, QemuDDAccelMeta, QemuHWVersionMeta, QemuEthernetDevTypeMeta, QemuUsbSpeedMeta>
+public class VirtualizationConfigurationQemu extends
+		VirtualizationConfiguration<QemuSoundCardMeta, QemuDDAccelMeta, QemuHWVersionMeta, QemuEthernetDevTypeMeta, QemuUsbSpeedMeta>
 {
 	/**
 	 * Name of the network bridge for the LAN.
@@ -285,9 +283,9 @@ public class QemuMetaData extends
 	 * @param osList list of operating systems.
 	 * @param file image file for the QEMU hypervisor.
 	 * 
-	 * @throws UnsupportedVirtualizerFormatException Libvirt XML configuration cannot be processed.
+	 * @throws VirtualizationConfigurationException Libvirt XML configuration cannot be processed.
 	 */
-	public QemuMetaData( List<OperatingSystem> osList, File file ) throws UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationQemu( List<OperatingSystem> osList, File file ) throws VirtualizationConfigurationException
 	{
 		super( osList );
 
@@ -295,7 +293,7 @@ public class QemuMetaData extends
 			// read and parse Libvirt domain XML configuration document
 			this.vmConfig = new Domain( file );
 		} catch ( LibvirtXmlDocumentException | LibvirtXmlSerializationException | LibvirtXmlValidationException e ) {
-			throw new UnsupportedVirtualizerFormatException( e.getLocalizedMessage() );
+			throw new VirtualizationConfigurationException( e.getLocalizedMessage() );
 		}
 
 		// parse VM config and initialize fields of QemuMetaData class
@@ -309,10 +307,10 @@ public class QemuMetaData extends
 	 * @param vmContent file content for the QEMU hypervisor.
 	 * @param length number of bytes of the file content.
 	 * 
-	 * @throws UnsupportedVirtualizerFormatException Libvirt XML configuration cannot be processed.
+	 * @throws VirtualizationConfigurationException Libvirt XML configuration cannot be processed.
 	 */
-	public QemuMetaData( List<OperatingSystem> osList, byte[] vmContent, int length )
-			throws UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationQemu( List<OperatingSystem> osList, byte[] vmContent, int length )
+			throws VirtualizationConfigurationException
 	{
 		super( osList );
 
@@ -320,7 +318,7 @@ public class QemuMetaData extends
 			// read and parse Libvirt domain XML configuration document
 			this.vmConfig = new Domain( new String( vmContent ) );
 		} catch ( LibvirtXmlDocumentException | LibvirtXmlSerializationException | LibvirtXmlValidationException e ) {
-			throw new UnsupportedVirtualizerFormatException( e.getLocalizedMessage() );
+			throw new VirtualizationConfigurationException( e.getLocalizedMessage() );
 		}
 
 		// parse VM config and initialize fields of QemuMetaData class
@@ -358,7 +356,7 @@ public class QemuMetaData extends
 	private void addHddMetaData( DiskStorage storageDiskDevice )
 	{
 		String hddChipsetModel = null;
-		DriveBusType hddChipsetBus = QemuMetaDataUtils.convertBusType( storageDiskDevice.getBusType() );
+		DriveBusType hddChipsetBus = VirtualizationConfigurationQemuUtils.convertBusType( storageDiskDevice.getBusType() );
 		String hddImagePath = storageDiskDevice.getStorageSource();
 
 		this.hdds.add( new HardDisk( hddChipsetModel, hddChipsetBus, hddImagePath ) );
@@ -381,7 +379,7 @@ public class QemuMetaData extends
 	@Override
 	public List<DiskImage.ImageFormat> getSupportedImageFormats()
 	{
-		return QemuMetaData.SUPPORTED_IMAGE_FORMATS;
+		return VirtualizationConfigurationQemu.SUPPORTED_IMAGE_FORMATS;
 	}
 
 	@Override
@@ -415,14 +413,14 @@ public class QemuMetaData extends
 	public boolean addHddTemplate( int index, String diskImagePath, String hddMode, String redoDir )
 	{
 		ArrayList<DiskStorage> storageDiskDevices = this.vmConfig.getDiskStorageDevices();
-		DiskStorage storageDiskDevice = QemuMetaDataUtils.getArrayIndex( storageDiskDevices, index );
+		DiskStorage storageDiskDevice = VirtualizationConfigurationQemuUtils.getArrayIndex( storageDiskDevices, index );
 
 		if ( storageDiskDevice == null ) {
 			// HDD does not exist, so create new storage (HDD) device
 			storageDiskDevice = this.vmConfig.addDiskStorageDevice();
 			storageDiskDevice.setReadOnly( false );
 			storageDiskDevice.setBusType( BusType.VIRTIO );
-			String targetDevName = QemuMetaDataUtils.createAlphabeticalDeviceName( "vd", index );
+			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "vd", index );
 			storageDiskDevice.setTargetDevice( targetDevName );
 			storageDiskDevice.setStorage( StorageType.FILE, diskImagePath );
 
@@ -476,13 +474,13 @@ public class QemuMetaData extends
 	public void addFloppy( int index, String image, boolean readOnly )
 	{
 		ArrayList<DiskFloppy> floppyDiskDevices = this.vmConfig.getDiskFloppyDevices();
-		DiskFloppy floppyDiskDevice = QemuMetaDataUtils.getArrayIndex( floppyDiskDevices, index );
+		DiskFloppy floppyDiskDevice = VirtualizationConfigurationQemuUtils.getArrayIndex( floppyDiskDevices, index );
 
 		if ( floppyDiskDevice == null ) {
 			// floppy device does not exist, so create new floppy device
 			floppyDiskDevice = this.vmConfig.addDiskFloppyDevice();
 			floppyDiskDevice.setBusType( BusType.FDC );
-			String targetDevName = QemuMetaDataUtils.createAlphabeticalDeviceName( "fd", index );
+			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "fd", index );
 			floppyDiskDevice.setTargetDevice( targetDevName );
 			floppyDiskDevice.setReadOnly( readOnly );
 			floppyDiskDevice.setStorage( StorageType.FILE, image );
@@ -509,13 +507,13 @@ public class QemuMetaData extends
 	public boolean addCdrom( int index, String image )
 	{
 		ArrayList<DiskCdrom> cdromDiskDevices = this.vmConfig.getDiskCdromDevices();
-		DiskCdrom cdromDiskDevice = QemuMetaDataUtils.getArrayIndex( cdromDiskDevices, index );
+		DiskCdrom cdromDiskDevice = VirtualizationConfigurationQemuUtils.getArrayIndex( cdromDiskDevices, index );
 
 		if ( cdromDiskDevice == null ) {
 			// CDROM device does not exist, so create new CDROM device
 			cdromDiskDevice = this.vmConfig.addDiskCdromDevice();
 			cdromDiskDevice.setBusType( BusType.SATA );
-			String targetDevName = QemuMetaDataUtils.createAlphabeticalDeviceName( "sd", index );
+			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "sd", index );
 			cdromDiskDevice.setTargetDevice( targetDevName );
 			cdromDiskDevice.setReadOnly( true );
 
@@ -579,7 +577,7 @@ public class QemuMetaData extends
 		} else {
 			// the VM configuration at least one sound card device, so return the type of the first one
 			Sound.Model soundDeviceModel = soundDevices.get( 0 ).getModel();
-			soundDeviceType = QemuMetaDataUtils.convertSoundDeviceModel( soundDeviceModel );
+			soundDeviceType = VirtualizationConfigurationQemuUtils.convertSoundDeviceModel( soundDeviceModel );
 		}
 
 		return soundDeviceType;
@@ -690,7 +688,7 @@ public class QemuMetaData extends
 	{
 		QemuEthernetDevTypeMeta networkDeviceConfig = this.networkCards.get( type );
 		ArrayList<Interface> networkDevices = this.vmConfig.getInterfaceDevices();
-		Interface networkDevice = QemuMetaDataUtils.getArrayIndex( networkDevices, cardIndex );
+		Interface networkDevice = VirtualizationConfigurationQemuUtils.getArrayIndex( networkDevices, cardIndex );
 		Interface.Model networkDeviceModel = networkDeviceConfig.getModel();
 
 		if ( networkDevice != null ) {
@@ -702,7 +700,7 @@ public class QemuMetaData extends
 	public EthernetDevType getEthernetDevType( int cardIndex )
 	{
 		ArrayList<Interface> networkDevices = this.vmConfig.getInterfaceDevices();
-		Interface networkDevice = QemuMetaDataUtils.getArrayIndex( networkDevices, cardIndex );
+		Interface networkDevice = VirtualizationConfigurationQemuUtils.getArrayIndex( networkDevices, cardIndex );
 		EthernetDevType networkDeviceType = EthernetDevType.NONE;
 
 		if ( networkDevice == null ) {
@@ -711,7 +709,7 @@ public class QemuMetaData extends
 		} else {
 			// get model of existing network interface device
 			Interface.Model networkDeviceModel = networkDevice.getModel();
-			networkDeviceType = QemuMetaDataUtils.convertNetworkDeviceModel( networkDeviceModel );
+			networkDeviceType = VirtualizationConfigurationQemuUtils.convertNetworkDeviceModel( networkDeviceModel );
 		}
 
 		return networkDeviceType;
@@ -740,7 +738,7 @@ public class QemuMetaData extends
 	public UsbSpeed getMaxUsbSpeed()
 	{
 		ArrayList<ControllerUsb> usbControllerDevices = this.vmConfig.getUsbControllerDevices();
-		UsbSpeed maxUsbSpeed = VmMetaData.UsbSpeed.NONE;
+		UsbSpeed maxUsbSpeed = VirtualizationConfiguration.UsbSpeed.NONE;
 		int maxUsbSpeedNumeric = 0;
 
 		for ( ControllerUsb usbControllerDevice : usbControllerDevices ) {
@@ -790,7 +788,7 @@ public class QemuMetaData extends
 	{
 		QemuEthernetDevTypeMeta defaultNetworkDeviceConfig = this.networkCards.get( EthernetDevType.AUTO );
 		ArrayList<Interface> interfaceDevices = this.vmConfig.getInterfaceDevices();
-		Interface interfaceDevice = QemuMetaDataUtils.getArrayIndex( interfaceDevices, index );
+		Interface interfaceDevice = VirtualizationConfigurationQemuUtils.getArrayIndex( interfaceDevices, index );
 
 		final Interface.Model defaultNetworkDeviceModel = defaultNetworkDeviceConfig.getModel();
 
@@ -801,19 +799,19 @@ public class QemuMetaData extends
 				// add network bridge interface device
 				interfaceDevice = this.vmConfig.addInterfaceBridgeDevice();
 				interfaceDevice.setModel( defaultNetworkDeviceModel );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_LAN_DEFAULT );
+				interfaceDevice.setSource( VirtualizationConfigurationQemu.NETWORK_BRIDGE_LAN_DEFAULT );
 				break;
 			case HOST_ONLY:
 				// add network interface device with link to the isolated host network
 				interfaceDevice = this.vmConfig.addInterfaceBridgeDevice();
 				interfaceDevice.setModel( defaultNetworkDeviceModel );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_HOST_ONLY_DEFAULT );
+				interfaceDevice.setSource( VirtualizationConfigurationQemu.NETWORK_BRIDGE_HOST_ONLY_DEFAULT );
 				break;
 			case NAT:
 				// add network interface device with link to the NAT network
 				interfaceDevice = this.vmConfig.addInterfaceBridgeDevice();
 				interfaceDevice.setModel( defaultNetworkDeviceModel );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_NAT_DEFAULT );
+				interfaceDevice.setSource( VirtualizationConfigurationQemu.NETWORK_BRIDGE_NAT_DEFAULT );
 				break;
 			}
 		} else {
@@ -821,15 +819,15 @@ public class QemuMetaData extends
 			switch ( type ) {
 			case BRIDGED:
 				interfaceDevice.setType( Interface.Type.BRIDGE );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_LAN_DEFAULT );
+				interfaceDevice.setSource( VirtualizationConfigurationQemu.NETWORK_BRIDGE_LAN_DEFAULT );
 				break;
 			case HOST_ONLY:
 				interfaceDevice.setType( Interface.Type.BRIDGE );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_HOST_ONLY_DEFAULT );
+				interfaceDevice.setSource( VirtualizationConfigurationQemu.NETWORK_BRIDGE_HOST_ONLY_DEFAULT );
 				break;
 			case NAT:
 				interfaceDevice.setType( Interface.Type.BRIDGE );
-				interfaceDevice.setSource( QemuMetaData.NETWORK_BRIDGE_NAT_DEFAULT );
+				interfaceDevice.setSource( VirtualizationConfigurationQemu.NETWORK_BRIDGE_NAT_DEFAULT );
 				break;
 			}
 		}
@@ -840,7 +838,7 @@ public class QemuMetaData extends
 	@Override
 	public Virtualizer getVirtualizer()
 	{
-		return QemuMetaData.VIRTUALIZER;
+		return VirtualizationConfigurationQemu.VIRTUALIZER;
 	}
 
 	@Override
@@ -854,30 +852,30 @@ public class QemuMetaData extends
 	public void registerVirtualHW()
 	{
 		// @formatter:off
-		soundCards.put( VmMetaData.SoundCardType.NONE,          new QemuSoundCardMeta( null ) );
-		soundCards.put( VmMetaData.SoundCardType.DEFAULT,       new QemuSoundCardMeta( Sound.Model.ICH9 ) );
-		soundCards.put( VmMetaData.SoundCardType.SOUND_BLASTER, new QemuSoundCardMeta( Sound.Model.SB16 ) );
-		soundCards.put( VmMetaData.SoundCardType.ES,            new QemuSoundCardMeta( Sound.Model.ES1370 ) );
-		soundCards.put( VmMetaData.SoundCardType.AC,            new QemuSoundCardMeta( Sound.Model.AC97 ) );
-		soundCards.put( VmMetaData.SoundCardType.HD_AUDIO,      new QemuSoundCardMeta( Sound.Model.ICH9 ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.NONE,          new QemuSoundCardMeta( null ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.DEFAULT,       new QemuSoundCardMeta( Sound.Model.ICH9 ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.SOUND_BLASTER, new QemuSoundCardMeta( Sound.Model.SB16 ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.ES,            new QemuSoundCardMeta( Sound.Model.ES1370 ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.AC,            new QemuSoundCardMeta( Sound.Model.AC97 ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.HD_AUDIO,      new QemuSoundCardMeta( Sound.Model.ICH9 ) );
 
-		ddacc.put( VmMetaData.DDAcceleration.OFF, new QemuDDAccelMeta( false ) );
-		ddacc.put( VmMetaData.DDAcceleration.ON,  new QemuDDAccelMeta( true ) );
+		ddacc.put( VirtualizationConfiguration.DDAcceleration.OFF, new QemuDDAccelMeta( false ) );
+		ddacc.put( VirtualizationConfiguration.DDAcceleration.ON,  new QemuDDAccelMeta( true ) );
 
-		hwversion.put( VmMetaData.HWVersion.DEFAULT, new QemuHWVersionMeta( 0 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.DEFAULT, new QemuHWVersionMeta( 0 ) );
 
-		networkCards.put( VmMetaData.EthernetDevType.NONE,      new QemuEthernetDevTypeMeta( null ) );
-		networkCards.put( VmMetaData.EthernetDevType.AUTO,      new QemuEthernetDevTypeMeta( Interface.Model.VIRTIO_NET_PCI ) );
-		networkCards.put( VmMetaData.EthernetDevType.PCNETPCI2, new QemuEthernetDevTypeMeta( Interface.Model.PCNET ) );
-		networkCards.put( VmMetaData.EthernetDevType.E1000,     new QemuEthernetDevTypeMeta( Interface.Model.E1000 ) );
-		networkCards.put( VmMetaData.EthernetDevType.E1000E,    new QemuEthernetDevTypeMeta( Interface.Model.E1000E ) );
-		networkCards.put( VmMetaData.EthernetDevType.VMXNET3,   new QemuEthernetDevTypeMeta( Interface.Model.VMXNET3 ) );
-		networkCards.put( VmMetaData.EthernetDevType.PARAVIRT,  new QemuEthernetDevTypeMeta( Interface.Model.VIRTIO_NET_PCI ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.NONE,      new QemuEthernetDevTypeMeta( null ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.AUTO,      new QemuEthernetDevTypeMeta( Interface.Model.VIRTIO_NET_PCI ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETPCI2, new QemuEthernetDevTypeMeta( Interface.Model.PCNET ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.E1000,     new QemuEthernetDevTypeMeta( Interface.Model.E1000 ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.E1000E,    new QemuEthernetDevTypeMeta( Interface.Model.E1000E ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.VMXNET3,   new QemuEthernetDevTypeMeta( Interface.Model.VMXNET3 ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PARAVIRT,  new QemuEthernetDevTypeMeta( Interface.Model.VIRTIO_NET_PCI ) );
 
-		usbSpeeds.put( VmMetaData.UsbSpeed.NONE,   new QemuUsbSpeedMeta( 0, ControllerUsb.Model.NONE ) );
-		usbSpeeds.put( VmMetaData.UsbSpeed.USB1_1, new QemuUsbSpeedMeta( 1, ControllerUsb.Model.ICH9_UHCI1 ) );
-		usbSpeeds.put( VmMetaData.UsbSpeed.USB2_0, new QemuUsbSpeedMeta( 2, ControllerUsb.Model.ICH9_EHCI1 ) );
-		usbSpeeds.put( VmMetaData.UsbSpeed.USB3_0, new QemuUsbSpeedMeta( 3, ControllerUsb.Model.QEMU_XHCI ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.NONE,   new QemuUsbSpeedMeta( 0, ControllerUsb.Model.NONE ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB1_1, new QemuUsbSpeedMeta( 1, ControllerUsb.Model.ICH9_UHCI1 ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB2_0, new QemuUsbSpeedMeta( 2, ControllerUsb.Model.ICH9_EHCI1 ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB3_0, new QemuUsbSpeedMeta( 3, ControllerUsb.Model.QEMU_XHCI ) );
 		// @formatter:on
 	}
 }

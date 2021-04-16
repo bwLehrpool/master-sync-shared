@@ -13,19 +13,15 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
-import org.openslx.virtualization.configuration.container.DockerMetaDataDummy;
-import org.openslx.virtualization.configuration.machine.QemuMetaData;
-import org.openslx.virtualization.configuration.machine.VboxMetaData;
-import org.openslx.virtualization.configuration.machine.VmwareMetaData;
 import org.openslx.vm.disk.DiskImage;
 
 /**
  * Describes a configured virtual machine. This class is parsed from a machine
  * description, like a *.vmx for VMware machines.
  */
-public abstract class VmMetaData<T, U, V, W, X>
+public abstract class VirtualizationConfiguration<T, U, V, W, X>
 {
-	private static final Logger LOGGER = Logger.getLogger( VmMetaData.class );
+	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfiguration.class );
 
 	/*
 	 * Helper types
@@ -253,7 +249,7 @@ public abstract class VmMetaData<T, U, V, W, X>
 	 * Methods
 	 */
 
-	public VmMetaData( List<OperatingSystem> osList )
+	public VirtualizationConfiguration( List<OperatingSystem> osList )
 	{
 		this.osList = osList;
 
@@ -311,26 +307,26 @@ public abstract class VmMetaData<T, U, V, W, X>
 	 * @param file VM's machine description file to get the metadata instance from
 	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 */
-	public static VmMetaData<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
+	public static VirtualizationConfiguration<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
 			throws IOException
 	{
 		try {
-			return new VmwareMetaData( osList, file );
-		} catch ( UnsupportedVirtualizerFormatException e ) {
+			return new VirtualizationConfigurationVmware( osList, file );
+		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.info( "Not a VMware file", e );
 		}
 		try {
-			return new VboxMetaData( osList, file );
-		} catch ( UnsupportedVirtualizerFormatException e ) {
+			return new VirtualizationConfigurationVirtualBox( osList, file );
+		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.info( "Not a VirtualBox file", e );
 		}
 		try {
-			return new QemuMetaData( osList, file );
-		} catch ( UnsupportedVirtualizerFormatException e ) {
+			return new VirtualizationConfigurationQemu( osList, file );
+		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.info( "Not a Libvirt file", e );
 		}
 		try {
-			return new DockerMetaDataDummy(osList, file);
+			return new VirtualizationConfigurationDocker(osList, file);
 		} catch ( Exception e ) {
 			LOGGER.info( "Not a tar.gz file, for docker container", e );
 		}
@@ -348,27 +344,27 @@ public abstract class VmMetaData<T, U, V, W, X>
 	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 * @throws IOException
 	 */
-	public static VmMetaData<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length )
+	public static VirtualizationConfiguration<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length )
 			throws IOException
 	{
 		try {
-			return new VmwareMetaData( osList, vmContent, length );
-		} catch ( UnsupportedVirtualizerFormatException e ) {
+			return new VirtualizationConfigurationVmware( osList, vmContent, length );
+		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.info( "Not a VMware file", e );
 		}
 		try {
-			return new VboxMetaData( osList, vmContent, length );
-		} catch ( UnsupportedVirtualizerFormatException e ) {
+			return new VirtualizationConfigurationVirtualBox( osList, vmContent, length );
+		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.info( "Not a VirtualBox file", e );
 		}
 		try {
-			return new QemuMetaData( osList, vmContent, length );
-		} catch ( UnsupportedVirtualizerFormatException e ) {
+			return new VirtualizationConfigurationQemu( osList, vmContent, length );
+		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.info( "Not a Libvirt file", e );
 		}
 		try {
-			return new DockerMetaDataDummy( osList, vmContent, length );
-		} catch ( UnsupportedVirtualizerFormatException e ) {
+			return new VirtualizationConfigurationDocker( osList, vmContent, length );
+		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.info( "Not a tar.gz file, for docker container", e );
 		}
 

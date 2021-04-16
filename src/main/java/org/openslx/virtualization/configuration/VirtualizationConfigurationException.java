@@ -1,13 +1,13 @@
 package org.openslx.virtualization.configuration;
 
-public class UnsupportedVirtualizerFormatException extends Exception
+public class VirtualizationConfigurationException extends Exception
 {
 	/**
 	 * Version for serialization.
 	 */
 	private static final long serialVersionUID = 5794121065945636839L;
 
-	public UnsupportedVirtualizerFormatException(String message) {
+	public VirtualizationConfigurationException(String message) {
 		super(message);
 	}
 }

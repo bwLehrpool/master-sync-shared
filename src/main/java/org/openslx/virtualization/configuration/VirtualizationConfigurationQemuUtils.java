@@ -1,13 +1,13 @@
-package org.openslx.virtualization.configuration.machine;
+package org.openslx.virtualization.configuration;
 
 import java.util.ArrayList;
 
 import org.openslx.libvirt.domain.device.Disk;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.Disk.BusType;
-import org.openslx.virtualization.configuration.VmMetaData.DriveBusType;
-import org.openslx.virtualization.configuration.VmMetaData.EthernetDevType;
-import org.openslx.virtualization.configuration.VmMetaData.SoundCardType;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.DriveBusType;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.EthernetDevType;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType;
 import org.openslx.libvirt.domain.device.Sound;
 
 /**
@@ -16,7 +16,7 @@ import org.openslx.libvirt.domain.device.Sound;
  * @author Manuel Bentele
  * @version 1.0
  */
-public class QemuMetaDataUtils
+public class VirtualizationConfigurationQemuUtils
 {
 	/**
 	 * Converts a Libvirt disk device bus type to a VM metadata driver bus type.

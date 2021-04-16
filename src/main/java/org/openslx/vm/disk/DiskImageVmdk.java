@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.openslx.util.Util;
-import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
-import org.openslx.virtualization.configuration.machine.VmwareConfig;
+import org.openslx.virtualization.configuration.VirtualizationConfigurationVmwareFileFormat;
+import org.openslx.virtualization.configuration.VirtualizationConfigurationException;
 
 /**
  * VMDK (sparse extent) disk image for virtual machines.
@@ -35,7 +35,7 @@ public class DiskImageVmdk extends DiskImage
 	/**
 	 * Stores disk configuration if VMDK disk image contains an embedded descriptor file.
 	 */
-	private final VmwareConfig vmdkConfig;
+	private final VirtualizationConfigurationVmwareFileFormat vmdkConfig;
 
 	/**
 	 * Creates a new VMDK disk image from an existing VMDK image file.
@@ -99,7 +99,7 @@ public class DiskImageVmdk extends DiskImage
 	 */
 	private String getCreationType()
 	{
-		final VmwareConfig vmdkConfig = this.getVmdkConfig();
+		final VirtualizationConfigurationVmwareFileFormat vmdkConfig = this.getVmdkConfig();
 		final String vmdkCreationType;
 
 		if ( vmdkConfig == null ) {
@@ -122,10 +122,10 @@ public class DiskImageVmdk extends DiskImage
 	 * 
 	 * @throws DiskImageException parsing of the VMDK's embedded descriptor file failed.
 	 */
-	protected VmwareConfig parseVmdkConfig() throws DiskImageException
+	protected VirtualizationConfigurationVmwareFileFormat parseVmdkConfig() throws DiskImageException
 	{
 		final RandomAccessFile diskFile = this.getDiskImage();
-		final VmwareConfig vmdkConfig;
+		final VirtualizationConfigurationVmwareFileFormat vmdkConfig;
 
 		// get offset and size of descriptor file embedded into the VMDK disk image
 		final long vmdkDescriptorSectorOffset = Long.reverseBytes( DiskImageUtils.readLong( diskFile, 28 ) );
@@ -152,8 +152,8 @@ public class DiskImageVmdk extends DiskImage
 
 			// create configuration instance from content of the descriptor file
 			try {
-				vmdkConfig = new VmwareConfig( configStr.getBytes(), vmdkDescriptorSize );
-			} catch ( UnsupportedVirtualizerFormatException e ) {
+				vmdkConfig = new VirtualizationConfigurationVmwareFileFormat( configStr.getBytes(), vmdkDescriptorSize );
+			} catch ( VirtualizationConfigurationException e ) {
 				throw new DiskImageException( e.getLocalizedMessage() );
 			}
 		} else {
@@ -169,7 +169,7 @@ public class DiskImageVmdk extends DiskImage
 	 * 
 	 * @return parsed configuration of the VMDK's embedded descriptor file.
 	 */
-	protected VmwareConfig getVmdkConfig()
+	protected VirtualizationConfigurationVmwareFileFormat getVmdkConfig()
 	{
 		return this.vmdkConfig;
 	}
@@ -186,7 +186,7 @@ public class DiskImageVmdk extends DiskImage
 	 */
 	public int getHwVersion() throws DiskImageException
 	{
-		final VmwareConfig vmdkConfig = this.getVmdkConfig();
+		final VirtualizationConfigurationVmwareFileFormat vmdkConfig = this.getVmdkConfig();
 		final int hwVersion;
 
 		if ( vmdkConfig != null ) {
@@ -252,7 +252,7 @@ public class DiskImageVmdk extends DiskImage
 	@Override
 	public boolean isSnapshot() throws DiskImageException
 	{
-		final VmwareConfig vmdkConfig = this.getVmdkConfig();
+		final VirtualizationConfigurationVmwareFileFormat vmdkConfig = this.getVmdkConfig();
 		final boolean vmdkSnapshot;
 
 		if ( vmdkConfig == null ) {

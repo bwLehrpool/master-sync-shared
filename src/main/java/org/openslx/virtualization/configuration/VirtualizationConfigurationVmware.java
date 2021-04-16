@@ -1,4 +1,4 @@
-package org.openslx.virtualization.configuration.machine;
+package org.openslx.virtualization.configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +17,7 @@ import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
-import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
-import org.openslx.virtualization.configuration.VmMetaData;
-import org.openslx.virtualization.configuration.machine.VmwareConfig.ConfigEntry;
+import org.openslx.virtualization.configuration.VirtualizationConfigurationVmwareFileFormat.ConfigEntry;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
@@ -77,7 +75,7 @@ class VmwareUsbSpeed
 	}
 }
 
-public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareHWVersionMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
+public class VirtualizationConfigurationVmware extends VirtualizationConfiguration<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareHWVersionMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
 {
 	/**
 	 * List of supported image formats by the VMware hypervisor.
@@ -85,7 +83,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
 			Arrays.asList( ImageFormat.VMDK ) );
 	
-	private static final Logger LOGGER = Logger.getLogger( VmwareMetaData.class );
+	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVmware.class );
 
 	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_VMWARE, "VMware" );
 
@@ -94,7 +92,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 	// Lowercase list of allowed settings for upload (as regex)
 	private static final Pattern[] whitelist;
 
-	private final VmwareConfig config;
+	private final VirtualizationConfigurationVmwareFileFormat config;
 
 	// Init static members
 	static {
@@ -122,17 +120,17 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 
 	private final Map<String, Controller> disks = new HashMap<>();
 
-	public VmwareMetaData( List<OperatingSystem> osList, File file ) throws IOException, UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationVmware( List<OperatingSystem> osList, File file ) throws IOException, VirtualizationConfigurationException
 	{
 		super( osList );
-		this.config = new VmwareConfig( file );
+		this.config = new VirtualizationConfigurationVmwareFileFormat( file );
 		init();
 	}
 
-	public VmwareMetaData( List<OperatingSystem> osList, byte[] vmxContent, int length ) throws UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationVmware( List<OperatingSystem> osList, byte[] vmxContent, int length ) throws VirtualizationConfigurationException
 	{
 		super( osList );
-		this.config = new VmwareConfig( vmxContent, length ); // still unfiltered
+		this.config = new VirtualizationConfigurationVmwareFileFormat( vmxContent, length ); // still unfiltered
 		init(); // now filtered
 	}
 
@@ -259,7 +257,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 	@Override
 	public List<DiskImage.ImageFormat> getSupportedImageFormats()
 	{
-		return VmwareMetaData.SUPPORTED_IMAGE_FORMATS;
+		return VirtualizationConfigurationVmware.SUPPORTED_IMAGE_FORMATS;
 	}
 	
 	@Override
@@ -324,7 +322,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		return true;
 	}
 
-	public boolean addEthernet( VmMetaData.EtherType type )
+	public boolean addEthernet( VirtualizationConfiguration.EtherType type )
 	{
 		boolean ret = false;
 		int index = 0;
@@ -494,7 +492,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		return config.get( key );
 	}
 
-	public void setSoundCard( VmMetaData.SoundCardType type )
+	public void setSoundCard( VirtualizationConfiguration.SoundCardType type )
 	{
 		VmWareSoundCardMeta soundCardMeta = soundCards.get( type );
 		addFiltered( "sound.present", vmBoolean( soundCardMeta.isPresent ) );
@@ -505,15 +503,15 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		}
 	}
 
-	public VmMetaData.SoundCardType getSoundCard()
+	public VirtualizationConfiguration.SoundCardType getSoundCard()
 	{
 		if ( !isSetAndTrue( "sound.present" ) || !isSetAndTrue( "sound.autodetect" ) ) {
-			return VmMetaData.SoundCardType.NONE;
+			return VirtualizationConfiguration.SoundCardType.NONE;
 		}
 		String current = config.get( "sound.virtualDev" );
 		if ( current != null ) {
 			VmWareSoundCardMeta soundCardMeta = null;
-			for ( VmMetaData.SoundCardType type : VmMetaData.SoundCardType.values() ) {
+			for ( VirtualizationConfiguration.SoundCardType type : VirtualizationConfiguration.SoundCardType.values() ) {
 				soundCardMeta = soundCards.get( type );
 				if ( soundCardMeta != null ) {
 					if ( current.equals( soundCardMeta.value ) ) {
@@ -522,35 +520,35 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 				}
 			}
 		}
-		return VmMetaData.SoundCardType.DEFAULT;
+		return VirtualizationConfiguration.SoundCardType.DEFAULT;
 	}
 
-	public void setDDAcceleration( VmMetaData.DDAcceleration type )
+	public void setDDAcceleration( VirtualizationConfiguration.DDAcceleration type )
 	{
 		VmWareDDAccelMeta ddaMeta = ddacc.get( type );
 		addFiltered( "mks.enable3d", vmBoolean( ddaMeta.isPresent ) );
 	}
 
-	public VmMetaData.DDAcceleration getDDAcceleration()
+	public VirtualizationConfiguration.DDAcceleration getDDAcceleration()
 	{
 		if ( isSetAndTrue( "mks.enable3d" ) ) {
-			return VmMetaData.DDAcceleration.ON;
+			return VirtualizationConfiguration.DDAcceleration.ON;
 		} else {
-			return VmMetaData.DDAcceleration.OFF;
+			return VirtualizationConfiguration.DDAcceleration.OFF;
 		}
 	}
 
-	public void setHWVersion( VmMetaData.HWVersion type )
+	public void setHWVersion( VirtualizationConfiguration.HWVersion type )
 	{
 		VmWareHWVersionMeta hwVersionMeta = hwversion.get( type );
 		addFiltered( "virtualHW.version", vmInteger( hwVersionMeta.version ) );
 	}
 
-	public VmMetaData.HWVersion getHWVersion()
+	public VirtualizationConfiguration.HWVersion getHWVersion()
 	{
 		int currentValue = Util.parseInt( config.get( "virtualHW.version" ), -1 );
 		VmWareHWVersionMeta hwVersionMeta = null;
-		for ( VmMetaData.HWVersion ver : VmMetaData.HWVersion.values() ) {
+		for ( VirtualizationConfiguration.HWVersion ver : VirtualizationConfiguration.HWVersion.values() ) {
 			hwVersionMeta = hwversion.get( ver );
 			if ( hwVersionMeta == null ) {
 				continue;
@@ -562,7 +560,7 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		return HWVersion.NONE;
 	}
 
-	public void setEthernetDevType( int cardIndex, VmMetaData.EthernetDevType type )
+	public void setEthernetDevType( int cardIndex, VirtualizationConfiguration.EthernetDevType type )
 	{
 		VmWareEthernetDevTypeMeta ethernetDevTypeMeta = networkCards.get( type );
 		if ( ethernetDevTypeMeta.value != null ) {
@@ -572,12 +570,12 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 		}
 	}
 
-	public VmMetaData.EthernetDevType getEthernetDevType( int cardIndex )
+	public VirtualizationConfiguration.EthernetDevType getEthernetDevType( int cardIndex )
 	{
 		String temp = config.get( "ethernet" + cardIndex + ".virtualDev" );
 		if ( temp != null ) {
 			VmWareEthernetDevTypeMeta ethernetDevTypeMeta = null;
-			for ( VmMetaData.EthernetDevType type : VmMetaData.EthernetDevType.values() ) {
+			for ( VirtualizationConfiguration.EthernetDevType type : VirtualizationConfiguration.EthernetDevType.values() ) {
 				ethernetDevTypeMeta = networkCards.get( type );
 				if ( ethernetDevTypeMeta == null ) {
 					continue;
@@ -587,14 +585,14 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 				}
 			}
 		}
-		return VmMetaData.EthernetDevType.AUTO;
+		return VirtualizationConfiguration.EthernetDevType.AUTO;
 	}
 
 	@Override
-	public void setMaxUsbSpeed( VmMetaData.UsbSpeed newSpeed )
+	public void setMaxUsbSpeed( VirtualizationConfiguration.UsbSpeed newSpeed )
 	{
 		if ( newSpeed == null ) {
-			newSpeed = VmMetaData.UsbSpeed.NONE;
+			newSpeed = VirtualizationConfiguration.UsbSpeed.NONE;
 		}
 		VmwareUsbSpeed newSpeedMeta = usbSpeeds.get( newSpeed );
 		if ( newSpeedMeta == null ) {
@@ -620,11 +618,11 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 	}
 
 	@Override
-	public VmMetaData.UsbSpeed getMaxUsbSpeed()
+	public VirtualizationConfiguration.UsbSpeed getMaxUsbSpeed()
 	{
 		int max = 0;
-		VmMetaData.UsbSpeed maxEnum = VmMetaData.UsbSpeed.NONE;
-		for ( Entry<VmMetaData.UsbSpeed, VmwareUsbSpeed> entry : usbSpeeds.entrySet() ) {
+		VirtualizationConfiguration.UsbSpeed maxEnum = VirtualizationConfiguration.UsbSpeed.NONE;
+		for ( Entry<VirtualizationConfiguration.UsbSpeed, VmwareUsbSpeed> entry : usbSpeeds.entrySet() ) {
 			VmwareUsbSpeed v = entry.getValue();
 			if ( v.speedNumeric > max && isSetAndTrue( v.keyName ) ) {
 				max = v.speedNumeric;
@@ -643,42 +641,42 @@ public class VmwareMetaData extends VmMetaData<VmWareSoundCardMeta, VmWareDDAcce
 
 	public void registerVirtualHW()
 	{
-		soundCards.put( VmMetaData.SoundCardType.NONE, new VmWareSoundCardMeta( false, null ) );
-		soundCards.put( VmMetaData.SoundCardType.DEFAULT, new VmWareSoundCardMeta( true, null ) );
-		soundCards.put( VmMetaData.SoundCardType.SOUND_BLASTER, new VmWareSoundCardMeta( true, "sb16" ) );
-		soundCards.put( VmMetaData.SoundCardType.ES, new VmWareSoundCardMeta( true, "es1371" ) );
-		soundCards.put( VmMetaData.SoundCardType.HD_AUDIO, new VmWareSoundCardMeta( true, "hdaudio" ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.NONE, new VmWareSoundCardMeta( false, null ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.DEFAULT, new VmWareSoundCardMeta( true, null ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.SOUND_BLASTER, new VmWareSoundCardMeta( true, "sb16" ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.ES, new VmWareSoundCardMeta( true, "es1371" ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.HD_AUDIO, new VmWareSoundCardMeta( true, "hdaudio" ) );
 
-		ddacc.put( VmMetaData.DDAcceleration.OFF, new VmWareDDAccelMeta( false ) );
-		ddacc.put( VmMetaData.DDAcceleration.ON, new VmWareDDAccelMeta( true ) );
+		ddacc.put( VirtualizationConfiguration.DDAcceleration.OFF, new VmWareDDAccelMeta( false ) );
+		ddacc.put( VirtualizationConfiguration.DDAcceleration.ON, new VmWareDDAccelMeta( true ) );
 
-		hwversion.put( VmMetaData.HWVersion.NONE, new VmWareHWVersionMeta( 0 ) );
-		hwversion.put( VmMetaData.HWVersion.THREE, new VmWareHWVersionMeta( 3 ) );
-		hwversion.put( VmMetaData.HWVersion.FOUR, new VmWareHWVersionMeta( 4 ) );
-		hwversion.put( VmMetaData.HWVersion.SIX, new VmWareHWVersionMeta( 6 ) );
-		hwversion.put( VmMetaData.HWVersion.SEVEN, new VmWareHWVersionMeta( 7 ) );
-		hwversion.put( VmMetaData.HWVersion.EIGHT, new VmWareHWVersionMeta( 8 ) );
-		hwversion.put( VmMetaData.HWVersion.NINE, new VmWareHWVersionMeta( 9 ) );
-		hwversion.put( VmMetaData.HWVersion.TEN, new VmWareHWVersionMeta( 10 ) );
-		hwversion.put( VmMetaData.HWVersion.ELEVEN, new VmWareHWVersionMeta( 11 ) );
-		hwversion.put( VmMetaData.HWVersion.TWELVE, new VmWareHWVersionMeta( 12 ) );
-		hwversion.put( VmMetaData.HWVersion.FOURTEEN, new VmWareHWVersionMeta( 14 ) );
-		hwversion.put( VmMetaData.HWVersion.FIFTEEN, new VmWareHWVersionMeta( 15 ) );
-		hwversion.put( VmMetaData.HWVersion.FIFTEEN_ONE, new VmWareHWVersionMeta( 16 ) );
-		hwversion.put( VmMetaData.HWVersion.SIXTEEN, new VmWareHWVersionMeta( 17 ) );
-		hwversion.put( VmMetaData.HWVersion.SIXTEEN_ONE, new VmWareHWVersionMeta( 18 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.NONE, new VmWareHWVersionMeta( 0 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.THREE, new VmWareHWVersionMeta( 3 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.FOUR, new VmWareHWVersionMeta( 4 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.SIX, new VmWareHWVersionMeta( 6 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.SEVEN, new VmWareHWVersionMeta( 7 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.EIGHT, new VmWareHWVersionMeta( 8 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.NINE, new VmWareHWVersionMeta( 9 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.TEN, new VmWareHWVersionMeta( 10 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.ELEVEN, new VmWareHWVersionMeta( 11 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.TWELVE, new VmWareHWVersionMeta( 12 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.FOURTEEN, new VmWareHWVersionMeta( 14 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.FIFTEEN, new VmWareHWVersionMeta( 15 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.FIFTEEN_ONE, new VmWareHWVersionMeta( 16 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.SIXTEEN, new VmWareHWVersionMeta( 17 ) );
+		hwversion.put( VirtualizationConfiguration.HWVersion.SIXTEEN_ONE, new VmWareHWVersionMeta( 18 ) );
 
-		networkCards.put( VmMetaData.EthernetDevType.AUTO, new VmWareEthernetDevTypeMeta( null ) );
-		networkCards.put( VmMetaData.EthernetDevType.PCNET32, new VmWareEthernetDevTypeMeta( "vlance" ) );
-		networkCards.put( VmMetaData.EthernetDevType.E1000, new VmWareEthernetDevTypeMeta( "e1000" ) );
-		networkCards.put( VmMetaData.EthernetDevType.E1000E, new VmWareEthernetDevTypeMeta( "e1000e" ) );
-		networkCards.put( VmMetaData.EthernetDevType.VMXNET, new VmWareEthernetDevTypeMeta( "vmxnet" ) );
-		networkCards.put( VmMetaData.EthernetDevType.VMXNET3, new VmWareEthernetDevTypeMeta( "vmxnet3" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.AUTO, new VmWareEthernetDevTypeMeta( null ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNET32, new VmWareEthernetDevTypeMeta( "vlance" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.E1000, new VmWareEthernetDevTypeMeta( "e1000" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.E1000E, new VmWareEthernetDevTypeMeta( "e1000e" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.VMXNET, new VmWareEthernetDevTypeMeta( "vmxnet" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.VMXNET3, new VmWareEthernetDevTypeMeta( "vmxnet3" ) );
 		
-		usbSpeeds.put( VmMetaData.UsbSpeed.NONE, new VmwareUsbSpeed( 0, null ));
-		usbSpeeds.put( VmMetaData.UsbSpeed.USB1_1, new VmwareUsbSpeed( 1, "usb" ) );
-		usbSpeeds.put( VmMetaData.UsbSpeed.USB2_0, new VmwareUsbSpeed( 2, "ehci" ) );
-		usbSpeeds.put( VmMetaData.UsbSpeed.USB3_0, new VmwareUsbSpeed( 3, "usb_xhci" ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.NONE, new VmwareUsbSpeed( 0, null ));
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB1_1, new VmwareUsbSpeed( 1, "usb" ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB2_0, new VmwareUsbSpeed( 2, "ehci" ) );
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB3_0, new VmwareUsbSpeed( 3, "usb_xhci" ) );
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.openslx.virtualization.configuration.machine;
+package org.openslx.virtualization.configuration;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -18,21 +18,32 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openslx.util.Util;
-import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
 
-public class VmwareConfig
+class KeyValuePair
+{
+	public final String key;
+	public final String value;
+
+	public KeyValuePair( String key, String value )
+	{
+		this.key = key;
+		this.value = value;
+	}
+}
+
+public class VirtualizationConfigurationVmwareFileFormat
 {
 
-	private static final Logger LOGGER = Logger.getLogger( VmwareConfig.class );
+	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVmwareFileFormat.class );
 
 	private Map<String, ConfigEntry> entries = new TreeMap<>( String.CASE_INSENSITIVE_ORDER );
 
-	public VmwareConfig()
+	public VirtualizationConfigurationVmwareFileFormat()
 	{
 		// (void)
 	}
 
-	public VmwareConfig( File file ) throws IOException, UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationVmwareFileFormat( File file ) throws IOException, VirtualizationConfigurationException
 	{
 		int todo = (int)Math.min( 100000, file.length() );
 		int offset = 0;
@@ -54,7 +65,7 @@ public class VmwareConfig
 
 	}
 
-	public VmwareConfig( InputStream is ) throws IOException, UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationVmwareFileFormat( InputStream is ) throws IOException, VirtualizationConfigurationException
 	{
 		int todo = Math.max( 4000, Math.min( 100000, is.available() ) );
 		int offset = 0;
@@ -69,13 +80,13 @@ public class VmwareConfig
 		init( data, offset );
 	}
 
-	public VmwareConfig( byte[] vmxContent, int length ) throws UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationVmwareFileFormat( byte[] vmxContent, int length ) throws VirtualizationConfigurationException
 	{
 		init( vmxContent, length );
 	}
 
 	// function is used for both .vmx and .vmdk files
-	private void init( byte[] vmxContent, int length ) throws UnsupportedVirtualizerFormatException
+	private void init( byte[] vmxContent, int length ) throws VirtualizationConfigurationException
 	{
 		try {
 			boolean isValid = false;
@@ -95,7 +106,7 @@ public class VmwareConfig
 				}
 			}
 			if ( !isValid ) {
-				throw new UnsupportedVirtualizerFormatException( "Not in VMX format." );
+				throw new VirtualizationConfigurationException( "Not in VMX format." );
 			}
 		} catch ( IOException e ) {
 			LOGGER.warn( "Exception when loading vmx from byte array (how!?)", e );

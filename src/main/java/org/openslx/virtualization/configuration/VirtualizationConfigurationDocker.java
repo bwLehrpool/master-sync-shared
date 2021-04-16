@@ -1,11 +1,9 @@
-package org.openslx.virtualization.configuration.container;
+package org.openslx.virtualization.configuration;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
-import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
-import org.openslx.virtualization.configuration.VmMetaData;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
@@ -37,7 +35,7 @@ class DockerUsbSpeedMeta
 {
 }
 
-public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerDDAccelMeta, DockerHWVersionMeta, DockerEthernetDevTypeMeta, DockerUsbSpeedMeta> {
+public class VirtualizationConfigurationDocker extends VirtualizationConfiguration<DockerSoundCardMeta, DockerDDAccelMeta, DockerHWVersionMeta, DockerEthernetDevTypeMeta, DockerUsbSpeedMeta> {
 
 	/**
 	 * List of supported image formats by the Docker hypervisor.
@@ -45,7 +43,7 @@ public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerD
 	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
 			Arrays.asList( ImageFormat.NONE ) );
 	
-	private static final Logger LOGGER = Logger.getLogger( DockerMetaDataDummy.class);
+	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationDocker.class);
 
 	private final Virtualizer virtualizer = new Virtualizer(TConst.VIRT_DOCKER, "Docker");
 
@@ -61,7 +59,7 @@ public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerD
 	 */
 	private byte[] containerDefinition;
 
-	public DockerMetaDataDummy(List<OperatingSystem> osList, File file) throws UnsupportedVirtualizerFormatException {
+	public VirtualizationConfigurationDocker(List<OperatingSystem> osList, File file) throws VirtualizationConfigurationException {
 		super(osList);
 
 		BufferedInputStream bis = null;
@@ -72,7 +70,7 @@ public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerD
 			bis.read(containerDefinition);
 
 			checkIsTarGz();
-		} catch (IOException | UnsupportedVirtualizerFormatException e) {
+		} catch (IOException | VirtualizationConfigurationException e) {
 			LOGGER.error("Couldn't read dockerfile", e);
 		} finally {
 			try {
@@ -83,8 +81,8 @@ public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerD
 		}
 	}
 
-	public DockerMetaDataDummy(List<OperatingSystem> osList, byte[] vmContent, int length)
-			throws UnsupportedVirtualizerFormatException {
+	public VirtualizationConfigurationDocker(List<OperatingSystem> osList, byte[] vmContent, int length)
+			throws VirtualizationConfigurationException {
 		super(osList);
 
 		containerDefinition = vmContent;
@@ -99,12 +97,12 @@ public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerD
 	 * Checks if the first two bytes of the content identifies a tar.gz archive.
 	 * The first byte is 31 == 0x1f, the second byte has to be -117 == 0x8b.
 	 *
-	 * @throws UnsupportedVirtualizerFormatException
+	 * @throws VirtualizationConfigurationException
 	 */
-	private void checkIsTarGz() throws UnsupportedVirtualizerFormatException {
+	private void checkIsTarGz() throws VirtualizationConfigurationException {
 		if (!((31 == containerDefinition[0]) && (-117 == containerDefinition[1]))) {
 			LOGGER.warn("Not Supported Content.");
-			throw new UnsupportedVirtualizerFormatException(
+			throw new VirtualizationConfigurationException(
 					"DockerMetaDataDummy: Not tar.gz encoded content!");
 		}
 	}
@@ -116,7 +114,7 @@ public class DockerMetaDataDummy extends VmMetaData<DockerSoundCardMeta, DockerD
 	@Override
 	public List<DiskImage.ImageFormat> getSupportedImageFormats()
 	{
-		return DockerMetaDataDummy.SUPPORTED_IMAGE_FORMATS;
+		return VirtualizationConfigurationDocker.SUPPORTED_IMAGE_FORMATS;
 	}
 
 	@Override public void applySettingsForLocalEdit() {

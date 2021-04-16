@@ -1,4 +1,4 @@
-package org.openslx.virtualization.configuration.machine;
+package org.openslx.virtualization.configuration;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -20,9 +20,8 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.log4j.Logger;
 import org.openslx.util.Util;
 import org.openslx.util.XmlHelper;
-import org.openslx.virtualization.configuration.UnsupportedVirtualizerFormatException;
-import org.openslx.virtualization.configuration.VmMetaData.DriveBusType;
-import org.openslx.virtualization.configuration.VmMetaData.HardDisk;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.DriveBusType;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.HardDisk;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -33,9 +32,9 @@ import org.xml.sax.SAXException;
 /**
  * Class handling the parsing of a .vbox machine description file
  */
-public class VboxConfig
+public class VirtualizationConfigurationVirtualboxFileFormat
 {
-	private static final Logger LOGGER = Logger.getLogger( VboxConfig.class );
+	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVirtualboxFileFormat.class );
 
 	// key information set during initial parsing of the XML file
 	private String osName = new String();
@@ -84,15 +83,15 @@ public class VboxConfig
 	 * 
 	 * @param file the VirtualBox machine configuration file
 	 * @throws IOException if an error occurs while reading the file
-	 * @throws UnsupportedVirtualizerFormatException if the given file is not a valid VirtualBox
+	 * @throws VirtualizationConfigurationException if the given file is not a valid VirtualBox
 	 *            configuration file.
 	 */
-	public VboxConfig( File file ) throws IOException, UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationVirtualboxFileFormat( File file ) throws IOException, VirtualizationConfigurationException
 	{
 		// first validate xml
 		try {
 			SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-			InputStream xsdStream = VboxConfig.class.getResourceAsStream( "/master-sync-shared/xml/VirtualBox-settings.xsd" );
+			InputStream xsdStream = VirtualizationConfigurationVirtualboxFileFormat.class.getResourceAsStream( "/master-sync-shared/xml/VirtualBox-settings.xsd" );
 			if ( xsdStream == null ) {
 				LOGGER.warn( "Cannot validate Vbox XML: No XSD found in JAR" );
 			} else {
@@ -107,7 +106,7 @@ public class VboxConfig
 		doc = XmlHelper.parseDocumentFromStream( new FileInputStream( file ) );
 		doc = XmlHelper.removeFormattingNodes( doc );
 		if ( doc == null )
-			throw new UnsupportedVirtualizerFormatException( "Could not create DOM from given VirtualBox machine configuration file!" );
+			throw new VirtualizationConfigurationException( "Could not create DOM from given VirtualBox machine configuration file!" );
 		init();
 	}
 
@@ -119,25 +118,25 @@ public class VboxConfig
 	 * @param length of the machine description byte array.
 	 * @throws IOException if an
 	 */
-	public VboxConfig( byte[] machineDescription, int length ) throws UnsupportedVirtualizerFormatException
+	public VirtualizationConfigurationVirtualboxFileFormat( byte[] machineDescription, int length ) throws VirtualizationConfigurationException
 	{
 		ByteArrayInputStream is = new ByteArrayInputStream( machineDescription );
 		doc = XmlHelper.parseDocumentFromStream( is );
 		if ( doc == null ) {
 			LOGGER.error( "Failed to create a DOM from given machine description." );
-			throw new UnsupportedVirtualizerFormatException( "Could not create DOM from given machine description as. byte array." );
+			throw new VirtualizationConfigurationException( "Could not create DOM from given machine description as. byte array." );
 		}
 		init();
 	}
 
 	/**
 	 * Main initialization functions parsing the document created during the constructor.
-	 * @throws UnsupportedVirtualizerFormatException 
+	 * @throws VirtualizationConfigurationException 
 	 */
-	private void init() throws UnsupportedVirtualizerFormatException
+	private void init() throws VirtualizationConfigurationException
 	{
 		if ( Util.isEmptyString( getDisplayName() ) ) {
-			throw new UnsupportedVirtualizerFormatException( "Machine doesn't have a name" );
+			throw new VirtualizationConfigurationException( "Machine doesn't have a name" );
 		}
 		try {
 			ensureHardwareUuid();
@@ -187,21 +186,21 @@ public class VboxConfig
 	 * believing in a hardware change.
 	 *
 	 * @throws XPathExpressionException
-	 * @throws UnsupportedVirtualizerFormatException 
+	 * @throws VirtualizationConfigurationException 
 	 */
-	private void ensureHardwareUuid() throws XPathExpressionException, UnsupportedVirtualizerFormatException
+	private void ensureHardwareUuid() throws XPathExpressionException, VirtualizationConfigurationException
 	{
 		// we will need the machine uuid, so get it
 		String machineUuid = XmlHelper.XPath.compile( "/VirtualBox/Machine/@uuid" ).evaluate( this.doc );
 		if ( machineUuid.isEmpty() ) {
 			LOGGER.error( "Machine UUID empty, should never happen!" );
-			throw new UnsupportedVirtualizerFormatException( "XML doesn't contain a machine uuid" );
+			throw new VirtualizationConfigurationException( "XML doesn't contain a machine uuid" );
 		}
 
 		NodeList hwNodes = findNodes( "/VirtualBox/Machine/Hardware" );
 		int count = hwNodes.getLength();
 		if ( count != 1 ) {
-			throw new UnsupportedVirtualizerFormatException( "Zero or more '/VirtualBox/Machine/Hardware' node were found, should never happen!" );
+			throw new VirtualizationConfigurationException( "Zero or more '/VirtualBox/Machine/Hardware' node were found, should never happen!" );
 		}
 		Element hw = (Element)hwNodes.item( 0 );
 		String hwUuid = hw.getAttribute( "uuid" );
