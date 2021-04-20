@@ -22,11 +22,6 @@ public class VirtualizerVmware extends Virtualizer
 	private static final String VIRTUALIZER_NAME = "VMware";
 
 	/**
-	 * File name suffix for virtualization configuration files of the VMware virtualizer.
-	 */
-	private static final String VIRTUALIZER_CONFIG_FILE_NAME_SUFFIX = "vmx";
-
-	/**
 	 * List of supported image formats by the VMware virtualizer.
 	 */
 	private static final List<DiskImage.ImageFormat> VIRTUALIZER_SUPPORTED_IMAGE_FORMATS = Collections
@@ -37,8 +32,7 @@ public class VirtualizerVmware extends Virtualizer
 	 */
 	public VirtualizerVmware()
 	{
-		super( new org.openslx.bwlp.thrift.iface.Virtualizer( TConst.VIRT_VMWARE, VirtualizerVmware.VIRTUALIZER_NAME ),
-				VirtualizerVmware.VIRTUALIZER_CONFIG_FILE_NAME_SUFFIX );
+		super( new org.openslx.bwlp.thrift.iface.Virtualizer( TConst.VIRT_VMWARE, VirtualizerVmware.VIRTUALIZER_NAME ) );
 	}
 
 	@Override

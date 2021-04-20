@@ -13,9 +13,9 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
-import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder;
+import org.openslx.virtualization.virtualizer.VirtualizerVirtualBox;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 import org.w3c.dom.Attr;
@@ -81,14 +81,17 @@ class VBoxUsbSpeedMeta
 public class VirtualizationConfigurationVirtualBox extends VirtualizationConfiguration<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
 {
 	/**
+	 * File name extension for VirtualBox virtualization configuration files..
+	 */
+	private static final String CONFIGURATION_FILE_NAME_EXTENSION = ".vbox";
+	
+	/**
 	 * List of supported image formats by the VirtualBox hypervisor.
 	 */
 	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
 			Arrays.asList( ImageFormat.VDI ) );
 	
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVirtualBox.class );
-
-	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_VIRTUALBOX, "VirtualBox" );
 
 	private final VirtualizationConfigurationVirtualboxFileFormat config;
 
@@ -106,14 +109,14 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 
 	public VirtualizationConfigurationVirtualBox( List<OperatingSystem> osList, File file ) throws IOException, VirtualizationConfigurationException
 	{
-		super( osList );
+		super( new VirtualizerVirtualBox(), osList );
 		this.config = new VirtualizationConfigurationVirtualboxFileFormat( file );
 		init();
 	}
 
 	public VirtualizationConfigurationVirtualBox( List<OperatingSystem> osList, byte[] vmContent, int length ) throws IOException, VirtualizationConfigurationException
 	{
-		super( osList );
+		super( new VirtualizerVirtualBox(), osList );
 		this.config = new VirtualizationConfigurationVirtualboxFileFormat( vmContent, length );
 		init();
 	}
@@ -127,12 +130,6 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 			hdds.add( hardDisk );
 		}
 	}
-
-	@Override
-	public Virtualizer getVirtualizer()
-	{
-		return virtualizer;
-	}
 	
 	@Override
 	public List<DiskImage.ImageFormat> getSupportedImageFormats()
@@ -141,9 +138,15 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	}
 
 	@Override
-	public void applySettingsForLocalEdit()
+	public void transformEditable() throws VirtualizationConfigurationException
 	{
 		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void transformPrivacy() throws VirtualizationConfigurationException
+	{
+		
 	}
 
 	@Override
@@ -470,7 +473,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	}
 
 	@Override
-	public boolean tweakForNonPersistent()
+	public void transformNonPersistent() throws VirtualizationConfigurationException
 	{
 		// Cannot disable suspend
 		// https://forums.virtualbox.org/viewtopic.php?f=6&t=77169
@@ -484,7 +487,6 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		config.setExtraData( "GUI/PreventSnapshotOperations", "true" );
 		config.setExtraData( "GUI/PreventApplicationUpdate", "true" );
 		config.setExtraData( "GUI/RestrictedCloseActions", "SaveState,PowerOffRestoringSnapshot,Detach" );
-		return true;
 	}
 
 	@Override
@@ -531,5 +533,11 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 			}
 		}
 		return maxItem;
+	}
+
+	@Override
+	public String getFileNameExtension()
+	{
+		return VirtualizationConfigurationVirtualBox.CONFIGURATION_FILE_NAME_EXTENSION;
 	}
 }

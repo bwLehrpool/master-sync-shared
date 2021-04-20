@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
-import org.openslx.bwlp.thrift.iface.Virtualizer;
+import org.openslx.virtualization.virtualizer.Virtualizer;
 import org.openslx.vm.disk.DiskImage;
 
 /**
@@ -31,6 +31,8 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 	protected Map<HWVersion, V> hwversion = new HashMap<>();
 	protected Map<EthernetDevType, W> networkCards = new HashMap<>();
 	protected Map<UsbSpeed, X> usbSpeeds = new HashMap<>();
+	
+	private final Virtualizer virtualizer;
 
 	/**
 	 * Virtual sound cards types
@@ -249,8 +251,9 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 	 * Methods
 	 */
 
-	public VirtualizationConfiguration( List<OperatingSystem> osList )
+	public VirtualizationConfiguration( Virtualizer virtualizer, List<OperatingSystem> osList )
 	{
+		this.virtualizer = virtualizer;
 		this.osList = osList;
 
 		// register virtual hardware models for graphical editing of virtual devices (GPU, sound, USB, ...)
@@ -293,12 +296,6 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 	 * @return list of image formats.
 	 */
 	public abstract List<DiskImage.ImageFormat> getSupportedImageFormats();
-	
-	/**
-	 * Apply config options that are desired when locally editing a VM. for vmware,
-	 * this disables automatic DPI scaling of the guest.
-	 */
-	public abstract void applySettingsForLocalEdit();
 
 	/**
 	 * Returns a VmMetaData instance of the given machine description given as file
@@ -327,7 +324,7 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 		}
 		try {
 			return new VirtualizationConfigurationDocker(osList, file);
-		} catch ( Exception e ) {
+		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.info( "Not a tar.gz file, for docker container", e );
 		}
 
@@ -371,6 +368,13 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 		LOGGER.error( "Could not detect any known virtualizer format" );
 		return null;
 	}
+	
+	/**
+	 * Returns the file name extension for the virtualization configuration file.
+	 * 
+	 * @return file name extension for the virtualization configuration file.
+	 */
+	public abstract String getFileNameExtension();
 
 	public abstract boolean addHddTemplate( File diskImage, String hddMode, String redoDir );
 
@@ -414,10 +418,38 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 
 	public abstract boolean addEthernet( EtherType type );
 
-	public abstract Virtualizer getVirtualizer();
+	public Virtualizer getVirtualizer()
+	{
+		return this.virtualizer;
+	}
 
-	public abstract boolean tweakForNonPersistent();
-
+	/**
+	 * Transforms the virtualization configuration in terms of a privacy filter to filter out
+	 * sensitive information like name of users in absolute paths.
+	 * 
+	 * @throws VirtualizationConfigurationException transformation of the virtualization
+	 *            configuration failed.
+	 */
+	public abstract void transformPrivacy() throws VirtualizationConfigurationException;
+	
+	/**
+	 * Transforms the virtualization configuration applying options that are desired when locally
+	 * editing a virtualized system (e.g. disables automatic DPI scaling).
+	 * 
+	 * @throws VirtualizationConfigurationException transformation of the virtualization
+	 *            configuration failed.
+	 */
+	public abstract void transformEditable() throws VirtualizationConfigurationException;
+	
+	/**
+	 * Transforms the virtualization configuration applying options that are desired when running a
+	 * virtualized system in a stateless manner.
+	 * 
+	 * @throws VirtualizationConfigurationException transformation of the virtualization
+	 *            configuration failed.
+	 */
+	public abstract void transformNonPersistent() throws VirtualizationConfigurationException;
+	
 	/**
 	 * Function used to register virtual devices
 	 */

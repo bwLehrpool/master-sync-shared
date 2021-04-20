@@ -2,8 +2,7 @@ package org.openslx.virtualization.configuration;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
-import org.openslx.bwlp.thrift.iface.Virtualizer;
-import org.openslx.thrifthelper.TConst;
+import org.openslx.virtualization.virtualizer.VirtualizerDocker;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
@@ -38,14 +37,17 @@ class DockerUsbSpeedMeta
 public class VirtualizationConfigurationDocker extends VirtualizationConfiguration<DockerSoundCardMeta, DockerDDAccelMeta, DockerHWVersionMeta, DockerEthernetDevTypeMeta, DockerUsbSpeedMeta> {
 
 	/**
+	 * File name extension for Docker virtualization configuration files.
+	 */
+	private static final String CONFIGURATION_FILE_NAME_EXTENSION = null;
+	
+	/**
 	 * List of supported image formats by the Docker hypervisor.
 	 */
 	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
 			Arrays.asList( ImageFormat.NONE ) );
 	
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationDocker.class);
-
-	private final Virtualizer virtualizer = new Virtualizer(TConst.VIRT_DOCKER, "Docker");
 
 	/**
 	 * containerDefinition is a serialized tar.gz archive and represents a
@@ -60,7 +62,7 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	private byte[] containerDefinition;
 
 	public VirtualizationConfigurationDocker(List<OperatingSystem> osList, File file) throws VirtualizationConfigurationException {
-		super(osList);
+		super(new VirtualizerDocker(), osList);
 
 		BufferedInputStream bis = null;
 		
@@ -83,7 +85,7 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 
 	public VirtualizationConfigurationDocker(List<OperatingSystem> osList, byte[] vmContent, int length)
 			throws VirtualizationConfigurationException {
-		super(osList);
+		super(new VirtualizerDocker(), osList);
 
 		containerDefinition = vmContent;
 
@@ -117,8 +119,12 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 		return VirtualizationConfigurationDocker.SUPPORTED_IMAGE_FORMATS;
 	}
 
-	@Override public void applySettingsForLocalEdit() {
+	@Override public void transformEditable() throws VirtualizationConfigurationException {
 
+	}
+	
+	@Override
+	public void transformPrivacy() throws VirtualizationConfigurationException {
 	}
 
 	@Override public boolean addHddTemplate(File diskImage, String hddMode, String redoDir) {
@@ -205,15 +211,16 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 		return false;
 	}
 
-	@Override public Virtualizer getVirtualizer() {
-		return virtualizer;
-	}
-
-	@Override public boolean tweakForNonPersistent() {
-		return false;
+	@Override public void transformNonPersistent() throws VirtualizationConfigurationException {
+		
 	}
 
 	@Override public void registerVirtualHW() {
 
+	}
+
+	@Override
+	public String getFileNameExtension() {
+		return VirtualizationConfigurationDocker.CONFIGURATION_FILE_NAME_EXTENSION;
 	}
 }

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
-import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.libvirt.domain.Domain;
 import org.openslx.libvirt.domain.device.ControllerUsb;
 import org.openslx.libvirt.domain.device.Disk.BusType;
@@ -26,7 +25,7 @@ import org.openslx.libvirt.domain.device.Video;
 import org.openslx.libvirt.xml.LibvirtXmlDocumentException;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlValidationException;
-import org.openslx.thrifthelper.TConst;
+import org.openslx.virtualization.virtualizer.VirtualizerQemu;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
@@ -247,15 +246,15 @@ public class VirtualizationConfigurationQemu extends
 	public static final String CDROM_DEFAULT_PHYSICAL_DRIVE = "/dev/sr0";
 
 	/**
+	 * File name extension for QEMU (Libvirt) virtualization configuration files.
+	 */
+	private static final String CONFIGURATION_FILE_NAME_EXTENSION = ".xml";
+
+	/**
 	 * List of supported image formats by the QEMU hypervisor.
 	 */
 	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
 			Arrays.asList( ImageFormat.QCOW2, ImageFormat.VMDK, ImageFormat.VDI ) );
-
-	/**
-	 * Representation of a QEMU hypervisor (managed by Libvirt).
-	 */
-	private static final Virtualizer VIRTUALIZER = new Virtualizer( TConst.VIRT_QEMU, "QEMU" );
 
 	/**
 	 * Libvirt XML configuration file to modify configuration of virtual machine for QEMU.
@@ -285,9 +284,10 @@ public class VirtualizationConfigurationQemu extends
 	 * 
 	 * @throws VirtualizationConfigurationException Libvirt XML configuration cannot be processed.
 	 */
-	public VirtualizationConfigurationQemu( List<OperatingSystem> osList, File file ) throws VirtualizationConfigurationException
+	public VirtualizationConfigurationQemu( List<OperatingSystem> osList, File file )
+			throws VirtualizationConfigurationException
 	{
-		super( osList );
+		super( new VirtualizerQemu(), osList );
 
 		try {
 			// read and parse Libvirt domain XML configuration document
@@ -312,7 +312,7 @@ public class VirtualizationConfigurationQemu extends
 	public VirtualizationConfigurationQemu( List<OperatingSystem> osList, byte[] vmContent, int length )
 			throws VirtualizationConfigurationException
 	{
-		super( osList );
+		super( new VirtualizerQemu(), osList );
 
 		try {
 			// read and parse Libvirt domain XML configuration document
@@ -341,10 +341,6 @@ public class VirtualizationConfigurationQemu extends
 		for ( DiskStorage storageDiskDevice : this.vmConfig.getDiskStorageDevices() ) {
 			this.addHddMetaData( storageDiskDevice );
 		}
-
-		// start of privacy filters to filter out sensitive information like name of users in absolute paths, ...
-		// removes all referenced storage files of all specified CDROMs, Floppy drives and HDDs
-		this.vmConfig.removeDiskDevicesStorage();
 	}
 
 	/**
@@ -356,7 +352,8 @@ public class VirtualizationConfigurationQemu extends
 	private void addHddMetaData( DiskStorage storageDiskDevice )
 	{
 		String hddChipsetModel = null;
-		DriveBusType hddChipsetBus = VirtualizationConfigurationQemuUtils.convertBusType( storageDiskDevice.getBusType() );
+		DriveBusType hddChipsetBus = VirtualizationConfigurationQemuUtils
+				.convertBusType( storageDiskDevice.getBusType() );
 		String hddImagePath = storageDiskDevice.getStorageSource();
 
 		this.hdds.add( new HardDisk( hddChipsetModel, hddChipsetBus, hddImagePath ) );
@@ -383,7 +380,7 @@ public class VirtualizationConfigurationQemu extends
 	}
 
 	@Override
-	public void applySettingsForLocalEdit()
+	public void transformEditable() throws VirtualizationConfigurationException
 	{
 		// NOT implemented yet
 	}
@@ -836,16 +833,16 @@ public class VirtualizationConfigurationQemu extends
 	}
 
 	@Override
-	public Virtualizer getVirtualizer()
+	public void transformNonPersistent() throws VirtualizationConfigurationException
 	{
-		return VirtualizationConfigurationQemu.VIRTUALIZER;
+		// NOT implemented yet
 	}
 
 	@Override
-	public boolean tweakForNonPersistent()
+	public void transformPrivacy() throws VirtualizationConfigurationException
 	{
-		// NOT implemented yet
-		return false;
+		// removes all referenced storage files of all specified CDROMs, Floppy drives and HDDs
+		this.vmConfig.removeDiskDevicesStorage();
 	}
 
 	@Override
@@ -877,5 +874,11 @@ public class VirtualizationConfigurationQemu extends
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB2_0, new QemuUsbSpeedMeta( 2, ControllerUsb.Model.ICH9_EHCI1 ) );
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB3_0, new QemuUsbSpeedMeta( 3, ControllerUsb.Model.QEMU_XHCI ) );
 		// @formatter:on
+	}
+
+	@Override
+	public String getFileNameExtension()
+	{
+		return VirtualizationConfigurationQemu.CONFIGURATION_FILE_NAME_EXTENSION;
 	}
 }

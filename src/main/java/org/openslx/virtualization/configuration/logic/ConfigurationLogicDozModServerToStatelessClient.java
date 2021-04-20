@@ -1,0 +1,74 @@
+package org.openslx.virtualization.configuration.logic;
+
+import org.openslx.virtualization.configuration.VirtualizationConfiguration;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.EtherType;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.UsbSpeed;
+import org.openslx.virtualization.configuration.VirtualizationConfigurationException;
+import org.openslx.virtualization.configuration.data.ConfigurationDataDozModServerToStatelessClient;
+import org.openslx.virtualization.configuration.transformation.TransformationException;
+
+public class ConfigurationLogicDozModServerToStatelessClient
+		extends ConfigurationLogic<ConfigurationDataDozModServerToStatelessClient>
+{
+	private static final String CONFIGURATION_LOGIC_NAME = "Transformation of virtualization configuration during download from DozMod server to stateless client";
+
+	private static final EtherType CONFIGURATION_DEFAULT_ETHERNET_TYPE = EtherType.NAT;
+
+	public ConfigurationLogicDozModServerToStatelessClient()
+	{
+		super( ConfigurationLogicDozModServerToStatelessClient.CONFIGURATION_LOGIC_NAME );
+	}
+
+	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?, ?> config,
+			ConfigurationDataDozModServerToStatelessClient args )
+			throws TransformationException
+	{
+		if ( config == null || args == null ) {
+			throw new TransformationException( "Virtualization configuration or input arguments are missing!" );
+		} else if ( args.getDisplayName() == null || args.getDisplayName().isEmpty() ) {
+			throw new TransformationException( "Valid display name is not specified!" );
+		}
+	}
+
+	@Override
+	public void transform( VirtualizationConfiguration<?, ?, ?, ?, ?> config,
+			ConfigurationDataDozModServerToStatelessClient args )
+			throws TransformationException
+	{
+		// check if input parameters for a transformation are valid
+		this.validateInputs( config, args );
+
+		// set display name of lecture
+		if ( !config.addDisplayName( args.getDisplayName() ) ) {
+			throw new TransformationException( "Can not set display name in virtualization configuration!" );
+		}
+
+		// append hard disk drive
+		if ( !config.addHddTemplate( "%VM_DISK_PATH%", "%VM_DISK_MODE%", "%VM_DISK_REDOLOGDIR%" ) ) {
+			throw new TransformationException( "Can not configure hard disk in virtualization configuration!" );
+		}
+
+		// append default NAT interface
+		if ( !config.addEthernet(
+				ConfigurationLogicDozModServerToStatelessClient.CONFIGURATION_DEFAULT_ETHERNET_TYPE ) ) {
+			throw new TransformationException( "Can not configure NAT interface in virtualization configuration!" );
+		}
+
+		// set the guest OS if specified
+		if ( args.getOsId() != null ) {
+			config.setOs( args.getOsId() );
+		}
+
+		// disable USB if necessary
+		if ( !args.hasUsbAccess() ) {
+			config.setMaxUsbSpeed( UsbSpeed.NONE );
+		}
+
+		// apply settings to run virtualized system in a stateless manner
+		try {
+			config.transformNonPersistent();
+		} catch ( VirtualizationConfigurationException e ) {
+			throw new TransformationException( e.getLocalizedMessage() );
+		}
+	}
+}

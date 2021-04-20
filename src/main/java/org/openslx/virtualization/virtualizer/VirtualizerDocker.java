@@ -22,11 +22,6 @@ public class VirtualizerDocker extends Virtualizer
 	private static final String VIRTUALIZER_NAME = "Docker";
 
 	/**
-	 * File name suffix for virtualization configuration files of the Docker virtualizer.
-	 */
-	private static final String VIRTUALIZER_CONFIG_FILE_NAME_SUFFIX = null;
-
-	/**
 	 * List of supported image formats by the Docker virtualizer.
 	 */
 	private static final List<DiskImage.ImageFormat> VIRTUALIZER_SUPPORTED_IMAGE_FORMATS = Collections
@@ -37,8 +32,7 @@ public class VirtualizerDocker extends Virtualizer
 	 */
 	public VirtualizerDocker()
 	{
-		super( new org.openslx.bwlp.thrift.iface.Virtualizer( TConst.VIRT_DOCKER, VirtualizerDocker.VIRTUALIZER_NAME ),
-				VirtualizerDocker.VIRTUALIZER_CONFIG_FILE_NAME_SUFFIX );
+		super( new org.openslx.bwlp.thrift.iface.Virtualizer( TConst.VIRT_DOCKER, VirtualizerDocker.VIRTUALIZER_NAME ));
 	}
 
 	@Override

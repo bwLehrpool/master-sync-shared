@@ -14,10 +14,10 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
-import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationVmwareFileFormat.ConfigEntry;
+import org.openslx.virtualization.virtualizer.VirtualizerVmware;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
@@ -78,14 +78,17 @@ class VmwareUsbSpeed
 public class VirtualizationConfigurationVmware extends VirtualizationConfiguration<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareHWVersionMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
 {
 	/**
+	 * File name extension for VMware virtualization configuration files.
+	 */
+	private static final String CONFIGURATION_FILE_NAME_EXTENSION = ".vmx";
+	
+	/**
 	 * List of supported image formats by the VMware hypervisor.
 	 */
 	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
 			Arrays.asList( ImageFormat.VMDK ) );
 	
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVmware.class );
-
-	private static final Virtualizer virtualizer = new Virtualizer( TConst.VIRT_VMWARE, "VMware" );
 
 	private static final Pattern hddKey = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d|nvme\\d):?(\\d)?\\.(.*)", Pattern.CASE_INSENSITIVE );
 
@@ -122,14 +125,14 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 
 	public VirtualizationConfigurationVmware( List<OperatingSystem> osList, File file ) throws IOException, VirtualizationConfigurationException
 	{
-		super( osList );
+		super( new VirtualizerVmware(), osList );
 		this.config = new VirtualizationConfigurationVmwareFileFormat( file );
 		init();
 	}
 
 	public VirtualizationConfigurationVmware( List<OperatingSystem> osList, byte[] vmxContent, int length ) throws VirtualizationConfigurationException
 	{
-		super( osList );
+		super( new VirtualizerVmware(), osList );
 		this.config = new VirtualizationConfigurationVmwareFileFormat( vmxContent, length ); // still unfiltered
 		init(); // now filtered
 	}
@@ -412,10 +415,9 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	}
 
 	@Override
-	public boolean tweakForNonPersistent()
+	public void transformNonPersistent() throws VirtualizationConfigurationException
 	{
 		addFiltered( "suspend.disabled", "TRUE" );
-		return true;
 	}
 
 	@Override
@@ -449,12 +451,6 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 		return config.toString( false, false ).getBytes( StandardCharsets.UTF_8 );
 	}
 
-	@Override
-	public Virtualizer getVirtualizer()
-	{
-		return virtualizer;
-	}
-
 	private static class Device
 	{
 		public boolean present = false;
@@ -482,7 +478,7 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	}
 
 	@Override
-	public void applySettingsForLocalEdit()
+	public void transformEditable() throws VirtualizationConfigurationException
 	{
 		addFiltered( "gui.applyHostDisplayScalingToGuest", "FALSE" );
 	}
@@ -639,6 +635,11 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 		return false;
 	}
 
+	@Override
+	public void transformPrivacy() throws VirtualizationConfigurationException
+	{
+	}
+
 	public void registerVirtualHW()
 	{
 		soundCards.put( VirtualizationConfiguration.SoundCardType.NONE, new VmWareSoundCardMeta( false, null ) );
@@ -677,6 +678,12 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB1_1, new VmwareUsbSpeed( 1, "usb" ) );
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB2_0, new VmwareUsbSpeed( 2, "ehci" ) );
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB3_0, new VmwareUsbSpeed( 3, "usb_xhci" ) );
+	}
+
+	@Override
+	public String getFileNameExtension()
+	{
+		return VirtualizationConfigurationVmware.CONFIGURATION_FILE_NAME_EXTENSION;
 	}
 
 }

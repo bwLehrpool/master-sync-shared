@@ -22,20 +22,13 @@ public abstract class Virtualizer
 	protected final org.openslx.bwlp.thrift.iface.Virtualizer internalVirtualizer;
 
 	/**
-	 * File name suffix for virtualization configuration files of the virtualizer.
-	 */
-	public final String configFileNameSuffix;
-
-	/**
 	 * Creates a new virtualizer.
 	 * 
 	 * @param internalVirtualizer internal data representation for the new virtualizer.
-	 * @param configFileNameSuffix
 	 */
-	public Virtualizer( org.openslx.bwlp.thrift.iface.Virtualizer internalVirtualizer, String configFileNameSuffix )
+	public Virtualizer( org.openslx.bwlp.thrift.iface.Virtualizer internalVirtualizer )
 	{
 		this.internalVirtualizer = internalVirtualizer;
-		this.configFileNameSuffix = configFileNameSuffix;
 	}
 
 	/**
@@ -56,16 +49,6 @@ public abstract class Virtualizer
 	public String getName()
 	{
 		return this.internalVirtualizer.getVirtName();
-	}
-
-	/**
-	 * Returns the file name suffix for virtualization configuration files of the virtualizer.
-	 * 
-	 * @return file name suffix for virtualization configuration files of the virtualizer.
-	 */
-	public String getConfigFileNameSuffix()
-	{
-		return this.configFileNameSuffix;
 	}
 
 	/**

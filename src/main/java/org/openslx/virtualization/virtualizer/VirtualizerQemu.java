@@ -22,11 +22,6 @@ public class VirtualizerQemu extends Virtualizer
 	private static final String VIRTUALIZER_NAME = "QEMU";
 
 	/**
-	 * File name suffix for virtualization configuration files (Libvirt) of the QEMU virtualizer.
-	 */
-	private static final String VIRTUALIZER_CONFIG_FILE_NAME_SUFFIX = "xml";
-
-	/**
 	 * List of supported image formats by the QEMU virtualizer.
 	 */
 	private static final List<DiskImage.ImageFormat> VIRTUALIZER_SUPPORTED_IMAGE_FORMATS = Collections
@@ -37,8 +32,7 @@ public class VirtualizerQemu extends Virtualizer
 	 */
 	public VirtualizerQemu()
 	{
-		super( new org.openslx.bwlp.thrift.iface.Virtualizer( TConst.VIRT_QEMU, VirtualizerQemu.VIRTUALIZER_NAME ),
-				VirtualizerQemu.VIRTUALIZER_CONFIG_FILE_NAME_SUFFIX );
+		super( new org.openslx.bwlp.thrift.iface.Virtualizer( TConst.VIRT_QEMU, VirtualizerQemu.VIRTUALIZER_NAME ) );
 	}
 
 	@Override
