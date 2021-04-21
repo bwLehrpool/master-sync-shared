@@ -423,6 +423,8 @@ struct SatelliteConfig {
 	9: optional bool allowLoginByDefault,
 	// ServerSide Copy on, off, auto or controlled by user
 	10: optional SscMode serverSideCopy,
+	// Students are allowed to download non-restricted images?
+	11: optional bool allowStudentDownload,
 }
 
 struct SatelliteStatus {
