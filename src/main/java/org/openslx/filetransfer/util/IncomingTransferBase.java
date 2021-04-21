@@ -389,7 +389,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				currentChunk = chunks.getMissing();
 			} catch ( InterruptedException e ) {
 				Thread.currentThread().interrupt();
-				cancel();
+				LOGGER.info("Incoming transfer connection was interrupted");
 				return null;
 			}
 			if ( currentChunk == null ) {
@@ -600,7 +600,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		}
 		// A block finished, see if we can queue a new one
 		queueUnhashedChunk( false );
-		if ( localCopyManager != null ) {
+		if ( localCopyManager != null && localCopyManager.isAlive() ) {
 			localCopyManager.trigger();
 		}
 	}
@@ -645,7 +645,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 
 	final synchronized void finishUploadInternal()
 	{
-		if ( state == TransferState.FINISHED ) {
+		if ( state == TransferState.FINISHED || state == TransferState.ERROR ) {
 			return;
 		}
 		try {
@@ -659,13 +659,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		if ( localCopyManager != null ) {
 			localCopyManager.interrupt();
 		}
-		if ( state != TransferState.WORKING ) {
+		state = TransferState.FINISHED; // Races...
+		if ( !finishIncomingTransfer() ) {
 			state = TransferState.ERROR;
-		} else {
-			state = TransferState.FINISHED; // Races...
-			if ( !finishIncomingTransfer() ) {
-				state = TransferState.ERROR;
-			}
 		}
 	}
 	
