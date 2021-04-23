@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openslx.thrifthelper.TConst;
+import org.openslx.virtualization.Version;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
@@ -28,6 +29,11 @@ public class VirtualizerVirtualBox extends Virtualizer
 			.unmodifiableList( Arrays.asList( ImageFormat.VDI ) );
 
 	/**
+	 * List of supported version of the VirtualBox virtualizer.
+	 */
+	private static final List<Version> VIRTUALIZER_SUPPORTED_VERSIONS = null;
+
+	/**
 	 * Creates a new VirtualBox virtualizer.
 	 */
 	public VirtualizerVirtualBox()
@@ -40,5 +46,11 @@ public class VirtualizerVirtualBox extends Virtualizer
 	public List<ImageFormat> getSupportedImageFormats()
 	{
 		return VirtualizerVirtualBox.VIRTUALIZER_SUPPORTED_IMAGE_FORMATS;
+	}
+
+	@Override
+	public List<Version> getSupportedVersions()
+	{
+		return VirtualizerVirtualBox.VIRTUALIZER_SUPPORTED_VERSIONS;
 	}
 }

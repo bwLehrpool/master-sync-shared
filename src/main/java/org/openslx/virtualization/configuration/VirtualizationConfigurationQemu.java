@@ -4,8 +4,6 @@ import java.io.File;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -25,9 +23,8 @@ import org.openslx.libvirt.domain.device.Video;
 import org.openslx.libvirt.xml.LibvirtXmlDocumentException;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlValidationException;
+import org.openslx.virtualization.Version;
 import org.openslx.virtualization.virtualizer.VirtualizerQemu;
-import org.openslx.vm.disk.DiskImage;
-import org.openslx.vm.disk.DiskImage.ImageFormat;
 
 /**
  * Metadata to describe the hardware type of a QEMU sound card.
@@ -94,40 +91,6 @@ class QemuDDAccelMeta
 	public boolean isEnabled()
 	{
 		return this.enabled;
-	}
-}
-
-/**
- * Metadata to describe the version of a QEMU virtual machine configuration.
- * 
- * @author Manuel Bentele
- * @version 1.0
- */
-class QemuHWVersionMeta
-{
-	/**
-	 * Stores the version of a QEMU virtual machine configuration.
-	 */
-	private final int version;
-
-	/**
-	 * Creates metadata to describe the version of a QEMU virtual machine configuration.
-	 * 
-	 * @param version version of the QEMU virtual machine configuration.
-	 */
-	public QemuHWVersionMeta( int version )
-	{
-		this.version = version;
-	}
-
-	/**
-	 * Returns version of the QEMU virtual machine configuration.
-	 * 
-	 * @return version of the QEMU virtual machine configuration.
-	 */
-	public int getVersion()
-	{
-		return this.version;
 	}
 }
 
@@ -223,7 +186,7 @@ class QemuUsbSpeedMeta
  * @version 1.0
  */
 public class VirtualizationConfigurationQemu extends
-		VirtualizationConfiguration<QemuSoundCardMeta, QemuDDAccelMeta, QemuHWVersionMeta, QemuEthernetDevTypeMeta, QemuUsbSpeedMeta>
+		VirtualizationConfiguration<QemuSoundCardMeta, QemuDDAccelMeta, QemuEthernetDevTypeMeta, QemuUsbSpeedMeta>
 {
 	/**
 	 * Name of the network bridge for the LAN.
@@ -248,13 +211,7 @@ public class VirtualizationConfigurationQemu extends
 	/**
 	 * File name extension for QEMU (Libvirt) virtualization configuration files.
 	 */
-	private static final String CONFIGURATION_FILE_NAME_EXTENSION = ".xml";
-
-	/**
-	 * List of supported image formats by the QEMU hypervisor.
-	 */
-	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
-			Arrays.asList( ImageFormat.QCOW2, ImageFormat.VMDK, ImageFormat.VDI ) );
+	public static final String FILE_NAME_EXTENSION = "xml";
 
 	/**
 	 * Libvirt XML configuration file to modify configuration of virtual machine for QEMU.
@@ -360,29 +317,13 @@ public class VirtualizationConfigurationQemu extends
 	}
 
 	@Override
-	public byte[] getFilteredDefinitionArray()
+	public void transformEditable() throws VirtualizationConfigurationException
 	{
 		// removes all specified boot order entries
 		this.vmConfig.removeBootOrder();
 
 		// removes all source networks of all specified network interfaces
 		this.vmConfig.removeInterfaceDevicesSource();
-
-		// output filtered Libvirt domain XML configuration
-		String configuration = this.vmConfig.toString();
-		return configuration.getBytes( StandardCharsets.UTF_8 );
-	}
-
-	@Override
-	public List<DiskImage.ImageFormat> getSupportedImageFormats()
-	{
-		return VirtualizationConfigurationQemu.SUPPORTED_IMAGE_FORMATS;
-	}
-
-	@Override
-	public void transformEditable() throws VirtualizationConfigurationException
-	{
-		// NOT implemented yet
 	}
 
 	@Override
@@ -668,13 +609,13 @@ public class VirtualizationConfigurationQemu extends
 	}
 
 	@Override
-	public void setHWVersion( HWVersion type )
+	public void setVirtualizerVersion( Version type )
 	{
 		// NOT supported by the QEMU hypervisor
 	}
 
 	@Override
-	public HWVersion getHWVersion()
+	public Version getVirtualizerVersion()
 	{
 		// NOT supported by the QEMU hypervisor
 		return null;
@@ -754,7 +695,7 @@ public class VirtualizationConfigurationQemu extends
 	}
 
 	@Override
-	public byte[] getDefinitionArray()
+	public byte[] getConfigurationAsByteArray()
 	{
 		String configuration = this.vmConfig.toString();
 
@@ -859,8 +800,6 @@ public class VirtualizationConfigurationQemu extends
 		ddacc.put( VirtualizationConfiguration.DDAcceleration.OFF, new QemuDDAccelMeta( false ) );
 		ddacc.put( VirtualizationConfiguration.DDAcceleration.ON,  new QemuDDAccelMeta( true ) );
 
-		hwversion.put( VirtualizationConfiguration.HWVersion.DEFAULT, new QemuHWVersionMeta( 0 ) );
-
 		networkCards.put( VirtualizationConfiguration.EthernetDevType.NONE,      new QemuEthernetDevTypeMeta( null ) );
 		networkCards.put( VirtualizationConfiguration.EthernetDevType.AUTO,      new QemuEthernetDevTypeMeta( Interface.Model.VIRTIO_NET_PCI ) );
 		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETPCI2, new QemuEthernetDevTypeMeta( Interface.Model.PCNET ) );
@@ -879,6 +818,6 @@ public class VirtualizationConfigurationQemu extends
 	@Override
 	public String getFileNameExtension()
 	{
-		return VirtualizationConfigurationQemu.CONFIGURATION_FILE_NAME_EXTENSION;
+		return VirtualizationConfigurationQemu.FILE_NAME_EXTENSION;
 	}
 }

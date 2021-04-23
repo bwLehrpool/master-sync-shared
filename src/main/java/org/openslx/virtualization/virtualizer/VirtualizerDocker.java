@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openslx.thrifthelper.TConst;
+import org.openslx.virtualization.Version;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
@@ -28,16 +29,27 @@ public class VirtualizerDocker extends Virtualizer
 			.unmodifiableList( Arrays.asList( ImageFormat.NONE ) );
 
 	/**
+	 * List of supported versions of the Docker virtualizer.
+	 */
+	private static final List<Version> VIRTUALIZER_SUPPORTED_VERSIONS = null;
+
+	/**
 	 * Creates a new Docker virtualizer.
 	 */
 	public VirtualizerDocker()
 	{
-		super( new org.openslx.bwlp.thrift.iface.Virtualizer( TConst.VIRT_DOCKER, VirtualizerDocker.VIRTUALIZER_NAME ));
+		super( new org.openslx.bwlp.thrift.iface.Virtualizer( TConst.VIRT_DOCKER, VirtualizerDocker.VIRTUALIZER_NAME ) );
 	}
 
 	@Override
 	public List<ImageFormat> getSupportedImageFormats()
 	{
 		return VirtualizerDocker.VIRTUALIZER_SUPPORTED_IMAGE_FORMATS;
+	}
+
+	@Override
+	public List<Version> getSupportedVersions()
+	{
+		return VirtualizerDocker.VIRTUALIZER_SUPPORTED_VERSIONS;
 	}
 }

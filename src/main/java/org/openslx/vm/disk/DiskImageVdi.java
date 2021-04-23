@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.openslx.virtualization.Version;
+
 /**
  * VDI disk image for virtual machines.
  * 
@@ -94,14 +96,14 @@ public class DiskImageVdi extends DiskImage
 	}
 
 	@Override
-	public int getVersion() throws DiskImageException
+	public Version getVersion() throws DiskImageException
 	{
 		final RandomAccessFile diskFile = this.getDiskImage();
 
 		final short vdiVersionMajor = Short.reverseBytes( DiskImageUtils.readShort( diskFile, 68 ) );
 		final short vdiVersionMinor = Short.reverseBytes( DiskImageUtils.readShort( diskFile, 70 ) );
 
-		return DiskImageUtils.versionFromMajorMinor( vdiVersionMajor, vdiVersionMinor );
+		return new Version( vdiVersionMajor, vdiVersionMinor );
 	}
 
 	@Override

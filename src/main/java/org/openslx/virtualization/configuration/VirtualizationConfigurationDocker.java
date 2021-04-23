@@ -2,16 +2,13 @@ package org.openslx.virtualization.configuration;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
+import org.openslx.virtualization.Version;
 import org.openslx.virtualization.virtualizer.VirtualizerDocker;
-import org.openslx.vm.disk.DiskImage;
-import org.openslx.vm.disk.DiskImage.ImageFormat;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 class DockerSoundCardMeta
@@ -19,10 +16,6 @@ class DockerSoundCardMeta
 }
 
 class DockerDDAccelMeta
-{
-}
-
-class DockerHWVersionMeta
 {
 }
 
@@ -34,19 +27,13 @@ class DockerUsbSpeedMeta
 {
 }
 
-public class VirtualizationConfigurationDocker extends VirtualizationConfiguration<DockerSoundCardMeta, DockerDDAccelMeta, DockerHWVersionMeta, DockerEthernetDevTypeMeta, DockerUsbSpeedMeta> {
+public class VirtualizationConfigurationDocker extends VirtualizationConfiguration<DockerSoundCardMeta, DockerDDAccelMeta, DockerEthernetDevTypeMeta, DockerUsbSpeedMeta> {
 
 	/**
 	 * File name extension for Docker virtualization configuration files.
 	 */
-	private static final String CONFIGURATION_FILE_NAME_EXTENSION = null;
-	
-	/**
-	 * List of supported image formats by the Docker hypervisor.
-	 */
-	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
-			Arrays.asList( ImageFormat.NONE ) );
-	
+	private static final String FILE_NAME_EXTENSION = null;
+
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationDocker.class);
 
 	/**
@@ -109,16 +96,6 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 		}
 	}
 
-	@Override public byte[] getFilteredDefinitionArray() {
-		return containerDefinition;
-	}
-	
-	@Override
-	public List<DiskImage.ImageFormat> getSupportedImageFormats()
-	{
-		return VirtualizationConfigurationDocker.SUPPORTED_IMAGE_FORMATS;
-	}
-
 	@Override public void transformEditable() throws VirtualizationConfigurationException {
 
 	}
@@ -179,12 +156,12 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 		return DDAcceleration.OFF;
 	}
 
-	@Override public void setHWVersion(HWVersion type) {
+	@Override public void setVirtualizerVersion(Version type) {
 
 	}
 
-	@Override public HWVersion getHWVersion() {
-		return HWVersion.DEFAULT;
+	@Override public Version getVirtualizerVersion() {
+		return null;
 	}
 
 	@Override public void setEthernetDevType(int cardIndex, EthernetDevType type) {
@@ -203,8 +180,8 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 		return UsbSpeed.NONE;
 	}
 
-	@Override public byte[] getDefinitionArray() {
-		return new byte[0];
+	@Override public byte[] getConfigurationAsByteArray() {
+		return this.containerDefinition;
 	}
 
 	@Override public boolean addEthernet(EtherType type) {
@@ -221,6 +198,6 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 
 	@Override
 	public String getFileNameExtension() {
-		return VirtualizationConfigurationDocker.CONFIGURATION_FILE_NAME_EXTENSION;
+		return VirtualizationConfigurationDocker.FILE_NAME_EXTENSION;
 	}
 }

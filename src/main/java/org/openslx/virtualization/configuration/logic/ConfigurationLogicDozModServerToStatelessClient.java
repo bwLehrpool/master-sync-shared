@@ -19,7 +19,7 @@ public class ConfigurationLogicDozModServerToStatelessClient
 		super( ConfigurationLogicDozModServerToStatelessClient.CONFIGURATION_LOGIC_NAME );
 	}
 
-	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?, ?> config,
+	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?> config,
 			ConfigurationDataDozModServerToStatelessClient args )
 			throws TransformationException
 	{
@@ -31,7 +31,7 @@ public class ConfigurationLogicDozModServerToStatelessClient
 	}
 
 	@Override
-	public void transform( VirtualizationConfiguration<?, ?, ?, ?, ?> config,
+	public void transform( VirtualizationConfiguration<?, ?, ?, ?> config,
 			ConfigurationDataDozModServerToStatelessClient args )
 			throws TransformationException
 	{

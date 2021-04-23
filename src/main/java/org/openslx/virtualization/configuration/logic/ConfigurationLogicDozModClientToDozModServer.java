@@ -15,7 +15,7 @@ public class ConfigurationLogicDozModClientToDozModServer
 		super( ConfigurationLogicDozModClientToDozModServer.CONFIGURATION_LOGIC_NAME );
 	}
 
-	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?, ?> config,
+	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?> config,
 			ConfigurationDataDozModClientToDozModServer args )
 			throws TransformationException
 	{
@@ -27,7 +27,7 @@ public class ConfigurationLogicDozModClientToDozModServer
 	}
 
 	@Override
-	public void transform( VirtualizationConfiguration<?, ?, ?, ?, ?> config,
+	public void transform( VirtualizationConfiguration<?, ?, ?, ?> config,
 			ConfigurationDataDozModClientToDozModServer args )
 			throws TransformationException
 	{

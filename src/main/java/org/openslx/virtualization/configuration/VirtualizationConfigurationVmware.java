@@ -3,8 +3,6 @@ package org.openslx.virtualization.configuration;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +14,9 @@ import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
+import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationVmwareFileFormat.ConfigEntry;
 import org.openslx.virtualization.virtualizer.VirtualizerVmware;
-import org.openslx.vm.disk.DiskImage;
-import org.openslx.vm.disk.DiskImage.ImageFormat;
 
 class VmWareSoundCardMeta
 {
@@ -40,16 +37,6 @@ class VmWareDDAccelMeta
 	public VmWareDDAccelMeta( boolean present )
 	{
 		isPresent = present;
-	}
-}
-
-class VmWareHWVersionMeta
-{
-	public final int version;
-
-	public VmWareHWVersionMeta( int vers )
-	{
-		version = vers;
 	}
 }
 
@@ -75,18 +62,12 @@ class VmwareUsbSpeed
 	}
 }
 
-public class VirtualizationConfigurationVmware extends VirtualizationConfiguration<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareHWVersionMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
+public class VirtualizationConfigurationVmware extends VirtualizationConfiguration<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
 {
 	/**
 	 * File name extension for VMware virtualization configuration files.
 	 */
-	private static final String CONFIGURATION_FILE_NAME_EXTENSION = ".vmx";
-	
-	/**
-	 * List of supported image formats by the VMware hypervisor.
-	 */
-	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
-			Arrays.asList( ImageFormat.VMDK ) );
+	public static final String FILE_NAME_EXTENSION = "vmx";
 	
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVmware.class );
 
@@ -255,12 +236,6 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 		} else if ( property.equalsIgnoreCase( "present" ) ) {
 			device.present = Boolean.parseBoolean( value );
 		}
-	}
-
-	@Override
-	public List<DiskImage.ImageFormat> getSupportedImageFormats()
-	{
-		return VirtualizationConfigurationVmware.SUPPORTED_IMAGE_FORMATS;
 	}
 	
 	@Override
@@ -440,15 +415,9 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 		setOs( TConst.VIRT_VMWARE, vendorOsId );
 	}
 
-	@Override
-	public byte[] getFilteredDefinitionArray()
+	public byte[] getConfigurationAsByteArray()
 	{
 		return config.toString( true, false ).getBytes( StandardCharsets.UTF_8 );
-	}
-
-	public byte[] getDefinitionArray()
-	{
-		return config.toString( false, false ).getBytes( StandardCharsets.UTF_8 );
 	}
 
 	private static class Device
@@ -534,26 +503,15 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 		}
 	}
 
-	public void setHWVersion( VirtualizationConfiguration.HWVersion type )
+	public void setVirtualizerVersion( Version type )
 	{
-		VmWareHWVersionMeta hwVersionMeta = hwversion.get( type );
-		addFiltered( "virtualHW.version", vmInteger( hwVersionMeta.version ) );
+		addFiltered( "virtualHW.version", vmInteger( type.getMajor() ) );
 	}
 
-	public VirtualizationConfiguration.HWVersion getHWVersion()
+	public Version getVirtualizerVersion()
 	{
-		int currentValue = Util.parseInt( config.get( "virtualHW.version" ), -1 );
-		VmWareHWVersionMeta hwVersionMeta = null;
-		for ( VirtualizationConfiguration.HWVersion ver : VirtualizationConfiguration.HWVersion.values() ) {
-			hwVersionMeta = hwversion.get( ver );
-			if ( hwVersionMeta == null ) {
-				continue;
-			}
-			if ( currentValue == hwVersionMeta.version ) {
-				return ver;
-			}
-		}
-		return HWVersion.NONE;
+		final short major = Integer.valueOf( Util.parseInt( config.get( "virtualHW.version" ), -1 ) ).shortValue();
+		return Version.getInstanceByMajorFromVersions( major, this.getVirtualizer().getSupportedVersions() );
 	}
 
 	public void setEthernetDevType( int cardIndex, VirtualizationConfiguration.EthernetDevType type )
@@ -644,37 +602,24 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	{
 		soundCards.put( VirtualizationConfiguration.SoundCardType.NONE, new VmWareSoundCardMeta( false, null ) );
 		soundCards.put( VirtualizationConfiguration.SoundCardType.DEFAULT, new VmWareSoundCardMeta( true, null ) );
-		soundCards.put( VirtualizationConfiguration.SoundCardType.SOUND_BLASTER, new VmWareSoundCardMeta( true, "sb16" ) );
+		soundCards.put( VirtualizationConfiguration.SoundCardType.SOUND_BLASTER,
+				new VmWareSoundCardMeta( true, "sb16" ) );
 		soundCards.put( VirtualizationConfiguration.SoundCardType.ES, new VmWareSoundCardMeta( true, "es1371" ) );
 		soundCards.put( VirtualizationConfiguration.SoundCardType.HD_AUDIO, new VmWareSoundCardMeta( true, "hdaudio" ) );
 
 		ddacc.put( VirtualizationConfiguration.DDAcceleration.OFF, new VmWareDDAccelMeta( false ) );
 		ddacc.put( VirtualizationConfiguration.DDAcceleration.ON, new VmWareDDAccelMeta( true ) );
 
-		hwversion.put( VirtualizationConfiguration.HWVersion.NONE, new VmWareHWVersionMeta( 0 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.THREE, new VmWareHWVersionMeta( 3 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.FOUR, new VmWareHWVersionMeta( 4 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.SIX, new VmWareHWVersionMeta( 6 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.SEVEN, new VmWareHWVersionMeta( 7 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.EIGHT, new VmWareHWVersionMeta( 8 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.NINE, new VmWareHWVersionMeta( 9 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.TEN, new VmWareHWVersionMeta( 10 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.ELEVEN, new VmWareHWVersionMeta( 11 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.TWELVE, new VmWareHWVersionMeta( 12 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.FOURTEEN, new VmWareHWVersionMeta( 14 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.FIFTEEN, new VmWareHWVersionMeta( 15 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.FIFTEEN_ONE, new VmWareHWVersionMeta( 16 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.SIXTEEN, new VmWareHWVersionMeta( 17 ) );
-		hwversion.put( VirtualizationConfiguration.HWVersion.SIXTEEN_ONE, new VmWareHWVersionMeta( 18 ) );
-
 		networkCards.put( VirtualizationConfiguration.EthernetDevType.AUTO, new VmWareEthernetDevTypeMeta( null ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNET32, new VmWareEthernetDevTypeMeta( "vlance" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNET32,
+				new VmWareEthernetDevTypeMeta( "vlance" ) );
 		networkCards.put( VirtualizationConfiguration.EthernetDevType.E1000, new VmWareEthernetDevTypeMeta( "e1000" ) );
 		networkCards.put( VirtualizationConfiguration.EthernetDevType.E1000E, new VmWareEthernetDevTypeMeta( "e1000e" ) );
 		networkCards.put( VirtualizationConfiguration.EthernetDevType.VMXNET, new VmWareEthernetDevTypeMeta( "vmxnet" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.VMXNET3, new VmWareEthernetDevTypeMeta( "vmxnet3" ) );
-		
-		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.NONE, new VmwareUsbSpeed( 0, null ));
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.VMXNET3,
+				new VmWareEthernetDevTypeMeta( "vmxnet3" ) );
+
+		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.NONE, new VmwareUsbSpeed( 0, null ) );
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB1_1, new VmwareUsbSpeed( 1, "usb" ) );
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB2_0, new VmwareUsbSpeed( 2, "ehci" ) );
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB3_0, new VmwareUsbSpeed( 3, "usb_xhci" ) );
@@ -683,7 +628,7 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	@Override
 	public String getFileNameExtension()
 	{
-		return VirtualizationConfigurationVmware.CONFIGURATION_FILE_NAME_EXTENSION;
+		return VirtualizationConfigurationVmware.FILE_NAME_EXTENSION;
 	}
 
 }

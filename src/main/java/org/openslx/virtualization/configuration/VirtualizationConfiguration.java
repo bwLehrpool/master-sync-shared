@@ -2,7 +2,7 @@ package org.openslx.virtualization.configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,14 +12,14 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
+import org.openslx.virtualization.Version;
 import org.openslx.virtualization.virtualizer.Virtualizer;
-import org.openslx.vm.disk.DiskImage;
 
 /**
  * Describes a configured virtual machine. This class is parsed from a machine
  * description, like a *.vmx for VMware machines.
  */
-public abstract class VirtualizationConfiguration<T, U, V, W, X>
+public abstract class VirtualizationConfiguration<T, U, W, X>
 {
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfiguration.class );
 
@@ -28,7 +28,6 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 	 */
 	protected Map<SoundCardType, T> soundCards = new HashMap<>();
 	protected Map<DDAcceleration, U> ddacc = new HashMap<>();
-	protected Map<HWVersion, V> hwversion = new HashMap<>();
 	protected Map<EthernetDevType, W> networkCards = new HashMap<>();
 	protected Map<UsbSpeed, X> usbSpeeds = new HashMap<>();
 	
@@ -59,36 +58,6 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 		public final String displayName;
 
 		private DDAcceleration( String dName )
-		{
-			this.displayName = dName;
-		}
-	}
-
-	/**
-	 * Virtual hardware version - currently only in use for VMPlayer
-	 */
-	public static enum HWVersion
-	{
-		NONE(  "(invalid)" ),
-		THREE( "  3 (Workstation 4/5, Player 1)" ),
-		FOUR(  "  4 (Workstation 4/5, Player 1/2, Fusion 1)" ),
-		SIX(   "  6 (Workstation 6)" ),
-		SEVEN( "  7 (Workstation 6.5/7, Player 3, Fusion 2/3)" ),
-		EIGHT( "  8 (Workstation 8, Player/Fusion 4)" ),
-		NINE( "  9 (Workstation 9, Player/Fusion 5)" ),
-		TEN( "10 (Workstation 10, Player/Fusion 6)" ),
-		ELEVEN( "11 (Workstation 11, Player/Fusion 7)" ),
-		TWELVE( "12 (Workstation/Player 12, Fusion 8)" ),
-		FOURTEEN( "14 (Workstation/Player 14, Fusion 10)"),
-		FIFTEEN( "15 (Workstation/Player 15, Fusion 11)"),
-		FIFTEEN_ONE( "16 (Workstation/Player 15.1, Fusion 11.1)"),
-		SIXTEEN( "17 (Workstation/Player 16, Fusion 12)"),
-		SIXTEEN_ONE( "18 (Workstation/Player 16.1, Fusion 12.1)"),
-		DEFAULT( "default" );
-
-		public final String displayName;
-
-		private HWVersion( String dName )
 		{
 			this.displayName = dName;
 		}
@@ -180,11 +149,11 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 		return availables;
 	}
 
-	public List<HWVersion> getSupportedHWVersions()
+	public List<Version> getSupportedHWVersions()
 	{
-		ArrayList<HWVersion> availables = new ArrayList<HWVersion>( hwversion.keySet() );
+		final List<Version> availables = this.getVirtualizer().getSupportedVersions();
 		Collections.sort( availables );
-		return availables;
+		return Collections.unmodifiableList( availables );
 	}
 
 	public List<EthernetDevType> getSupportedEthernetDevices()
@@ -233,20 +202,6 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 		return isMachineSnapshot;
 	}
 
-	/**
-	 * This method should return a minimal representation of the input meta data.
-	 * The representation is platform dependent, and should be stripped of all
-	 * non-essential configuration, such as CD/DVD/FLoppy drives, serial or parallel
-	 * ports, shared folders, or anything else that could be considered sensible
-	 * information (absolute paths containing the local user's name).
-	 */
-	public abstract byte[] getFilteredDefinitionArray();
-
-	public final ByteBuffer getFilteredDefinition()
-	{
-		return ByteBuffer.wrap( getFilteredDefinitionArray() );
-	}
-
 	/*
 	 * Methods
 	 */
@@ -291,20 +246,13 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 	}
 
 	/**
-	 * Returns list of image formats supported by the VM's hypervisor.
-	 * 
-	 * @return list of image formats.
-	 */
-	public abstract List<DiskImage.ImageFormat> getSupportedImageFormats();
-
-	/**
 	 * Returns a VmMetaData instance of the given machine description given as file
 	 *
 	 * @param osList List of supported operating systems
 	 * @param file VM's machine description file to get the metadata instance from
 	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 */
-	public static VirtualizationConfiguration<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
+	public static VirtualizationConfiguration<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
 			throws IOException
 	{
 		try {
@@ -341,7 +289,7 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 * @throws IOException
 	 */
-	public static VirtualizationConfiguration<?, ?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length )
+	public static VirtualizationConfiguration<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length )
 			throws IOException
 	{
 		try {
@@ -402,9 +350,9 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 
 	public abstract DDAcceleration getDDAcceleration();
 
-	public abstract void setHWVersion( HWVersion type );
+	public abstract void setVirtualizerVersion( Version type );
 
-	public abstract HWVersion getHWVersion();
+	public abstract Version getVirtualizerVersion();
 
 	public abstract void setEthernetDevType( int cardIndex, EthernetDevType type );
 
@@ -414,7 +362,18 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 
 	public abstract UsbSpeed getMaxUsbSpeed();
 
-	public abstract byte[] getDefinitionArray();
+	public abstract byte[] getConfigurationAsByteArray();
+
+	public String getConfigurationAsString()
+	{
+		return new String( this.getConfigurationAsByteArray(), StandardCharsets.UTF_8 );
+	}
+
+	@Override
+	public String toString()
+	{
+		return this.getConfigurationAsString();
+	}
 
 	public abstract boolean addEthernet( EtherType type );
 
@@ -451,7 +410,7 @@ public abstract class VirtualizationConfiguration<T, U, V, W, X>
 	public abstract void transformNonPersistent() throws VirtualizationConfigurationException;
 	
 	/**
-	 * Function used to register virtual devices
+	 * Function used to register virtual devices.
 	 */
 	public abstract void registerVirtualHW();
 }

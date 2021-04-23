@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openslx.virtualization.Version;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
 public class DiskImageVdiTest
@@ -16,7 +17,7 @@ public class DiskImageVdiTest
 	public void testVdiDiskImage() throws DiskImageException, IOException
 	{
 		final DiskImage image = DiskImage.newInstance( DiskImageTestResources.getDiskFile( "image-default.vdi" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajorMinor( Short.valueOf( "1" ), Short.valueOf( "1" ) );
+		final Version imageVersion = new Version( Short.valueOf( "1" ), Short.valueOf( "1" ) );
 
 		assertEquals( ImageFormat.VDI.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -25,13 +26,13 @@ public class DiskImageVdiTest
 		assertEquals( imageVersion, image.getVersion() );
 		assertNotNull( image.getDescription() );
 	}
-	
+
 	@Test
 	@DisplayName( "Test detection of VDI disk image snapshot" )
 	public void testVdiDiskImageSnapshot() throws DiskImageException, IOException
 	{
 		final DiskImage image = DiskImage.newInstance( DiskImageTestResources.getDiskFile( "image-default_snapshot.vdi" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajorMinor( Short.valueOf( "1" ), Short.valueOf( "1" ) );
+		final Version imageVersion = new Version( Short.valueOf( "1" ), Short.valueOf( "1" ) );
 
 		assertEquals( ImageFormat.VDI.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );

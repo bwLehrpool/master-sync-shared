@@ -6,7 +6,6 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -14,10 +13,9 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder;
 import org.openslx.virtualization.virtualizer.VirtualizerVirtualBox;
-import org.openslx.vm.disk.DiskImage;
-import org.openslx.vm.disk.DiskImage.ImageFormat;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -45,16 +43,6 @@ class VBoxDDAccelMeta
 	}
 }
 
-class VBoxHWVersionMeta
-{
-	public final int version;
-
-	public VBoxHWVersionMeta( int vers )
-	{
-		version = vers;
-	}
-}
-
 class VBoxEthernetDevTypeMeta
 {
 	public final String value;
@@ -78,18 +66,12 @@ class VBoxUsbSpeedMeta
 	}
 }
 
-public class VirtualizationConfigurationVirtualBox extends VirtualizationConfiguration<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxHWVersionMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
+public class VirtualizationConfigurationVirtualBox extends VirtualizationConfiguration<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
 {
 	/**
 	 * File name extension for VirtualBox virtualization configuration files..
 	 */
-	private static final String CONFIGURATION_FILE_NAME_EXTENSION = ".vbox";
-	
-	/**
-	 * List of supported image formats by the VirtualBox hypervisor.
-	 */
-	private static final List<DiskImage.ImageFormat> SUPPORTED_IMAGE_FORMATS = Collections.unmodifiableList(
-			Arrays.asList( ImageFormat.VDI ) );
+	public static final String FILE_NAME_EXTENSION = "vbox";
 	
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVirtualBox.class );
 
@@ -130,12 +112,6 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 			hdds.add( hardDisk );
 		}
 	}
-	
-	@Override
-	public List<DiskImage.ImageFormat> getSupportedImageFormats()
-	{
-		return VirtualizationConfigurationVirtualBox.SUPPORTED_IMAGE_FORMATS;
-	}
 
 	@Override
 	public void transformEditable() throws VirtualizationConfigurationException
@@ -150,15 +126,9 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	}
 
 	@Override
-	public byte[] getDefinitionArray()
+	public byte[] getConfigurationAsByteArray()
 	{
-		return config.toString( false ).getBytes( StandardCharsets.UTF_8 );
-	}
-
-	@Override
-	public byte[] getFilteredDefinitionArray()
-	{
-		return config.toString( false ).getBytes( StandardCharsets.UTF_8 );
+		return config.toString( true ).getBytes( StandardCharsets.UTF_8 );
 	}
 
 	@Override
@@ -384,15 +354,15 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	 * Virtual Box accepts per default only one hardware version and is hidden from the user
 	 */
 	@Override
-	public void setHWVersion( HWVersion type )
+	public void setVirtualizerVersion( Version type )
 	{
 	}
 
 	@Override
-	public VirtualizationConfiguration.HWVersion getHWVersion()
+	public Version getVirtualizerVersion()
 	{
 		// Virtual Box uses only one virtual hardware version and can't be changed
-		return VirtualizationConfiguration.HWVersion.DEFAULT;
+		return null;
 	}
 
 	@Override
@@ -443,8 +413,6 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 
 		ddacc.put( VirtualizationConfiguration.DDAcceleration.OFF, new VBoxDDAccelMeta( false ) );
 		ddacc.put( VirtualizationConfiguration.DDAcceleration.ON, new VBoxDDAccelMeta( true ) );
-
-		hwversion.put( VirtualizationConfiguration.HWVersion.DEFAULT, new VBoxHWVersionMeta( 0 ) );
 
 		// none type needs to have a valid value; it takes the value of pcnetcpi2; if value is left null or empty vm will not start because value is not valid
 		networkCards.put( VirtualizationConfiguration.EthernetDevType.NONE, new VBoxEthernetDevTypeMeta( false, "Am79C970A" ) );
@@ -538,6 +506,6 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	@Override
 	public String getFileNameExtension()
 	{
-		return VirtualizationConfigurationVirtualBox.CONFIGURATION_FILE_NAME_EXTENSION;
+		return VirtualizationConfigurationVirtualBox.FILE_NAME_EXTENSION;
 	}
 }

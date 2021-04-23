@@ -107,7 +107,7 @@ public class VirtualizationConfigurationQemuTest
 		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
 				.getPrivateDomainFromQemuMetaData( vmConfig );
 
-		final List<DiskImage.ImageFormat> supportedImageFormats = vmConfig.getSupportedImageFormats();
+		final List<DiskImage.ImageFormat> supportedImageFormats = vmConfig.getVirtualizer().getSupportedImageFormats();
 
 		assertNotNull( supportedImageFormats );
 		assertEquals( 3, supportedImageFormats.size() );
@@ -150,9 +150,7 @@ public class VirtualizationConfigurationQemuTest
 		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
 				.getPrivateDomainFromQemuMetaData( vmConfig );
 
-		final int numberOfDeletedElements = 1;
-
-		final String unfilteredXmlConfig = new String( vmConfig.getDefinitionArray(), StandardCharsets.UTF_8 );
+		final String unfilteredXmlConfig = new String( vmConfig.getConfigurationAsByteArray(), StandardCharsets.UTF_8 );
 		final String originalXmlConfig = FileUtils.readFileToString( file, StandardCharsets.UTF_8 );
 
 		assertNotNull( unfilteredXmlConfig );
@@ -160,34 +158,7 @@ public class VirtualizationConfigurationQemuTest
 		final int lengthUnfilteredXmlConfig = unfilteredXmlConfig.split( System.lineSeparator() ).length;
 		final int lengthOriginalXmlConfig = originalXmlConfig.split( System.lineSeparator() ).length;
 
-		assertEquals( lengthOriginalXmlConfig, lengthUnfilteredXmlConfig + numberOfDeletedElements );
-
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
-	}
-
-	@Test
-	@DisplayName( "Test output of filtered VM configuration" )
-	public void testQemuMetaDataGetFilteredDefinitionArray()
-			throws VirtualizationConfigurationException, IOException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException
-	{
-		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
-		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
-
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
-		final int numberOfDeletedElements = 2;
-
-		final String filteredXmlConfig = new String( vmConfig.getFilteredDefinitionArray(), StandardCharsets.UTF_8 );
-		final String originalXmlConfig = FileUtils.readFileToString( file, StandardCharsets.UTF_8 );
-
-		assertNotNull( filteredXmlConfig );
-
-		final int lengthFilteredXmlConfig = filteredXmlConfig.split( System.lineSeparator() ).length;
-		final int lengthOriginalXmlConfig = originalXmlConfig.split( System.lineSeparator() ).length;
-
-		assertEquals( lengthOriginalXmlConfig, lengthFilteredXmlConfig + numberOfDeletedElements );
+		assertEquals( lengthOriginalXmlConfig, lengthUnfilteredXmlConfig );
 
 		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
 	}

@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openslx.virtualization.Version;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
 public class DiskImageQcow2Test
@@ -16,7 +17,7 @@ public class DiskImageQcow2Test
 	public void testQcow2DiskImage() throws DiskImageException, IOException
 	{
 		final DiskImage image = DiskImage.newInstance( DiskImageTestResources.getDiskFile( "image-default.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -32,7 +33,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-16384_cp-on_l2-on.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -48,7 +49,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-16384_cp-on_l2-off.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -64,7 +65,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-16384_cp-off_l2-on.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -80,7 +81,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-16384_cp-off_l2-off.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -96,7 +97,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-65536_cp-on_l2-on.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -112,7 +113,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-65536_cp-on_l2-off.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -128,7 +129,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-65536_cp-off_l2-on.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -144,7 +145,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-65536_cp-off_l2-off.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -160,7 +161,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-2097152_cp-on_l2-on.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -176,7 +177,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-2097152_cp-on_l2-off.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -192,7 +193,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-2097152_cp-off_l2-on.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -208,7 +209,7 @@ public class DiskImageQcow2Test
 	{
 		final DiskImage image = DiskImage
 				.newInstance( DiskImageTestResources.getDiskFile( "image_cs-2097152_cp-off_l2-off.qcow2" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
 
 		assertEquals( ImageFormat.QCOW2.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );

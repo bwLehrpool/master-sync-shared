@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.openslx.thrifthelper.TConst;
+import org.openslx.virtualization.Version;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
@@ -28,6 +29,11 @@ public class VirtualizerQemu extends Virtualizer
 			.unmodifiableList( Arrays.asList( ImageFormat.QCOW2, ImageFormat.VMDK, ImageFormat.VDI ) );
 
 	/**
+	 * List of supported versions of the QEMU virtualizer.
+	 */
+	private static final List<Version> VIRTUALIZER_SUPPORTED_VERSIONS = null;
+
+	/**
 	 * Creates a new QEMU virtualizer.
 	 */
 	public VirtualizerQemu()
@@ -39,5 +45,11 @@ public class VirtualizerQemu extends Virtualizer
 	public List<ImageFormat> getSupportedImageFormats()
 	{
 		return VirtualizerQemu.VIRTUALIZER_SUPPORTED_IMAGE_FORMATS;
+	}
+
+	@Override
+	public List<Version> getSupportedVersions()
+	{
+		return VirtualizerQemu.VIRTUALIZER_SUPPORTED_VERSIONS;
 	}
 }

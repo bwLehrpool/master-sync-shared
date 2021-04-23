@@ -2,6 +2,7 @@ package org.openslx.virtualization.virtualizer;
 
 import java.util.List;
 
+import org.openslx.virtualization.Version;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
 /**
@@ -57,4 +58,11 @@ public abstract class Virtualizer
 	 * @return list of supported disk image formats by the virtualizer.
 	 */
 	public abstract List<ImageFormat> getSupportedImageFormats();
+
+	/**
+	 * Returns a list of supported versions of the virtualizer.
+	 * 
+	 * @return list of supported versions of the virtualizer.
+	 */
+	public abstract List<Version> getSupportedVersions();
 }

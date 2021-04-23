@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.virtualization.Version;
 
 /**
  * Disk image for virtual machines.
@@ -103,7 +104,7 @@ public abstract class DiskImage
 	 * 
 	 * @throws DiskImageException unable to obtain version of the disk image format.
 	 */
-	public abstract int getVersion() throws DiskImageException;
+	public abstract Version getVersion() throws DiskImageException;
 
 	/**
 	 * Returns the disk image description.

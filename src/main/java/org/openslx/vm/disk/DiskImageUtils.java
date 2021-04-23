@@ -141,24 +141,4 @@ public class DiskImageUtils
 
 		return new String( values );
 	}
-
-	public static int versionFromMajorMinor( final short major, final short minor )
-	{
-		return ( ( Integer.valueOf( major ) << 16 ) | minor );
-	}
-
-	public static int versionFromMajor( final short major )
-	{
-		return DiskImageUtils.versionFromMajorMinor( major, Short.valueOf( "0" ) );
-	}
-
-	public static short versionToMajor( final int version )
-	{
-		return Integer.valueOf( version >> 16 ).shortValue();
-	}
-
-	public static short versionToMinor( final int version )
-	{
-		return Integer.valueOf( version & 0x0000FFFF ).shortValue();
-	}
 }

@@ -7,6 +7,7 @@ import java.io.RandomAccessFile;
 
 import org.openslx.util.Util;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationVmwareFileFormat;
+import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationException;
 
 /**
@@ -184,10 +185,10 @@ public class DiskImageVmdk extends DiskImage
 	 * 
 	 * @throws DiskImageException
 	 */
-	public int getHwVersion() throws DiskImageException
+	public Version getHwVersion() throws DiskImageException
 	{
 		final VirtualizationConfigurationVmwareFileFormat vmdkConfig = this.getVmdkConfig();
-		final int hwVersion;
+		final Version hwVersion;
 
 		if ( vmdkConfig != null ) {
 			// VMDK image contains a hardware version, so return parsed hardware version
@@ -195,11 +196,11 @@ public class DiskImageVmdk extends DiskImage
 			final String hwVersionStr = vmdkConfig.get( "ddb.virtualHWVersion" );
 
 			final int hwVersionMajor = Util.parseInt( hwVersionStr, DiskImageVmdk.VMDK_DEFAULT_HW_VERSION );
-			hwVersion = DiskImageUtils.versionFromMajor( Integer.valueOf( hwVersionMajor ).shortValue() );
+			hwVersion = new Version( Integer.valueOf( hwVersionMajor ).shortValue() );
 		} else {
 			// VMDK image does not contain any hardware version, so return default hardware version
 			final int hwVersionMajor = DiskImageVmdk.VMDK_DEFAULT_HW_VERSION;
-			hwVersion = DiskImageUtils.versionFromMajor( Integer.valueOf( hwVersionMajor ).shortValue() );
+			hwVersion = new Version( Integer.valueOf( hwVersionMajor ).shortValue() );
 		}
 
 		return hwVersion;
@@ -276,12 +277,12 @@ public class DiskImageVmdk extends DiskImage
 	}
 
 	@Override
-	public int getVersion() throws DiskImageException
+	public Version getVersion() throws DiskImageException
 	{
 		final RandomAccessFile diskFile = this.getDiskImage();
 		final int vmdkVersion = Integer.reverseBytes( DiskImageUtils.readInt( diskFile, 4 ) );
 
-		return DiskImageUtils.versionFromMajor( Integer.valueOf( vmdkVersion ).shortValue() );
+		return new Version( Integer.valueOf( vmdkVersion ).shortValue() );
 	}
 
 	@Override
