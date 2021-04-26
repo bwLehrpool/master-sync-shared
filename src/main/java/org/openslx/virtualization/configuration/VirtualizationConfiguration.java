@@ -258,22 +258,22 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 		try {
 			return new VirtualizationConfigurationVmware( osList, file );
 		} catch ( VirtualizationConfigurationException e ) {
-			LOGGER.info( "Not a VMware file", e );
+			LOGGER.debug( "Not a VMware file", e );
 		}
 		try {
 			return new VirtualizationConfigurationVirtualBox( osList, file );
 		} catch ( VirtualizationConfigurationException e ) {
-			LOGGER.info( "Not a VirtualBox file", e );
+			LOGGER.debug( "Not a VirtualBox file", e );
 		}
 		try {
 			return new VirtualizationConfigurationQemu( osList, file );
 		} catch ( VirtualizationConfigurationException e ) {
-			LOGGER.info( "Not a Libvirt file", e );
+			LOGGER.debug( "Not a Libvirt file", e );
 		}
 		try {
 			return new VirtualizationConfigurationDocker(osList, file);
 		} catch ( VirtualizationConfigurationException e ) {
-			LOGGER.info( "Not a tar.gz file, for docker container", e );
+			LOGGER.debug( "Not a tar.gz file, for docker container", e );
 		}
 
 		LOGGER.error( "Could not detect any known virtualizer format" );
@@ -295,22 +295,22 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 		try {
 			return new VirtualizationConfigurationVmware( osList, vmContent, length );
 		} catch ( VirtualizationConfigurationException e ) {
-			LOGGER.info( "Not a VMware file", e );
+			LOGGER.debug( "Not a VMware file", e );
 		}
 		try {
 			return new VirtualizationConfigurationVirtualBox( osList, vmContent, length );
 		} catch ( VirtualizationConfigurationException e ) {
-			LOGGER.info( "Not a VirtualBox file", e );
+			LOGGER.debug( "Not a VirtualBox file", e );
 		}
 		try {
 			return new VirtualizationConfigurationQemu( osList, vmContent, length );
 		} catch ( VirtualizationConfigurationException e ) {
-			LOGGER.info( "Not a Libvirt file", e );
+			LOGGER.debug( "Not a Libvirt file", e );
 		}
 		try {
 			return new VirtualizationConfigurationDocker( osList, vmContent, length );
 		} catch ( VirtualizationConfigurationException e ) {
-			LOGGER.info( "Not a tar.gz file, for docker container", e );
+			LOGGER.debug( "Not a tar.gz file, for docker container", e );
 		}
 
 		LOGGER.error( "Could not detect any known virtualizer format" );
