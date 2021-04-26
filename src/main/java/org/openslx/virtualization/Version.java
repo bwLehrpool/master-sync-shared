@@ -133,6 +133,19 @@ public class Version implements Comparable<Version>
 	}
 
 	/**
+	 * Returns a version from a list of supported versions filtered by its given filter predicate.
+	 * 
+	 * @param byFilter filter predicate.
+	 * @param supportedVersions list of supported versions.
+	 * @return version from a list of supported versions filtered by its given filter predicate.
+	 */
+	private static Version getInstanceByPredicateFromVersions( Predicate<Version> byFilter,
+			List<Version> supportedVersions )
+	{
+		return supportedVersions.stream().filter( byFilter ).findFirst().orElse( null );
+	}
+
+	/**
 	 * Returns a version from a list of supported versions by its given major version.
 	 * 
 	 * @param major version.
@@ -142,7 +155,22 @@ public class Version implements Comparable<Version>
 	public static Version getInstanceByMajorFromVersions( short major, List<Version> supportedVersions )
 	{
 		final Predicate<Version> byMajor = version -> major == version.getMajor();
-		return supportedVersions.stream().filter( byMajor ).findFirst().orElse( null );
+		return Version.getInstanceByPredicateFromVersions( byMajor, supportedVersions );
+	}
+
+	/**
+	 * Returns a version from a list of supported versions by its given major and minor version.
+	 * 
+	 * @param major version.
+	 * @param minor version.
+	 * @param supportedVersions list of supported versions.
+	 * @return version from a list of supported versions by its given major and minor version.
+	 */
+	public static Version getInstanceByMajorMinorFromVersions( short major, short minor,
+			List<Version> supportedVersions )
+	{
+		final Predicate<Version> byMajorMinor = version -> major == version.getMajor() && minor == version.getMinor();
+		return supportedVersions.stream().filter( byMajorMinor ).findFirst().orElse( null );
 	}
 
 	@Override

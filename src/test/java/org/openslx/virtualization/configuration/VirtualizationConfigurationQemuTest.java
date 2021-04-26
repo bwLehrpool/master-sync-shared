@@ -3,6 +3,7 @@ package org.openslx.virtualization.configuration;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -32,6 +33,7 @@ import org.openslx.libvirt.domain.device.DiskStorage;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.Sound;
 import org.openslx.libvirt.xml.LibvirtXmlTestResources;
+import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.EtherType;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.EthernetDevType;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType;
@@ -514,6 +516,62 @@ public class VirtualizationConfigurationQemuTest
 			assertEquals( Interface.Model.VIRTIO, addedEthernetDevice.getModel() );
 			assertEquals( VirtualizationConfigurationQemu.NETWORK_BRIDGE_NAT_DEFAULT, addedEthernetDevice.getSource() );
 			break;
+		}
+
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+	}
+
+	@ParameterizedTest
+	@DisplayName( "Test get virtualizer HW version from VM configuration" )
+	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm-old-os.xml", "qemu-kvm_default-archlinux-vm-no-os.xml" } )
+	public void testQemuMetaDataGetVirtualizerVersion( String xmlFileName )
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
+	{
+		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
+
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
+
+		final Version machineVersion = vmConfig.getVirtualizerVersion();
+
+		if ( vmLibvirtDomainConfig.getOsMachine() == null ) {
+			assertNull( machineVersion );
+		} else {
+			assertEquals( new Version( Short.valueOf( "3" ), Short.valueOf( "1" ) ), machineVersion );
+		}
+
+		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+	}
+
+	@ParameterizedTest
+	@DisplayName( "Test set virtualizer HW version in VM configuration" )
+	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm-old-os.xml", "qemu-kvm_default-archlinux-vm-no-os.xml" } )
+	public void testQemuMetaDataSetVirtualizerVersion( String xmlFileName )
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
+	{
+		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
+
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
+
+		final String originalOsMachine = vmLibvirtDomainConfig.getOsMachine();
+		if ( originalOsMachine != null ) {
+			assertEquals( "pc-q35-3.1", originalOsMachine );
+		}
+
+		final Version modifiedVersion = new Version( Short.valueOf( "4" ), Short.valueOf( "1" ) );
+		vmConfig.setVirtualizerVersion( modifiedVersion );
+
+		final String modifiedOsMachine = vmLibvirtDomainConfig.getOsMachine();
+		if ( modifiedOsMachine == null ) {
+			assertNull( vmConfig.getVirtualizerVersion() );
+		} else {
+			assertEquals( modifiedVersion, vmConfig.getVirtualizerVersion() );
+			assertEquals( "pc-q35-4.1", modifiedOsMachine );
 		}
 
 		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );

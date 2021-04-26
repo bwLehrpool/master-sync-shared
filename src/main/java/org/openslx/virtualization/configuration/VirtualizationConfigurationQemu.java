@@ -611,14 +611,34 @@ public class VirtualizationConfigurationQemu extends
 	@Override
 	public void setVirtualizerVersion( Version type )
 	{
-		// NOT supported by the QEMU hypervisor
+		if ( type != null ) {
+			final String osMachine = this.vmConfig.getOsMachine();
+			final String osMachineName = VirtualizationConfigurationQemuUtils.getOsMachineName( osMachine );
+
+			if ( osMachineName != null && !osMachineName.isEmpty() ) {
+				final String modifiedOsMachineVersion = VirtualizationConfigurationQemuUtils.getOsMachineVersion( type );
+				final String modifiedOsMachine = VirtualizationConfigurationQemuUtils.getOsMachine( osMachineName,
+						modifiedOsMachineVersion );
+				this.vmConfig.setOsMachine( modifiedOsMachine );
+			}
+		}
 	}
 
 	@Override
 	public Version getVirtualizerVersion()
 	{
-		// NOT supported by the QEMU hypervisor
-		return null;
+		final String osMachine = this.vmConfig.getOsMachine();
+		final Version uncheckedVersion = VirtualizationConfigurationQemuUtils.getOsMachineVersion( osMachine );
+		final Version checkedVersion;
+
+		if ( uncheckedVersion == null ) {
+			checkedVersion = null;
+		} else {
+			checkedVersion = Version.getInstanceByMajorMinorFromVersions( uncheckedVersion.getMajor(),
+					uncheckedVersion.getMinor(), this.getVirtualizer().getSupportedVersions() );
+		}
+
+		return checkedVersion;
 	}
 
 	@Override

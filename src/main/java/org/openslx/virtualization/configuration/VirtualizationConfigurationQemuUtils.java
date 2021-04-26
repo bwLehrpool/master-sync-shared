@@ -1,10 +1,13 @@
 package org.openslx.virtualization.configuration;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openslx.libvirt.domain.device.Disk;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.Disk.BusType;
+import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.DriveBusType;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.EthernetDevType;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType;
@@ -18,6 +21,11 @@ import org.openslx.libvirt.domain.device.Sound;
  */
 public class VirtualizationConfigurationQemuUtils
 {
+	/**
+	 * Separator symbol between Libvirt/QEMU machine name and machine version.
+	 */
+	private static final String OS_MACHINE_NAME_VERSION_SEPARATOR = "-";
+
 	/**
 	 * Converts a Libvirt disk device bus type to a VM metadata driver bus type.
 	 * 
@@ -187,5 +195,147 @@ public class VirtualizationConfigurationQemuUtils
 		}
 
 		return devicePrefix + ( 'a' + deviceNumber );
+	}
+
+	/**
+	 * Data container to store a Libvirt/QEMU machine name with version information.
+	 * 
+	 * @author Manuel Bentele
+	 * @version 1.0
+	 */
+	static class OsMachineNameAndVersion
+	{
+		/**
+		 * Stores the machine name.
+		 */
+		final private String osMachineName;
+
+		/**
+		 * Stores the machine version.
+		 */
+		final private Version osMachineVersion;
+
+		/**
+		 * Creates a data container for a machine name with version information.
+		 * 
+		 * @param osMachineName name of the machine.
+		 * @param osMachineVersion version of the machine.
+		 */
+		public OsMachineNameAndVersion( String osMachineName, Version osMachineVersion )
+		{
+			this.osMachineName = osMachineName;
+			this.osMachineVersion = osMachineVersion;
+		}
+
+		/**
+		 * Returns the machine name.
+		 * 
+		 * @return machine name.
+		 */
+		public String getOsMachineName()
+		{
+			return this.osMachineName;
+		}
+
+		/**
+		 * Returns the version information.
+		 * 
+		 * @return version information.
+		 */
+		public Version getOsMachineVersion()
+		{
+			return this.osMachineVersion;
+		}
+	}
+
+	/**
+	 * Parses a machine name with version information from a Libvirt/QEMU machine description.
+	 * 
+	 * @param osMachine Libvirt/QEMU machine description as {@link String}.
+	 * @return data container containing the parsed machine name with version information.
+	 */
+	private static OsMachineNameAndVersion parseOsMachineNameAndVersion( String osMachine )
+	{
+		final String osMachineName;
+		final Version osMachineVersion;
+
+		if ( osMachine == null || osMachine.isEmpty() ) {
+			// there is no machine description given, so we can not parse anything
+			osMachineName = null;
+			osMachineVersion = null;
+		} else {
+			// create regular expression based matcher to extract machine name and version number
+			final Pattern osMachineNameAndVersionPattern = Pattern.compile( "^([a-z0-9\\-]+)"
+					+ VirtualizationConfigurationQemuUtils.OS_MACHINE_NAME_VERSION_SEPARATOR + "([0-9]+).([0-9]+)$" );
+			final Matcher osMachineNameAndVersionMatcher = osMachineNameAndVersionPattern.matcher( osMachine );
+
+			final boolean matches = osMachineNameAndVersionMatcher.find();
+
+			if ( matches ) {
+				// get results of regular expression based matcher
+				osMachineName = osMachineNameAndVersionMatcher.group( 1 );
+				final String osMachineMajorString = osMachineNameAndVersionMatcher.group( 2 );
+				final String osMachineMinorString = osMachineNameAndVersionMatcher.group( 3 );
+
+				// create version representation
+				final short osMachineMajor = Short.valueOf( osMachineMajorString );
+				final short osMachineMinor = Short.valueOf( osMachineMinorString );
+				osMachineVersion = new Version( osMachineMajor, osMachineMinor );
+			} else {
+				osMachineName = null;
+				osMachineVersion = null;
+			}
+		}
+
+		return new OsMachineNameAndVersion( osMachineName, osMachineVersion );
+	}
+
+	/**
+	 * Parses a machine name from a Libvirt/QEMU machine description.
+	 * 
+	 * @param osMachine Libvirt/QEMU machine description as {@link String}.
+	 * @return parsed machine name.
+	 */
+	public static String getOsMachineName( String osMachine )
+	{
+		final OsMachineNameAndVersion machineNameAndVersion = VirtualizationConfigurationQemuUtils
+				.parseOsMachineNameAndVersion( osMachine );
+		return machineNameAndVersion.getOsMachineName();
+	}
+
+	/**
+	 * Parses a machine version from a Libvirt/QEMU machine description.
+	 * 
+	 * @param osMachine Libvirt/QEMU machine description as {@link String}.
+	 * @return parsed machine version.
+	 */
+	public static Version getOsMachineVersion( String osMachine )
+	{
+		final OsMachineNameAndVersion machineNameAndVersion = VirtualizationConfigurationQemuUtils
+				.parseOsMachineNameAndVersion( osMachine );
+		return machineNameAndVersion.getOsMachineVersion();
+	}
+
+	/**
+	 * Combines a machine name with a machine version and returns a Libvirt/QEMU machine description.
+	 * 
+	 * @param osMachineName name of the machine.
+	 * @param osMachineVersion version of the machine.
+	 * @return Libvirt/QEMU machine description.
+	 */
+	public static String getOsMachine( String osMachineName, String osMachineVersion )
+	{
+		return osMachineName + VirtualizationConfigurationQemuUtils.OS_MACHINE_NAME_VERSION_SEPARATOR + osMachineVersion;
+	}
+
+	/**
+	 * Converts a {@link Version} to a Libvirt/QEMU machine version.
+	 * 
+	 * @param version Libvirt/QEMU machine version as {@link Version}.
+	 * @return Libvirt/QEMU machine version.
+	 */
+	public static String getOsMachineVersion( Version version )
+	{
+		return String.format( "%d.%d", version.getMajor(), version.getMinor() );
 	}
 }
