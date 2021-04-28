@@ -7,18 +7,53 @@ import org.openslx.virtualization.configuration.VirtualizationConfigurationExcep
 import org.openslx.virtualization.configuration.data.ConfigurationDataDozModServerToStatelessClient;
 import org.openslx.virtualization.configuration.transformation.TransformationException;
 
+/**
+ * Transformation logic for virtualization configurations between a dozmod-server and a stateless
+ * client.
+ * <p>
+ * This transformation logic is applied while downloading an existing virtualization configuration
+ * from a dozmod-server to a stateless client.
+ * 
+ * <pre>
+ *   +------------------------------+  DozModServerToStatelessClient   +------------------------------+
+ *   | virtualization configuration | -------------------------------> | virtualization configuration |
+ *   +---------------+--------------+      transformation logic        +------------------+-----------+
+ *   | dozmod-server |                                                 | stateless client |
+ *   +---------------+                                                 +------------------+
+ * </pre>
+ * 
+ * @author Manuel Bentele
+ * @version 1.0
+ */
 public class ConfigurationLogicDozModServerToStatelessClient
 		extends ConfigurationLogic<ConfigurationDataDozModServerToStatelessClient>
 {
+	/**
+	 * Name of the transformation logic for virtualization configurations.
+	 */
 	private static final String CONFIGURATION_LOGIC_NAME = "Transformation of virtualization configuration during download from DozMod server to stateless client";
 
+	/**
+	 * Default type for an ethernet interface in a virtualization configuration.
+	 */
 	private static final EtherType CONFIGURATION_DEFAULT_ETHERNET_TYPE = EtherType.NAT;
 
+	/**
+	 * Creates a new transformation logic for virtualization configurations between a dozmod-server
+	 * and a stateless client.
+	 */
 	public ConfigurationLogicDozModServerToStatelessClient()
 	{
 		super( ConfigurationLogicDozModServerToStatelessClient.CONFIGURATION_LOGIC_NAME );
 	}
 
+	/**
+	 * Validates a virtualization configuration and input arguments for a transformation.
+	 * 
+	 * @param config virtualization configuration for the validation.
+	 * @param args input arguments for the validation.
+	 * @throws TransformationException validation has failed.
+	 */
 	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?> config,
 			ConfigurationDataDozModServerToStatelessClient args )
 			throws TransformationException

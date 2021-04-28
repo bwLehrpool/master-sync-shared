@@ -9,19 +9,60 @@ import org.openslx.virtualization.configuration.VirtualizationConfigurationExcep
 import org.openslx.virtualization.configuration.data.ConfigurationDataDozModServerToDozModClient;
 import org.openslx.virtualization.configuration.transformation.TransformationException;
 
+/**
+ * Transformation logic for virtualization configurations between a dozmod-server and a
+ * dozmod-client.
+ * <p>
+ * This transformation logic is applied while downloading an existing virtualization configuration
+ * from a dozmod-server to a dozmod-client.
+ * 
+ * <pre>
+ *   +------------------------------+  DozModServerToDozModClient   +------------------------------+
+ *   | virtualization configuration | ----------------------------> | virtualization configuration |
+ *   +---------------+--------------+     transformation logic      +---------------+--------------+
+ *   | dozmod-server |                                              | dozmod-client |
+ *   +---------------+                                              +---------------+
+ * </pre>
+ * 
+ * @author Manuel Bentele
+ * @version 1.0
+ */
 public class ConfigurationLogicDozModServerToDozModClient
 		extends ConfigurationLogic<ConfigurationDataDozModServerToDozModClient>
 {
+	/**
+	 * Name of the transformation logic for virtualization configurations.
+	 */
 	private static final String CONFIGURATION_LOGIC_NAME = "Transformation of virtualization configuration during download from DozMod server to DozMod client";
 
+	/**
+	 * Default number of CPU cores set by the configuration logic for the virtualization
+	 * configuration's virtualizer.
+	 */
 	private static final int CONFIGURATION_LOGIC_NUM_CPU_CORES = 1;
+
+	/**
+	 * Default memory in megabytes set by the configuration logic for the virtualization
+	 * configuration's virtualizer.
+	 */
 	private static final int CONFIGURATION_LOGIC_MEMORY_MIN = 1024;
 
+	/**
+	 * Creates a new transformation logic for virtualization configurations between a dozmod-server
+	 * and a dozmod-client.
+	 */
 	public ConfigurationLogicDozModServerToDozModClient()
 	{
 		super( ConfigurationLogicDozModServerToDozModClient.CONFIGURATION_LOGIC_NAME );
 	}
 
+	/**
+	 * Validates a virtualization configuration and input arguments for a transformation.
+	 * 
+	 * @param config virtualization configuration for the validation.
+	 * @param args input arguments for the validation.
+	 * @throws TransformationException validation has failed.
+	 */
 	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?> config,
 			ConfigurationDataDozModServerToDozModClient args )
 			throws TransformationException
@@ -37,11 +78,30 @@ public class ConfigurationLogicDozModServerToDozModClient
 		}
 	}
 
+	/**
+	 * Rounds a given value to the nearest factor.
+	 * 
+	 * @param value input value for the rounding.
+	 * @param nearestFactor nearest factor for the rounding.
+	 * @return rounded value as a multiple of the nearest factor.
+	 * 
+	 * @apiNote This utility method rounds the given value to an integer value and no to a floating
+	 *          point value.
+	 */
 	private static int roundToNearest( int value, int nearestFactor )
 	{
 		return ( value / nearestFactor ) * nearestFactor;
 	}
 
+	/**
+	 * Calculates the amount of memory for the virtualization configuration depending on the
+	 * available resources of the dozmod-client's host system.
+	 * 
+	 * @param totalMemory maximum memory available on the dozmod-client's host system.
+	 * @param osMaxMemory maximum memory supported by the defined operating system in the
+	 *           virtualization configuration.
+	 * @return amount of memory for the virtualization configuration in megabytes
+	 */
 	private static int calculateVirtualizationMemoryOnDozmodClient( int totalMemory, int osMaxMemory )
 	{
 		// calculate the amount of memory
