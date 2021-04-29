@@ -98,6 +98,8 @@
 				<includes>
 					<include>disk/*</include>
 					<include>libvirt/xml/*</include>
+					<include>virtualbox/xml/*</include>
+					<include>vmware/vmx/*</include>
 				</includes>
 			</testResource>
 		</testResources>
