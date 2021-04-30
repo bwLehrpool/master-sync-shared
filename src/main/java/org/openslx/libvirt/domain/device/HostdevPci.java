@@ -48,7 +48,7 @@ public class HostdevPci extends Hostdev
 	 * detached from the host before being passed on to the guest and reattached to the host after
 	 * the guest exits.
 	 * 
-	 * @return state whether PCI hostdev device is managed.
+	 * @param managed state whether PCI hostdev device is managed or not.
 	 */
 	public void setManaged( boolean managed )
 	{

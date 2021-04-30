@@ -6,7 +6,8 @@ import org.openslx.bwlp.thrift.iface.OperatingSystem;
 
 /**
  * Data container to collect and store input arguments for a
- * {@link ConfigurationLogicDozModServerToDozModClient} transformation.
+ * {@link org.openslx.virtualization.configuration.logic.ConfigurationLogicDozModServerToDozModClient}
+ * transformation.
  * 
  * @author Manuel Bentele
  * @version 1.0
@@ -40,7 +41,8 @@ public class ConfigurationDataDozModServerToDozModClient
 
 	/**
 	 * Creates a new data container to collect and store input arguments for a
-	 * {@link ConfigurationLogicDozModServerToDozModClient} transformation.
+	 * {@link org.openslx.virtualization.configuration.logic.ConfigurationLogicDozModServerToDozModClient}
+	 * transformation.
 	 * 
 	 * @param displayName display name for a transformation of a virtualization configuration.
 	 * @param diskImage disk image file for a transformation of a virtualization configuration.

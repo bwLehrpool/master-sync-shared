@@ -23,6 +23,7 @@ public abstract class TransformationSpecific<T, R, H> extends Transformation<T, 
 	 * Create a specific transformation.
 	 * 
 	 * @param name comprehensible name for the transformation.
+	 * @param virtualizer initialized virtualizer.
 	 */
 	public TransformationSpecific( String name, H virtualizer )
 	{

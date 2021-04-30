@@ -194,7 +194,7 @@ public abstract class DiskImage
 		/**
 		 * Checks if the disk image format is supported by a virtualizer.
 		 * 
-		 * @param supportedImageTypes list of supported disk image formats of a virtualizer.
+		 * @param supportedImageFormats list of supported disk image formats of a virtualizer.
 		 * @return <code>true</code> if image type is supported by the virtualizer; otherwise
 		 *         <code>false</code>.
 		 */

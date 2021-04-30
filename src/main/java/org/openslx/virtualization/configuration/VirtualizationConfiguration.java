@@ -173,6 +173,8 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 
 	/**
 	 * Get operating system of this VM.
+	 * 
+	 * @return operating system of the VM.
 	 */
 	public OperatingSystem getOs()
 	{
@@ -181,6 +183,8 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 
 	/**
 	 * Get all hard disks of this VM.
+	 * 
+	 * @return list of hard disks of the VM.
 	 */
 	public List<HardDisk> getHdds()
 	{
@@ -189,6 +193,8 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 
 	/**
 	 * Get display name of VM.
+	 * 
+	 * @return display name of the VM.
 	 */
 	public String getDisplayName()
 	{
@@ -252,6 +258,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 * @param osList List of supported operating systems
 	 * @param file VM's machine description file to get the metadata instance from
 	 * @return VmMetaData object representing the relevant parts of the given machine description
+	 * @throws IOException failed to read machine description from specified file.
 	 */
 	public static VirtualizationConfiguration<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
 			throws IOException
@@ -288,7 +295,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 * @param vmContent VM's machine description as byte array (e.g. stored in DB)
 	 * @param length length of the byte array given as vmContent
 	 * @return VmMetaData object representing the relevant parts of the given machine description
-	 * @throws IOException
+	 * @throws IOException failed to read machine description from specified byte stream.
 	 */
 	public static VirtualizationConfiguration<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent,
 			int length )

@@ -183,7 +183,8 @@ public class DiskImageVmdk extends DiskImage
 	 * 
 	 * @return hardware version from the VMDK's embedded descriptor file.
 	 * 
-	 * @throws DiskImageException
+	 * @throws DiskImageException unable to obtain the VMDK's hardware version of the disk image
+	 *            format.
 	 */
 	public Version getHwVersion() throws DiskImageException
 	{

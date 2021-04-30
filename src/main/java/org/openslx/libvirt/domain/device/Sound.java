@@ -111,7 +111,7 @@ public class Sound extends Device
 		/**
 		 * Creates sound device model from its name with error check.
 		 * 
-		 * @param type name of the sound device model in a Libvirt domain XML document.
+		 * @param model name of the sound device model in a Libvirt domain XML document.
 		 * @return valid sound device model.
 		 */
 		public static Model fromString( String model )

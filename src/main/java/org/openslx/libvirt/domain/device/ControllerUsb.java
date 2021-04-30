@@ -122,7 +122,7 @@ public class ControllerUsb extends Controller
 		/**
 		 * Creates USB controller device model from its name with error check.
 		 * 
-		 * @param type name of the USB controller device model in a Libvirt domain XML document.
+		 * @param model name of the USB controller device model in a Libvirt domain XML document.
 		 * @return valid USB controller device model.
 		 */
 		public static Model fromString( String model )

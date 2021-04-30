@@ -116,7 +116,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 * 
 	 * @param machineDescription content of the XML file saved as a byte array.
 	 * @param length of the machine description byte array.
-	 * @throws IOException if an
+	 * @throws VirtualizationConfigurationException creation of VirtualBox configuration file representation failed.
 	 */
 	public VirtualizationConfigurationVirtualboxFileFormat( byte[] machineDescription, int length ) throws VirtualizationConfigurationException
 	{
@@ -313,7 +313,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	/**
 	 * Function finds and saves the name of the guest OS
 	 * 
-	 * @throws XPathExpressionException
+	 * @throws XPathExpressionException failed to find and retrieve name of the guest OS.
 	 */
 	public void setOsType() throws XPathExpressionException
 	{
@@ -336,7 +336,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	/**
 	 * Search for attached hard drives and determine their controller and their path.
 	 *
-	 * @throws XPathExpressionException
+	 * @throws XPathExpressionException failed to find attached hard drives and their controllers.
 	 */
 	public void setHdds() throws XPathExpressionException
 	{
@@ -452,6 +452,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 * @param elementXPath given as an xpath expression
 	 * @param attribute attribute to change
 	 * @param value to set the attribute to
+	 * @return state of the change operation whether the attribute was changed successful or not.
 	 */
 	public boolean changeAttribute( String elementXPath, String attribute, String value )
 	{
@@ -491,7 +492,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 * Adds a new node named nameOfNewNode to the given parent found by parentXPath.
 	 *
 	 * @param parentXPath XPath expression to the parent
-	 * @param nameOfnewNode name of the node to be added
+	 * @param childName name of the node to be added
 	 * @return the newly added Node
 	 */
 	public Node addNewNode( String parentXPath, String childName )

@@ -62,8 +62,8 @@ public class Interface extends Device
 
 	/**
 	 * Sets type of the network device.
-	 * 
-	 * @return type of the network device.
+	 *  
+	 * @param type network device type.
 	 */
 	public void setType( Type type )
 	{
@@ -327,7 +327,7 @@ public class Interface extends Device
 		/**
 		 * Creates network interface device model from its name with error check.
 		 * 
-		 * @param type name of the network interface device model in a Libvirt domain XML document.
+		 * @param model name of the network interface device model in a Libvirt domain XML document.
 		 * @return valid network interface device model.
 		 */
 		public static Model fromString( String model )

@@ -51,7 +51,7 @@ public class DiskImageQcow2 extends DiskImage
 	/**
 	 * Creates a new QCOW2 disk image from an existing QCOW2 image file.
 	 * 
-	 * @param diskImage file to a QCOW2 disk storing the image content.
+	 * @param disk file to a QCOW2 disk storing the image content.
 	 * 
 	 * @throws FileNotFoundException cannot find specified QCOW2 disk image file.
 	 * @throws IOException cannot access the content of the QCOW2 disk image file.
@@ -64,7 +64,7 @@ public class DiskImageQcow2 extends DiskImage
 	/**
 	 * Creates a new QCOW2 disk image from an existing QCOW2 image file.
 	 * 
-	 * @param diskImage file to a QCOW2 disk storing the image content.
+	 * @param disk file to a QCOW2 disk storing the image content.
 	 */
 	public DiskImageQcow2( RandomAccessFile disk )
 	{

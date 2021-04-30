@@ -2,7 +2,8 @@ package org.openslx.virtualization.configuration.data;
 
 /**
  * Data container to collect and store input arguments for a
- * {@link ConfigurationLogicDozModServerToStatelessClient} transformation.
+ * {@link org.openslx.virtualization.configuration.logic.ConfigurationLogicDozModServerToStatelessClient}
+ * transformation.
  * 
  * @author Manuel Bentele
  * @version 1.0
@@ -27,7 +28,8 @@ public class ConfigurationDataDozModServerToStatelessClient
 
 	/**
 	 * Creates a new data container to collect and store input arguments for a
-	 * {@link ConfigurationLogicDozModServerToStatelessClient} transformation.
+	 * {@link org.openslx.virtualization.configuration.logic.ConfigurationLogicDozModServerToStatelessClient}
+	 * transformation.
 	 * 
 	 * @param displayName display name for a transformation of a virtualization configuration.
 	 * @param osId operating system identifier for a transformation of a virtualization

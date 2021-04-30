@@ -195,7 +195,7 @@ public class Disk extends Device
 	/**
 	 * Sets target device for the disk device.
 	 * 
-	 * @param target device for the disk device.
+	 * @param targetDevice target device for the disk device.
 	 */
 	public void setTargetDevice( String targetDevice )
 	{

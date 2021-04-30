@@ -24,7 +24,7 @@ public class Version implements Comparable<Version>
 	 * The version consists of a major version, whereas the minor version is set to the value
 	 * <code>0</code> and the version name is undefined.
 	 * 
-	 * @param major
+	 * @param major major version.
 	 */
 	public Version( short major )
 	{

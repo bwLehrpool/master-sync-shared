@@ -116,7 +116,7 @@ public class VirtualizationConfigurationQemuUtils
 	/**
 	 * Converts a Libvirt network device model to a VM metadata ethernet device type.
 	 * 
-	 * @param soundDeviceModel Libvirt network device model.
+	 * @param networkDeviceModel Libvirt network device model.
 	 * @return VM metadata ethernet device type.
 	 */
 	public static EthernetDevType convertNetworkDeviceModel( Interface.Model networkDeviceModel )

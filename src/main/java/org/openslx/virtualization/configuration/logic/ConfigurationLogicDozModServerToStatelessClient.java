@@ -16,7 +16,7 @@ import org.openslx.virtualization.configuration.transformation.TransformationExc
  * 
  * <pre>
  *   +------------------------------+  DozModServerToStatelessClient   +------------------------------+
- *   | virtualization configuration | -------------------------------> | virtualization configuration |
+ *   | virtualization configuration | -------------------------------▶ | virtualization configuration |
  *   +---------------+--------------+      transformation logic        +------------------+-----------+
  *   | dozmod-server |                                                 | stateless client |
  *   +---------------+                                                 +------------------+

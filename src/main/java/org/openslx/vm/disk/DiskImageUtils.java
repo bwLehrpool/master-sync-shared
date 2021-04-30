@@ -114,12 +114,12 @@ public class DiskImageUtils
 	}
 
 	/**
-	 * Reads two bytes ({@link Short}) at a given <code>offset</code> from the specified disk image
-	 * file.
+	 * Reads a variable number of bytes (<code>numBytes</code>) at a given <code>offset</code> from the specified disk image file.
 	 * 
 	 * @param diskImage file to a disk storing the image content.
-	 * @param offset offset in bytes for reading the two bytes.
-	 * @return value of the two bytes from the disk image file as {@link Short}.
+	 * @param offset offset in bytes for reading <code>numBytes</code> bytes.
+	 * @param numBytes number of bytes to read at <code>offset</code>.
+	 * @return read bytes from the disk image file as {@link String}.
 	 * 
 	 * @throws DiskImageException unable to read two bytes from the disk image file.
 	 */

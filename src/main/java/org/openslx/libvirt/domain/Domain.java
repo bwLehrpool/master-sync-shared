@@ -603,7 +603,7 @@ public class Domain extends LibvirtXmlDocument
 		/**
 		 * Creates a CPU check from its name with error check.
 		 * 
-		 * @param mode name of the CPU check in the Libvirt domain XML document.
+		 * @param check name of the CPU check in the Libvirt domain XML document.
 		 * @return valid CPU check.
 		 */
 		public static CpuCheck fromString( String check )
