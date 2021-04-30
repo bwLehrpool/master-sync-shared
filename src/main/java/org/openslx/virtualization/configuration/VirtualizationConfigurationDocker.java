@@ -200,4 +200,9 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	public String getFileNameExtension() {
 		return VirtualizationConfigurationDocker.FILE_NAME_EXTENSION;
 	}
+	
+	@Override
+	public void validate() throws VirtualizationConfigurationException
+	{
+	}
 }

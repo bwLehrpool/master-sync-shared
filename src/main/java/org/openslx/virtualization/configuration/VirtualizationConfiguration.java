@@ -30,7 +30,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	protected Map<DDAcceleration, U> ddacc = new HashMap<>();
 	protected Map<EthernetDevType, W> networkCards = new HashMap<>();
 	protected Map<UsbSpeed, X> usbSpeeds = new HashMap<>();
-	
+
 	private final Virtualizer virtualizer;
 
 	/**
@@ -38,7 +38,8 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 */
 	public static enum SoundCardType
 	{
-		NONE( "None" ), DEFAULT( "(default)" ), SOUND_BLASTER( "Sound Blaster 16" ), ES( "ES 1371" ), HD_AUDIO( "Intel Integrated HD Audio" ), AC( "Intel ICH Audio Codec 97" );
+		NONE( "None" ), DEFAULT( "(default)" ), SOUND_BLASTER( "Sound Blaster 16" ), ES( "ES 1371" ), HD_AUDIO(
+				"Intel Integrated HD Audio" ), AC( "Intel ICH Audio Codec 97" );
 
 		public final String displayName;
 
@@ -68,9 +69,12 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 */
 	public static enum EthernetDevType
 	{
-		AUTO( "(default)" ), PCNET32( "AMD PCnet32" ), E1000( "Intel E1000 (PCI)" ), E1000E( "Intel E1000e (PCI-Express)" ), VMXNET( "VMXnet" ), VMXNET3( "VMXnet 3" ), PCNETPCI2(
-				"PCnet-PCI II" ), PCNETFAST3( "PCnet-FAST III" ), PRO1000MTD( "Intel PRO/1000 MT Desktop" ), PRO1000TS(
-						"Intel PRO/1000 T Server" ), PRO1000MTS( "Intel PRO/1000 MT Server" ), PARAVIRT( "Paravirtualized Network" ), NONE( "No Network Card" );
+		AUTO( "(default)" ), PCNET32( "AMD PCnet32" ), E1000( "Intel E1000 (PCI)" ), E1000E(
+				"Intel E1000e (PCI-Express)" ), VMXNET( "VMXnet" ), VMXNET3( "VMXnet 3" ), PCNETPCI2(
+						"PCnet-PCI II" ), PCNETFAST3( "PCnet-FAST III" ), PRO1000MTD(
+								"Intel PRO/1000 MT Desktop" ), PRO1000TS(
+										"Intel PRO/1000 T Server" ), PRO1000MTS( "Intel PRO/1000 MT Server" ), PARAVIRT(
+												"Paravirtualized Network" ), NONE( "No Network Card" );
 
 		public final String displayName;
 
@@ -82,10 +86,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 
 	public static enum UsbSpeed
 	{
-		NONE( "None" ),
-		USB1_1( "USB 1.1" ),
-		USB2_0( "USB 2.0" ),
-		USB3_0( "USB 3.0" );
+		NONE( "None" ), USB1_1( "USB 1.1" ), USB2_0( "USB 2.0" ), USB3_0( "USB 3.0" );
 
 		public final String displayName;
 
@@ -271,7 +272,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 			LOGGER.debug( "Not a Libvirt file", e );
 		}
 		try {
-			return new VirtualizationConfigurationDocker(osList, file);
+			return new VirtualizationConfigurationDocker( osList, file );
 		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.debug( "Not a tar.gz file, for docker container", e );
 		}
@@ -289,7 +290,8 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 * @throws IOException
 	 */
-	public static VirtualizationConfiguration<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent, int length )
+	public static VirtualizationConfiguration<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent,
+			int length )
 			throws IOException
 	{
 		try {
@@ -316,7 +318,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 		LOGGER.error( "Could not detect any known virtualizer format" );
 		return null;
 	}
-	
+
 	/**
 	 * Returns the file name extension for the virtualization configuration file.
 	 * 
@@ -383,6 +385,15 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	}
 
 	/**
+	 * Validates the virtualization configuration and reports errors if its content is not a valid
+	 * virtualization configuration.
+	 * 
+	 * @throws VirtualizationConfigurationException validation of the virtualization configuration
+	 *            failed.
+	 */
+	public abstract void validate() throws VirtualizationConfigurationException;
+
+	/**
 	 * Transforms the virtualization configuration in terms of a privacy filter to filter out
 	 * sensitive information like name of users in absolute paths.
 	 * 
@@ -390,7 +401,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 *            configuration failed.
 	 */
 	public abstract void transformPrivacy() throws VirtualizationConfigurationException;
-	
+
 	/**
 	 * Transforms the virtualization configuration applying options that are desired when locally
 	 * editing a virtualized system (e.g. disables automatic DPI scaling).
@@ -399,7 +410,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 *            configuration failed.
 	 */
 	public abstract void transformEditable() throws VirtualizationConfigurationException;
-	
+
 	/**
 	 * Transforms the virtualization configuration applying options that are desired when running a
 	 * virtualized system in a stateless manner.
@@ -408,7 +419,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 *            configuration failed.
 	 */
 	public abstract void transformNonPersistent() throws VirtualizationConfigurationException;
-	
+
 	/**
 	 * Function used to register virtual devices.
 	 */

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.libvirt.domain.Domain;
+import org.openslx.libvirt.domain.DomainUtils;
 import org.openslx.libvirt.domain.device.ControllerUsb;
 import org.openslx.libvirt.domain.device.Disk.BusType;
 import org.openslx.libvirt.domain.device.Disk.StorageType;
@@ -219,21 +220,6 @@ public class VirtualizationConfigurationQemu extends
 	private Domain vmConfig = null;
 
 	/**
-	 * Stores current index of added HDD device to the Libvirt XML configuration file.
-	 */
-	private int vmDeviceIndexHddAdd = 0;
-
-	/**
-	 * Stores current index of added CDROM device to the Libvirt XML configuration file.
-	 */
-	private int vmDeviceIndexCdromAdd = 0;
-
-	/**
-	 * Stores current index of added ethernet device to the Libvirt XML configuration file.
-	 */
-	private int vmDeviceIndexEthernetAdd = 0;
-
-	/**
 	 * Creates new virtual machine configuration (managed by Libvirt) for the QEMU hypervisor.
 	 * 
 	 * @param osList list of operating systems.
@@ -335,7 +321,9 @@ public class VirtualizationConfigurationQemu extends
 	@Override
 	public boolean addHddTemplate( String diskImagePath, String hddMode, String redoDir )
 	{
-		return this.addHddTemplate( this.vmDeviceIndexHddAdd++, diskImagePath, hddMode, redoDir );
+		int index = this.vmConfig.getDiskStorageDevices().size() - 1;
+		index = ( index > 0 ) ? index : 0;
+		return this.addHddTemplate( index, diskImagePath, hddMode, redoDir );
 	}
 
 	/**
@@ -369,7 +357,7 @@ public class VirtualizationConfigurationQemu extends
 			storageDiskDevice.setStorage( StorageType.FILE, diskImagePath );
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override
@@ -397,13 +385,14 @@ public class VirtualizationConfigurationQemu extends
 	@Override
 	public boolean addRam( int mem )
 	{
-		BigInteger memory = BigInteger.valueOf( mem );
+		// convert given memory in MiB to memory in bytes for Libvirt XML Domain API functions
+		final BigInteger memory = DomainUtils.decodeMemory( Integer.toString( mem ), "MiB" );
 
 		this.vmConfig.setMemory( memory );
 		this.vmConfig.setCurrentMemory( memory );
 
-		final boolean isMemorySet = this.vmConfig.getMemory().toString().equals( memory.toString() );
-		final boolean isCurrentMemorySet = this.vmConfig.getCurrentMemory().toString().equals( memory.toString() );
+		final boolean isMemorySet = this.vmConfig.getMemory().equals( memory );
+		final boolean isCurrentMemorySet = this.vmConfig.getCurrentMemory().equals( memory );
 
 		return isMemorySet && isCurrentMemorySet;
 	}
@@ -421,18 +410,30 @@ public class VirtualizationConfigurationQemu extends
 			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "fd", index );
 			floppyDiskDevice.setTargetDevice( targetDevName );
 			floppyDiskDevice.setReadOnly( readOnly );
-			floppyDiskDevice.setStorage( StorageType.FILE, image );
+
+			if ( image == null || image.isEmpty() ) {
+				floppyDiskDevice.removeStorage();
+			} else {
+				floppyDiskDevice.setStorage( StorageType.FILE, image );
+			}
 		} else {
 			// floppy device exists, so update existing floppy device
 			floppyDiskDevice.setReadOnly( readOnly );
-			floppyDiskDevice.setStorage( StorageType.FILE, image );
+
+			if ( image == null || image.isEmpty() ) {
+				floppyDiskDevice.removeStorage();
+			} else {
+				floppyDiskDevice.setStorage( StorageType.FILE, image );
+			}
 		}
 	}
 
 	@Override
 	public boolean addCdrom( String image )
 	{
-		return this.addCdrom( this.vmDeviceIndexCdromAdd++, image );
+		int index = this.vmConfig.getDiskCdromDevices().size() - 1;
+		index = ( index > 0 ) ? index : 0;
+		return this.addCdrom( index, image );
 	}
 
 	/**
@@ -458,7 +459,11 @@ public class VirtualizationConfigurationQemu extends
 			if ( image == null ) {
 				cdromDiskDevice.setStorage( StorageType.BLOCK, CDROM_DEFAULT_PHYSICAL_DRIVE );
 			} else {
-				cdromDiskDevice.setStorage( StorageType.FILE, image );
+				if ( image.isEmpty() ) {
+					cdromDiskDevice.removeStorage();
+				} else {
+					cdromDiskDevice.setStorage( StorageType.FILE, image );
+				}
 			}
 		} else {
 			// CDROM device exists, so update existing CDROM device
@@ -467,11 +472,15 @@ public class VirtualizationConfigurationQemu extends
 			if ( image == null ) {
 				cdromDiskDevice.setStorage( StorageType.BLOCK, CDROM_DEFAULT_PHYSICAL_DRIVE );
 			} else {
-				cdromDiskDevice.setStorage( StorageType.FILE, image );
+				if ( image.isEmpty() ) {
+					cdromDiskDevice.removeStorage();
+				} else {
+					cdromDiskDevice.setStorage( StorageType.FILE, image );
+				}
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override
@@ -731,7 +740,9 @@ public class VirtualizationConfigurationQemu extends
 	@Override
 	public boolean addEthernet( EtherType type )
 	{
-		return this.addEthernet( this.vmDeviceIndexEthernetAdd++, type );
+		int index = this.vmConfig.getInterfaceDevices().size() - 1;
+		index = ( index > 0 ) ? index : 0;
+		return this.addEthernet( index, type );
 	}
 
 	/**
@@ -790,7 +801,7 @@ public class VirtualizationConfigurationQemu extends
 			}
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override
@@ -839,5 +850,15 @@ public class VirtualizationConfigurationQemu extends
 	public String getFileNameExtension()
 	{
 		return VirtualizationConfigurationQemu.FILE_NAME_EXTENSION;
+	}
+
+	@Override
+	public void validate() throws VirtualizationConfigurationException
+	{
+		try {
+			this.vmConfig.validateXml();
+		} catch ( LibvirtXmlValidationException e ) {
+			throw new VirtualizationConfigurationException( e.getLocalizedMessage() );
+		}
 	}
 }

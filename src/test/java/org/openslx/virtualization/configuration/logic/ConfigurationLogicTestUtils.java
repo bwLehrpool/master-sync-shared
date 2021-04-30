@@ -10,6 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -32,6 +34,8 @@ public class ConfigurationLogicTestUtils
 			new OperatingSystem( 10, "Windows 7 (32 Bit)",        null, "x86",     4096,  32 ),
 			new OperatingSystem( 11, "Windows 2000 Professional", null, "x86",     4096,   4 ) ) );
 	// @formatter:on
+
+	private static final String REGEX_UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 
 	public static VirtualizationConfiguration<?, ?, ?, ?> newVirtualizationConfigurationInstance( File configFile )
 	{
@@ -74,5 +78,23 @@ public class ConfigurationLogicTestUtils
 		Collections.sort( linesContent2 );
 
 		return linesContent1.equals( linesContent2 );
+	}
+
+	public static String removeUuid( String content )
+	{
+		final Pattern patternUuid = Pattern.compile( ConfigurationLogicTestUtils.REGEX_UUID );
+		final Matcher matcherUuidContent = patternUuid.matcher( content );
+
+		// replace all UUIDs with the empty String
+		return matcherUuidContent.replaceAll( "" );
+	}
+
+	public static boolean isVirtualBoxContentEqual( String content1, String content2 )
+	{
+		// replace all UUIDs with the empty String
+		final String filteredContent1 = ConfigurationLogicTestUtils.removeUuid( content1 );
+		final String filteredContent2 = ConfigurationLogicTestUtils.removeUuid( content2 );
+
+		return ConfigurationLogicTestUtils.isContentEqual( filteredContent1, filteredContent2 );
 	}
 }

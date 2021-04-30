@@ -1,5 +1,6 @@
 package org.openslx.virtualization.configuration.logic;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
@@ -41,6 +42,7 @@ public class ConfigurationLogicDozModClientToDozModServerTest
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
 		assertTrue( ConfigurationLogicTestUtils.isContentEqual( expectedTransformedConfig, transformedConfig ) );
+		assertDoesNotThrow( () -> config.validate() );
 	}
 
 	@Test
@@ -61,6 +63,7 @@ public class ConfigurationLogicDozModClientToDozModServerTest
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
 		assertTrue( ConfigurationLogicTestUtils.isContentEqual( expectedTransformedConfig, transformedConfig ) );
+		assertDoesNotThrow( () -> config.validate() );
 	}
 
 	@Test
@@ -81,5 +84,6 @@ public class ConfigurationLogicDozModClientToDozModServerTest
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
 		assertTrue( ConfigurationLogicTestUtils.isContentEqual( expectedTransformedConfig, transformedConfig ) );
+		assertDoesNotThrow( () -> config.validate() );
 	}
 }

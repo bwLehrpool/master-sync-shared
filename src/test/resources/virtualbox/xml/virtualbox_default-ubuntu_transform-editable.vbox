@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><VirtualBox xmlns="http://www.virtualbox.org/" version="1.16-linux">
+  <Machine OSType="Ubuntu_64" lastStateChange="2021-04-28T09:11:13Z" name="Test" snapshotFolder="Snapshots" uuid="{4fa19ba0-f15c-465a-939d-42524c4d133c}">
+    <MediaRegistry>
+      <HardDisks>
+        <HardDisk format="VDI" location="image-default.vmdk" type="Normal" uuid="{ef093a53-6d50-454f-afca-aed47e9f97f9}"/>
+      </HardDisks>
+    </MediaRegistry>
+    <Hardware uuid="{b36f101a-a45d-41cb-8bd4-3908e75e081b}">
+      <CPU count="1">
+        <PAE enabled="false"/>
+        <LongMode enabled="true"/>
+        <X2APIC enabled="true"/>
+        <HardwareVirtExLargePages enabled="false"/>
+      </CPU>
+      <Memory RAMSize="1536"/>
+      <Display VRAMSize="16" controller="VMSVGA"/>
+      <BIOS>
+        <IOAPIC enabled="true"/>
+        <SmbiosUuidLittleEndian enabled="true"/>
+      </BIOS>
+      <Network>
+        <Adapter MACAddress="080027B86D12" enabled="true" slot="0" type="82540EM">
+          <NAT/>
+        </Adapter>
+      </Network>
+      <AudioAdapter codec="AD1980" driver="Pulse" enabled="true" enabledIn="false"/>
+      <RTC localOrUTC="UTC"/>
+      <Clipboard/>
+      <USB>
+        <Controllers>
+          <Controller name="OHCI" type="OHCI"/>
+        </Controllers>
+      </USB>
+    </Hardware>
+    <StorageControllers>
+      <StorageController Bootable="true" PortCount="2" name="IDE" type="PIIX4" useHostIOCache="true"/>
+      <StorageController Bootable="true" IDE0MasterEmulationPort="0" IDE0SlaveEmulationPort="1" IDE1MasterEmulationPort="2" IDE1SlaveEmulationPort="3" PortCount="1" name="SATA" type="AHCI" useHostIOCache="false">
+        <AttachedDevice device="0" hotpluggable="false" port="0" type="HardDisk">
+          <Image uuid="{ef093a53-6d50-454f-afca-aed47e9f97f9}"/>
+        </AttachedDevice>
+      </StorageController>
+      <StorageController Bootable="false" PortCount="1" name="Floppy" type="I82078" useHostIOCache="true">
+        <AttachedDevice device="0" hotpluggable="false" port="0" type="Floppy"/>
+        <AttachedDevice device="1" hotpluggable="false" port="0" type="Floppy"/>
+      </StorageController>
+    </StorageControllers>
+  </Machine>
+</VirtualBox>

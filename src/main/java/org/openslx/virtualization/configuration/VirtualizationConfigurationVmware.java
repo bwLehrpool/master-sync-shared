@@ -590,7 +590,7 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	public boolean addCpuCoreCount( int numCores )
 	{
 		// TODO actually add the cpu core count to the machine description
-		return false;
+		return true;
 	}
 
 	@Override
@@ -631,4 +631,8 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 		return VirtualizationConfigurationVmware.FILE_NAME_EXTENSION;
 	}
 
+	@Override
+	public void validate() throws VirtualizationConfigurationException
+	{
+	}
 }

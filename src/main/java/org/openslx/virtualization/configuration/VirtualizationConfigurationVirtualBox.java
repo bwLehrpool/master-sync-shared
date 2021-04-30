@@ -508,4 +508,9 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	{
 		return VirtualizationConfigurationVirtualBox.FILE_NAME_EXTENSION;
 	}
+	
+	@Override
+	public void validate() throws VirtualizationConfigurationException
+	{
+	}
 }

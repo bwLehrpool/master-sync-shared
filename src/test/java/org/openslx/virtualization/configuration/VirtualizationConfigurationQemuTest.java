@@ -68,14 +68,11 @@ public class VirtualizationConfigurationQemuTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
 		final String displayName = vmConfig.getDisplayName();
 
 		assertEquals( "archlinux", displayName );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@Test
@@ -87,14 +84,11 @@ public class VirtualizationConfigurationQemuTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
 		final boolean isVmSnapshot = vmConfig.isMachineSnapshot();
 
 		assertEquals( false, isVmSnapshot );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@Test
@@ -106,9 +100,6 @@ public class VirtualizationConfigurationQemuTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
 		final List<DiskImage.ImageFormat> supportedImageFormats = vmConfig.getVirtualizer().getSupportedImageFormats();
 
 		assertNotNull( supportedImageFormats );
@@ -116,7 +107,7 @@ public class VirtualizationConfigurationQemuTest
 		assertEquals( true, supportedImageFormats
 				.containsAll( Arrays.asList( ImageFormat.QCOW2, ImageFormat.VMDK, ImageFormat.VDI ) ) );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@Test
@@ -128,16 +119,13 @@ public class VirtualizationConfigurationQemuTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
 		final List<VirtualizationConfiguration.HardDisk> hdds = vmConfig.getHdds();
 
 		assertNotNull( hdds );
 		assertEquals( 1, hdds.size() );
 		assertEquals( "/var/lib/libvirt/images/archlinux.qcow2", hdds.get( 0 ).diskImage );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@Test
@@ -149,9 +137,6 @@ public class VirtualizationConfigurationQemuTest
 		File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-archlinux-vm.xml" );
 		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
 
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
 		final String unfilteredXmlConfig = new String( vmConfig.getConfigurationAsByteArray(), StandardCharsets.UTF_8 );
 		final String originalXmlConfig = FileUtils.readFileToString( file, StandardCharsets.UTF_8 );
 
@@ -162,7 +147,7 @@ public class VirtualizationConfigurationQemuTest
 
 		assertEquals( lengthOriginalXmlConfig, lengthUnfilteredXmlConfig );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -204,7 +189,7 @@ public class VirtualizationConfigurationQemuTest
 		DiskStorage addedStorageDevice = vmLibvirtDomainConfig.getDiskStorageDevices().get( 0 );
 		assertEquals( diskFile.getAbsolutePath(), addedStorageDevice.getStorageSource() );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -233,7 +218,7 @@ public class VirtualizationConfigurationQemuTest
 		DiskCdrom addedCdromDevice = vmLibvirtDomainConfig.getDiskCdromDevices().get( 0 );
 		assertEquals( diskFile.getAbsolutePath(), addedCdromDevice.getStorageSource() );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -261,7 +246,7 @@ public class VirtualizationConfigurationQemuTest
 		DiskCdrom addedCdromDevice = vmLibvirtDomainConfig.getDiskCdromDevices().get( 0 );
 		assertEquals( VirtualizationConfigurationQemu.CDROM_DEFAULT_PHYSICAL_DRIVE, addedCdromDevice.getStorageSource() );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -291,7 +276,7 @@ public class VirtualizationConfigurationQemuTest
 		assertTrue( addedFloppyDevice.isReadOnly() );
 		assertEquals( diskFile.getAbsolutePath(), addedFloppyDevice.getStorageSource() );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -311,7 +296,7 @@ public class VirtualizationConfigurationQemuTest
 
 		assertEquals( coreCount, vmLibvirtDomainConfig.getVCpu() );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -335,7 +320,7 @@ public class VirtualizationConfigurationQemuTest
 			assertEquals( SoundCardType.HD_AUDIO, soundCardType );
 		}
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -363,7 +348,7 @@ public class VirtualizationConfigurationQemuTest
 		Sound addedSoundDevice = vmLibvirtDomainConfig.getSoundDevices().get( 0 );
 		assertEquals( Sound.Model.SB16, addedSoundDevice.getModel() );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -387,7 +372,7 @@ public class VirtualizationConfigurationQemuTest
 			assertEquals( EthernetDevType.PARAVIRT, ethernetDeviceType );
 		}
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -410,7 +395,7 @@ public class VirtualizationConfigurationQemuTest
 			assertEquals( Interface.Model.E1000E, addedEthernetDevice.getModel() );
 		}
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -434,7 +419,7 @@ public class VirtualizationConfigurationQemuTest
 			assertEquals( UsbSpeed.USB3_0, maxUsbSpeed );
 		}
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -462,7 +447,7 @@ public class VirtualizationConfigurationQemuTest
 		ControllerUsb addedUsbControllerDevice = vmLibvirtDomainConfig.getUsbControllerDevices().get( 0 );
 		assertEquals( ControllerUsb.Model.ICH9_EHCI1, addedUsbControllerDevice.getModel() );
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	static Stream<Arguments> configAndEthernetTypeProvider()
@@ -518,7 +503,7 @@ public class VirtualizationConfigurationQemuTest
 			break;
 		}
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -542,7 +527,7 @@ public class VirtualizationConfigurationQemuTest
 			assertEquals( new Version( Short.valueOf( "3" ), Short.valueOf( "1" ) ), machineVersion );
 		}
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 
 	@ParameterizedTest
@@ -574,6 +559,6 @@ public class VirtualizationConfigurationQemuTest
 			assertEquals( "pc-q35-4.1", modifiedOsMachine );
 		}
 
-		assertDoesNotThrow( () -> vmLibvirtDomainConfig.validateXml() );
+		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
 }

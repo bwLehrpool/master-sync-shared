@@ -194,7 +194,7 @@ public class VirtualizationConfigurationQemuUtils
 			throw new IllegalArgumentException( errorMsg );
 		}
 
-		return devicePrefix + ( 'a' + deviceNumber );
+		return devicePrefix + Character.valueOf( (char) ( 'a' + deviceNumber ) ).toString();
 	}
 
 	/**
