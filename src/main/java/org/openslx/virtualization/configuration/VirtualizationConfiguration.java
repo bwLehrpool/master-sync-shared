@@ -326,6 +326,8 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 */
 	public abstract String getFileNameExtension();
 
+	public abstract boolean addEmptyHddTemplate();
+
 	public abstract boolean addHddTemplate( File diskImage, String hddMode, String redoDir );
 
 	public abstract boolean addHddTemplate( String diskImagePath, String hddMode, String redoDir );

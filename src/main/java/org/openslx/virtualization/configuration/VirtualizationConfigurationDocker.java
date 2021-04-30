@@ -104,6 +104,11 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	public void transformPrivacy() throws VirtualizationConfigurationException {
 	}
 
+	@Override
+	public boolean addEmptyHddTemplate() {
+		return false;
+	}
+
 	@Override public boolean addHddTemplate(File diskImage, String hddMode, String redoDir) {
 		return false;
 	}

@@ -313,6 +313,12 @@ public class VirtualizationConfigurationQemu extends
 	}
 
 	@Override
+	public boolean addEmptyHddTemplate()
+	{
+		return this.addHddTemplate( new String(), null, null );
+	}
+
+	@Override
 	public boolean addHddTemplate( File diskImage, String hddMode, String redoDir )
 	{
 		return this.addHddTemplate( diskImage.getAbsolutePath(), hddMode, redoDir );
@@ -348,13 +354,22 @@ public class VirtualizationConfigurationQemu extends
 			storageDiskDevice.setBusType( BusType.VIRTIO );
 			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "vd", index );
 			storageDiskDevice.setTargetDevice( targetDevName );
-			storageDiskDevice.setStorage( StorageType.FILE, diskImagePath );
+
+			if ( diskImagePath == null || diskImagePath.isEmpty() ) {
+				storageDiskDevice.removeStorage();
+			} else {
+				storageDiskDevice.setStorage( StorageType.FILE, diskImagePath );
+			}
 
 			// add new created HDD to the metadata of the QemuMetaData object, too
 			this.addHddMetaData( storageDiskDevice );
 		} else {
 			// HDD exists, so update existing storage (HDD) device
-			storageDiskDevice.setStorage( StorageType.FILE, diskImagePath );
+			if ( diskImagePath == null || diskImagePath.isEmpty() ) {
+				storageDiskDevice.removeStorage();
+			} else {
+				storageDiskDevice.setStorage( StorageType.FILE, diskImagePath );
+			}
 		}
 
 		return true;

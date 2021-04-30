@@ -132,6 +132,12 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	}
 
 	@Override
+	public boolean addEmptyHddTemplate()
+	{
+		return this.addHddTemplate( "%VM_DISK_PATH%", "%VM_DISK_MODE%", "%VM_DISK_REDOLOGDIR%" );
+	}
+	
+	@Override
 	public boolean addHddTemplate( String diskImage, String hddMode, String redoDir )
 	{
 		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk[@location='" + PlaceHolder.HDDLOCATION.toString() + "']", "location", diskImage );

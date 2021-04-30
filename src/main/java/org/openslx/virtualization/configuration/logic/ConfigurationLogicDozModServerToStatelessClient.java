@@ -78,8 +78,8 @@ public class ConfigurationLogicDozModServerToStatelessClient
 			throw new TransformationException( "Can not set display name in virtualization configuration!" );
 		}
 
-		// append hard disk drive
-		if ( !config.addHddTemplate( "%VM_DISK_PATH%", "%VM_DISK_MODE%", "%VM_DISK_REDOLOGDIR%" ) ) {
+		// append hard disk drive (with no referenced image as content)
+		if ( !config.addEmptyHddTemplate() ) {
 			throw new TransformationException( "Can not configure hard disk in virtualization configuration!" );
 		}
 

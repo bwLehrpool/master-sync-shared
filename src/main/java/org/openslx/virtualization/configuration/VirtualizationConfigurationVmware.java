@@ -239,6 +239,12 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	}
 	
 	@Override
+	public boolean addEmptyHddTemplate()
+	{
+		return this.addHddTemplate( "%VM_DISK_PATH%", "%VM_DISK_MODE%", "%VM_DISK_REDOLOGDIR%" );
+	}
+
+	@Override
 	public boolean addHddTemplate( File diskImage, String hddMode, String redoDir )
 	{
 		return addHddTemplate( diskImage.getName(), hddMode, redoDir );
@@ -251,6 +257,7 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 			LOGGER.error( "Empty disk image path given!" );
 			return false;
 		}
+
 		DriveBusType bus;
 		try {
 			bus = DriveBusType.valueOf( config.get( "#SLX_HDD_BUS" ) );
