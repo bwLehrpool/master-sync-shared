@@ -91,6 +91,7 @@
 					<include>libvirt/libosinfo/xml/*</include>
 					<include>libvirt/rng/*</include>
 					<include>libvirt/xsl/*</include>
+					<include>virtualbox/xsd/*</include>
 				</includes>
 			</resource>
 		</resources>

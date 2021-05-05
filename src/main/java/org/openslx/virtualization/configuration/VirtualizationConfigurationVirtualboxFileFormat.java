@@ -91,7 +91,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 		// first validate xml
 		try {
 			SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-			InputStream xsdStream = VirtualizationConfigurationVirtualboxFileFormat.class.getResourceAsStream( "/master-sync-shared/xml/VirtualBox-settings.xsd" );
+			InputStream xsdStream = VirtualizationConfigurationVirtualboxFileFormat.class.getResourceAsStream( "/virtualbox/xsd/VirtualBox-settings.xsd" );
 			if ( xsdStream == null ) {
 				LOGGER.warn( "Cannot validate Vbox XML: No XSD found in JAR" );
 			} else {
