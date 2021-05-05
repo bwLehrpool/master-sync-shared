@@ -13,6 +13,8 @@ import org.openslx.libvirt.domain.DomainUtils;
 import org.openslx.libvirt.domain.device.ControllerUsb;
 import org.openslx.libvirt.domain.device.Disk.BusType;
 import org.openslx.libvirt.domain.device.Disk.StorageType;
+import org.openslx.libvirt.libosinfo.LibOsInfo;
+import org.openslx.libvirt.libosinfo.os.Os;
 import org.openslx.libvirt.domain.device.DiskCdrom;
 import org.openslx.libvirt.domain.device.DiskFloppy;
 import org.openslx.libvirt.domain.device.DiskStorage;
@@ -24,6 +26,7 @@ import org.openslx.libvirt.domain.device.Video;
 import org.openslx.libvirt.xml.LibvirtXmlDocumentException;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlValidationException;
+import org.openslx.util.LevenshteinDistance;
 import org.openslx.virtualization.Version;
 import org.openslx.virtualization.virtualizer.VirtualizerQemu;
 
@@ -284,6 +287,9 @@ public class VirtualizationConfigurationQemu extends
 		for ( DiskStorage storageDiskDevice : this.vmConfig.getDiskStorageDevices() ) {
 			this.addHddMetaData( storageDiskDevice );
 		}
+
+		// detect the operating system from the optional embedded libosinfo metadata
+		this.setOs( this.vmConfig.getLibOsInfoOsId() );
 	}
 
 	/**
@@ -300,6 +306,44 @@ public class VirtualizationConfigurationQemu extends
 		String hddImagePath = storageDiskDevice.getStorageSource();
 
 		this.hdds.add( new HardDisk( hddChipsetModel, hddChipsetBus, hddImagePath ) );
+	}
+
+	/**
+	 * Detects the operating system by the specified libosinfo operating system identifier.
+	 * 
+	 * @param osId libosinfo operating system identifier.
+	 */
+	private OperatingSystem detectOperatingSystem( String osId )
+	{
+		OperatingSystem os = null;
+
+		if ( osId != null && !osId.isEmpty() ) {
+			// lookup operating system identifier in the libosinfo database
+			final Os osLookup = LibOsInfo.lookupOs( osId );
+
+			// check if entry in the database was found
+			if ( osLookup != null ) {
+				// operating system entry was found
+				// so determine OpenSLX OS name with the smallest distance to the libosinfo OS name
+				final LevenshteinDistance distance = new LevenshteinDistance( 1, 1, 1 );
+				int smallestDistance = Integer.MAX_VALUE;
+
+				// get name of the OS and combine it with the optional available architecture
+				final String osLookupOsName = osLookup.getName() + " " + this.vmConfig.getOsArch();
+
+				for ( final OperatingSystem osCandidate : this.osList ) {
+					final int currentDistance = distance.calculateDistance( osLookupOsName, osCandidate.getOsName() );
+
+					if ( currentDistance < smallestDistance ) {
+						// if the distance is smaller save the current distance and operating system as best candidate
+						smallestDistance = currentDistance;
+						os = osCandidate;
+					}
+				}
+			}
+		}
+
+		return os;
 	}
 
 	@Override
@@ -384,7 +428,8 @@ public class VirtualizationConfigurationQemu extends
 	@Override
 	public void setOs( String vendorOsId )
 	{
-		this.setOs( vendorOsId );
+		final OperatingSystem os = this.detectOperatingSystem( vendorOsId );
+		this.setOs( os );
 	}
 
 	@Override

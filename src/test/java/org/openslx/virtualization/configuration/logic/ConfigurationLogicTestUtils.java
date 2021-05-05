@@ -21,7 +21,7 @@ import org.openslx.virtualization.configuration.VirtualizationConfiguration;
 public class ConfigurationLogicTestUtils
 {
 	// @formatter:off
-	private static final List<OperatingSystem> STUB_OS_LIST = Collections.unmodifiableList( Arrays.asList(
+	public static final List<OperatingSystem> STUB_OS_LIST = Collections.unmodifiableList( Arrays.asList(
 			new OperatingSystem(  1, "Windows 7 (64 Bit)",        null, "AMD64", 196608, 256 ),
 			new OperatingSystem(  2, "Windows 8 (32 Bit)",        null, "x86",     4096,  32 ),
 			new OperatingSystem(  3, "Windows 8 (64 Bit)",        null, "AMD64", 131072, 256 ),

@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
@@ -125,7 +124,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 
 	protected final List<HardDisk> hdds = new ArrayList<HardDisk>();
 
-	private final List<OperatingSystem> osList;
+	protected final List<OperatingSystem> osList;
 
 	private OperatingSystem os = null;
 
@@ -180,6 +179,16 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	{
 		return os;
 	}
+	
+	/**
+	 * Sets the operating system for the virtualization configuration.
+	 * 
+	 * @param os operating system for the virtualization configuration.
+	 */
+	public void setOs( OperatingSystem os )
+	{
+		this.os = os;
+	}
 
 	/**
 	 * Get all hard disks of this VM.
@@ -216,40 +225,16 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	public VirtualizationConfiguration( Virtualizer virtualizer, List<OperatingSystem> osList )
 	{
 		this.virtualizer = virtualizer;
-		this.osList = osList;
+		
+		if ( osList == null ) {
+			// create empty operating system list if none is specified
+			this.osList = new ArrayList<OperatingSystem>();
+		} else {
+			this.osList = osList;
+		}
 
 		// register virtual hardware models for graphical editing of virtual devices (GPU, sound, USB, ...)
 		this.registerVirtualHW();
-	}
-
-	/**
-	 * Called from subclass to set the OS. If the OS cannot be determined from the
-	 * given parameters, it will not be set.
-	 *
-	 * @param virtId
-	 *           virtualizer, eg "vmware" for VMware
-	 * @param virtOsId
-	 *           the os identifier used by the virtualizer, eg. windows7-64 for
-	 *           64bit Windows 7 on VMware
-	 */
-	protected final void setOs( String virtId, String virtOsId )
-	{
-		OperatingSystem lazyMatch = null;
-		for ( OperatingSystem os : osList ) {
-			if ( os.getVirtualizerOsId() == null )
-				continue;
-			for ( Entry<String, String> entry : os.getVirtualizerOsId().entrySet() ) {
-				if ( !entry.getValue().equals( virtOsId ) )
-					continue;
-				if ( entry.getKey().equals( virtId ) ) {
-					this.os = os;
-					return;
-				} else {
-					lazyMatch = os;
-				}
-			}
-		}
-		this.os = lazyMatch;
 	}
 
 	/**

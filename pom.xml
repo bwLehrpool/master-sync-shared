@@ -87,6 +87,8 @@
 			<resource>
 				<directory>${basedir}/src/main/resources</directory>
 				<includes>
+					<include>libvirt/libosinfo/rng/*</include>
+					<include>libvirt/libosinfo/xml/*</include>
 					<include>libvirt/rng/*</include>
 					<include>libvirt/xsl/*</include>
 				</includes>

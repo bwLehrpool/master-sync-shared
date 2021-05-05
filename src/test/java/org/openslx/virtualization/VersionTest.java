@@ -2,6 +2,7 @@ package org.openslx.virtualization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
@@ -39,6 +40,22 @@ public class VersionTest
 				new Version( Short.valueOf( "1" ), Short.valueOf( "3" ) ) ) );
 
 		assertFalse( version.isSupported( versions ) );
+	}
+
+	@Test
+	@DisplayName( "Test that new version from String is valid" )
+	public void testVersionValueOfValid()
+	{
+		assertEquals( new Version( Short.valueOf( "52" ) ), Version.valueOf( "52" ) );
+		assertEquals( new Version( Short.valueOf( "1" ), Short.valueOf( "34" ) ), Version.valueOf( "1.34" ) );
+	}
+
+	@Test
+	@DisplayName( "Test that new version from String is invalid" )
+	public void testVersionValueOfInvalid()
+	{
+		assertNull( Version.valueOf( "52." ) );
+		assertNull( Version.valueOf( "1.34-release" ) );
 	}
 
 	@Test

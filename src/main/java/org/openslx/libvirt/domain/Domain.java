@@ -261,6 +261,17 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns the libosinfo operating system identifier.
+	 * 
+	 * @return libosinfo operating system identifier.
+	 */
+	public String getLibOsInfoOsId()
+	{
+		return this.getRootXmlNode()
+				.getXmlElementAttributeValue( "metadata/*[local-name()='libosinfo']/*[local-name()='os']", "id" );
+	}
+
+	/**
 	 * Returns virtual machine UUID defined in the Libvirt domain XML document.
 	 * 
 	 * @return UUID of virtual machine.

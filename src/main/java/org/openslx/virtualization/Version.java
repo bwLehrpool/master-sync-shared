@@ -2,6 +2,8 @@ package org.openslx.virtualization;
 
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Represents a version information.
@@ -14,8 +16,33 @@ import java.util.function.Predicate;
  */
 public class Version implements Comparable<Version>
 {
+	/**
+	 * Regular expression to parse a version from a {@link String}.
+	 * <p>
+	 * The regular expression matches a version if its textual version information is well-formed
+	 * according to the following examples:
+	 * 
+	 * <pre>
+	 *   52
+	 *   4.31
+	 *   5.10.13
+	 * </pre>
+	 */
+	private static final String VERSION_NUMBER_REGEX = "^(\\d+)(?:\\.(\\d+)(?:\\.(\\d+))?)?$";
+
+	/**
+	 * Major number of the version.
+	 */
 	private final short major;
+
+	/**
+	 * Minor number of the version.
+	 */
 	private final short minor;
+
+	/**
+	 * Name or description of the version.
+	 */
 	private final String name;
 
 	/**
@@ -171,6 +198,43 @@ public class Version implements Comparable<Version>
 	{
 		final Predicate<Version> byMajorMinor = version -> major == version.getMajor() && minor == version.getMinor();
 		return supportedVersions.stream().filter( byMajorMinor ).findFirst().orElse( null );
+	}
+
+	/**
+	 * Creates a new version parsed from a {@link String}.
+	 * 
+	 * The version consists of a major and a minor version parsed from the specified {@link String}.
+	 * 
+	 * @param version textual information containing a version as {@link String}. The textual
+	 *           version should be well-formed according to the defined regular expression
+	 *           {@link #VERSION_NUMBER_REGEX}.
+	 * @return version instance.
+	 */
+	public static Version valueOf( String version )
+	{
+		final Version parsedVersion;
+
+		if ( version == null || version.isEmpty() ) {
+			parsedVersion = null;
+		} else {
+			final Pattern versionPattern = Pattern.compile( Version.VERSION_NUMBER_REGEX );
+			final Matcher versionMatcher = versionPattern.matcher( version );
+
+			if ( versionMatcher.find() ) {
+				final String majorStr = versionMatcher.group( 1 );
+				final String minorStr = versionMatcher.group( 2 );
+
+				final short major = ( majorStr != null ) ? Short.valueOf( majorStr ) : 0;
+				final short minor = ( minorStr != null ) ? Short.valueOf( minorStr ) : 0;
+
+				parsedVersion = new Version( major, minor );
+
+			} else {
+				parsedVersion = null;
+			}
+		}
+
+		return parsedVersion;
 	}
 
 	@Override

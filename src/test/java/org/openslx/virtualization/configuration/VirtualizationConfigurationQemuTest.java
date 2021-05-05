@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.libvirt.domain.Domain;
 import org.openslx.libvirt.domain.device.ControllerUsb;
 import org.openslx.libvirt.domain.device.DiskCdrom;
@@ -38,12 +39,15 @@ import org.openslx.virtualization.configuration.VirtualizationConfiguration.Ethe
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.EthernetDevType;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.UsbSpeed;
+import org.openslx.virtualization.configuration.logic.ConfigurationLogicTestUtils;
 import org.openslx.vm.disk.DiskImage;
 import org.openslx.vm.disk.DiskImageTestResources;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
 public class VirtualizationConfigurationQemuTest
 {
+	public static final List<OperatingSystem> STUB_OS_LIST = ConfigurationLogicTestUtils.STUB_OS_LIST;
+
 	private static Domain getPrivateDomainFromQemuMetaData( VirtualizationConfigurationQemu qemuMetadata )
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
 	{
@@ -106,6 +110,42 @@ public class VirtualizationConfigurationQemuTest
 		assertEquals( 3, supportedImageFormats.size() );
 		assertEquals( true, supportedImageFormats
 				.containsAll( Arrays.asList( ImageFormat.QCOW2, ImageFormat.VMDK, ImageFormat.VDI ) ) );
+
+		assertDoesNotThrow( () -> vmConfig.validate() );
+	}
+
+	@Test
+	@DisplayName( "Test output of detected 32-bit OS from VM configuration" )
+	public void testQemuMetaDataGetOs32Bit()
+			throws VirtualizationConfigurationException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
+	{
+		final File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-ubuntu-20-04-vm_i686.xml" );
+		final VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu(
+				VirtualizationConfigurationQemuTest.STUB_OS_LIST, file );
+
+		final OperatingSystem os = vmConfig.getOs();
+
+		assertNotNull( os );
+		assertEquals( VirtualizationConfigurationQemuTest.STUB_OS_LIST.get( 3 ), os );
+
+		assertDoesNotThrow( () -> vmConfig.validate() );
+	}
+
+	@Test
+	@DisplayName( "Test output of detected 64-bit OS from VM configuration" )
+	public void testQemuMetaDataGetOs64Bit()
+			throws VirtualizationConfigurationException, IOException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
+	{
+		final File file = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		final VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu(
+				VirtualizationConfigurationQemuTest.STUB_OS_LIST, file );
+
+		final OperatingSystem os = vmConfig.getOs();
+
+		assertNotNull( os );
+		assertEquals( VirtualizationConfigurationQemuTest.STUB_OS_LIST.get( 4 ), os );
 
 		assertDoesNotThrow( () -> vmConfig.validate() );
 	}

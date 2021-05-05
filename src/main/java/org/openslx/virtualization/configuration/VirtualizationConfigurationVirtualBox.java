@@ -59,6 +59,7 @@ class VBoxUsbSpeedMeta
 {
 	public final String value;
 	public final int speed;
+
 	public VBoxUsbSpeedMeta( String value, int speed )
 	{
 		this.value = value;
@@ -66,13 +67,14 @@ class VBoxUsbSpeedMeta
 	}
 }
 
-public class VirtualizationConfigurationVirtualBox extends VirtualizationConfiguration<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
+public class VirtualizationConfigurationVirtualBox
+		extends VirtualizationConfiguration<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
 {
 	/**
 	 * File name extension for VirtualBox virtualization configuration files..
 	 */
 	public static final String FILE_NAME_EXTENSION = "vbox";
-	
+
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVirtualBox.class );
 
 	private final VirtualizationConfigurationVirtualboxFileFormat config;
@@ -89,14 +91,16 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		}
 	}
 
-	public VirtualizationConfigurationVirtualBox( List<OperatingSystem> osList, File file ) throws IOException, VirtualizationConfigurationException
+	public VirtualizationConfigurationVirtualBox( List<OperatingSystem> osList, File file )
+			throws IOException, VirtualizationConfigurationException
 	{
 		super( new VirtualizerVirtualBox(), osList );
 		this.config = new VirtualizationConfigurationVirtualboxFileFormat( file );
 		init();
 	}
 
-	public VirtualizationConfigurationVirtualBox( List<OperatingSystem> osList, byte[] vmContent, int length ) throws IOException, VirtualizationConfigurationException
+	public VirtualizationConfigurationVirtualBox( List<OperatingSystem> osList, byte[] vmContent, int length )
+			throws IOException, VirtualizationConfigurationException
 	{
 		super( new VirtualizerVirtualBox(), osList );
 		this.config = new VirtualizationConfigurationVirtualboxFileFormat( vmContent, length );
@@ -118,11 +122,11 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	{
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
 	public void transformPrivacy() throws VirtualizationConfigurationException
 	{
-		
+
 	}
 
 	@Override
@@ -136,11 +140,12 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	{
 		return this.addHddTemplate( "%VM_DISK_PATH%", "%VM_DISK_MODE%", "%VM_DISK_REDOLOGDIR%" );
 	}
-	
+
 	@Override
 	public boolean addHddTemplate( String diskImage, String hddMode, String redoDir )
 	{
-		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk[@location='" + PlaceHolder.HDDLOCATION.toString() + "']", "location", diskImage );
+		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk[@location='"
+				+ PlaceHolder.HDDLOCATION.toString() + "']", "location", diskImage );
 		config.changeAttribute( "/VirtualBox/Machine", "snapshotFolder", redoDir );
 		return true;
 	}
@@ -156,7 +161,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		// patching the new uuid in the vbox config file here
 		String vboxUUid = "{" + newhdduuid.toString() + "}";
 		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "uuid", vboxUUid );
-		config.changeAttribute( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image", "uuid", vboxUUid );
+		config.changeAttribute( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image", "uuid",
+				vboxUUid );
 
 		// the order of the UUID is BIG_ENDIAN but we need to change the order of the first 8 Bytes
 		// to be able to write them to the vdi file... the PROBLEM here is that the first 8 
@@ -206,7 +212,10 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	public void setOs( String vendorOsId )
 	{
 		config.changeAttribute( "/VirtualBox/Machine", "OSType", vendorOsId );
-		setOs( TConst.VIRT_VIRTUALBOX, vendorOsId );
+
+		final OperatingSystem os = VirtualizationConfigurationUtils.getOsOfVirtualizerFromList( this.osList,
+				TConst.VIRT_VIRTUALBOX, vendorOsId );
+		this.setOs( os );
 	}
 
 	@Override
@@ -225,7 +234,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	public void addFloppy( int index, String image, boolean readOnly )
 	{
 		Element floppyController = null;
-		NodeList matches = (NodeList)config.findNodes( "/VirtualBox/Machine/StorageControllers/StorageController[@name='Floppy']" );
+		NodeList matches = (NodeList)config
+				.findNodes( "/VirtualBox/Machine/StorageControllers/StorageController[@name='Floppy']" );
 		if ( matches == null || matches.getLength() == 0 ) {
 			floppyController = (Element)config.addNewNode( "/VirtualBox/Machine/StorageControllers", "StorageController" );
 			if ( floppyController == null ) {
@@ -265,20 +275,24 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 				LOGGER.error( "Failed to add <Image> to floppy device." );
 				return;
 			}
-			floppyImage.setAttribute( "uuid", VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYUUID.toString() );
+			floppyImage.setAttribute( "uuid",
+					VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYUUID.toString() );
 			// register the image in the media registry
 			Element floppyImages = (Element)config.addNewNode( "/VirtualBox/Machine/MediaRegistry", "FloppyImages" );
 			if ( floppyImages == null ) {
 				LOGGER.error( "Failed to add <FloppyImages> to media registry." );
 				return;
 			}
-			Element floppyImageReg = (Element)config.addNewNode( "/VirtualBox/Machine/MediaRegistry/FloppyImages", "Image" );
+			Element floppyImageReg = (Element)config.addNewNode( "/VirtualBox/Machine/MediaRegistry/FloppyImages",
+					"Image" );
 			if ( floppyImageReg == null ) {
 				LOGGER.error( "Failed to add <Image> to floppy images in the media registry." );
 				return;
 			}
-			floppyImageReg.setAttribute( "uuid", VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYUUID.toString() );
-			floppyImageReg.setAttribute( "location", VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYLOCATION.toString() );
+			floppyImageReg.setAttribute( "uuid",
+					VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYUUID.toString() );
+			floppyImageReg.setAttribute( "location",
+					VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYLOCATION.toString() );
 		}
 	}
 
@@ -299,7 +313,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	public void setSoundCard( org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType type )
 	{
 		VBoxSoundCardMeta sound = soundCards.get( type );
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", Boolean.toString( sound.isPresent ) );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled",
+				Boolean.toString( sound.isPresent ) );
 		config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "controller", sound.value );
 	}
 
@@ -309,7 +324,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		// initialize here to type None to avoid all null pointer exceptions thrown for unknown user written sound cards
 		VirtualizationConfiguration.SoundCardType returnsct = VirtualizationConfiguration.SoundCardType.NONE;
 		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/AudioAdapter" ).item( 0 );
-		if ( !x.hasAttribute( "enabled" ) || ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
+		if ( !x.hasAttribute( "enabled" )
+				|| ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
 			return returnsct;
 		} else {
 			// extra separate case for the non-existing argument}
@@ -318,7 +334,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 			} else {
 				String controller = x.getAttribute( "controller" );
 				VBoxSoundCardMeta soundMeta = null;
-				for ( VirtualizationConfiguration.SoundCardType type : VirtualizationConfiguration.SoundCardType.values() ) {
+				for ( VirtualizationConfiguration.SoundCardType type : VirtualizationConfiguration.SoundCardType
+						.values() ) {
 					soundMeta = soundCards.get( type );
 					if ( soundMeta != null ) {
 						if ( controller.equals( soundMeta.value ) ) {
@@ -335,7 +352,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	public void setDDAcceleration( VirtualizationConfiguration.DDAcceleration type )
 	{
 		VBoxDDAccelMeta accel = ddacc.get( type );
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/Display", "accelerate3D", Boolean.toString( accel.isPresent ) );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/Display", "accelerate3D",
+				Boolean.toString( accel.isPresent ) );
 	}
 
 	@Override
@@ -377,8 +395,10 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		String index = "0";
 		VBoxEthernetDevTypeMeta nic = networkCards.get( type );
 		// cardIndex is not used yet...maybe later needed for different network cards
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "enabled", Boolean.toString( nic.isPresent ) );
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "type", nic.value );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "enabled",
+				Boolean.toString( nic.isPresent ) );
+		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "type",
+				nic.value );
 	}
 
 	@Override
@@ -386,7 +406,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	{
 		VirtualizationConfiguration.EthernetDevType returnedt = VirtualizationConfiguration.EthernetDevType.NONE;
 		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/Network/Adapter" ).item( 0 );
-		if ( !x.hasAttribute( "enabled" ) || ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
+		if ( !x.hasAttribute( "enabled" )
+				|| ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
 			return returnedt;
 		} else {
 			// extra separate case for the non-existing argument}
@@ -395,7 +416,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 			} else {
 				String temp = x.getAttribute( "type" );
 				VBoxEthernetDevTypeMeta etherMeta = null;
-				for ( VirtualizationConfiguration.EthernetDevType type : VirtualizationConfiguration.EthernetDevType.values() ) {
+				for ( VirtualizationConfiguration.EthernetDevType type : VirtualizationConfiguration.EthernetDevType
+						.values() ) {
 					etherMeta = networkCards.get( type );
 					if ( etherMeta != null ) {
 						if ( temp.equals( etherMeta.value ) ) {
@@ -421,14 +443,21 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		ddacc.put( VirtualizationConfiguration.DDAcceleration.ON, new VBoxDDAccelMeta( true ) );
 
 		// none type needs to have a valid value; it takes the value of pcnetcpi2; if value is left null or empty vm will not start because value is not valid
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.NONE, new VBoxEthernetDevTypeMeta( false, "Am79C970A" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETPCI2, new VBoxEthernetDevTypeMeta( true, "Am79C970A" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETFAST3, new VBoxEthernetDevTypeMeta( true, "Am79C973" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000MTD, new VBoxEthernetDevTypeMeta( true, "82540EM" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000TS, new VBoxEthernetDevTypeMeta( true, "82543GC" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000MTS, new VBoxEthernetDevTypeMeta( true, "82545EM" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PARAVIRT, new VBoxEthernetDevTypeMeta( true, "virtio" ) );
-		
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.NONE,
+				new VBoxEthernetDevTypeMeta( false, "Am79C970A" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETPCI2,
+				new VBoxEthernetDevTypeMeta( true, "Am79C970A" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETFAST3,
+				new VBoxEthernetDevTypeMeta( true, "Am79C973" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000MTD,
+				new VBoxEthernetDevTypeMeta( true, "82540EM" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000TS,
+				new VBoxEthernetDevTypeMeta( true, "82543GC" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000MTS,
+				new VBoxEthernetDevTypeMeta( true, "82545EM" ) );
+		networkCards.put( VirtualizationConfiguration.EthernetDevType.PARAVIRT,
+				new VBoxEthernetDevTypeMeta( true, "virtio" ) );
+
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.NONE, new VBoxUsbSpeedMeta( null, 0 ) );
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB1_1, new VBoxUsbSpeedMeta( "OHCI", 1 ) );
 		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB2_0, new VBoxUsbSpeedMeta( "EHCI", 2 ) );
@@ -438,7 +467,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	@Override
 	public boolean addEthernet( VirtualizationConfiguration.EtherType type )
 	{
-		Node hostOnlyInterfaceNode = config.addNewNode( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']", "HostOnlyInterface" );
+		Node hostOnlyInterfaceNode = config.addNewNode( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']",
+				"HostOnlyInterface" );
 		if ( hostOnlyInterfaceNode == null ) {
 			LOGGER.error( "Failed to create node for HostOnlyInterface." );
 			return false;
@@ -498,7 +528,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 				LOGGER.info( "Not ATTRIBUTE type" );
 				continue;
 			}
-			String type = ((Attr)nodes.item( i )).getValue();
+			String type = ( (Attr)nodes.item( i ) ).getValue();
 			for ( Entry<VirtualizationConfiguration.UsbSpeed, VBoxUsbSpeedMeta> s : usbSpeeds.entrySet() ) {
 				if ( s.getValue().speed > maxSpeed && type.equals( s.getValue().value ) ) {
 					maxSpeed = s.getValue().speed;
@@ -514,7 +544,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	{
 		return VirtualizationConfigurationVirtualBox.FILE_NAME_EXTENSION;
 	}
-	
+
 	@Override
 	public void validate() throws VirtualizationConfigurationException
 	{

@@ -111,6 +111,14 @@ public class DomainTest
 	}
 
 	@Test
+	@DisplayName( "Get VM libosinfo operating system identifier in libvirt XML file" )
+	public void testGetLibOsInfoOsId()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( "http://ubuntu.com/ubuntu/20.04", vm.getLibOsInfoOsId() );
+	}
+
+	@Test
 	@DisplayName( "Get VM UUID from libvirt XML file" )
 	public void testGetUuid()
 	{

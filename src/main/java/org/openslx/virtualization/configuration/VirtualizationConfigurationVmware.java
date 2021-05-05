@@ -54,7 +54,7 @@ class VmwareUsbSpeed
 {
 	public final String keyName;
 	public final int speedNumeric;
-	
+
 	public VmwareUsbSpeed( int speed, String key )
 	{
 		this.keyName = key == null ? null : ( key + ".present" );
@@ -62,16 +62,18 @@ class VmwareUsbSpeed
 	}
 }
 
-public class VirtualizationConfigurationVmware extends VirtualizationConfiguration<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
+public class VirtualizationConfigurationVmware extends
+		VirtualizationConfiguration<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
 {
 	/**
 	 * File name extension for VMware virtualization configuration files.
 	 */
 	public static final String FILE_NAME_EXTENSION = "vmx";
-	
+
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVmware.class );
 
-	private static final Pattern hddKey = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d|nvme\\d):?(\\d)?\\.(.*)", Pattern.CASE_INSENSITIVE );
+	private static final Pattern hddKey = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d|nvme\\d):?(\\d)?\\.(.*)",
+			Pattern.CASE_INSENSITIVE );
 
 	// Lowercase list of allowed settings for upload (as regex)
 	private static final Pattern[] whitelist;
@@ -80,9 +82,12 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 
 	// Init static members
 	static {
-		String[] list = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci[.:]", "^mks\\.enable3d", "^virtualhw\\.",
-				"^sound[.:]", "\\.pcislotnumber$", "^pcibridge", "\\.virtualdev$", "^tools\\.syncTime$", "^time\\.synchronize",
-				"^bios\\.bootDelay", "^rtc\\.", "^xhci[.:]", "^usb_xhci[.:]", "\\.deviceType$", "\\.port$", "\\.parent$", "^usb[.:]",
+		String[] list = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci[.:]", "^mks\\.enable3d",
+				"^virtualhw\\.",
+				"^sound[.:]", "\\.pcislotnumber$", "^pcibridge", "\\.virtualdev$", "^tools\\.syncTime$",
+				"^time\\.synchronize",
+				"^bios\\.bootDelay", "^rtc\\.", "^xhci[.:]", "^usb_xhci[.:]", "\\.deviceType$", "\\.port$", "\\.parent$",
+				"^usb[.:]",
 				"^firmware", "^hpet", "^vm\\.genid" };
 		whitelist = new Pattern[ list.length ];
 		for ( int i = 0; i < list.length; ++i ) {
@@ -104,14 +109,16 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 
 	private final Map<String, Controller> disks = new HashMap<>();
 
-	public VirtualizationConfigurationVmware( List<OperatingSystem> osList, File file ) throws IOException, VirtualizationConfigurationException
+	public VirtualizationConfigurationVmware( List<OperatingSystem> osList, File file )
+			throws IOException, VirtualizationConfigurationException
 	{
 		super( new VirtualizerVmware(), osList );
 		this.config = new VirtualizationConfigurationVmwareFileFormat( file );
 		init();
 	}
 
-	public VirtualizationConfigurationVmware( List<OperatingSystem> osList, byte[] vmxContent, int length ) throws VirtualizationConfigurationException
+	public VirtualizationConfigurationVmware( List<OperatingSystem> osList, byte[] vmxContent, int length )
+			throws VirtualizationConfigurationException
 	{
 		super( new VirtualizerVmware(), osList );
 		this.config = new VirtualizationConfigurationVmwareFileFormat( vmxContent, length ); // still unfiltered
@@ -237,7 +244,7 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 			device.present = Boolean.parseBoolean( value );
 		}
 	}
-	
+
 	@Override
 	public boolean addEmptyHddTemplate()
 	{
@@ -419,7 +426,10 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	public void setOs( String vendorOsId )
 	{
 		addFiltered( "guestOS", vendorOsId );
-		setOs( TConst.VIRT_VMWARE, vendorOsId );
+
+		final OperatingSystem os = VirtualizationConfigurationUtils.getOsOfVirtualizerFromList( this.osList,
+				TConst.VIRT_VMWARE, vendorOsId );
+		this.setOs( os );
 	}
 
 	public byte[] getConfigurationAsByteArray()
@@ -536,7 +546,8 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 		String temp = config.get( "ethernet" + cardIndex + ".virtualDev" );
 		if ( temp != null ) {
 			VmWareEthernetDevTypeMeta ethernetDevTypeMeta = null;
-			for ( VirtualizationConfiguration.EthernetDevType type : VirtualizationConfiguration.EthernetDevType.values() ) {
+			for ( VirtualizationConfiguration.EthernetDevType type : VirtualizationConfiguration.EthernetDevType
+					.values() ) {
 				ethernetDevTypeMeta = networkCards.get( type );
 				if ( ethernetDevTypeMeta == null ) {
 					continue;
