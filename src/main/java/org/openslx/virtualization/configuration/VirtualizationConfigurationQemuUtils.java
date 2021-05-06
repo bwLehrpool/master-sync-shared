@@ -338,4 +338,104 @@ public class VirtualizationConfigurationQemuUtils
 	{
 		return String.format( "%d.%d", version.getMajor(), version.getMinor() );
 	}
+
+	/**
+	 * Returns the size of a given architecture {@link String}.
+	 * 
+	 * @param osArch Libvirt/QEMU machine architecture as {@link String}.
+	 * @return Size of the Libvirt/QEMU machine architecture.
+	 */
+	public static int getOsArchSize( String osArch )
+	{
+		final int archSize;
+
+		if ( osArch == null || osArch.isEmpty() ) {
+			archSize = 0;
+		} else {
+			switch ( osArch ) {
+			case "alpha":
+				archSize = 64;
+				break;
+			case "armv6l":
+				archSize = 32;
+				break;
+			case "armv7l":
+				archSize = 32;
+				break;
+			case "aarch64":
+				archSize = 64;
+				break;
+			case "cris":
+				archSize = 32;
+				break;
+			case "i686":
+				archSize = 32;
+				break;
+			case "m68k":
+				archSize = 32;
+				break;
+			case "microblaze":
+				archSize = 32;
+				break;
+			case "microblazeel":
+				archSize = 32;
+				break;
+			case "mips":
+				archSize = 32;
+				break;
+			case "mipsel":
+				archSize = 32;
+				break;
+			case "mips64":
+				archSize = 64;
+				break;
+			case "mips64el":
+				archSize = 64;
+				break;
+			case "ppc":
+				archSize = 32;
+				break;
+			case "ppc64":
+				archSize = 64;
+				break;
+			case "ppc64le":
+				archSize = 64;
+				break;
+			case "riscv32":
+				archSize = 32;
+				break;
+			case "riscv64":
+				archSize = 64;
+				break;
+			case "s390x":
+				archSize = 64;
+				break;
+			case "sh4":
+				archSize = 32;
+				break;
+			case "sh4eb":
+				archSize = 64;
+				break;
+			case "sparc":
+				archSize = 32;
+				break;
+			case "sparc64":
+				archSize = 64;
+				break;
+			case "x86_64":
+				archSize = 64;
+				break;
+			case "xtensa":
+				archSize = 32;
+				break;
+			case "xtensaeb":
+				archSize = 32;
+				break;
+			default:
+				archSize = 0;
+			}
+		}
+
+		return archSize;
+	}
 }

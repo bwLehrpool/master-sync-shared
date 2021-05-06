@@ -325,11 +325,17 @@ public class VirtualizationConfigurationQemu extends
 			if ( osLookup != null ) {
 				// operating system entry was found
 				// so determine OpenSLX OS name with the smallest distance to the libosinfo OS name
-				final LevenshteinDistance distance = new LevenshteinDistance( 1, 1, 1 );
+				final LevenshteinDistance distance = new LevenshteinDistance( 2, 1, 1 );
 				int smallestDistance = Integer.MAX_VALUE;
 
 				// get name of the OS and combine it with the optional available architecture
-				final String osLookupOsName = osLookup.getName() + " " + this.vmConfig.getOsArch();
+				String osLookupOsName = osLookup.getName();
+				final int osArchSize = VirtualizationConfigurationQemuUtils.getOsArchSize( this.vmConfig.getOsArch() );
+
+				if ( osArchSize > 0 ) {
+					// append architecture size in bit if information is available from the specified architecture
+					osLookupOsName += " (" + osArchSize + " Bit)";
+				}
 
 				for ( final OperatingSystem osCandidate : this.osList ) {
 					final int currentDistance = distance.calculateDistance( osLookupOsName, osCandidate.getOsName() );
