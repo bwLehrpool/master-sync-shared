@@ -92,14 +92,36 @@ public class VersionTest
 	}
 
 	@Test
-	@DisplayName( "Test that version is larger than" )
-	public void testVersionLargerThan()
+	@DisplayName( "Test that version is smaller than with helper method" )
+	public void testVersionSmallerThanMethod()
+	{
+		final Version versionOne = new Version( Short.valueOf( "2" ), Short.valueOf( "3" ) );
+		final Version versionTwo = new Version( Short.valueOf( "3" ), Short.valueOf( "2" ) );
+
+		assertTrue( versionOne.isSmallerThan( versionTwo ) );
+		assertFalse( versionTwo.isSmallerThan( versionOne ) );
+	}
+
+	@Test
+	@DisplayName( "Test that version is greater than" )
+	public void testVersionGreaterThan()
 	{
 		final Version versionOne = new Version( Short.valueOf( "3" ), Short.valueOf( "3" ) );
 		final Version versionTwo = new Version( Short.valueOf( "3" ), Short.valueOf( "2" ) );
 
 		assertEquals( 1, versionOne.compareTo( versionTwo ) );
 		assertEquals( -1, versionTwo.compareTo( versionOne ) );
+	}
+
+	@Test
+	@DisplayName( "Test that version is greater than with helper method" )
+	public void testVersionGreaterThanMethod()
+	{
+		final Version versionOne = new Version( Short.valueOf( "3" ), Short.valueOf( "3" ) );
+		final Version versionTwo = new Version( Short.valueOf( "3" ), Short.valueOf( "2" ) );
+
+		assertTrue( versionOne.isGreaterThan( versionTwo ) );
+		assertFalse( versionTwo.isGreaterThan( versionOne ) );
 	}
 
 	@Test

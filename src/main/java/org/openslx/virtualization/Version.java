@@ -201,6 +201,28 @@ public class Version implements Comparable<Version>
 	}
 
 	/**
+	 * Checks if this version is smaller than a specified {@code version}.
+	 * 
+	 * @param version for comparison.
+	 * @return state whether this version is smaller than the specified {@code version} or not.
+	 */
+	public boolean isSmallerThan( Version version )
+	{
+		return ( this.compareTo( version ) < 0 ) ? true : false;
+	}
+
+	/**
+	 * Checks if this version is greater than a specified {@code version}.
+	 * 
+	 * @param version for comparison.
+	 * @return state whether this version is greater than the specified {@code version} or not.
+	 */
+	public boolean isGreaterThan( Version version )
+	{
+		return ( this.compareTo( version ) > 0 ) ? true : false;
+	}
+
+	/**
 	 * Creates a new version parsed from a {@link String}.
 	 * 
 	 * The version consists of a major and a minor version parsed from the specified {@link String}.
@@ -235,6 +257,16 @@ public class Version implements Comparable<Version>
 		}
 
 		return parsedVersion;
+	}
+
+	@Override
+	public String toString()
+	{
+		if ( this.getName() == null || this.getName().isEmpty() ) {
+			return String.format( "%d.%d", this.getMajor(), this.getMinor() );
+		} else {
+			return String.format( "%d.%d %s", this.getMajor(), this.getMinor(), this.getName() );
+		}
 	}
 
 	@Override

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -20,6 +22,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.apache.log4j.Logger;
 import org.openslx.util.Util;
 import org.openslx.util.XmlHelper;
+import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.DriveBusType;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.HardDisk;
 import org.w3c.dom.DOMException;
@@ -43,6 +46,11 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	// XPath and DOM parsing related members
 	private Document doc = null;
 
+	/**
+	 * Version of the configuration file format.
+	 */
+	private Version version = null;
+
 	// list of nodes to automatically remove when reading the vbox file
 	private static String[] blacklist = {
 			"/VirtualBox/Machine/Hardware/GuestProperties",
@@ -53,6 +61,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 			"/VirtualBox/Machine/Hardware/Network/Adapter[@enabled='true']/*",
 			"/VirtualBox/Machine/ExtraData",
 			"/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice[not(@type='HardDisk')]",
+			"/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice[not(@type='HardDisk')]",
 			"/VirtualBox/Machine/MediaRegistry/FloppyImages",
 			"/VirtualBox/Machine/MediaRegistry/DVDImages" };
 
@@ -139,6 +148,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 			throw new VirtualizationConfigurationException( "Machine doesn't have a name" );
 		}
 		try {
+			this.parseConfigurationVersion();
 			ensureHardwareUuid();
 			setOsType();
 			fixUsb(); // Since we now support selecting specific speed
@@ -154,6 +164,27 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 		}
 	}
 	
+	private void parseConfigurationVersion() throws XPathExpressionException, VirtualizationConfigurationException
+	{
+		final String versionText = XmlHelper.XPath.compile( "/VirtualBox/@version" ).evaluate( this.doc );
+
+		if ( versionText == null || versionText.isEmpty() ) {
+			throw new VirtualizationConfigurationException( "Configuration file does not contain any version number!" );
+		} else {
+			// parse version information from textual description
+			final Pattern versionPattern = Pattern.compile( "^(\\d+\\.\\d+).*$" );
+			final Matcher versionMatcher = versionPattern.matcher( versionText );
+
+			if ( versionMatcher.find() ) {
+				this.version = Version.valueOf( versionMatcher.group( 1 ) );
+			}
+
+			if ( this.version == null ) {
+				throw new VirtualizationConfigurationException( "Configuration file version number is not valid!" );
+			}
+		}
+	}
+
 	private void fixUsb()
 	{
 		NodeList list = findNodes( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller" );
@@ -216,6 +247,11 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 		}
 	}
 
+	public Version getVersion()
+	{
+		return this.version;
+	}
+
 	/**
 	 * Self-explanatory.
 	 */
@@ -243,7 +279,14 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 				continue;
 			String hddUuid = hdd.getAttribute( "uuid" );
 			hdd.setAttribute( "uuid", PlaceHolder.HDDUUID.toString() + i + "%" );
-			NodeList images = findNodes( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image" );
+			final NodeList images;
+			if ( this.getVersion().isSmallerThan( Version.valueOf( "1.17" ) ) ) {
+				images = findNodes( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image" );
+			} else {
+				images = findNodes(
+						"/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice/Image" );
+			}
+
 			for ( int j = 0; j < images.getLength(); j++ ) {
 				Element image = (Element)images.item( j );
 				if ( image == null )
@@ -340,7 +383,15 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 */
 	public void setHdds() throws XPathExpressionException
 	{
-		XPathExpression hddsExpr = XmlHelper.XPath.compile( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice[@type='HardDisk']/Image" );
+		final XPathExpression hddsExpr;
+		if ( this.getVersion().isSmallerThan( Version.valueOf( "1.17" ) ) ) {
+			hddsExpr = XmlHelper.XPath.compile(
+					"/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice[@type='HardDisk']/Image" );
+		} else {
+			hddsExpr = XmlHelper.XPath.compile(
+					"/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice[@type='HardDisk']/Image" );
+		}
+
 		NodeList nodes = (NodeList)hddsExpr.evaluate( this.doc, XPathConstants.NODESET );
 		if ( nodes == null ) {
 			LOGGER.error( "Failed to find attached hard drives." );

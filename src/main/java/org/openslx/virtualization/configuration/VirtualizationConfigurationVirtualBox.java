@@ -382,6 +382,11 @@ public class VirtualizationConfigurationVirtualBox
 	{
 	}
 
+	public Version getConfigurationVersion()
+	{
+		return this.config.getVersion();
+	}
+
 	@Override
 	public Version getVirtualizerVersion()
 	{
