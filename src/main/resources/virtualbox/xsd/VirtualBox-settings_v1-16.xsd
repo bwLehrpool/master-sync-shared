@@ -245,6 +245,14 @@
   </xsd:restriction>
 </xsd:simpleType>
 
+<xsd:simpleType name="TDisplayControllerType">
+  <xsd:restriction base="xsd:token">
+    <xsd:enumeration value="VBoxVGA"/>
+    <xsd:enumeration value="VMSVGA"/>
+    <xsd:enumeration value="VBoxSVGA"/>
+  </xsd:restriction>
+</xsd:simpleType>
+
 <!--
 // Complex types
 /////////////////////////////////////////////////////////////////////////
@@ -525,6 +533,10 @@
   <xsd:attribute name="enabled" type="xsd:boolean"/>
 </xsd:complexType>
 
+<xsd:complexType name="TX2APICType">
+  <xsd:attribute name="enabled" type="xsd:boolean"/>
+</xsd:complexType>
+
 <xsd:complexType name="THardwareVirtExLargePages">
   <xsd:attribute name="enabled" type="xsd:boolean"/>
 </xsd:complexType>
@@ -563,6 +575,7 @@
     <xsd:element name="HardwareVirtExUX" type="THWVirtExUXType" minOccurs="0"/>
     <xsd:element name="PAE" type="TPAEType" minOccurs="0"/>
     <xsd:element name="LongMode" type="TLongModeType" minOccurs="0"/>
+    <xsd:element name="X2APIC" type="TX2APICType" minOccurs="0"/>
     <xsd:element name="HardwareVirtExLargePages" type="THardwareVirtExLargePages" minOccurs="0"/>
     <xsd:element name="HardwareVirtForce" type="THardwareVirtForce" minOccurs="0"/>
     <xsd:element name="SyntheticCpu" type="TSyntheticCpuType" minOccurs="0"/>
@@ -608,6 +621,7 @@
   <xsd:attribute name="MonitorCount" type="TMonitorCount"/> <!-- deprecated -->
   <xsd:attribute name="accelerate3D" type="xsd:boolean" default="false"/>
   <xsd:attribute name="accelerate2DVideo" type="xsd:boolean" default="false"/>
+  <xsd:attribute name="controller" type="TDisplayControllerType" default="VBoxSVGA"/>
 </xsd:complexType>
 
 <xsd:complexType name="TVideoRecording">
@@ -701,6 +715,11 @@
       </xsd:complexType>
     </xsd:element>
     <xsd:element name="PXEDebug" minOccurs="0">
+      <xsd:complexType>
+        <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
+      </xsd:complexType>
+    </xsd:element>
+    <xsd:element name="SmbiosUuidLittleEndian" minOccurs="0">
       <xsd:complexType>
         <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
       </xsd:complexType>
@@ -866,6 +885,8 @@
 
 <xsd:complexType name="TAudioAdapter">
   <xsd:attribute name="enabled" type="xsd:boolean" default="false"/>
+  <xsd:attribute name="enabledIn" type="xsd:boolean" default="false"/>
+  <xsd:attribute name="enabledOut" type="xsd:boolean" default="false"/>
   <xsd:attribute name="controller" default="AC97">
     <xsd:simpleType>
       <xsd:restriction base="xsd:token">
@@ -875,6 +896,7 @@
       </xsd:restriction>
     </xsd:simpleType>
   </xsd:attribute>
+  <xsd:attribute name="codec" type="xsd:string" use="optional"/>
   <xsd:attribute name="driver" use="required">
     <xsd:simpleType>
       <xsd:restriction base="xsd:token">
@@ -1135,7 +1157,7 @@
 </xsd:complexType>
 
 <xsd:complexType name="TClipboard">
-  <xsd:attribute name="mode" type="TClipboardMode" use="required"/>
+  <xsd:attribute name="mode" type="TClipboardMode" default="Disabled"/>
 </xsd:complexType>
 
 <xsd:complexType name="TDragAndDrop">
@@ -1401,6 +1423,7 @@
     <xsd:element name="StorageControllers" type="TStorageControllers" minOccurs="0"/>
   </xsd:all>
   <xsd:attribute name="version" type="xsd:string" default="2"/>
+  <xsd:attribute name="uuid" type="TNonNullUUID" use="optional"/>
 </xsd:complexType>
 
 <xsd:complexType name="TGroup">
