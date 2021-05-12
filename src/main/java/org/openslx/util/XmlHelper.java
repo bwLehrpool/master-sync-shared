@@ -3,6 +3,8 @@ package org.openslx.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,6 +16,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
@@ -28,16 +31,59 @@ public class XmlHelper
 	private final static Logger LOGGER = Logger.getLogger( XmlHelper.class );
 
 	// TODO check thread-safety
-	public static final XPath XPath = XPathFactory.newInstance().newXPath();
+	private static final XPath XPath = XPathFactory.newInstance().newXPath();
 	private static DocumentBuilder dBuilder;
 	static {
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		dbFactory.setNamespaceAware( true );
 		dbFactory.setIgnoringComments( true );
 		try {
 			dBuilder = dbFactory.newDocumentBuilder();
 		} catch ( ParserConfigurationException e ) {
 			LOGGER.error( "Failed to initalize DOM parser with default configurations." );
 		}
+	}
+
+	public static String globalXPathToLocalXPath( String xPath )
+	{
+		final StringBuilder exprBuilder = new StringBuilder();
+		final String[] elements = xPath.split( "/" );
+
+		for ( final String element : elements ) {
+			if ( !element.isEmpty() ) {
+				final Pattern arraySpecifierRegex = Pattern.compile( "^(.*)\\[(.*)\\]$" );
+				final Matcher arraySpecifierMatcher = arraySpecifierRegex.matcher( element );
+				final String elementName;
+				final String elementSpecifier;
+
+				if ( arraySpecifierMatcher.find() ) {
+					elementName = arraySpecifierMatcher.group( 1 );
+					elementSpecifier = arraySpecifierMatcher.group( 2 );
+				} else {
+					elementName = element;
+					elementSpecifier = null;
+				}
+
+				if ( !elementName.startsWith( "@" ) && !elementName.equals( "*" ) ) {
+					exprBuilder.append( "/*[local-name()='" + elementName + "']" );
+
+				} else {
+					exprBuilder.append( "/" + elementName );
+				}
+
+				if ( elementSpecifier != null && !elementSpecifier.isEmpty() ) {
+					exprBuilder.append( "[" + elementSpecifier + "]" );
+				}
+			}
+		}
+
+		return exprBuilder.toString();
+	}
+
+	public static XPathExpression compileXPath( String xPath ) throws XPathExpressionException
+	{
+		final String localXPath = XmlHelper.globalXPathToLocalXPath( xPath );
+		return XPath.compile( localXPath );
 	}
 
 	public static Document parseDocumentFromStream( InputStream is )

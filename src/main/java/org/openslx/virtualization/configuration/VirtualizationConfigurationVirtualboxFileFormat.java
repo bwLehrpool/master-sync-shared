@@ -6,11 +6,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -50,6 +52,26 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 * Version of the configuration file format.
 	 */
 	private Version version = null;
+
+	/**
+	 * File names of XML schema files for different file format versions.
+	 */
+	private final static HashMap<Version, String> FILE_FORMAT_SCHEMA_VERSIONS = new HashMap<Version, String>() {
+
+		private static final long serialVersionUID = -3163681758191475625L;
+
+		{
+			put( Version.valueOf( "1.15" ), "VirtualBox-settings_v1-15.xsd" );
+			put( Version.valueOf( "1.16" ), "VirtualBox-settings_v1-16.xsd" );
+			put( Version.valueOf( "1.17" ), "VirtualBox-settings_v1-17.xsd" );
+			put( Version.valueOf( "1.18" ), "VirtualBox-settings_v1-18.xsd" );
+		}
+	};
+
+	/**
+	 * Path to the VirtualBox file format schemas within the *.jar file.
+	 */
+	private final static String FILE_FORMAT_SCHEMA_PREFIX_PATH = File.separator + "virtualbox" + File.separator + "xsd";
 
 	// list of nodes to automatically remove when reading the vbox file
 	private static String[] blacklist = {
@@ -97,26 +119,13 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 */
 	public VirtualizationConfigurationVirtualboxFileFormat( File file ) throws IOException, VirtualizationConfigurationException
 	{
-		// first validate xml
-		try {
-			SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-			InputStream xsdStream = VirtualizationConfigurationVirtualboxFileFormat.class.getResourceAsStream( "/virtualbox/xsd/VirtualBox-settings.xsd" );
-			if ( xsdStream == null ) {
-				LOGGER.warn( "Cannot validate Vbox XML: No XSD found in JAR" );
-			} else {
-				Schema schema = factory.newSchema( new StreamSource( xsdStream ) );
-				Validator validator = schema.newValidator();
-				validator.validate( new StreamSource( file ) );
-			}
-		} catch ( SAXException e ) {
-			LOGGER.error( "Selected vbox file was not validated against the XSD schema: " + e.getMessage() );
-		}
-		// valid xml, try to create the DOM
 		doc = XmlHelper.parseDocumentFromStream( new FileInputStream( file ) );
 		doc = XmlHelper.removeFormattingNodes( doc );
 		if ( doc == null )
-			throw new VirtualizationConfigurationException( "Could not create DOM from given VirtualBox machine configuration file!" );
-		init();
+			throw new VirtualizationConfigurationException( "Could not parse given VirtualBox machine configuration file!" );
+
+		this.parseConfigurationVersion();
+		this.init();
 	}
 
 	/**
@@ -130,12 +139,59 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	public VirtualizationConfigurationVirtualboxFileFormat( byte[] machineDescription, int length ) throws VirtualizationConfigurationException
 	{
 		ByteArrayInputStream is = new ByteArrayInputStream( machineDescription );
+
 		doc = XmlHelper.parseDocumentFromStream( is );
 		if ( doc == null ) {
-			LOGGER.error( "Failed to create a DOM from given machine description." );
-			throw new VirtualizationConfigurationException( "Could not create DOM from given machine description as. byte array." );
+			final String errorMsg = "Could not parse given VirtualBox machine description from byte array!";
+			LOGGER.debug( errorMsg );
+			throw new VirtualizationConfigurationException( errorMsg );
 		}
-		init();
+
+		this.parseConfigurationVersion();
+		this.init();
+	}
+
+	public void validate() throws VirtualizationConfigurationException
+	{
+		this.validateFileFormatVersion( this.getVersion() );
+	}
+
+	public void validateFileFormatVersion( Version version ) throws VirtualizationConfigurationException
+	{
+		if ( this.getVersion() != null && this.doc != null ) {
+			// check if specified version is supported
+			final String fileName = FILE_FORMAT_SCHEMA_VERSIONS.get( version );
+
+			if ( fileName == null ) {
+				final String errorMsg = "File format version " + version.toString() + " is not supported!";
+				LOGGER.debug( errorMsg );
+				throw new VirtualizationConfigurationException( errorMsg );
+			} else {
+				// specified version is supported, so validate document with corresponding schema file
+				final InputStream schemaResource = VirtualizationConfigurationVirtualboxFileFormat
+						.getSchemaResource( fileName );
+
+				if ( schemaResource != null ) {
+					try {
+						final SchemaFactory factory = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+						final Schema schema = factory.newSchema( new StreamSource( schemaResource ) );
+						final Validator validator = schema.newValidator();
+						validator.validate( new DOMSource( this.doc ) );
+					} catch ( SAXException | IOException e ) {
+						final String errorMsg = "XML configuration is not a valid VirtualBox v" + version.toString()
+								+ " configuration: " + e.getLocalizedMessage();
+						LOGGER.debug( errorMsg );
+						throw new VirtualizationConfigurationException( errorMsg );
+					}
+				}
+			}
+		}
+	}
+
+	private static InputStream getSchemaResource( String fileName )
+	{
+		final String schemaFilePath = FILE_FORMAT_SCHEMA_PREFIX_PATH + File.separator + fileName;
+		return VirtualizationConfigurationVirtualboxFileFormat.class.getResourceAsStream( schemaFilePath );
 	}
 
 	/**
@@ -144,11 +200,22 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 */
 	private void init() throws VirtualizationConfigurationException
 	{
+		try {
+			this.validate();
+		} catch ( VirtualizationConfigurationException e ) {
+			// do not print output of failed validation if placeholders are available
+			// since thoses placeholder values violate the defined UUID pattern
+			if ( !this.checkForPlaceholders() ) {
+				final String errorMsg = "XML configuration is not a valid VirtualBox v" + version.toString()
+						+ " configuration: " + e.getLocalizedMessage();
+				LOGGER.debug( errorMsg );
+			}
+		}
+
 		if ( Util.isEmptyString( getDisplayName() ) ) {
 			throw new VirtualizationConfigurationException( "Machine doesn't have a name" );
 		}
 		try {
-			this.parseConfigurationVersion();
 			ensureHardwareUuid();
 			setOsType();
 			fixUsb(); // Since we now support selecting specific speed
@@ -164,9 +231,15 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 		}
 	}
 	
-	private void parseConfigurationVersion() throws XPathExpressionException, VirtualizationConfigurationException
+	private void parseConfigurationVersion() throws VirtualizationConfigurationException
 	{
-		final String versionText = XmlHelper.XPath.compile( "/VirtualBox/@version" ).evaluate( this.doc );
+		String versionText;
+		try {
+			versionText = XmlHelper.compileXPath( "/VirtualBox/@version" ).evaluate( this.doc );
+		} catch ( XPathExpressionException e ) {
+			throw new VirtualizationConfigurationException(
+					"Failed to parse the version number of the configuration file" );
+		}
 
 		if ( versionText == null || versionText.isEmpty() ) {
 			throw new VirtualizationConfigurationException( "Configuration file does not contain any version number!" );
@@ -222,7 +295,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	private void ensureHardwareUuid() throws XPathExpressionException, VirtualizationConfigurationException
 	{
 		// we will need the machine uuid, so get it
-		String machineUuid = XmlHelper.XPath.compile( "/VirtualBox/Machine/@uuid" ).evaluate( this.doc );
+		String machineUuid = XmlHelper.compileXPath( "/VirtualBox/Machine/@uuid" ).evaluate( this.doc );
 		if ( machineUuid.isEmpty() ) {
 			LOGGER.error( "Machine UUID empty, should never happen!" );
 			throw new VirtualizationConfigurationException( "XML doesn't contain a machine uuid" );
@@ -329,7 +402,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	{
 		// iterate over the blackList
 		for ( String blackedTag : blacklist ) {
-			XPathExpression blackedExpr = XmlHelper.XPath.compile( blackedTag );
+			XPathExpression blackedExpr = XmlHelper.compileXPath( blackedTag );
 			NodeList blackedNodes = (NodeList)blackedExpr.evaluate( this.doc, XPathConstants.NODESET );
 			for ( int i = 0; i < blackedNodes.getLength(); i++ ) {
 				// go through the child nodes of the blacklisted ones -> why?
@@ -347,7 +420,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	public String getDisplayName()
 	{
 		try {
-			return XmlHelper.XPath.compile( "/VirtualBox/Machine/@name" ).evaluate( this.doc );
+			return XmlHelper.compileXPath( "/VirtualBox/Machine/@name" ).evaluate( this.doc );
 		} catch ( XPathExpressionException e ) {
 			return "";
 		}
@@ -360,7 +433,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 */
 	public void setOsType() throws XPathExpressionException
 	{
-		String os = XmlHelper.XPath.compile( "/VirtualBox/Machine/@OSType" ).evaluate( this.doc );
+		String os = XmlHelper.compileXPath( "/VirtualBox/Machine/@OSType" ).evaluate( this.doc );
 		if ( os != null && !os.isEmpty() ) {
 			osName = os;
 		}
@@ -385,10 +458,10 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	{
 		final XPathExpression hddsExpr;
 		if ( this.getVersion().isSmallerThan( Version.valueOf( "1.17" ) ) ) {
-			hddsExpr = XmlHelper.XPath.compile(
+			hddsExpr = XmlHelper.compileXPath(
 					"/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice[@type='HardDisk']/Image" );
 		} else {
-			hddsExpr = XmlHelper.XPath.compile(
+			hddsExpr = XmlHelper.compileXPath(
 					"/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice[@type='HardDisk']/Image" );
 		}
 
@@ -405,7 +478,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 			if ( uuid.isEmpty() )
 				continue;
 			// got uuid, check if it was registered
-			XPathExpression hddsRegistered = XmlHelper.XPath.compile( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk[@uuid='" + uuid + "']" );
+			XPathExpression hddsRegistered = XmlHelper.compileXPath( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk[@uuid='" + uuid + "']" );
 			NodeList hddsRegisteredNodes = (NodeList)hddsRegistered.evaluate( this.doc, XPathConstants.NODESET );
 			if ( hddsRegisteredNodes == null || hddsRegisteredNodes.getLength() != 1 ) {
 				LOGGER.error( "Found hard disk with uuid '" + uuid + "' which does not appear (unique) in the Media Registry. Skipping." );
@@ -484,7 +557,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	{
 		NodeList nodes = null;
 		try {
-			XPathExpression expr = XmlHelper.XPath.compile( xpath );
+			XPathExpression expr = XmlHelper.compileXPath( xpath );
 			Object nodesObject = expr.evaluate( this.doc, XPathConstants.NODESET );
 			nodes = (NodeList)nodesObject;
 		} catch ( XPathExpressionException e ) {
@@ -591,13 +664,19 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	
 	public void setExtraData( String key, String value )
 	{
-		NodeList nl = findNodes( "/VirtualBox/Machine/ExtraData/ExtraDataItem[@name='" + key + "']" );
+		NodeList nl = findNodes( "/VirtualBox/Machine/ExtraData/ExtraDataItem" );
 		Element e = null;
-		for ( int i = 0; i < nl.getLength(); ++i ) {
-			Node n = nl.item( i );
-			if ( n.getNodeType() == Node.ELEMENT_NODE ) {
-				e = (Element)n;
-				break;
+		if ( nl != null ) {
+			for ( int i = 0; i < nl.getLength(); ++i ) {
+				Node n = nl.item( i );
+				if ( n.getNodeType() == Node.ELEMENT_NODE ) {
+					final Element ne = (Element)n;
+					final String keyValue = ne.getAttribute( "name" );
+					if ( keyValue != null && keyValue.equals( key ) ) {
+						e = ne;
+						break;
+					}
+				}
 			}
 		}
 		if ( e == null ) {

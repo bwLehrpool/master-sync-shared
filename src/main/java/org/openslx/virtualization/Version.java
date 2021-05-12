@@ -311,4 +311,10 @@ public class Version implements Comparable<Version>
 			}
 		}
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return ( Short.valueOf( this.getMajor() ).hashCode() ) ^ ( Short.valueOf( this.getMinor() ).hashCode() );
+	}
 }

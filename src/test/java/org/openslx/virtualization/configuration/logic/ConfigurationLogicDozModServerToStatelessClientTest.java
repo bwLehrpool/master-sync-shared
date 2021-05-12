@@ -73,7 +73,10 @@ public class ConfigurationLogicDozModServerToStatelessClientTest
 
 		assertTrue(
 				ConfigurationLogicTestUtils.isVirtualBoxContentEqual( expectedTransformedConfig, transformedConfig ) );
-		assertDoesNotThrow( () -> config.validate() );
+
+		// do not validate the VirtualBox configuration afterwards, since the inserted
+		// place holders do not match valid primitive values from the XML schema
+		//assertDoesNotThrow( () -> config.validate() );
 	}
 
 	@Test

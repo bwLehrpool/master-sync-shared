@@ -553,5 +553,6 @@ public class VirtualizationConfigurationVirtualBox
 	@Override
 	public void validate() throws VirtualizationConfigurationException
 	{
+		this.config.validate();
 	}
 }
