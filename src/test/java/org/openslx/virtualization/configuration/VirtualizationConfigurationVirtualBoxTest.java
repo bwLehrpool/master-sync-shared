@@ -20,7 +20,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openslx.virtualization.Version;
-import org.openslx.vm.disk.DiskImage.ImageFormat;
+import org.openslx.virtualization.disk.DiskImage.ImageFormat;
 
 public class VirtualizationConfigurationVirtualBoxTest
 {

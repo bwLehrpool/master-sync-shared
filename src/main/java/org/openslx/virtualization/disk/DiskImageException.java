@@ -1,4 +1,4 @@
-package org.openslx.vm.disk;
+package org.openslx.virtualization.disk;
 
 /**
  * An exception for faulty disk image handling.

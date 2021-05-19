@@ -1,4 +1,4 @@
-package org.openslx.vm.disk;
+package org.openslx.virtualization.disk;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openslx.virtualization.Version;
-import org.openslx.vm.disk.DiskImage.ImageFormat;
+import org.openslx.virtualization.disk.DiskImage.ImageFormat;
 
 public class DiskImageVdiTest
 {

@@ -15,7 +15,7 @@ import org.openslx.libvirt.xml.LibvirtXmlTestResources;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration;
 import org.openslx.virtualization.configuration.data.ConfigurationDataDozModServerToDozModClient;
 import org.openslx.virtualization.configuration.transformation.TransformationException;
-import org.openslx.vm.disk.DiskImageTestResources;
+import org.openslx.virtualization.disk.DiskImageTestResources;
 
 public class ConfigurationLogicDozModServerToDozModClientTest
 {

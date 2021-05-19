@@ -1,4 +1,4 @@
-package org.openslx.vm.disk;
+package org.openslx.virtualization.disk;
 
 import java.io.Closeable;
 import java.io.File;

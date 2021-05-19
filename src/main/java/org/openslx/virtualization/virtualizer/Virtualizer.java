@@ -3,7 +3,7 @@ package org.openslx.virtualization.virtualizer;
 import java.util.List;
 
 import org.openslx.virtualization.Version;
-import org.openslx.vm.disk.DiskImage.ImageFormat;
+import org.openslx.virtualization.disk.DiskImage.ImageFormat;
 
 /**
  * Representation of a virtualization system.

@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.openslx.thrifthelper.TConst;
 import org.openslx.virtualization.Version;
-import org.openslx.vm.disk.DiskImage;
-import org.openslx.vm.disk.DiskImage.ImageFormat;
+import org.openslx.virtualization.disk.DiskImage;
+import org.openslx.virtualization.disk.DiskImage.ImageFormat;
 
 /**
  * Representation of the QEMU virtualizer for virtual machines.

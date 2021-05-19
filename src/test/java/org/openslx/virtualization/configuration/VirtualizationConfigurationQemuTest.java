@@ -40,9 +40,9 @@ import org.openslx.virtualization.configuration.VirtualizationConfiguration.Ethe
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.UsbSpeed;
 import org.openslx.virtualization.configuration.logic.ConfigurationLogicTestUtils;
-import org.openslx.vm.disk.DiskImage;
-import org.openslx.vm.disk.DiskImageTestResources;
-import org.openslx.vm.disk.DiskImage.ImageFormat;
+import org.openslx.virtualization.disk.DiskImage;
+import org.openslx.virtualization.disk.DiskImageTestResources;
+import org.openslx.virtualization.disk.DiskImage.ImageFormat;
 
 public class VirtualizationConfigurationQemuTest
 {
