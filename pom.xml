@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>master-sync-shared</name>
-	<url>http://maven.apache.org</url>
+	<url>https://git.openslx.org/bwlp/master-sync-shared.git</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
