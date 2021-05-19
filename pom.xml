@@ -14,19 +14,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<repositories>
-		<repository>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</snapshots>
-			<id>mltk-repo</id>
-			<name>mltk repo</name>
-			<url>http://mltk-services.ruf.uni-freiburg.de:8081/nexus/content/repositories/snapshots/</url>
-		</repository>
-	</repositories>
-
 	<distributionManagement>
 		<repository>
 			<id>mltk-repo</id>
