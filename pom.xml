@@ -74,8 +74,11 @@
 			<resource>
 				<directory>${basedir}/src/main/resources</directory>
 				<includes>
+					<include>libvirt/libosinfo/rng/*</include>
+					<include>libvirt/libosinfo/xml/*</include>
 					<include>libvirt/rng/*</include>
 					<include>libvirt/xsl/*</include>
+					<include>virtualbox/xsd/*</include>
 				</includes>
 			</resource>
 		</resources>
@@ -85,6 +88,8 @@
 				<includes>
 					<include>disk/*</include>
 					<include>libvirt/xml/*</include>
+					<include>virtualbox/xml/*</include>
+					<include>vmware/vmx/*</include>
 				</includes>
 			</testResource>
 		</testResources>

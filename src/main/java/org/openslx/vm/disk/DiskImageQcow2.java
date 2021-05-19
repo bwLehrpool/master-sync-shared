@@ -2,6 +2,8 @@ package org.openslx.vm.disk;
 
 import java.io.RandomAccessFile;
 
+import org.openslx.virtualization.Version;
+
 /**
  * QCOW2 disk image for virtual machines.
  * 
@@ -48,9 +50,9 @@ public class DiskImageQcow2 extends DiskImage
 	 * 
 	 * @param diskImage file to a QCOW2 disk storing the image content.
 	 */
-	DiskImageQcow2( RandomAccessFile disk )
+	DiskImageQcow2( RandomAccessFile diskImage )
 	{
-		super( disk );
+		super( diskImage );
 	}
 
 	/**
@@ -104,7 +106,7 @@ public class DiskImageQcow2 extends DiskImage
 
 		// check if QCOW2 image uses extended L2 tables
 		// extended L2 tables are only possible in QCOW2 version 3 header format
-		if ( this.getVersion() >= 3 ) {
+		if ( this.getVersion().getMajor() >= Short.valueOf( "3" ) ) {
 			// read incompatible feature bits
 			final long qcowIncompatibleFeatures = DiskImageUtils.readLong( diskFile, 72 );
 
@@ -200,7 +202,7 @@ public class DiskImageQcow2 extends DiskImage
 	}
 
 	@Override
-	public int getVersion() throws DiskImageException
+	public Version getVersion() throws DiskImageException
 	{
 		final RandomAccessFile diskFile = this.getDiskImage();
 		final int qcowVersion = DiskImageUtils.readInt( diskFile, 4 );
@@ -212,7 +214,7 @@ public class DiskImageQcow2 extends DiskImage
 			throw new DiskImageException( errorMsg );
 		}
 
-		return DiskImageUtils.versionFromMajor( Integer.valueOf( qcowVersion ).shortValue() );
+		return new Version( Integer.valueOf( qcowVersion ).shortValue() );
 	}
 
 	@Override

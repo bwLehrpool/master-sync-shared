@@ -12,7 +12,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * A representation of a XML node as part of a {@link LibvirtXMLDocument}.
+ * A representation of a XML node as part of a {@link LibvirtXmlDocument}.
  * 
  * @author Manuel Bentele
  * @version 1.0
@@ -20,17 +20,17 @@ import org.w3c.dom.NodeList;
 public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 {
 	/**
-	 * Separation character for internal {@link XPath} expressions.
+	 * Separation character for internal XPath expressions.
 	 */
 	private static final String XPATH_EXPRESSION_SEPARATOR = "/";
 
 	/**
-	 * Current XML node selection character for internal {@link XPath} expressions.
+	 * Current XML node selection character for internal XPath expressions.
 	 */
 	private static final String XPATH_EXPRESSION_CURRENT_NODE = ".";
 
 	/**
-	 * Factory to create {@link XPath} objects.
+	 * Factory to create XPath objects.
 	 */
 	private XPathFactory xPathFactory = null;
 
@@ -40,13 +40,12 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 	private Document xmlDocument = null;
 
 	/**
-	 * Current XML base node as XML root anchor for relative internal {@link XPath} expressions.
+	 * Current XML base node as XML root anchor for relative internal XPath expressions.
 	 */
 	private Node xmlBaseNode = null;
 
 	/**
-	 * Create and initialize {@link XPath} context to define and compile custom {@link XPath}
-	 * expressions.
+	 * Create and initialize XPath context to define and compile custom XPath expressions.
 	 */
 	private void createXPathContext()
 	{
@@ -139,8 +138,7 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 	/**
 	 * Returns current XML base node.
 	 * 
-	 * @return current XML base node as XML root anchor of relative internal {@link XPath}
-	 *         expressions.
+	 * @return current XML base node as XML root anchor of relative internal XPath expressions.
 	 */
 	public Node getXmlBaseNode()
 	{
@@ -150,8 +148,8 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 	/**
 	 * Sets existing XML base node for Libvirt XML node.
 	 * 
-	 * @param xmlBaseNode existing XML base node as XML root anchor for relative internal
-	 *           {@link XPath} expressions.
+	 * @param xmlBaseNode existing XML base node as XML root anchor for relative internal XPath
+	 *           expressions.
 	 */
 	public void setXmlBaseNode( Node xmlBaseNode )
 	{
@@ -317,7 +315,7 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 			attribute.setNodeValue( value );
 		}
 	}
-	
+
 	@Override
 	public void removeXmlElementAttribute( String expression, String attributeName )
 	{

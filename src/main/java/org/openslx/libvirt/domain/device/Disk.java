@@ -68,7 +68,7 @@ public class Disk extends Device
 			storageSource = this.getXmlElementAttributeValue( "source", "file" );
 			break;
 		case BLOCK:
-			storageSource = this.getXmlElementAttributeValue( "source", "bdev" );
+			storageSource = this.getXmlElementAttributeValue( "source", "dev" );
 			break;
 		}
 
@@ -96,7 +96,7 @@ public class Disk extends Device
 			this.setXmlElementAttributeValue( "source", "file", source );
 			break;
 		case BLOCK:
-			this.setXmlElementAttributeValue( "source", "bdev", source );
+			this.setXmlElementAttributeValue( "source", "dev", source );
 			break;
 		}
 	}
@@ -195,7 +195,7 @@ public class Disk extends Device
 	/**
 	 * Sets target device for the disk device.
 	 * 
-	 * @param target device for the disk device.
+	 * @param targetDevice target device for the disk device.
 	 */
 	public void setTargetDevice( String targetDevice )
 	{

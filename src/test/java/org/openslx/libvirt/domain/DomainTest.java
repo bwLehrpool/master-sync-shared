@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openslx.libvirt.domain.Domain.CpuCheck;
 import org.openslx.libvirt.domain.Domain.CpuMode;
+import org.openslx.libvirt.domain.Domain.OsType;
 import org.openslx.libvirt.xml.LibvirtXmlDocumentException;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlTestResources;
@@ -110,6 +111,14 @@ public class DomainTest
 	}
 
 	@Test
+	@DisplayName( "Get VM libosinfo operating system identifier in libvirt XML file" )
+	public void testGetLibOsInfoOsId()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( "http://ubuntu.com/ubuntu/20.04", vm.getLibOsInfoOsId() );
+	}
+
+	@Test
 	@DisplayName( "Get VM UUID from libvirt XML file" )
 	public void testGetUuid()
 	{
@@ -178,6 +187,57 @@ public class DomainTest
 	}
 
 	@Test
+	@DisplayName( "Get VM's OS type from libvirt XML file" )
+	public void testGetOsType()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( OsType.HVM.toString(), vm.getOsType().toString() );
+	}
+
+	@Test
+	@DisplayName( "Set VM's OS type in libvirt XML file" )
+	public void testSetOsType()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		vm.setOsType( OsType.XEN );
+		assertEquals( OsType.XEN.toString(), vm.getOsType().toString() );
+	}
+
+	@Test
+	@DisplayName( "Get VM's OS architecture from libvirt XML file" )
+	public void testGetOsArch()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( "x86_64", vm.getOsArch() );
+	}
+
+	@Test
+	@DisplayName( "Set VM's OS architecture in libvirt XML file" )
+	public void testSetOsArch()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		vm.setOsArch( "aarch" );
+		assertEquals( "aarch", vm.getOsArch() );
+	}
+
+	@Test
+	@DisplayName( "Get VM's OS machine from libvirt XML file" )
+	public void testGetOsMachine()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( "pc-q35-5.1", vm.getOsMachine() );
+	}
+
+	@Test
+	@DisplayName( "Set VM's OS machine in libvirt XML file" )
+	public void testSetOsMachine()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		vm.setOsMachine( "pc" );
+		assertEquals( "pc", vm.getOsMachine() );
+	}
+
+	@Test
 	@DisplayName( "Get VM CPU model from libvirt XML file" )
 	public void testGetCpuModel()
 	{
@@ -229,11 +289,28 @@ public class DomainTest
 	}
 
 	@Test
+	@DisplayName( "Get VM emulator binary from libvirt XML file" )
+	public void testGetDevicesEmulator()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( "/usr/bin/qemu-system-x86_64", vm.getDevicesEmulator() );
+	}
+
+	@Test
+	@DisplayName( "Set VM emulator binary in libvirt XML file" )
+	public void testSetDevicesEmulator()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		vm.setDevicesEmulator( "/usr/bin/qemu-system-i386" );
+		assertEquals( "/usr/bin/qemu-system-i386", vm.getDevicesEmulator() );
+	}
+
+	@Test
 	@DisplayName( "Get all VM devices from libvirt XML file" )
 	public void testGetDevices()
 	{
 		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
-		assertEquals( 21, vm.getDevices().size() );
+		assertEquals( 22, vm.getDevices().size() );
 	}
 
 	@Test
@@ -250,6 +327,14 @@ public class DomainTest
 	{
 		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 3, vm.getDiskDevices().size() );
+	}
+
+	@Test
+	@DisplayName( "Get all VM file system devices from libvirt XML file" )
+	public void testGetFileSystemDevices()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( 0, vm.getFileSystemDevices().size() );
 	}
 
 	@Test
@@ -274,6 +359,22 @@ public class DomainTest
 	{
 		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getGraphicDevices().size() );
+	}
+
+	@Test
+	@DisplayName( "Get all VM parallel port devices from libvirt XML file" )
+	public void testGetParallelDevices()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( 0, vm.getParallelDevices().size() );
+	}
+
+	@Test
+	@DisplayName( "Get all VM serial port devices from libvirt XML file" )
+	public void testGetSerialDevices()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( 1, vm.getSerialDevices().size() );
 	}
 
 	@Test

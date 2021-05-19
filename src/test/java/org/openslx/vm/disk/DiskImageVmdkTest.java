@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openslx.virtualization.Version;
 import org.openslx.vm.disk.DiskImage.ImageFormat;
 
 public class DiskImageVmdkTest
@@ -17,8 +18,8 @@ public class DiskImageVmdkTest
 	public void testVmdkDiskImage() throws DiskImageException, IOException
 	{
 		final DiskImage image = DiskImage.newInstance( DiskImageTestResources.getDiskFile( "image-default.vmdk" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "1" ) );
-		final int imageHwVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "18" ) );
+		final Version imageVersion = new Version( Short.valueOf( "1" ) );
+		final Version imageHwVersion = new Version( Short.valueOf( "18" ) );
 
 		assertEquals( ImageFormat.VMDK.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -37,8 +38,8 @@ public class DiskImageVmdkTest
 	public void testVmdkDiskImageType0() throws DiskImageException, IOException
 	{
 		final DiskImage image = DiskImage.newInstance( DiskImageTestResources.getDiskFile( "image_t0.vmdk" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "1" ) );
-		final int imageHwVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "18" ) );
+		final Version imageVersion = new Version( Short.valueOf( "1" ) );
+		final Version imageHwVersion = new Version( Short.valueOf( "18" ) );
 
 		assertEquals( ImageFormat.VMDK.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );
@@ -93,8 +94,8 @@ public class DiskImageVmdkTest
 	public void testVmdkDiskImageType5() throws DiskImageException, IOException
 	{
 		final DiskImage image = DiskImage.newInstance( DiskImageTestResources.getDiskFile( "image_t5.vmdk" ) );
-		final int imageVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "3" ) );
-		final int imageHwVersion = DiskImageUtils.versionFromMajor( Short.valueOf( "18" ) );
+		final Version imageVersion = new Version( Short.valueOf( "3" ) );
+		final Version imageHwVersion = new Version( Short.valueOf( "18" ) );
 
 		assertEquals( ImageFormat.VMDK.toString(), image.getFormat().toString() );
 		assertEquals( true, image.isStandalone() );

@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openslx.vm.VmwareConfig;
+import org.openslx.virtualization.configuration.VirtualizationConfigurationVmwareFileFormat;
 
 public class ThriftUtil {
 
@@ -41,7 +41,7 @@ public class ThriftUtil {
 		BufferedReader reader;
 		StringBuffer content = new StringBuffer("");
 		try {
-			reader = VmwareConfig.getVmxReader(bytes, bytes.length);
+			reader = VirtualizationConfigurationVmwareFileFormat.getVmxReader(bytes, bytes.length);
 			String line="";
 			while ((line=reader.readLine()) != null) {
 				content.append(line + "\n");

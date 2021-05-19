@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import org.openslx.bwlp.thrift.iface.Virtualizer;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
+import org.openslx.virtualization.Version;
 
 /**
  * Disk image for virtual machines.
@@ -87,7 +88,7 @@ public abstract class DiskImage implements Closeable
 	 * 
 	 * @throws DiskImageException unable to obtain version of the disk image format.
 	 */
-	public abstract int getVersion() throws DiskImageException;
+	public abstract Version getVersion() throws DiskImageException;
 
 	/**
 	 * Returns the disk image description.
@@ -115,7 +116,8 @@ public abstract class DiskImage implements Closeable
 	 * @throws IOException cannot access the content of the disk image file.
 	 * @throws DiskImageException disk image file has an invalid and unknown disk image format.
 	 */
-	public static DiskImage newInstance( File diskImagePath ) throws FileNotFoundException, IOException, DiskImageException
+	public static DiskImage newInstance( File diskImagePath )
+			throws FileNotFoundException, IOException, DiskImageException
 	{
 		// Make sure this doesn't escape the scope, in case instantiation fails - we can't know when the GC
 		// would come along and close this file, which is problematic on Windows (blocking rename/delete)
@@ -193,7 +195,7 @@ public abstract class DiskImage implements Closeable
 		/**
 		 * Checks if the disk image format is supported by a virtualizer.
 		 * 
-		 * @param supportedImageTypes list of supported disk image formats of a virtualizer.
+		 * @param supportedImageFormats list of supported disk image formats of a virtualizer.
 		 * @return <code>true</code> if image type is supported by the virtualizer; otherwise
 		 *         <code>false</code>.
 		 */

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -252,16 +253,7 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	@Override
 	public void fromXml( String xml ) throws LibvirtXmlSerializationException
 	{
-		try {
-			this.xmlDocument = this.domBuilder.parse( xml );
-			this.xmlDocument.getDocumentElement().normalize();
-		} catch ( SAXException e ) {
-			e.printStackTrace();
-		} catch ( IOException e ) {
-			e.printStackTrace();
-		}
-
-		this.rootXmlNode = new LibvirtXmlNode( this.xmlDocument, this.xmlDocument.getDocumentElement() );
+		this.fromXml( new InputSource( new StringReader( xml ) ) );
 	}
 
 	@Override

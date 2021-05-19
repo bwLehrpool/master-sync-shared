@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<Foundry>
+<VM>
+<VMId type="string">52 b0 5f 60 2f a2 72 51-0e 6d f6 a0 e0 56 d4 6e</VMId>
+<ClientMetaData>
+<clientMetaDataAttributes/>
+<HistoryEventList/></ClientMetaData>
+<vmxPathName type="string">vmware-player_default-ubuntu.vmx</vmxPathName></VM></Foundry>

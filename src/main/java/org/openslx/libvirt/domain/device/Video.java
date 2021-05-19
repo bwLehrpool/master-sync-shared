@@ -171,7 +171,7 @@ public class Video extends Device
 		/**
 		 * Creates video device model from its name with error check.
 		 * 
-		 * @param type name of the video device model in a Libvirt domain XML document.
+		 * @param model name of the video device model in a Libvirt domain XML document.
 		 * @return valid video device model.
 		 */
 		public static Model fromString( String model )

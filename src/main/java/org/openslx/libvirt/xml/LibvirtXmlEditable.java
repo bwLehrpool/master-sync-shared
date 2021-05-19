@@ -4,7 +4,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Editability of XML nodes based on {@link XPath} expressions.
+ * Editability of XML nodes based on XPath expressions.
  * 
  * @author Manuel Bentele
  * @version 1.0
@@ -12,17 +12,17 @@ import org.w3c.dom.NodeList;
 public interface LibvirtXmlEditable
 {
 	/**
-	 * Returns XML node selected by a {@link XPath} expression
+	 * Returns XML node selected by a XPath expression
 	 * 
-	 * @param expression {@link XPath} expression to select XML node.
+	 * @param expression XPath expression to select XML node.
 	 * @return selected XML node.
 	 */
 	public Node getXmlNode( String expression );
 
 	/**
-	 * Returns XML nodes selected by a {@link XPath} expression
+	 * Returns XML nodes selected by a XPath expression
 	 * 
-	 * @param expression {@link XPath} expression to select XML nodes.
+	 * @param expression XPath expression to select XML nodes.
 	 * @return selected XML nodes.
 	 */
 	public NodeList getXmlNodes( String expression );
@@ -38,20 +38,20 @@ public interface LibvirtXmlEditable
 	}
 
 	/**
-	 * Returns XML element from selection by a {@link XPath} expression.
+	 * Returns XML element from selection by a XPath expression.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 * @return selected XML element.
 	 */
 	public Node getXmlElement( String expression );
 
 	/**
-	 * Sets an XML element selected by a {@link XPath} expression.
+	 * Sets an XML element selected by a XPath expression.
 	 * 
-	 * If the XML element selected by the given {@link XPath} expression does not exists, the XML
+	 * If the XML element selected by the given XPath expression does not exists, the XML
 	 * element will be created.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 */
 	public default void setXmlElement( String expression )
 	{
@@ -59,43 +59,43 @@ public interface LibvirtXmlEditable
 	}
 
 	/**
-	 * Sets a XML element selected by a {@link XPath} expression and appends child XML node.
+	 * Sets a XML element selected by a XPath expression and appends child XML node.
 	 * 
-	 * If the XML element selected by the given {@link XPath} expression does not exists, the XML
+	 * If the XML element selected by the given XPath expression does not exists, the XML
 	 * element will be created and the given XML child node is appended.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 * @param child XML node that will be appended to the selected XML element.
 	 */
 	public void setXmlElement( String expression, Node child );
 
 	/**
-	 * Returns the text value of a XML element selected by a {@link XPath} expression.
+	 * Returns the text value of a XML element selected by a XPath expression.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 * @return Text value of the selected XML element.
 	 */
 	public String getXmlElementValue( String expression );
 
 	/**
-	 * Sets the text value of a XML element selected by a {@link XPath} expression.
+	 * Sets the text value of a XML element selected by a XPath expression.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 * @param value text value to set selected XML element's text.
 	 */
 	public void setXmlElementValue( String expression, String value );
 
 	/**
-	 * Removes a XML element and all its childs selected by a {@link XPath} expression.
+	 * Removes a XML element and all its childs selected by a XPath expression.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 */
 	public void removeXmlElement( String expression );
 
 	/**
-	 * Removes all child elements of a XML element selected by a {@link XPath} expression.
+	 * Removes all child elements of a XML element selected by a XPath expression.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 */
 	public void removeXmlElementChilds( String expression );
 
@@ -128,14 +128,14 @@ public interface LibvirtXmlEditable
 	}
 
 	/**
-	 * Returns the binary choice of a XML attribute from a XML element selected by a
-	 * {@link XPath}expression.
+	 * Returns the binary choice of a XML attribute from a XML element selected by a XPath
+	 * expression.
 	 * 
 	 * If the text value of the XML attribute equals to <i>yes</i>, the returned {@link boolean}
 	 * value is set to <i>true</i>. Otherwise, if the text value of the XML attribute equals to
 	 * <i>no</i>, the returned {@link boolean} value is set to <i>false</i>.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 * @param attributeName name to select XML attribute of the current XML root element.
 	 * @return attribute value of the XML attribute from the current XML root element as
 	 *         {@link boolean}.
@@ -146,10 +146,9 @@ public interface LibvirtXmlEditable
 	}
 
 	/**
-	 * Returns the text value of a XML attribute from a XML element selected by a
-	 * {@link XPath}expression.
+	 * Returns the text value of a XML attribute from a XML element selected by a XPath expression.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 * @param attributeName name to select XML attribute of the selected XML element.
 	 * @return attribute text of the XML attribute from the selected XML element.
 	 */
@@ -185,15 +184,15 @@ public interface LibvirtXmlEditable
 	}
 
 	/**
-	 * Sets the binary choice value of a XML attribute from a XML element selected by a
-	 * {@link XPath} expression.
+	 * Sets the binary choice value of a XML attribute from a XML element selected by a XPath
+	 * expression.
 	 * 
 	 * If the binary choice value for the XML attribute equals to <i>true</i>, the text value of the
 	 * selected XML attribute is set to <i>yes</i>. Otherwise, if the binary choice value for the
 	 * selected XML attribute equals to <i>false</i>, the text value of the selected XML attribute is
 	 * set to <i>no</i>.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 * @param attributeName name to select XML attribute of the selected XML element.
 	 * @param value binary choice value for the selected XML attribute from the selected XML element.
 	 */
@@ -204,10 +203,9 @@ public interface LibvirtXmlEditable
 	}
 
 	/**
-	 * Sets the text value of a XML attribute from a XML element selected by a
-	 * {@link XPath} expression.
+	 * Sets the text value of a XML attribute from a XML element selected by a XPath expression.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 * @param attributeName name to select XML attribute of the selected XML element.
 	 * @param value XML attribute value for the selected XML attribute from the selected XML element.
 	 */
@@ -224,17 +222,17 @@ public interface LibvirtXmlEditable
 	}
 
 	/**
-	 * Removes an XML attribute from a XML element selected by a {@link XPath} expression.
+	 * Removes an XML attribute from a XML element selected by a XPath expression.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 * @param attributeName name of the attribute which should be deleted.
 	 */
 	public void removeXmlElementAttribute( String expression, String attributeName );
 
 	/**
-	 * Removes all XML attributes from a XML element selected by a {@link XPath} expression.
+	 * Removes all XML attributes from a XML element selected by a XPath expression.
 	 * 
-	 * @param expression {@link XPath} expression to select XML element.
+	 * @param expression XPath expression to select XML element.
 	 */
 	public void removeXmlElementAttributes( String expression );
 

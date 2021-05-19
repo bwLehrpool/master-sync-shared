@@ -77,6 +77,9 @@ public class Device extends LibvirtXmlNode
 		} else if ( device instanceof Disk ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.DISK );
 			createdDevice = Disk.createInstance( Disk.class.cast( device ), xmlNode );
+		} else if ( device instanceof FileSystem ) {
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.FILESYSTEM );
+			createdDevice = FileSystem.createInstance( FileSystem.class.cast( device ), xmlNode );
 		} else if ( device instanceof Hostdev ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.HOSTDEV );
 			createdDevice = Hostdev.createInstance( Hostdev.class.cast( device ), xmlNode );
@@ -86,6 +89,12 @@ public class Device extends LibvirtXmlNode
 		} else if ( device instanceof Graphics ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.GRAPHICS );
 			createdDevice = Graphics.createInstance( Graphics.class.cast( device ), xmlNode );
+		} else if ( device instanceof Parallel ) {
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.PARALLEL );
+			createdDevice = Parallel.createInstance( xmlNode );
+		} else if ( device instanceof Serial ) {
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.SERIAL );
+			createdDevice = Serial.createInstance( xmlNode );
 		} else if ( device instanceof Sound ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.SOUND );
 			createdDevice = Sound.createInstance( xmlNode );
@@ -125,6 +134,9 @@ public class Device extends LibvirtXmlNode
 			case DISK:
 				device = Disk.newInstance( xmlNode );
 				break;
+			case FILESYSTEM:
+				device = FileSystem.newInstance( xmlNode );
+				break;
 			case HOSTDEV:
 				device = Hostdev.newInstance( xmlNode );
 				break;
@@ -133,6 +145,12 @@ public class Device extends LibvirtXmlNode
 				break;
 			case GRAPHICS:
 				device = Graphics.newInstance( xmlNode );
+				break;
+			case PARALLEL:
+				device = Parallel.newInstance( xmlNode );
+				break;
+			case SERIAL:
+				device = Serial.newInstance( xmlNode );
 				break;
 			case SOUND:
 				device = Sound.newInstance( xmlNode );
@@ -157,9 +175,12 @@ public class Device extends LibvirtXmlNode
 		// @formatter:off
 		CONTROLLER( "controller" ),
 		DISK      ( "disk" ),
+		FILESYSTEM( "filesystem" ),
 		HOSTDEV   ( "hostdev" ),
 		INTERFACE ( "interface" ),
 		GRAPHICS  ( "graphics" ),
+		PARALLEL  ( "parallel" ),
+		SERIAL    ( "serial" ),
 		SOUND     ( "sound" ),
 		VIDEO     ( "video" );
 		// @formatter:on

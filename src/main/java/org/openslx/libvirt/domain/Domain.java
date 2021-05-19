@@ -20,6 +20,7 @@ import org.openslx.libvirt.domain.device.Disk;
 import org.openslx.libvirt.domain.device.DiskCdrom;
 import org.openslx.libvirt.domain.device.DiskFloppy;
 import org.openslx.libvirt.domain.device.DiskStorage;
+import org.openslx.libvirt.domain.device.FileSystem;
 import org.openslx.libvirt.domain.device.Graphics;
 import org.openslx.libvirt.domain.device.GraphicsSdl;
 import org.openslx.libvirt.domain.device.GraphicsSpice;
@@ -28,6 +29,8 @@ import org.openslx.libvirt.domain.device.Hostdev;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.InterfaceBridge;
 import org.openslx.libvirt.domain.device.InterfaceNetwork;
+import org.openslx.libvirt.domain.device.Parallel;
+import org.openslx.libvirt.domain.device.Serial;
 import org.openslx.libvirt.domain.device.Sound;
 import org.openslx.libvirt.domain.device.Video;
 import org.openslx.libvirt.xml.LibvirtXmlDocument;
@@ -258,6 +261,17 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns the libosinfo operating system identifier.
+	 * 
+	 * @return libosinfo operating system identifier.
+	 */
+	public String getLibOsInfoOsId()
+	{
+		return this.getRootXmlNode()
+				.getXmlElementAttributeValue( "metadata/*[local-name()='libosinfo']/*[local-name()='os']", "id" );
+	}
+
+	/**
 	 * Returns virtual machine UUID defined in the Libvirt domain XML document.
 	 * 
 	 * @return UUID of virtual machine.
@@ -350,6 +364,122 @@ public class Domain extends LibvirtXmlDocument
 	public void setVCpu( int number )
 	{
 		this.getRootXmlNode().setXmlElementValue( "vcpu", Integer.toString( number ) );
+	}
+
+	/**
+	 * Returns OS type defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS type of the virtual machine.
+	 */
+	public OsType getOsType()
+	{
+		final String osType = this.getRootXmlNode().getXmlElementValue( "os/type" );
+		return OsType.fromString( osType );
+	}
+
+	/**
+	 * Set OS type in the Libvirt domain XML document.
+	 * 
+	 * @param type OS type for the virtual machine.
+	 */
+	public void setOsType( OsType type )
+	{
+		this.getRootXmlNode().setXmlElementValue( "os/type", type.toString() );
+	}
+
+	/**
+	 * Returns OS architecture defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS architecture of the virtual machine.
+	 */
+	public String getOsArch()
+	{
+		return this.getRootXmlNode().getXmlElementAttributeValue( "os/type", "arch" );
+	}
+
+	/**
+	 * Set OS architecture in the Libvirt domain XML document.
+	 * 
+	 * @param arch OS architecture for the virtual machine.
+	 */
+	public void setOsArch( String arch )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "os/type", "arch", arch );
+	}
+
+	/**
+	 * Returns OS machine defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS machine of the virtual machine.
+	 */
+	public String getOsMachine()
+	{
+		return this.getRootXmlNode().getXmlElementAttributeValue( "os/type", "machine" );
+	}
+
+	/**
+	 * Set OS machine in the Libvirt domain XML document.
+	 * 
+	 * @param machine OS machine for the virtual machine.
+	 */
+	public void setOsMachine( String machine )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "os/type", "machine", machine );
+	}
+
+	/**
+	 * Operating system types specifiable for a virtual machine in the Libvirt domain XML document.
+	 * 
+	 * @author Manuel Bentele
+	 * @version 1.0
+	 */
+	public enum OsType
+	{
+		// @formatter:off
+		XEN  ( "xen" ),
+		LINUX( "linux" ),
+		HVM  ( "hvm" ),
+		EXE  ( "exe" ),
+		UML  ( "uml" );
+		// @formatter:on
+
+		/**
+		 * Name of the OS type in a Libvirt domain XML document.
+		 */
+		private final String osType;
+
+		/**
+		 * Creates an OS type.
+		 * 
+		 * @param osType valid name of the OS type in the Libvirt domain XML document.
+		 */
+		OsType( String osType )
+		{
+			this.osType = osType;
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.osType;
+		}
+
+		/**
+		 * Creates an OS type from its name with error check.
+		 * 
+		 * @param osType name of the OS type in the Libvirt domain XML document.
+		 * @return valid OS type.
+		 */
+		public static OsType fromString( String osType )
+		{
+			for ( OsType t : OsType.values() ) {
+				if ( t.osType.equalsIgnoreCase( osType ) ) {
+					return t;
+				}
+			}
+
+			return null;
+		}
 	}
 
 	/**
@@ -484,7 +614,7 @@ public class Domain extends LibvirtXmlDocument
 		/**
 		 * Creates a CPU check from its name with error check.
 		 * 
-		 * @param mode name of the CPU check in the Libvirt domain XML document.
+		 * @param check name of the CPU check in the Libvirt domain XML document.
 		 * @return valid CPU check.
 		 */
 		public static CpuCheck fromString( String check )
@@ -521,6 +651,26 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns the file name of the emulator binary defined in the Libvirt domain XML document.
+	 * 
+	 * @return file name of the emulator binary.
+	 */
+	public String getDevicesEmulator()
+	{
+		return this.getRootXmlNode().getXmlElementValue( "devices/emulator" );
+	}
+
+	/**
+	 * Sets the file name of the emulator binary in the Libvirt domain XML document.
+	 * 
+	 * @param emulator file name of the emulator binary.
+	 */
+	public void setDevicesEmulator( String emulator )
+	{
+		this.getRootXmlNode().setXmlElementValue( "devices/emulator", emulator );
+	}
+
+	/**
 	 * Returns virtual machine devices defined in the Libvirt domain XML document.
 	 * 
 	 * @return devices of the virtual machine.
@@ -535,12 +685,14 @@ public class Domain extends LibvirtXmlDocument
 			NodeList devicesElements = devicesNode.getChildNodes();
 
 			for ( int i = 0; i < devicesElements.getLength(); i++ ) {
-				LibvirtXmlNode deviceNode = null;
-				deviceNode = new LibvirtXmlNode( this.getRootXmlNode().getXmlDocument(), devicesElements.item( i ) );
-				Device device = Device.newInstance( deviceNode );
+				final Node childNode = devicesElements.item( i );
+				if ( childNode.getNodeType() == Node.ELEMENT_NODE ) {
+					LibvirtXmlNode deviceNode = new LibvirtXmlNode( this.getRootXmlNode().getXmlDocument(), childNode );
+					Device device = Device.newInstance( deviceNode );
 
-				if ( device != null ) {
-					devices.add( device );
+					if ( device != null ) {
+						devices.add( device );
+					}
 				}
 			}
 		}
@@ -687,6 +839,17 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns list of virtual machine file system devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine file system devices.
+	 */
+	public ArrayList<FileSystem> getFileSystemDevices()
+	{
+		return Domain.filterDevices( FileSystem.class, this.getDevices() );
+	}
+
+	/**
 	 * Returns list of virtual machine hostdev devices specified in the Libvirt domain XML document.
 	 * 
 	 * @return list of virtual machine hostdev devices.
@@ -715,6 +878,28 @@ public class Domain extends LibvirtXmlDocument
 	public ArrayList<Graphics> getGraphicDevices()
 	{
 		return Domain.filterDevices( Graphics.class, this.getDevices() );
+	}
+
+	/**
+	 * Returns list of virtual machine parallel port devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine parallel port devices.
+	 */
+	public ArrayList<Parallel> getParallelDevices()
+	{
+		return Domain.filterDevices( Parallel.class, this.getDevices() );
+	}
+
+	/**
+	 * Returns list of virtual machine serial port devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine serial port devices.
+	 */
+	public ArrayList<Serial> getSerialDevices()
+	{
+		return Domain.filterDevices( Serial.class, this.getDevices() );
 	}
 
 	/**
@@ -871,6 +1056,16 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Adds a virtual machine file system device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added file system device if creation was successful.
+	 */
+	public FileSystem addFileSystemDevice()
+	{
+		return FileSystem.class.cast( this.addDevice( new FileSystem() ) );
+	}
+
+	/**
 	 * Adds a virtual machine disk device to the Libvirt domain XML document.
 	 *
 	 * @return reference to the added disk device if creation was successful.
@@ -951,6 +1146,26 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Adds a virtual machine parallel port device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added parallel port device if creation was successful.
+	 */
+	public Parallel addParallelDevice()
+	{
+		return Parallel.class.cast( this.addDevice( new Parallel() ) );
+	}
+
+	/**
+	 * Adds a virtual machine serial port device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added serial port device if creation was successful.
+	 */
+	public Serial addSerialDevice()
+	{
+		return Serial.class.cast( this.addDevice( new Serial() ) );
+	}
+
+	/**
 	 * Adds a virtual machine sound device to the Libvirt domain XML document.
 	 *
 	 * @return reference to the added sound device if creation was successful.
@@ -1012,7 +1227,8 @@ public class Domain extends LibvirtXmlDocument
 	public void removeInterfaceDevicesSource()
 	{
 		for ( Interface interfaceDevice : this.getInterfaceDevices() ) {
-			interfaceDevice.removeSource();
+			// set empty source to preserve the XML attribute (to prevent XML validation errors)
+			interfaceDevice.setSource( "" );
 		}
 	}
 }

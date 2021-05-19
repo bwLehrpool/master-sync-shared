@@ -196,8 +196,9 @@ public class LibvirtXmlSchemaValidator
 	/**
 	 * Creates a validator for validation of Libvirt XML documents with RelaxNG schemas.
 	 * 
-	 * @param rngSchema
-	 * @throws SAXException
+	 * @param rngSchema RelaxNG schema used for validation with {@link #validate(Document)}.
+	 * 
+	 * @throws SAXException creation of a Libvirt XML validator failed.
 	 */
 	public LibvirtXmlSchemaValidator( InputStream rngSchema ) throws SAXException
 	{
