@@ -56,7 +56,7 @@ public class ConfigurationLogicDozModServerToDozModClientTest
 		final String transformedConfig = config.getConfigurationAsString();
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
-		assertTrue( ConfigurationLogicTestUtils.isContentEqual( expectedTransformedConfig, transformedConfig ) );
+		assertTrue( ConfigurationLogicTestUtils.isLibvirtContentEqual( expectedTransformedConfig, transformedConfig ) );
 		assertDoesNotThrow( () -> config.validate() );
 	}
 

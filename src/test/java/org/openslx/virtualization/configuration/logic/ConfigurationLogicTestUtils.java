@@ -36,6 +36,7 @@ public class ConfigurationLogicTestUtils
 	// @formatter:on
 
 	private static final String REGEX_UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+	private static final String REGEX_SOURCE_FILE_PATHS = "(<source.*file=\")(.*)(\".*>)";
 
 	public static VirtualizationConfiguration<?, ?, ?, ?> newVirtualizationConfigurationInstance( File configFile )
 	{
@@ -80,6 +81,15 @@ public class ConfigurationLogicTestUtils
 		return linesContent1.equals( linesContent2 );
 	}
 
+	public static String removeSourceFilePaths( String content )
+	{
+		final Pattern patternSourceFilePaths = Pattern.compile( ConfigurationLogicTestUtils.REGEX_SOURCE_FILE_PATHS );
+		final Matcher matcherSourceFilePathsContent = patternSourceFilePaths.matcher( content );
+
+		// replace all source file paths with the empty String
+		return matcherSourceFilePathsContent.replaceAll( "$1$3" );
+	}
+
 	public static String removeUuid( String content )
 	{
 		final Pattern patternUuid = Pattern.compile( ConfigurationLogicTestUtils.REGEX_UUID );
@@ -87,6 +97,15 @@ public class ConfigurationLogicTestUtils
 
 		// replace all UUIDs with the empty String
 		return matcherUuidContent.replaceAll( "" );
+	}
+
+	public static boolean isLibvirtContentEqual( String content1, String content2 )
+	{
+		// replace all source file paths with the empty String
+		final String filteredContent1 = ConfigurationLogicTestUtils.removeSourceFilePaths( content1 );
+		final String filteredContent2 = ConfigurationLogicTestUtils.removeSourceFilePaths( content2 );
+
+		return ConfigurationLogicTestUtils.isContentEqual( filteredContent1, filteredContent2 );
 	}
 
 	public static boolean isVirtualBoxContentEqual( String content1, String content2 )
