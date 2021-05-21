@@ -89,14 +89,19 @@ public class XmlHelper
 	public static Document parseDocumentFromStream( InputStream is )
 	{
 		Document doc = null;
+
+		// read document from stream
 		try {
 			doc = dBuilder.parse( is );
 		} catch ( SAXException | IOException e ) {
-			LOGGER.error( "Failed to parse input stream to document." );
+			doc = null;
 		}
-		if ( doc == null )
-			return null;
-		doc.getDocumentElement().normalize();
+
+		// normalize parsed document
+		if ( doc != null ) {
+			doc.getDocumentElement().normalize();
+		}
+
 		return doc;
 	}
 
