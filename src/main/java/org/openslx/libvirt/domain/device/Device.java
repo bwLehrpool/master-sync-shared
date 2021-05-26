@@ -79,7 +79,7 @@ public class Device extends LibvirtXmlNode
 			createdDevice = Disk.createInstance( Disk.class.cast( device ), xmlNode );
 		} else if ( device instanceof FileSystem ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.FILESYSTEM );
-			createdDevice = FileSystem.createInstance( FileSystem.class.cast( device ), xmlNode );
+			createdDevice = FileSystem.createInstance( xmlNode );
 		} else if ( device instanceof Hostdev ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.HOSTDEV );
 			createdDevice = Hostdev.createInstance( Hostdev.class.cast( device ), xmlNode );
