@@ -71,7 +71,7 @@ public class Video extends Device
 		if ( model != null ) {
 			if ( model == Model.VIRTIO ) {
 				// only set acceleration on supported Virtio GPUs
-				this.setXmlElementAttributeValue( "model/acceleration", "accel2d", acceleration );
+				this.setXmlElementAttributeValueYesNo( "model/acceleration", "accel2d", acceleration );
 			} else {
 				String errorMsg = new String(
 						"Video card model '" + model.toString() + "' does not support enabled 2D hardware acceleration." );
@@ -101,12 +101,21 @@ public class Video extends Device
 
 		if ( model == Model.VIRTIO ) {
 			// only set acceleration on supported Virtio GPUs
-			this.setXmlElementAttributeValue( "model/acceleration", "accel3d", acceleration );
+			this.setXmlElementAttributeValueYesNo( "model/acceleration", "accel3d", acceleration );
 		} else {
 			String errorMsg = new String(
 					"Video card model '" + model.toString() + "' does not support enabled 3D hardware acceleration." );
 			throw new IllegalArgumentException( errorMsg );
 		}
+	}
+
+	/**
+	 * Disables the video device by setting the model to {@link Model#NONE}.
+	 */
+	public void disable()
+	{
+		this.removeXmlElementChilds();
+		this.setModel( Model.NONE );
 	}
 
 	/**

@@ -46,7 +46,7 @@ public class GraphicsSpice extends Graphics
 	 */
 	public void setOpenGl( boolean enabled )
 	{
-		this.setXmlElementAttributeValue( "gl", "enable", enabled );
+		this.setXmlElementAttributeValueYesNo( "gl", "enable", enabled );
 	}
 
 	/**

@@ -29,6 +29,33 @@ public class Hostdev extends Device
 	}
 
 	/**
+	 * Checks if hostdev device is managed.
+	 * 
+	 * If {@link #isManaged()} returns <code>true</code> the hostdev device is detached from the
+	 * host before being passed on to the guest and reattached to the host after the guest exits.
+	 * 
+	 * @return state whether hostdev device is managed.
+	 */
+	public boolean isManaged()
+	{
+		return this.getXmlElementAttributeValueAsBool( "managed" );
+	}
+
+	/**
+	 * Sets state whether hostdev device is managed.
+	 * 
+	 * If the <code>managed</code> parameter is set to <code>true</code> the hostdev device is
+	 * detached from the host before being passed on to the guest and reattached to the host after
+	 * the guest exits.
+	 * 
+	 * @param managed state whether hostdev device is managed or not.
+	 */
+	public void setManaged( boolean managed )
+	{
+		this.setXmlElementAttributeValueYesNo( "managed", managed );
+	}
+
+	/**
 	 * Removes boot oder entry of the hostdev device.
 	 */
 	public void removeBootOrder()
@@ -47,11 +74,13 @@ public class Hostdev extends Device
 	{
 		Hostdev addedHostdev = null;
 
+		xmlNode.setXmlElementAttributeValue( "mode", "subsystem" );
+
 		if ( hostdev instanceof HostdevPci ) {
-			xmlNode.setXmlElementAttributeValue( "device", Type.PCI.toString() );
+			xmlNode.setXmlElementAttributeValue( "type", Type.PCI.toString() );
 			addedHostdev = HostdevPci.createInstance( xmlNode );
 		} else if ( hostdev instanceof HostdevUsb ) {
-			xmlNode.setXmlElementAttributeValue( "device", Type.USB.toString() );
+			xmlNode.setXmlElementAttributeValue( "type", Type.USB.toString() );
 			addedHostdev = HostdevUsb.createInstance( xmlNode );
 		}
 

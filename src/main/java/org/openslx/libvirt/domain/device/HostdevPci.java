@@ -8,7 +8,8 @@ import org.openslx.libvirt.xml.LibvirtXmlNode;
  * @author Manuel Bentele
  * @version 1.0
  */
-public class HostdevPci extends Hostdev
+public class HostdevPci extends Hostdev implements HostdevAddressableSource<HostdevPciDeviceAddress>,
+		HostdevAddressableTarget<HostdevPciDeviceAddress>
 {
 	/**
 	 * Creates an empty hostdev PCI device.
@@ -29,30 +30,67 @@ public class HostdevPci extends Hostdev
 	}
 
 	/**
-	 * Checks if PCI hostdev device is managed.
+	 * Returns the PCI device address from an address XML element selected by a XPath expression.
 	 * 
-	 * If {@link #isManaged()} returns <code>true</code> the hostdev PCI device is detached from the
-	 * host before being passed on to the guest and reattached to the host after the guest exits.
-	 * 
-	 * @return state whether PCI hostdev device is managed.
+	 * @param expression XPath expression to select the XML address element.
+	 * @return PCI device address from the selected XML address element.
 	 */
-	public boolean isManaged()
+	private HostdevPciDeviceAddress getPciAddress( final String expression )
 	{
-		return this.getXmlElementAttributeValueAsBool( "managed" );
+		String pciDomain = this.getXmlElementAttributeValue( expression, "domain" );
+		String pciBus = this.getXmlElementAttributeValue( expression, "bus" );
+		String pciDevice = this.getXmlElementAttributeValue( expression, "slot" );
+		String pciFunction = this.getXmlElementAttributeValue( expression, "function" );
+
+		pciDomain = HostdevUtils.removeHexPrefix( pciDomain );
+		pciBus = HostdevUtils.removeHexPrefix( pciBus );
+		pciDevice = HostdevUtils.removeHexPrefix( pciDevice );
+		pciFunction = HostdevUtils.removeHexPrefix( pciFunction );
+
+		return HostdevPciDeviceAddress.valueOf( pciDomain + ":" + pciBus + ":" + pciDevice + "." + pciFunction );
 	}
 
 	/**
-	 * Sets state whether PCI hostdev device is managed.
+	 * Sets the PCI device address for an XML address element selected by a XPath expression.
 	 * 
-	 * If the <code>managed</code> parameter is set to <code>true</code> the PCI hostdev device is
-	 * detached from the host before being passed on to the guest and reattached to the host after
-	 * the guest exits.
-	 * 
-	 * @param managed state whether PCI hostdev device is managed or not.
+	 * @param expression XPath expression to select the XML address element.
+	 * @param address PCI device address for the selected XML address element.
 	 */
-	public void setManaged( boolean managed )
+	private void setPciAddress( final String expression, final HostdevPciDeviceAddress address )
 	{
-		this.setXmlElementAttributeValue( "managed", managed );
+		final String pciDomain = HostdevUtils.appendHexPrefix( address.getPciDomainAsString() );
+		final String pciBus = HostdevUtils.appendHexPrefix( address.getPciBusAsString() );
+		final String pciDevice = HostdevUtils.appendHexPrefix( address.getPciDeviceAsString() );
+		final String pciFunction = HostdevUtils.appendHexPrefix( address.getPciFunctionAsString() );
+
+		this.setXmlElementAttributeValue( expression, "domain", pciDomain );
+		this.setXmlElementAttributeValue( expression, "bus", pciBus );
+		this.setXmlElementAttributeValue( expression, "slot", pciDevice );
+		this.setXmlElementAttributeValue( expression, "function", pciFunction );
+	}
+
+	@Override
+	public HostdevPciDeviceAddress getSource()
+	{
+		return this.getPciAddress( "source/address" );
+	}
+
+	@Override
+	public void setSource( HostdevPciDeviceAddress address )
+	{
+		this.setPciAddress( "source/address", address );
+	}
+
+	@Override
+	public HostdevPciDeviceAddress getTarget()
+	{
+		return this.getPciAddress( "address" );
+	}
+
+	@Override
+	public void setTarget( HostdevPciDeviceAddress address )
+	{
+		this.setPciAddress( "address", address );
 	}
 
 	/**

@@ -93,6 +93,14 @@ public interface LibvirtXmlEditable
 	public void removeXmlElement( String expression );
 
 	/**
+	 * Removes all child elements of the current XML root element.
+	 */
+	public default void removeXmlElementChilds()
+	{
+		this.removeXmlElementChilds( null );
+	}
+
+	/**
 	 * Removes all child elements of a XML element selected by a XPath expression.
 	 * 
 	 * @param expression XPath expression to select XML element.
@@ -114,9 +122,9 @@ public interface LibvirtXmlEditable
 	/**
 	 * Returns the binary choice of a XML attribute from the current XML root element.
 	 * 
-	 * If the text value of the XML attribute equals to <i>yes</i>, the returned {@link boolean}
-	 * value is set to <i>true</i>. Otherwise, if the text value of the XML attribute equals to
-	 * <i>no</i>, the returned {@link boolean} value is set to <i>false</i>.
+	 * If the text value of the XML attribute equals to <i>yes</i> or <i>on</i>, the returned
+	 * {@link boolean} value is set to <i>true</i>. Otherwise, if the text value of the XML attribute
+	 * equals to <i>no</i> or <i>off</i>, the returned {@link boolean} value is set to <i>false</i>.
 	 * 
 	 * @param attributeName name to select XML attribute of the current XML root element.
 	 * @return attribute value of the XML attribute from the current XML root element as
@@ -124,16 +132,17 @@ public interface LibvirtXmlEditable
 	 */
 	public default boolean getXmlElementAttributeValueAsBool( String attributeName )
 	{
-		return "yes".equals( this.getXmlElementAttributeValue( attributeName ) );
+		final String attributeValue = this.getXmlElementAttributeValue( attributeName );
+		return "yes".equals( attributeValue ) || "on".equals( attributeValue );
 	}
 
 	/**
 	 * Returns the binary choice of a XML attribute from a XML element selected by a XPath
 	 * expression.
 	 * 
-	 * If the text value of the XML attribute equals to <i>yes</i>, the returned {@link boolean}
-	 * value is set to <i>true</i>. Otherwise, if the text value of the XML attribute equals to
-	 * <i>no</i>, the returned {@link boolean} value is set to <i>false</i>.
+	 * If the text value of the XML attribute equals to <i>yes</i> or <i>on</i>, the returned
+	 * {@link boolean} value is set to <i>true</i>. Otherwise, if the text value of the XML attribute
+	 * equals to <i>no</i> or <i>off</i>, the returned {@link boolean} value is set to <i>false</i>.
 	 * 
 	 * @param expression XPath expression to select XML element.
 	 * @param attributeName name to select XML attribute of the current XML root element.
@@ -142,7 +151,8 @@ public interface LibvirtXmlEditable
 	 */
 	public default boolean getXmlElementAttributeValueAsBool( String expression, String attributeName )
 	{
-		return "yes".equals( this.getXmlElementAttributeValue( expression, attributeName ) );
+		final String attributeValue = this.getXmlElementAttributeValue( expression, attributeName );
+		return "yes".equals( attributeValue ) || "on".equals( attributeValue );
 	}
 
 	/**
@@ -177,7 +187,7 @@ public interface LibvirtXmlEditable
 	 * @param attributeName name to select XML attribute of the selected XML element.
 	 * @param value binary choice value for the selected XML attribute from the selected XML element.
 	 */
-	public default void setXmlElementAttributeValue( String attributeName, boolean value )
+	public default void setXmlElementAttributeValueYesNo( String attributeName, boolean value )
 	{
 		final String valueYesNo = value ? "yes" : "no";
 		this.setXmlElementAttributeValue( attributeName, valueYesNo );
@@ -196,10 +206,46 @@ public interface LibvirtXmlEditable
 	 * @param attributeName name to select XML attribute of the selected XML element.
 	 * @param value binary choice value for the selected XML attribute from the selected XML element.
 	 */
-	public default void setXmlElementAttributeValue( String expression, String attributeName, boolean value )
+	public default void setXmlElementAttributeValueYesNo( String expression, String attributeName, boolean value )
 	{
 		final String valueYesNo = value ? "yes" : "no";
 		this.setXmlElementAttributeValue( expression, attributeName, valueYesNo );
+	}
+
+	/**
+	 * Sets the binary choice value of a XML attribute from the current XML root element.
+	 * 
+	 * If the binary choice value for the XML attribute equals to <i>true</i>, the text value of the
+	 * selected XML attribute is set to <i>on</i>. Otherwise, if the binary choice value for the
+	 * selected XML attribute equals to <i>false</i>, the text value of the selected XML attribute is
+	 * set to <i>off</i>.
+	 * 
+	 * @param attributeName name to select XML attribute of the selected XML element.
+	 * @param value binary choice value for the selected XML attribute from the selected XML element.
+	 */
+	public default void setXmlElementAttributeValueOnOff( String attributeName, boolean value )
+	{
+		final String valueOnOff = value ? "on" : "off";
+		this.setXmlElementAttributeValue( attributeName, valueOnOff );
+	}
+
+	/**
+	 * Sets the binary choice value of a XML attribute from a XML element selected by a XPath
+	 * expression.
+	 * 
+	 * If the binary choice value for the XML attribute equals to <i>true</i>, the text value of the
+	 * selected XML attribute is set to <i>on</i>. Otherwise, if the binary choice value for the
+	 * selected XML attribute equals to <i>false</i>, the text value of the selected XML attribute is
+	 * set to <i>off</i>.
+	 * 
+	 * @param expression XPath expression to select XML element.
+	 * @param attributeName name to select XML attribute of the selected XML element.
+	 * @param value binary choice value for the selected XML attribute from the selected XML element.
+	 */
+	public default void setXmlElementAttributeValueOnOff( String expression, String attributeName, boolean value )
+	{
+		final String valueOnOff = value ? "on" : "off";
+		this.setXmlElementAttributeValue( expression, attributeName, valueOnOff );
 	}
 
 	/**

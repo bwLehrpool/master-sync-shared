@@ -184,9 +184,7 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 	{
 		String completeExpression = null;
 
-		if ( expression == null ) {
-			completeExpression = XPATH_EXPRESSION_CURRENT_NODE;
-		} else if ( expression.isEmpty() ) {
+		if ( expression == null || expression.isEmpty() ) {
 			completeExpression = XPATH_EXPRESSION_CURRENT_NODE;
 		} else {
 			completeExpression = XPATH_EXPRESSION_CURRENT_NODE + XPATH_EXPRESSION_SEPARATOR + expression;
@@ -271,8 +269,9 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 		Node node = this.getXmlElement( expression );
 
 		if ( node != null ) {
-			for ( int i = 0; i < node.getChildNodes().getLength(); i++ ) {
-				Node child = node.getChildNodes().item( 0 );
+			final NodeList childs = node.getChildNodes();
+			while ( childs.getLength() > 0 ) {
+				Node child = childs.item( 0 );
 				node.removeChild( child );
 			}
 		}
@@ -281,13 +280,7 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 	@Override
 	public String getXmlElementAttributeValue( String expression, String attributeName )
 	{
-		Node node = null;
-
-		if ( expression != null && !expression.isEmpty() ) {
-			node = this.getXmlElement( expression );
-		} else {
-			node = this.xmlBaseNode;
-		}
+		Node node = this.getXmlElement( expression );
 
 		if ( node == null ) {
 			return null;

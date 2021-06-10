@@ -8,7 +8,8 @@ import org.openslx.libvirt.xml.LibvirtXmlNode;
  * @author Manuel Bentele
  * @version 1.0
  */
-public class HostdevUsb extends Hostdev
+public class HostdevUsb extends Hostdev implements HostdevAddressableSource<HostdevUsbDeviceDescription>,
+		HostdevAddressableTarget<HostdevUsbDeviceAddress>
 {
 	/**
 	 * Creates an empty hostdev USB device.
@@ -26,6 +27,44 @@ public class HostdevUsb extends Hostdev
 	public HostdevUsb( LibvirtXmlNode xmlNode )
 	{
 		super( xmlNode );
+	}
+
+	@Override
+	public HostdevUsbDeviceDescription getSource()
+	{
+		String vendorId = this.getXmlElementAttributeValue( "source/address/vendor", "id" );
+		String productId = this.getXmlElementAttributeValue( "source/address/product", "id" );
+
+		vendorId = HostdevUtils.removeHexPrefix( vendorId );
+		productId = HostdevUtils.removeHexPrefix( productId );
+
+		return HostdevUsbDeviceDescription.valueOf( vendorId + ":" + productId );
+	}
+
+	@Override
+	public void setSource( HostdevUsbDeviceDescription description )
+	{
+		final String vendorId = HostdevUtils.appendHexPrefix( description.getVendorIdAsString() );
+		final String productId = HostdevUtils.appendHexPrefix( description.getProductIdAsString() );
+
+		this.setXmlElementAttributeValue( "source/address/vendor", "id", vendorId );
+		this.setXmlElementAttributeValue( "source/address/product", "id", productId );
+	}
+
+	@Override
+	public HostdevUsbDeviceAddress getTarget()
+	{
+		final String usbBus = this.getXmlElementAttributeValue( "address", "bus" );
+		final String usbPort = this.getXmlElementAttributeValue( "address", "port" );
+
+		return HostdevUsbDeviceAddress.valueOf( usbBus, usbPort );
+	}
+
+	@Override
+	public void setTarget( HostdevUsbDeviceAddress address )
+	{
+		this.setXmlElementAttributeValue( "address", "bus", Integer.toString( address.getUsbBus() ) );
+		this.setXmlElementAttributeValue( "address", "port", Integer.toString( address.getUsbPort() ) );
 	}
 
 	/**

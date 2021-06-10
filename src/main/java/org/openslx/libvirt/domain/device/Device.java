@@ -95,6 +95,9 @@ public class Device extends LibvirtXmlNode
 		} else if ( device instanceof Serial ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.SERIAL );
 			createdDevice = Serial.createInstance( xmlNode );
+		} else if ( device instanceof Shmem ) {
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.SHMEM );
+			createdDevice = Shmem.createInstance( xmlNode );
 		} else if ( device instanceof Sound ) {
 			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.SOUND );
 			createdDevice = Sound.createInstance( xmlNode );
@@ -152,6 +155,9 @@ public class Device extends LibvirtXmlNode
 			case SERIAL:
 				device = Serial.newInstance( xmlNode );
 				break;
+			case SHMEM:
+				device = Shmem.newInstance( xmlNode );
+				break;
 			case SOUND:
 				device = Sound.newInstance( xmlNode );
 				break;
@@ -181,6 +187,7 @@ public class Device extends LibvirtXmlNode
 		GRAPHICS  ( "graphics" ),
 		PARALLEL  ( "parallel" ),
 		SERIAL    ( "serial" ),
+		SHMEM     ( "shmem" ),
 		SOUND     ( "sound" ),
 		VIDEO     ( "video" );
 		// @formatter:on

@@ -26,11 +26,14 @@ import org.openslx.libvirt.domain.device.GraphicsSdl;
 import org.openslx.libvirt.domain.device.GraphicsSpice;
 import org.openslx.libvirt.domain.device.GraphicsVnc;
 import org.openslx.libvirt.domain.device.Hostdev;
+import org.openslx.libvirt.domain.device.HostdevPci;
+import org.openslx.libvirt.domain.device.HostdevUsb;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.InterfaceBridge;
 import org.openslx.libvirt.domain.device.InterfaceNetwork;
 import org.openslx.libvirt.domain.device.Parallel;
 import org.openslx.libvirt.domain.device.Serial;
+import org.openslx.libvirt.domain.device.Shmem;
 import org.openslx.libvirt.domain.device.Sound;
 import org.openslx.libvirt.domain.device.Video;
 import org.openslx.libvirt.xml.LibvirtXmlDocument;
@@ -269,6 +272,66 @@ public class Domain extends LibvirtXmlDocument
 	{
 		return this.getRootXmlNode()
 				.getXmlElementAttributeValue( "metadata/*[local-name()='libosinfo']/*[local-name()='os']", "id" );
+	}
+
+	/**
+	 * Returns the state of the Hyper-V vendor identifier feature.
+	 * 
+	 * @return state of the Hyper-V vendor identifier feature.
+	 */
+	public boolean isFeatureHypervVendorIdStateOn()
+	{
+		return this.getRootXmlNode().getXmlElementAttributeValueAsBool( "features/hyperv/vendor_id", "state" );
+	}
+
+	/**
+	 * Sets the state of the Hyper-V vendor identifier feature.
+	 * 
+	 * @param on state for the Hyper-V vendor identifier feature.
+	 */
+	public void setFeatureHypervVendorIdState( boolean on )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValueOnOff( "features/hyperv/vendor_id", "state", on );
+	}
+
+	/**
+	 * Returns the value of the Hyper-V vendor identifier feature.
+	 * 
+	 * @return value of the Hyper-V vendor identifier feature.
+	 */
+	public String getFeatureHypervVendorIdValue()
+	{
+		return this.getRootXmlNode().getXmlElementAttributeValue( "features/hyperv/vendor_id", "value" );
+	}
+
+	/**
+	 * Sets the value of the Hyper-V vendor identifier feature.
+	 * 
+	 * @param value value for the Hyper-V vendor identifier feature.
+	 */
+	public void setFeatureHypervVendorIdValue( String value )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "features/hyperv/vendor_id", "value", value );
+	}
+
+	/**
+	 * Returns the state of the KVM hidden feature.
+	 * 
+	 * @return state of the KVM hidden feature.
+	 */
+	public boolean isFeatureKvmHiddenStateOn()
+	{
+		return this.getRootXmlNode().getXmlElementAttributeValueAsBool( "features/kvm/hidden", "state" );
+	}
+
+	/**
+	 * Sets the state of the KVM hidden feature.
+	 * 
+	 * @param on state for the KVM hidden feature.
+	 */
+	public void setFeatureKvmHiddenState( boolean on )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValueOnOff( "features/kvm/hidden", "state", on );
 	}
 
 	/**
@@ -860,6 +923,28 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns list of virtual machine PCI hostdev devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine PCI hostdev devices.
+	 */
+	public ArrayList<HostdevPci> getHostdevPciDevices()
+	{
+		return Domain.filterDevices( HostdevPci.class, this.getDevices() );
+	}
+
+	/**
+	 * Returns list of virtual machine USB hostdev devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine USB hostdev devices.
+	 */
+	public ArrayList<HostdevUsb> getHostdevUsbDevices()
+	{
+		return Domain.filterDevices( HostdevUsb.class, this.getDevices() );
+	}
+
+	/**
 	 * Returns list of virtual machine network interface devices specified in the Libvirt domain XML
 	 * document.
 	 * 
@@ -900,6 +985,17 @@ public class Domain extends LibvirtXmlDocument
 	public ArrayList<Serial> getSerialDevices()
 	{
 		return Domain.filterDevices( Serial.class, this.getDevices() );
+	}
+
+	/**
+	 * Returns list of virtual machine shared memory devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine shared memory devices.
+	 */
+	public ArrayList<Shmem> getShmemDevices()
+	{
+		return Domain.filterDevices( Shmem.class, this.getDevices() );
 	}
 
 	/**
@@ -1066,13 +1162,33 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
-	 * Adds a virtual machine disk device to the Libvirt domain XML document.
+	 * Adds a virtual machine hostdev device to the Libvirt domain XML document.
 	 *
-	 * @return reference to the added disk device if creation was successful.
+	 * @return reference to the added hostdev device if creation was successful.
 	 */
 	public Hostdev addHostdevDevice()
 	{
 		return Hostdev.class.cast( this.addDevice( new Hostdev() ) );
+	}
+
+	/**
+	 * Adds a virtual machine PCI hostdev device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added PCI hostdev device if creation was successful.
+	 */
+	public HostdevPci addHostdevPciDevice()
+	{
+		return HostdevPci.class.cast( this.addDevice( new HostdevPci() ) );
+	}
+
+	/**
+	 * Adds a virtual machine USB hostdev device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added USB hostdev device if creation was successful.
+	 */
+	public HostdevUsb addHostdevUsbDevice()
+	{
+		return HostdevUsb.class.cast( this.addDevice( new HostdevUsb() ) );
 	}
 
 	/**
@@ -1163,6 +1279,16 @@ public class Domain extends LibvirtXmlDocument
 	public Serial addSerialDevice()
 	{
 		return Serial.class.cast( this.addDevice( new Serial() ) );
+	}
+
+	/**
+	 * Adds a virtual machine shared memory device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added shared memory device if creation was successful.
+	 */
+	public Shmem addShmemDevice()
+	{
+		return Shmem.class.cast( this.addDevice( new Shmem() ) );
 	}
 
 	/**
