@@ -170,5 +170,11 @@
 			<artifactId>jing</artifactId>
 			<version>20181222</version>
 		</dependency>
+		<dependency>
+			<groupId>org.kamranzafar</groupId>
+			<artifactId>jtar</artifactId>
+			<version>2.3</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 </project>
