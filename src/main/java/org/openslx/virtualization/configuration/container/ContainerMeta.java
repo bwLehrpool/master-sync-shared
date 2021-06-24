@@ -15,29 +15,20 @@ import java.util.Objects;
 public class ContainerMeta {
 
 	public enum ContainerImageType implements org.apache.thrift.TEnum {
-		LECTURE("lecture"), BATCH("batch"), DATA("data");
+		LECTURE("Lecture"), BATCH("Batch"), DATA("Data");
 
-		private final String name;
+		private final String displayLable;
 
 		ContainerImageType(String name) {
-			this.name = name;
+			this.displayLable = name;
 		}
 
 		public boolean equalNames(String other) {
-			return name.equals(other);
-		}
-
-		public static ContainerImageType getByName(String name) {
-			for (ContainerImageType item : ContainerImageType.values()) {
-				if (item.name.equals(name))
-					return item;
-			}
-			// name is not an enum, return lecture as default
-			return LECTURE;
+			return displayLable.equals(other);
 		}
 
 		@Override public String toString() {
-			return this.name;
+			return this.displayLable;
 		}
 
 		@Override public int getValue() {
@@ -139,11 +130,13 @@ public class ContainerMeta {
 		if (image_type == null || image_type.length() == 0)
 			return ContainerImageType.LECTURE;
 
-		return ContainerImageType.getByName(image_type);
+		// turn string representation into enum-var 'LECTURE' -> ContainerImageType.LECTURE
+		return ContainerImageType.valueOf(image_type);
 	}
 
 	public void setImageType(ContainerImageType image_type) {
-		this.image_type = image_type.toString();
+		// set constant representation of the enum-var e.g. ContainerImageType.LECTURE -> 'LECTURE'
+		this.image_type = image_type.name();
 	}
 
 	@Override public boolean equals(Object o) {
