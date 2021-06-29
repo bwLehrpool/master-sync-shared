@@ -80,7 +80,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 			"/VirtualBox/Machine/Hardware/HID",
 			"/VirtualBox/Machine/Hardware/LPT",
 			"/VirtualBox/Machine/Hardware/SharedFolders",
-			"/VirtualBox/Machine/Hardware/Network/Adapter[@enabled='true']/*",
+			"/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']/*",
 			"/VirtualBox/Machine/ExtraData",
 			"/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice[not(@type='HardDisk')]",
 			"/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice[not(@type='HardDisk')]",
@@ -343,7 +343,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 		changeAttribute( "/VirtualBox/Machine/Hardware/CPU", "count", PlaceHolder.CPU.toString() );
 
 		// placeholder for the MACAddress
-		changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter", "MACAddress", PlaceHolder.NETWORKMAC.toString() );
+		changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']", "MACAddress", PlaceHolder.NETWORKMAC.toString() );
 
 		NodeList hdds = findNodes( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk" );
 		for ( int i = 0; i < hdds.getLength(); i++ ) {

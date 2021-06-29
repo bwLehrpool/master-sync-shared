@@ -117,10 +117,34 @@ public class VirtualizationConfigurationVirtualBox
 		}
 	}
 
+	private void disableEnhancedNetworkAdapters()
+	{
+		final NodeList disableAdapters = this.config.findNodes( "/VirtualBox/Machine/Hardware/Network/Adapter[not(@slot='0')]" );
+
+		if ( disableAdapters != null ) {
+			for ( int i = 0; i < disableAdapters.getLength(); i++ ) {
+				final Element disableAdapter = (Element)disableAdapters.item( i );
+				disableAdapter.setAttribute( "enabled", "false" );
+			}
+		}
+	}
+
+	private void removeEnhancedNetworkAdapters()
+	{
+		final NodeList removeAdapters = this.config.findNodes( "/VirtualBox/Machine/Hardware/Network/Adapter[not(@slot='0')]" );
+
+		if ( removeAdapters != null ) {
+			for ( int i = 0; i < removeAdapters.getLength(); i++ ) {
+				final Node removeAdapter = removeAdapters.item( i );
+				removeAdapter.getParentNode().removeChild( removeAdapter );
+			}
+		}
+	}
+
 	@Override
 	public void transformEditable() throws VirtualizationConfigurationException
 	{
-		// TODO Auto-generated method stub
+		this.disableEnhancedNetworkAdapters();
 	}
 
 	@Override
@@ -201,11 +225,28 @@ public class VirtualizationConfigurationVirtualBox
 	@Override
 	public boolean addDefaultNat()
 	{
-		if ( config.addNewNode( "/VirtualBox/Machine/Hardware/Network/Adapter", "NAT" ) == null ) {
-			LOGGER.error( "Failed to set network adapter to NAT." );
-			return false;
+		final boolean status;
+
+		final Node adapterSlot0 = config.findNodes( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']" ).item( 0 );
+		if ( adapterSlot0 != null ) {
+			// remove all child node to wipe existing networking mode
+			final NodeList adapterSlot0SettingNodes = adapterSlot0.getChildNodes();
+			while ( adapterSlot0.getChildNodes().getLength() > 0 ) {
+				adapterSlot0.removeChild( adapterSlot0SettingNodes.item( 0 ) );
+			}
+
+			// add networking mode 'NAT'
+			if ( config.addNewNode( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']", "NAT" ) == null ) {
+				LOGGER.error( "Failed to set network adapter to NAT." );
+				status = false;
+			} else {
+				status = config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']", "MACAddress", "080027B86D12" );
+			}
+		} else {
+			status = false;
 		}
-		return config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter", "MACAddress", "080027B86D12" );
+
+		return status;
 	}
 
 	@Override
@@ -496,6 +537,8 @@ public class VirtualizationConfigurationVirtualBox
 		config.setExtraData( "GUI/PreventSnapshotOperations", "true" );
 		config.setExtraData( "GUI/PreventApplicationUpdate", "true" );
 		config.setExtraData( "GUI/RestrictedCloseActions", "SaveState,PowerOffRestoringSnapshot,Detach" );
+
+		this.removeEnhancedNetworkAdapters();
 	}
 
 	@Override
