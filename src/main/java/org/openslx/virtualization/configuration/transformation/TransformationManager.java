@@ -111,7 +111,7 @@ public class TransformationManager<T, R>
 				transformation.apply( this.config, this.args );
 			} catch ( TransformationException e ) {
 				final String errorMsg = new String(
-						"Error in configuration filter '" + transformation.getName() + "':" + e.getLocalizedMessage() );
+						"Error in configuration filter '" + transformation.getName() + "': " + e.getLocalizedMessage() );
 				throw new TransformationException( errorMsg );
 			}
 		}
