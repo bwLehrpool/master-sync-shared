@@ -434,7 +434,7 @@ public class VirtualizationConfigurationVmware extends
 
 	public byte[] getConfigurationAsByteArray()
 	{
-		return config.toString( true, false ).getBytes( StandardCharsets.UTF_8 );
+		return config.toString( false, false ).getBytes( StandardCharsets.UTF_8 );
 	}
 
 	private static class Device
