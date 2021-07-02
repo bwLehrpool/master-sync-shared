@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -72,27 +73,31 @@ public class VirtualizationConfigurationVmware extends
 
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVmware.class );
 
-	private static final Pattern hddKey = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d|nvme\\d):?(\\d)?\\.(.*)",
+	private static final Pattern HDD_PATTERN = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d|nvme\\d):?(\\d?)\\.(.*)",
 			Pattern.CASE_INSENSITIVE );
 
-	// Lowercase list of allowed settings for upload (as regex)
-	private static final Pattern[] whitelist;
+	/** Lowercase regex of allowed settings for stateless execution */
+	private static final Pattern STATELESS_WHITELIST_PATTERN;
+
+	/** Lowercase regex of forbidden settings when uploading (privacy concerns) */
+	private static final Pattern PRIVACY_BLACKLIST_PATTERN;
 
 	private final VirtualizationConfigurationVmwareFileFormat config;
 
 	// Init static members
 	static {
-		String[] list = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci[.:]", "^mks\\.enable3d",
+		// LOWERCASE - Client execution whitelist
+		String[] list1 = { "^guestos", "^uuid\\.bios", "^config\\.version", "^ehci[.:]", "^mks\\.enable3d",
 				"^virtualhw\\.",
 				"^sound[.:]", "\\.pcislotnumber$", "^pcibridge", "\\.virtualdev$", "^tools\\.syncTime$",
 				"^time\\.synchronize",
 				"^bios\\.bootDelay", "^rtc\\.", "^xhci[.:]", "^usb_xhci[.:]", "\\.deviceType$", "\\.port$", "\\.parent$",
 				"^usb[.:]",
 				"^firmware", "^hpet", "^vm\\.genid" };
-		whitelist = new Pattern[ list.length ];
-		for ( int i = 0; i < list.length; ++i ) {
-			whitelist[i] = Pattern.compile( list[i].toLowerCase() );
-		}
+		STATELESS_WHITELIST_PATTERN = Pattern.compile( String.join( "|", list1 ).toLowerCase(), Pattern.CASE_INSENSITIVE );
+		// LOWERCASE - Upload privacy filter
+		String[] list2 = { "^displayname$", "^extendedconfigfile$", "^gui\\.", "^nvram$", "^memsize$" };
+		PRIVACY_BLACKLIST_PATTERN = Pattern.compile( String.join( "|", list2 ).toLowerCase(), Pattern.CASE_INSENSITIVE );
 	}
 
 	public static enum EthernetType
@@ -106,8 +111,6 @@ public class VirtualizationConfigurationVmware extends
 			this.vmnet = vnet;
 		}
 	}
-
-	private final Map<String, Controller> disks = new HashMap<>();
 
 	public VirtualizationConfigurationVmware( List<OperatingSystem> osList, File file )
 			throws IOException, VirtualizationConfigurationException
@@ -127,8 +130,9 @@ public class VirtualizationConfigurationVmware extends
 
 	private void init()
 	{
+		Map<String, Controller> disks = new HashMap<>();
 		for ( Entry<String, ConfigEntry> entry : config.entrySet() ) {
-			handleLoadEntry( entry );
+			handleLoadEntry( entry, disks );
 		}
 		// Fix accidentally filtered USB config if we see EHCI is present
 		if ( isSetAndTrue( "ehci.present" ) && !isSetAndTrue( "usb.present" ) ) {
@@ -136,6 +140,12 @@ public class VirtualizationConfigurationVmware extends
 		}
 		// if we find this tag, we already went through the hdd's - so we're done.
 		if ( config.get( "#SLX_HDD_BUS" ) != null ) {
+			try {
+				hdds.add( new HardDisk( config.get( "#SLX_HDD_CHIP" ),
+						DriveBusType.valueOf( config.get( "#SLX_HDD_BUS" ) ), "empty" ) );
+			} catch ( Exception e ) {
+				LOGGER.debug( "Error adding HDD object when parsing #SLX_HDD_BUS. Meta-data will be incorrect.", e );
+			}
 			return;
 		}
 		// Now find the HDDs and add to list
@@ -145,6 +155,7 @@ public class VirtualizationConfigurationVmware extends
 			if ( !controller.present )
 				continue;
 			for ( Entry<String, Device> dEntry : controller.devices.entrySet() ) {
+				String deviceId = dEntry.getKey();
 				Device device = dEntry.getValue();
 				if ( !device.present )
 					continue; // Not present
@@ -161,6 +172,8 @@ public class VirtualizationConfigurationVmware extends
 					bus = DriveBusType.NVME;
 				}
 				hdds.add( new HardDisk( controller.virtualDev, bus, device.filename ) );
+				// Remove original entries from VMX
+				removeEntriesStartingWith( controllerType + ":" + deviceId + "." );
 			}
 		}
 		// TODO check if this machine is in a paused/suspended state
@@ -176,9 +189,19 @@ public class VirtualizationConfigurationVmware extends
 		}
 	}
 
+	private void removeEntriesStartingWith( String start )
+	{
+		for ( Iterator<Entry<String, ConfigEntry>> it = config.entrySet().iterator(); it.hasNext(); ) {
+			Entry<String, ConfigEntry> entry = it.next();
+			if ( entry.getKey().startsWith( start ) ) {
+				it.remove();
+			}
+		}
+	}
+
 	private void addFiltered( String key, String value )
 	{
-		config.set( key, value ).filtered( true );
+		config.set( key, value );
 	}
 
 	private boolean isSetAndTrue( String key )
@@ -187,17 +210,9 @@ public class VirtualizationConfigurationVmware extends
 		return value != null && value.equalsIgnoreCase( "true" );
 	}
 
-	private void handleLoadEntry( Entry<String, ConfigEntry> entry )
+	private void handleLoadEntry( Entry<String, ConfigEntry> entry, Map<String, Controller> disks )
 	{
 		String lowerKey = entry.getKey().toLowerCase();
-		// Cleaned vmx construction
-		for ( Pattern exp : whitelist ) {
-			if ( exp.matcher( lowerKey ).find() ) {
-				entry.getValue().filtered( true );
-				break;
-			}
-		}
-		//
 		// Dig Usable meta data
 		String value = entry.getValue().getValue();
 		if ( lowerKey.equals( "guestos" ) ) {
@@ -208,13 +223,13 @@ public class VirtualizationConfigurationVmware extends
 			displayName = value;
 			return;
 		}
-		Matcher hdd = hddKey.matcher( entry.getKey() );
+		Matcher hdd = HDD_PATTERN.matcher( entry.getKey() );
 		if ( hdd.find() ) {
-			handleHddEntry( hdd.group( 1 ).toLowerCase(), hdd.group( 2 ), hdd.group( 3 ), value );
+			handleHddEntry( disks, hdd.group( 1 ).toLowerCase(), hdd.group( 2 ), hdd.group( 3 ), value );
 		}
 	}
 
-	private void handleHddEntry( String controllerStr, String deviceStr, String property, String value )
+	private void handleHddEntry( Map<String, Controller> disks, String controllerStr, String deviceStr, String property, String value )
 	{
 		Controller controller = disks.get( controllerStr );
 		if ( controller == null ) {
@@ -265,16 +280,16 @@ public class VirtualizationConfigurationVmware extends
 			return false;
 		}
 
-		DriveBusType bus;
-		try {
-			bus = DriveBusType.valueOf( config.get( "#SLX_HDD_BUS" ) );
-		} catch ( Exception e ) {
-			LOGGER.warn( "Unknown bus type: " + config.get( "#SLX_HDD_BUS" ) + ". Cannot add hdd config." );
+		if ( hdds.isEmpty() ) {
+			LOGGER.warn( "No HDDs found in configuration" );
 			return false;
 		}
-		String chipset = config.get( "#SLX_HDD_CHIP" );
+
+		HardDisk hdd = hdds.get( 0 );
+
+		String chipset = hdd.chipsetDriver;
 		String prefix;
-		switch ( bus ) {
+		switch ( hdd.bus ) {
 		case SATA:
 			// Cannot happen?... use lsisas1068
 			prefix = "scsi0";
@@ -283,10 +298,10 @@ public class VirtualizationConfigurationVmware extends
 		case IDE:
 		case SCSI:
 		case NVME:
-			prefix = bus.name().toLowerCase() + "0";
+			prefix = hdd.bus.name().toLowerCase() + "0";
 			break;
 		default:
-			LOGGER.warn( "Unknown HDD bus type: " + bus.toString() );
+			LOGGER.warn( "Unknown HDD bus type: " + hdd.bus.toString() );
 			return false;
 		}
 		// Gen
@@ -406,7 +421,36 @@ public class VirtualizationConfigurationVmware extends
 	@Override
 	public void transformNonPersistent() throws VirtualizationConfigurationException
 	{
+		// Cleaned vmx construction
+		for ( Iterator<Entry<String, ConfigEntry>> it = config.entrySet().iterator(); it.hasNext(); ) {
+			Entry<String, ConfigEntry> elem = it.next();
+			if ( !STATELESS_WHITELIST_PATTERN.matcher( elem.getKey() ).find() ) {
+				it.remove();
+			}
+		}
 		addFiltered( "suspend.disabled", "TRUE" );
+	}
+
+	@Override
+	public void transformEditable() throws VirtualizationConfigurationException
+	{
+		addFiltered( "gui.applyHostDisplayScalingToGuest", "FALSE" );
+	}
+
+	@Override
+	public void transformPrivacy() throws VirtualizationConfigurationException
+	{
+		for ( Iterator<Entry<String, ConfigEntry>> it = config.entrySet().iterator(); it.hasNext(); ) {
+			Entry<String, ConfigEntry> elem = it.next();
+			String key = elem.getKey();
+			String value = elem.getValue().getValue();
+			if ( key.endsWith( ".fileName" ) && !value.startsWith( "-" )
+					&& ( value.contains( "." ) || value.contains( "/" ) || value.contains( "\\" ) ) ) {
+				it.remove();
+			} else if ( PRIVACY_BLACKLIST_PATTERN.matcher( key ).find() ) {
+				it.remove();
+			}
+		}
 	}
 
 	@Override
@@ -434,7 +478,7 @@ public class VirtualizationConfigurationVmware extends
 
 	public byte[] getConfigurationAsByteArray()
 	{
-		return config.toString( false, false ).getBytes( StandardCharsets.UTF_8 );
+		return config.toString().getBytes( StandardCharsets.UTF_8 );
 	}
 
 	private static class Device
@@ -461,12 +505,6 @@ public class VirtualizationConfigurationVmware extends
 		{
 			return virtualDev + " is (present: " + present + "): " + devices.toString();
 		}
-	}
-
-	@Override
-	public void transformEditable() throws VirtualizationConfigurationException
-	{
-		addFiltered( "gui.applyHostDisplayScalingToGuest", "FALSE" );
 	}
 
 	public String getValue( String key )
@@ -607,13 +645,8 @@ public class VirtualizationConfigurationVmware extends
 	@Override
 	public boolean addCpuCoreCount( int numCores )
 	{
-		// TODO actually add the cpu core count to the machine description
+		addFiltered( "numvcpus", vmInteger( numCores ) );
 		return true;
-	}
-
-	@Override
-	public void transformPrivacy() throws VirtualizationConfigurationException
-	{
 	}
 
 	public void registerVirtualHW()

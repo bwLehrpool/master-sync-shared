@@ -73,6 +73,13 @@ public class ConfigurationLogicDozModServerToStatelessClient
 		// check if input parameters for a transformation are valid
 		this.validateInputs( config, args );
 
+		// apply settings to run virtualized system in a stateless manner
+		try {
+			config.transformNonPersistent();
+		} catch ( VirtualizationConfigurationException e ) {
+			throw new TransformationException( e.getLocalizedMessage() );
+		}
+
 		// set display name of lecture
 		if ( !config.addDisplayName( args.getDisplayName() ) ) {
 			throw new TransformationException( "Can not set display name in virtualization configuration!" );
@@ -97,13 +104,6 @@ public class ConfigurationLogicDozModServerToStatelessClient
 		// disable USB if necessary
 		if ( !args.hasUsbAccess() ) {
 			config.setMaxUsbSpeed( UsbSpeed.NONE );
-		}
-
-		// apply settings to run virtualized system in a stateless manner
-		try {
-			config.transformNonPersistent();
-		} catch ( VirtualizationConfigurationException e ) {
-			throw new TransformationException( e.getLocalizedMessage() );
 		}
 	}
 }

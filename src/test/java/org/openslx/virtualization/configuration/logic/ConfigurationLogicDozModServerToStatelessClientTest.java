@@ -89,6 +89,7 @@ public class ConfigurationLogicDozModServerToStatelessClientTest
 		final File expectedConfig = ConfigurationLogicTestResources.getVmwareVmxFile( expectedConfigFileName );
 		final VirtualizationConfiguration<?, ?, ?, ?> config;
 		config = ConfigurationLogicTestUtils.newVirtualizationConfigurationInstance( inputConfig );
+		assertTrue( config.getHdds().size() == 1 );
 		final ConfigurationLogicDozModServerToStatelessClient logic = new ConfigurationLogicDozModServerToStatelessClient();
 
 		logic.apply( config, ConfigurationLogicDozModServerToStatelessClientTest.DEFAULT_CONFIG_DATA );

@@ -95,11 +95,11 @@ public class VirtualizationConfigurationVmwareFileFormat
 			while ( ( line = reader.readLine() ) != null ) {
 				KeyValuePair entry = parse( line );
 
-				if ( entry != null ) { 
+				if ( entry != null ) {
+					// TODO: This is supposed to be case insensitive.
+					// Check if there are other consequences from lowercase entries in converted vmx files.
 					if ( entry.key.equals( "virtualHW.version" ) || entry.key.equals( "ddb.virtualHWVersion" )
-						// TODO: This is supposed to be case insensitive.
-						// Check if there are other consequences from lowercase entries in converted vmx files. 
-						|| entry.key.equals( "virtualhw.version" )) {
+							|| entry.key.equals( "virtualhw.version" ) ) {
 						isValid = true;
 					}
 					set( entry.key, unescape( entry.value ) );
@@ -218,49 +218,28 @@ public class VirtualizationConfigurationVmwareFileFormat
 		return ce.value;
 	}
 
-	public String toString( boolean filteredRequired, boolean generatedRequired )
-	{
-		set( ".encoding", "UTF-8" ).filtered( true ).generated( true );
-		StringBuilder sb = new StringBuilder( 300 );
-		for ( Entry<String, ConfigEntry> entry : entries.entrySet() ) {
-			ConfigEntry value = entry.getValue();
-			if ( ( !filteredRequired || value.forFiltered ) && ( !generatedRequired || value.forGenerated ) ) {
-				sb.append( entry.getKey() );
-				sb.append( " = \"" );
-				sb.append( value.getEscaped() );
-				sb.append( "\"\n" );
-			}
-		}
-		return sb.toString();
-	}
-
 	@Override
 	public String toString()
 	{
-		return toString( false, false );
+		set( ".encoding", "UTF-8" );
+		StringBuilder sb = new StringBuilder( 300 );
+		for ( Entry<String, ConfigEntry> entry : entries.entrySet() ) {
+			ConfigEntry value = entry.getValue();
+			sb.append( entry.getKey() );
+			sb.append( " = \"" );
+			sb.append( value.getEscaped() );
+			sb.append( "\"\n" );
+		}
+		return sb.toString();
 	}
 
 	public static class ConfigEntry
 	{
 		private String value;
-		private boolean forFiltered;
-		private boolean forGenerated;
 
 		public ConfigEntry( String value )
 		{
 			this.value = value;
-		}
-
-		public ConfigEntry filtered( boolean set )
-		{
-			this.forFiltered = set;
-			return this;
-		}
-
-		public ConfigEntry generated( boolean set )
-		{
-			this.forGenerated = set;
-			return this;
 		}
 
 		public String getEscaped()

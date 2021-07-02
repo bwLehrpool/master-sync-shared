@@ -79,6 +79,7 @@ public class ConfigurationLogicDozModClientToDozModServerTest
 		final File expectedConfig = ConfigurationLogicTestResources.getVmwareVmxFile( expectedConfigFileName );
 		final VirtualizationConfiguration<?, ?, ?, ?> config;
 		config = ConfigurationLogicTestUtils.newVirtualizationConfigurationInstance( inputConfig );
+		assertTrue( config.getHdds().size() == 1 );
 		final ConfigurationLogicDozModClientToDozModServer logic = new ConfigurationLogicDozModClientToDozModServer();
 
 		logic.apply( config, new ConfigurationDataDozModClientToDozModServer() );
