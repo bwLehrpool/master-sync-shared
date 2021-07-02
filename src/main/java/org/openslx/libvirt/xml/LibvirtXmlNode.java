@@ -159,6 +159,9 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 	@Override
 	public Node getXmlNode( String expression )
 	{
+		if ( XPATH_EXPRESSION_CURRENT_NODE.equals( expression ) ) {
+			return this.xmlBaseNode;
+		}
 		NodeList nodes = this.getXmlNodes( expression );
 		return nodes.item( 0 );
 	}
