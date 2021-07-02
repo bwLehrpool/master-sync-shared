@@ -68,17 +68,23 @@ public class ConfigurationLogicTestUtils
 		return content;
 	}
 
-	public static boolean isContentEqual( String content1, String content2 )
+	public static boolean isContentEqual( String expectedContent, String actualContent )
 	{
-		final BufferedReader bfrContent1 = new BufferedReader( new StringReader( content1 ) );
-		final BufferedReader bfrContent2 = new BufferedReader( new StringReader( content2 ) );
+		final BufferedReader bfrContent1 = new BufferedReader( new StringReader( expectedContent ) );
+		final BufferedReader bfrContent2 = new BufferedReader( new StringReader( actualContent ) );
 		final List<String> linesContent1 = bfrContent1.lines().collect( Collectors.toList() );
 		final List<String> linesContent2 = bfrContent2.lines().collect( Collectors.toList() );
 
 		Collections.sort( linesContent1 );
 		Collections.sort( linesContent2 );
 
-		return linesContent1.equals( linesContent2 );
+		boolean ret = linesContent1.equals( linesContent2 );
+		if ( !ret ) {
+			System.out.println( "----- UNEXPECTED OUTPUT: -------------\n" );
+			System.out.println( actualContent );
+			System.out.println( "--------------------------------------\n" );
+		}
+		return ret;
 	}
 
 	public static String removeSourceFilePaths( String content )
