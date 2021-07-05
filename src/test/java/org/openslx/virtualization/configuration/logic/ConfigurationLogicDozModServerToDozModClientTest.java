@@ -47,7 +47,7 @@ public class ConfigurationLogicDozModServerToDozModClientTest
 		final String expectedConfigFileName = "qemu-kvm_default-ubuntu-20-04-vm_transform-editable.xml";
 		final File inputConfig = LibvirtXmlTestResources.getLibvirtXmlFile( inputConfigFileName );
 		final File expectedConfig = LibvirtXmlTestResources.getLibvirtXmlFile( expectedConfigFileName );
-		final VirtualizationConfiguration<?, ?, ?, ?> config;
+		final VirtualizationConfiguration config;
 		config = ConfigurationLogicTestUtils.newVirtualizationConfigurationInstance( inputConfig );
 		final ConfigurationLogicDozModServerToDozModClient logic = new ConfigurationLogicDozModServerToDozModClient();
 
@@ -68,7 +68,7 @@ public class ConfigurationLogicDozModServerToDozModClientTest
 		final String expectedConfigFileName = "virtualbox_default-ubuntu_transform-editable.vbox";
 		final File inputConfig = ConfigurationLogicTestResources.getVirtualBoxXmlFile( inputConfigFileName );
 		final File expectedConfig = ConfigurationLogicTestResources.getVirtualBoxXmlFile( expectedConfigFileName );
-		final VirtualizationConfiguration<?, ?, ?, ?> config;
+		final VirtualizationConfiguration config;
 		config = ConfigurationLogicTestUtils.newVirtualizationConfigurationInstance( inputConfig );
 		final ConfigurationLogicDozModServerToDozModClient logic = new ConfigurationLogicDozModServerToDozModClient();
 
@@ -93,7 +93,7 @@ public class ConfigurationLogicDozModServerToDozModClientTest
 		final String expectedConfigFileName = "vmware-player_default-ubuntu_transform-editable.vmx";
 		final File inputConfig = ConfigurationLogicTestResources.getVmwareVmxFile( inputConfigFileName );
 		final File expectedConfig = ConfigurationLogicTestResources.getVmwareVmxFile( expectedConfigFileName );
-		final VirtualizationConfiguration<?, ?, ?, ?> config;
+		final VirtualizationConfiguration config;
 		config = ConfigurationLogicTestUtils.newVirtualizationConfigurationInstance( inputConfig );
 		assertTrue( config.getHdds().size() == 1 );
 		final ConfigurationLogicDozModServerToDozModClient logic = new ConfigurationLogicDozModServerToDozModClient();

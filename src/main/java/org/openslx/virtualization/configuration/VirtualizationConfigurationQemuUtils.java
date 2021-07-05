@@ -5,13 +5,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openslx.libvirt.domain.device.Disk;
-import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.Disk.BusType;
 import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.DriveBusType;
-import org.openslx.virtualization.configuration.VirtualizationConfiguration.EthernetDevType;
-import org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType;
-import org.openslx.libvirt.domain.device.Sound;
 
 /**
  * Collection of utils to convert data types from bwLehrpool to Libvirt and vice versa.
@@ -76,80 +72,6 @@ public class VirtualizationConfigurationQemuUtils
 			break;
 		case SCSI:
 			type = BusType.SCSI;
-			break;
-		}
-
-		return type;
-	}
-
-	/**
-	 * Converts a Libvirt sound device model to a VM metadata sound card type.
-	 * 
-	 * @param soundDeviceModel Libvirt sound device model.
-	 * @return VM metadata sound card type.
-	 */
-	public static SoundCardType convertSoundDeviceModel( Sound.Model soundDeviceModel )
-	{
-		SoundCardType type = SoundCardType.NONE;
-
-		switch ( soundDeviceModel ) {
-		case AC97:
-			type = SoundCardType.AC;
-			break;
-		case ES1370:
-			type = SoundCardType.ES;
-			break;
-		case ICH6:
-			type = SoundCardType.HD_AUDIO;
-			break;
-		case ICH9:
-			type = SoundCardType.HD_AUDIO;
-			break;
-		case SB16:
-			type = SoundCardType.SOUND_BLASTER;
-			break;
-		}
-
-		return type;
-	}
-
-	/**
-	 * Converts a Libvirt network device model to a VM metadata ethernet device type.
-	 * 
-	 * @param networkDeviceModel Libvirt network device model.
-	 * @return VM metadata ethernet device type.
-	 */
-	public static EthernetDevType convertNetworkDeviceModel( Interface.Model networkDeviceModel )
-	{
-		EthernetDevType type = EthernetDevType.NONE;
-
-		switch ( networkDeviceModel ) {
-		case E1000:
-			type = EthernetDevType.E1000;
-			break;
-		case E1000E:
-			type = EthernetDevType.E1000E;
-			break;
-		case PCNET:
-			type = EthernetDevType.PCNETPCI2;
-			break;
-		case VIRTIO:
-			type = EthernetDevType.PARAVIRT;
-			break;
-		case VIRTIO_NET_PCI:
-			type = EthernetDevType.PARAVIRT;
-			break;
-		case VIRTIO_NET_PCI_NON_TRANSITIONAL:
-			type = EthernetDevType.PARAVIRT;
-			break;
-		case VIRTIO_NET_PCI_TRANSITIONAL:
-			type = EthernetDevType.PARAVIRT;
-			break;
-		case VMXNET3:
-			type = EthernetDevType.VMXNET3;
-			break;
-		default:
-			type = EthernetDevType.AUTO;
 			break;
 		}
 

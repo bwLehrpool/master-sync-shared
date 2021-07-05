@@ -27,22 +27,19 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.libvirt.domain.Domain;
-import org.openslx.libvirt.domain.device.ControllerUsb;
 import org.openslx.libvirt.domain.device.DiskCdrom;
 import org.openslx.libvirt.domain.device.DiskFloppy;
 import org.openslx.libvirt.domain.device.DiskStorage;
 import org.openslx.libvirt.domain.device.Interface;
-import org.openslx.libvirt.domain.device.Sound;
 import org.openslx.libvirt.xml.LibvirtXmlTestResources;
 import org.openslx.virtualization.Version;
+import org.openslx.virtualization.configuration.VirtualizationConfiguration.ConfigurableOptionGroup;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.EtherType;
-import org.openslx.virtualization.configuration.VirtualizationConfiguration.EthernetDevType;
-import org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType;
-import org.openslx.virtualization.configuration.VirtualizationConfiguration.UsbSpeed;
 import org.openslx.virtualization.configuration.logic.ConfigurationLogicTestUtils;
 import org.openslx.virtualization.disk.DiskImage;
-import org.openslx.virtualization.disk.DiskImageTestResources;
 import org.openslx.virtualization.disk.DiskImage.ImageFormat;
+import org.openslx.virtualization.disk.DiskImageTestResources;
+import org.openslx.virtualization.hardware.ConfigurationGroups;
 
 public class VirtualizationConfigurationQemuTest
 {
@@ -340,58 +337,6 @@ public class VirtualizationConfigurationQemuTest
 	}
 
 	@ParameterizedTest
-	@DisplayName( "Test get sound card from VM configuration" )
-	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-sound.xml" } )
-	public void testQemuMetaDataGetSoundCardType( String xmlFileName )
-			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException
-	{
-		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
-
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
-		SoundCardType soundCardType = vmConfig.getSoundCard();
-
-		if ( vmLibvirtDomainConfig.getSoundDevices().isEmpty() ) {
-			assertEquals( SoundCardType.NONE, soundCardType );
-		} else {
-			assertEquals( SoundCardType.HD_AUDIO, soundCardType );
-		}
-
-		assertDoesNotThrow( () -> vmConfig.validate() );
-	}
-
-	@ParameterizedTest
-	@DisplayName( "Test set sound card in VM configuration" )
-	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-sound.xml" } )
-	public void testQemuMetaDataSetSoundCardType( String xmlFileName )
-			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException
-	{
-		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
-
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
-		final int numSoundDevsLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getSoundDevices().size();
-
-		vmConfig.setSoundCard( SoundCardType.SOUND_BLASTER );
-
-		final int numSoundDevsLibvirtDomainXmlAfterAdd = vmLibvirtDomainConfig.getSoundDevices().size();
-
-		assertTrue( numSoundDevsLibvirtDomainXmlBeforeAdd >= 0 );
-		assertTrue( numSoundDevsLibvirtDomainXmlAfterAdd > 0 );
-
-		Sound addedSoundDevice = vmLibvirtDomainConfig.getSoundDevices().get( 0 );
-		assertEquals( Sound.Model.SB16, addedSoundDevice.getModel() );
-
-		assertDoesNotThrow( () -> vmConfig.validate() );
-	}
-
-	@ParameterizedTest
 	@DisplayName( "Test get ethernet device type from VM configuration" )
 	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-nic.xml" } )
 	public void testQemuMetaDataGetEthernetDevType( String xmlFileName )
@@ -404,88 +349,17 @@ public class VirtualizationConfigurationQemuTest
 		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
 				.getPrivateDomainFromQemuMetaData( vmConfig );
 
-		EthernetDevType ethernetDeviceType = vmConfig.getEthernetDevType( 0 );
+		List<ConfigurableOptionGroup> groups = vmConfig.getConfigurableOptions();
 
-		if ( vmLibvirtDomainConfig.getInterfaceDevices().isEmpty() ) {
-			assertEquals( EthernetDevType.NONE, ethernetDeviceType );
-		} else {
-			assertEquals( EthernetDevType.PARAVIRT, ethernetDeviceType );
+		for ( ConfigurableOptionGroup group : groups ) {
+			if ( group.groupIdentifier != ConfigurationGroups.NIC_MODEL )
+				continue;
+			if ( vmLibvirtDomainConfig.getInterfaceDevices().isEmpty() ) {
+				assertEquals( null, group.getSelected() );
+			} else {
+				assertEquals( Interface.Model.VIRTIO.toString(), group.getSelected().getId() );
+			}
 		}
-
-		assertDoesNotThrow( () -> vmConfig.validate() );
-	}
-
-	@ParameterizedTest
-	@DisplayName( "Test set ethernet device type in VM configuration" )
-	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-nic.xml" } )
-	public void testQemuMetaDataSetEthernetDevType( String xmlFileName )
-			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException
-	{
-		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
-
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
-		vmConfig.setEthernetDevType( 0, EthernetDevType.E1000E );
-
-		if ( !vmLibvirtDomainConfig.getInterfaceDevices().isEmpty() ) {
-			Interface addedEthernetDevice = vmLibvirtDomainConfig.getInterfaceDevices().get( 0 );
-			assertEquals( Interface.Model.E1000E, addedEthernetDevice.getModel() );
-		}
-
-		assertDoesNotThrow( () -> vmConfig.validate() );
-	}
-
-	@ParameterizedTest
-	@DisplayName( "Test get maximal USB speed from VM configuration" )
-	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-usb.xml" } )
-	public void testQemuMetaDataGetMaxUsbSpeed( String xmlFileName )
-			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException
-	{
-		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
-
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
-		UsbSpeed maxUsbSpeed = vmConfig.getMaxUsbSpeed();
-
-		if ( vmLibvirtDomainConfig.getUsbControllerDevices().isEmpty() ) {
-			assertEquals( UsbSpeed.NONE, maxUsbSpeed );
-		} else {
-			assertEquals( UsbSpeed.USB3_0, maxUsbSpeed );
-		}
-
-		assertDoesNotThrow( () -> vmConfig.validate() );
-	}
-
-	@ParameterizedTest
-	@DisplayName( "Test set maximal USB speed in VM configuration" )
-	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml", "qemu-kvm_default-archlinux-vm-no-usb.xml" } )
-	public void testQemuMetaDataSetMaxUsbSpeed( String xmlFileName )
-			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException
-	{
-		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
-		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
-
-		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
-				.getPrivateDomainFromQemuMetaData( vmConfig );
-
-		final int numUsbControllersLibvirtDomainXmlBeforeAdd = vmLibvirtDomainConfig.getUsbControllerDevices().size();
-
-		vmConfig.setMaxUsbSpeed( UsbSpeed.USB2_0 );
-
-		final int numUsbControllersLibvirtDomainXmlAfterAdd = vmLibvirtDomainConfig.getUsbControllerDevices().size();
-
-		assertTrue( numUsbControllersLibvirtDomainXmlBeforeAdd >= 0 );
-		assertTrue( numUsbControllersLibvirtDomainXmlAfterAdd > 0 );
-
-		ControllerUsb addedUsbControllerDevice = vmLibvirtDomainConfig.getUsbControllerDevices().get( 0 );
-		assertEquals( ControllerUsb.Model.ICH9_EHCI1, addedUsbControllerDevice.getModel() );
 
 		assertDoesNotThrow( () -> vmConfig.validate() );
 	}

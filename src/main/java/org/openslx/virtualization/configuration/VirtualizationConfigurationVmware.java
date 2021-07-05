@@ -3,6 +3,7 @@ package org.openslx.virtualization.configuration;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,54 +18,14 @@ import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
 import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationVmwareFileFormat.ConfigEntry;
+import org.openslx.virtualization.hardware.VirtOptionValue;
+import org.openslx.virtualization.hardware.ConfigurationGroups;
+import org.openslx.virtualization.hardware.Ethernet;
+import org.openslx.virtualization.hardware.SoundCard;
+import org.openslx.virtualization.hardware.Usb;
 import org.openslx.virtualization.virtualizer.VirtualizerVmware;
 
-class VmWareSoundCardMeta
-{
-	public final boolean isPresent;
-	public final String value;
-
-	public VmWareSoundCardMeta( boolean present, String val )
-	{
-		isPresent = present;
-		value = val;
-	}
-}
-
-class VmWareDDAccelMeta
-{
-	public final boolean isPresent;
-
-	public VmWareDDAccelMeta( boolean present )
-	{
-		isPresent = present;
-	}
-}
-
-class VmWareEthernetDevTypeMeta
-{
-	public final String value;
-
-	public VmWareEthernetDevTypeMeta( String val )
-	{
-		value = val;
-	}
-}
-
-class VmwareUsbSpeed
-{
-	public final String keyName;
-	public final int speedNumeric;
-
-	public VmwareUsbSpeed( int speed, String key )
-	{
-		this.keyName = key == null ? null : ( key + ".present" );
-		this.speedNumeric = speed;
-	}
-}
-
-public class VirtualizationConfigurationVmware extends
-		VirtualizationConfiguration<VmWareSoundCardMeta, VmWareDDAccelMeta, VmWareEthernetDevTypeMeta, VmwareUsbSpeed>
+public class VirtualizationConfigurationVmware extends VirtualizationConfiguration
 {
 	/**
 	 * File name extension for VMware virtualization configuration files.
@@ -435,6 +396,27 @@ public class VirtualizationConfigurationVmware extends
 	public void transformEditable() throws VirtualizationConfigurationException
 	{
 		addFiltered( "gui.applyHostDisplayScalingToGuest", "FALSE" );
+		// This is for a very old bug: Check we have at lerast USB 2.0, as
+		// a buggy dmsd removed all USB controllers
+		List<ConfigurableOptionGroup> groups = getConfigurableOptions();
+		for ( ConfigurableOptionGroup group : groups ) {
+			if ( group.groupIdentifier != ConfigurationGroups.USB_SPEED )
+				continue;
+			int currentSpeed = 0;
+			VirtOptionValue twoPointOh = null;
+			for ( VirtOptionValue option : group.availableOptions ) {
+				int s = Util.parseInt( option.getId(), 0 );
+				if ( option.isActive() && s > currentSpeed ) {
+					currentSpeed = s;
+				}
+				if ( s == 2 ) {
+					twoPointOh = option;
+				}
+			}
+			if ( currentSpeed < 3 && twoPointOh != null ) {
+				twoPointOh.apply();
+			}
+		}
 	}
 
 	@Override
@@ -511,51 +493,99 @@ public class VirtualizationConfigurationVmware extends
 	{
 		return config.get( key );
 	}
-
-	public void setSoundCard( VirtualizationConfiguration.SoundCardType type )
+	
+	class VmwareNoSoundCard extends VirtOptionValue
 	{
-		VmWareSoundCardMeta soundCardMeta = soundCards.get( type );
-		addFiltered( "sound.present", vmBoolean( soundCardMeta.isPresent ) );
-		if ( soundCardMeta.value != null ) {
-			addFiltered( "sound.virtualDev", soundCardMeta.value );
-		} else {
+
+		public VmwareNoSoundCard( String displayName )
+		{
+			super( "", displayName );
+		}
+
+		@Override
+		public void apply()
+		{
+			addFiltered( "sound.present", vmBoolean( false ) );
 			config.remove( "sound.virtualDev" );
 		}
+
+		@Override
+		public boolean isActive()
+		{
+			return !isSetAndTrue( "sound.present" );
+		}
+
 	}
 
-	public VirtualizationConfiguration.SoundCardType getSoundCard()
+	class VmWareSoundCardModelNone extends VirtOptionValue
 	{
-		if ( !isSetAndTrue( "sound.present" ) || !isSetAndTrue( "sound.autodetect" ) ) {
-			return VirtualizationConfiguration.SoundCardType.NONE;
+
+		public VmWareSoundCardModelNone( String displayName )
+		{
+			super( "none", displayName );
 		}
-		String current = config.get( "sound.virtualDev" );
-		if ( current != null ) {
-			VmWareSoundCardMeta soundCardMeta = null;
-			for ( VirtualizationConfiguration.SoundCardType type : VirtualizationConfiguration.SoundCardType.values() ) {
-				soundCardMeta = soundCards.get( type );
-				if ( soundCardMeta != null ) {
-					if ( current.equals( soundCardMeta.value ) ) {
-						return type;
-					}
-				}
-			}
+
+		@Override
+		public void apply()
+		{
+			addFiltered( "sound.present", vmBoolean( false ) );
+			addFiltered( "sound.autodetect", vmBoolean( false ) );
+			config.remove( "sound.virtualDev" );
 		}
-		return VirtualizationConfiguration.SoundCardType.DEFAULT;
+
+		@Override
+		public boolean isActive()
+		{
+			return !isSetAndTrue( "sound.present" );
+		}
+
 	}
 
-	public void setDDAcceleration( VirtualizationConfiguration.DDAcceleration type )
+	class VmWareSoundCardModel extends VirtOptionValue
 	{
-		VmWareDDAccelMeta ddaMeta = ddacc.get( type );
-		addFiltered( "mks.enable3d", vmBoolean( ddaMeta.isPresent ) );
+
+		public VmWareSoundCardModel( String id, String displayName )
+		{
+			super( id, displayName );
+		}
+
+		@Override
+		public void apply()
+		{
+			addFiltered( "sound.present", vmBoolean( true ) );
+			addFiltered( "sound.autodetect", vmBoolean( true ) );
+			addFiltered( "sound.virtualDev", this.id );
+		}
+
+		@Override
+		public boolean isActive()
+		{
+			return isSetAndTrue( "sound.present" ) && isSetAndTrue( "sound.autodetect" )
+					&& this.id.equals( config.get( "sound.virtualDev" ) );
+		}
+
 	}
 
-	public VirtualizationConfiguration.DDAcceleration getDDAcceleration()
+	class VmWareAccel3D extends VirtOptionValue
 	{
-		if ( isSetAndTrue( "mks.enable3d" ) ) {
-			return VirtualizationConfiguration.DDAcceleration.ON;
-		} else {
-			return VirtualizationConfiguration.DDAcceleration.OFF;
+
+		public VmWareAccel3D( String id, String displayName )
+		{
+			super( id, displayName );
 		}
+
+		@Override
+		public void apply()
+		{
+			addFiltered( "mks.enable3d", this.id );
+		}
+
+		@Override
+		public boolean isActive()
+		{
+			return Boolean.parseBoolean( this.id ) == isSetAndTrue( "mks.enable3d" );
+		}
+
 	}
 
 	public void setVirtualizerVersion( Version type )
@@ -568,78 +598,81 @@ public class VirtualizationConfigurationVmware extends
 		final short major = Integer.valueOf( Util.parseInt( config.get( "virtualHW.version" ), -1 ) ).shortValue();
 		return Version.getInstanceByMajorFromVersions( major, this.getVirtualizer().getSupportedVersions() );
 	}
-
-	public void setEthernetDevType( int cardIndex, VirtualizationConfiguration.EthernetDevType type )
+	
+	class VmwareNicModel extends VirtOptionValue
 	{
-		VmWareEthernetDevTypeMeta ethernetDevTypeMeta = networkCards.get( type );
-		if ( ethernetDevTypeMeta.value != null ) {
-			addFiltered( "ethernet" + cardIndex + ".virtualDev", ethernetDevTypeMeta.value );
-		} else {
-			config.remove( "ethernet" + cardIndex + ".virtualDev" );
-		}
-	}
 
-	public VirtualizationConfiguration.EthernetDevType getEthernetDevType( int cardIndex )
-	{
-		String temp = config.get( "ethernet" + cardIndex + ".virtualDev" );
-		if ( temp != null ) {
-			VmWareEthernetDevTypeMeta ethernetDevTypeMeta = null;
-			for ( VirtualizationConfiguration.EthernetDevType type : VirtualizationConfiguration.EthernetDevType
-					.values() ) {
-				ethernetDevTypeMeta = networkCards.get( type );
-				if ( ethernetDevTypeMeta == null ) {
-					continue;
-				}
-				if ( temp.equals( ethernetDevTypeMeta.value ) ) {
-					return type;
-				}
-			}
+		private final int cardIndex;
+		
+		public VmwareNicModel( int cardIndex, String id, String displayName )
+		{
+			super( id, displayName );
+			this.cardIndex = cardIndex;
 		}
-		return VirtualizationConfiguration.EthernetDevType.AUTO;
-	}
 
-	@Override
-	public void setMaxUsbSpeed( VirtualizationConfiguration.UsbSpeed newSpeed )
-	{
-		if ( newSpeed == null ) {
-			newSpeed = VirtualizationConfiguration.UsbSpeed.NONE;
-		}
-		VmwareUsbSpeed newSpeedMeta = usbSpeeds.get( newSpeed );
-		if ( newSpeedMeta == null ) {
-			throw new RuntimeException( "USB Speed " + newSpeed.name() + " not registered with VMware" );
-		}
-		for ( VmwareUsbSpeed meta : usbSpeeds.values() ) {
-			if ( meta == null )
-				continue; // Should not happen
-			if ( meta.keyName == null )
-				continue; // "No USB" has no config entry, obviously
-			if ( meta.speedNumeric <= newSpeedMeta.speedNumeric ) {
-				// Enable desired speed class, plus all lower ones
-				addFiltered( meta.keyName, "TRUE" );
+		@Override
+		public void apply()
+		{
+			if ( Util.isEmptyString( id ) ) {
+				config.remove( "ethernet" + cardIndex + ".virtualDev" );
 			} else {
-				// This one is higher – remove
-				config.remove( meta.keyName );
+				addFiltered( "ethernet" + cardIndex + ".virtualDev", id );
 			}
 		}
-		// VMware 14+ needs this to use USB 3.0 devices at USB 3.0 ports in VMs configured for < 3.0
-		if ( newSpeedMeta.speedNumeric > 0 && newSpeedMeta.speedNumeric < 3 ) {
-			addFiltered( "usb.mangleUsb3Speed", "TRUE" );
-		}
-	}
 
-	@Override
-	public VirtualizationConfiguration.UsbSpeed getMaxUsbSpeed()
+		@Override
+		public boolean isActive()
+		{
+			String temp = config.get( "ethernet" + cardIndex + ".virtualDev" );
+			if ( temp == null )
+				return Util.isEmptyString( this.id );
+			return temp.equals( this.id );
+		}
+
+	}
+	
+	class VmWareUsbSpeed extends VirtOptionValue
 	{
-		int max = 0;
-		VirtualizationConfiguration.UsbSpeed maxEnum = VirtualizationConfiguration.UsbSpeed.NONE;
-		for ( Entry<VirtualizationConfiguration.UsbSpeed, VmwareUsbSpeed> entry : usbSpeeds.entrySet() ) {
-			VmwareUsbSpeed v = entry.getValue();
-			if ( v.speedNumeric > max && isSetAndTrue( v.keyName ) ) {
-				max = v.speedNumeric;
-				maxEnum = entry.getKey();
+		private final String[] SPEED = { null, "usb", "ehci", "usb_xhci" };
+		private final int speed;
+
+		public VmWareUsbSpeed( int speed, String displayName )
+		{
+			super( Integer.toString( speed ), displayName );
+			this.speed = speed;
+		}
+
+		@Override
+		public void apply()
+		{
+			// XXX TODO This sucks, qnd
+			for ( int i = 1; i < SPEED.length; ++i ) {
+				String key = SPEED[i] + ".present";
+				if ( i <= speed ) {
+					// Enable desired speed class, plus all lower ones
+					addFiltered( key, "TRUE" );
+				} else {
+					config.remove( key );
+				}
+			}
+			// VMware 14+ needs this to use USB 3.0 devices at USB 3.0 ports in VMs configured for < 3.0
+			if ( speed > 0 && speed < 3 ) {
+				addFiltered( "usb.mangleUsb3Speed", "TRUE" );
 			}
 		}
-		return maxEnum;
+
+		@Override
+		public boolean isActive()
+		{
+			int max = 0;
+			for ( int i = 1; i < SPEED.length; ++i ) {
+				if ( isSetAndTrue( SPEED[i] + ".present" ) ) {
+					max = i;
+				}
+			}
+			return speed == max;
+		}
+		
 	}
 
 	@Override
@@ -651,29 +684,35 @@ public class VirtualizationConfigurationVmware extends
 
 	public void registerVirtualHW()
 	{
-		soundCards.put( VirtualizationConfiguration.SoundCardType.NONE, new VmWareSoundCardMeta( false, null ) );
-		soundCards.put( VirtualizationConfiguration.SoundCardType.DEFAULT, new VmWareSoundCardMeta( true, null ) );
-		soundCards.put( VirtualizationConfiguration.SoundCardType.SOUND_BLASTER,
-				new VmWareSoundCardMeta( true, "sb16" ) );
-		soundCards.put( VirtualizationConfiguration.SoundCardType.ES, new VmWareSoundCardMeta( true, "es1371" ) );
-		soundCards.put( VirtualizationConfiguration.SoundCardType.HD_AUDIO, new VmWareSoundCardMeta( true, "hdaudio" ) );
+		List<VirtOptionValue> list;
+		list = new ArrayList<>();
+		list.add( new VmWareSoundCardModelNone( SoundCard.NONE ) );
+		list.add( new VmWareSoundCardModel( "", SoundCard.DEFAULT ) );
+		list.add( new VmWareSoundCardModel( "sb16", SoundCard.SOUND_BLASTER ) );
+		list.add( new VmWareSoundCardModel( "es1371", SoundCard.ES ) );
+		list.add( new VmWareSoundCardModel( "hdaudio", SoundCard.HD_AUDIO ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.SOUND_CARD_MODEL, list ) );
 
-		ddacc.put( VirtualizationConfiguration.DDAcceleration.OFF, new VmWareDDAccelMeta( false ) );
-		ddacc.put( VirtualizationConfiguration.DDAcceleration.ON, new VmWareDDAccelMeta( true ) );
+		list = new ArrayList<>();
+		list.add( new VmWareAccel3D( "FALSE", "2D" ) );
+		list.add( new VmWareAccel3D( "TRUE", "3D" ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.GFX_TYPE, list ) );
+		
+		list = new ArrayList<>();
+		list.add( new VmwareNicModel( 0, "", Ethernet.AUTO ) );
+		list.add( new VmwareNicModel( 0, "vlance", Ethernet.PCNET32 ) );
+		list.add( new VmwareNicModel( 0, "e1000", Ethernet.E1000 ) );
+		list.add( new VmwareNicModel( 0, "e1000e", Ethernet.E1000E ) );
+		list.add( new VmwareNicModel( 0, "vmxnet", Ethernet.VMXNET ) );
+		list.add( new VmwareNicModel( 0, "vmxnet3", Ethernet.VMXNET3 ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.NIC_MODEL, list ) );
 
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.AUTO, new VmWareEthernetDevTypeMeta( null ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNET32,
-				new VmWareEthernetDevTypeMeta( "vlance" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.E1000, new VmWareEthernetDevTypeMeta( "e1000" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.E1000E, new VmWareEthernetDevTypeMeta( "e1000e" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.VMXNET, new VmWareEthernetDevTypeMeta( "vmxnet" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.VMXNET3,
-				new VmWareEthernetDevTypeMeta( "vmxnet3" ) );
-
-		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.NONE, new VmwareUsbSpeed( 0, null ) );
-		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB1_1, new VmwareUsbSpeed( 1, "usb" ) );
-		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB2_0, new VmwareUsbSpeed( 2, "ehci" ) );
-		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB3_0, new VmwareUsbSpeed( 3, "usb_xhci" ) );
+		list = new ArrayList<>();
+		list.add( new VmWareUsbSpeed( 0, Usb.NONE ) );
+		list.add( new VmWareUsbSpeed( 1, Usb.USB1_1 ) );
+		list.add( new VmWareUsbSpeed( 2, Usb.USB2_0 ) );
+		list.add( new VmWareUsbSpeed( 3, Usb.USB3_0 ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.USB_SPEED, list ) );
 	}
 
 	@Override

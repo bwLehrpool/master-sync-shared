@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration;
-import org.openslx.virtualization.configuration.VirtualizationConfiguration.UsbSpeed;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationException;
 import org.openslx.virtualization.configuration.data.ConfigurationDataDozModServerToDozModClient;
 import org.openslx.virtualization.configuration.transformation.TransformationException;
@@ -63,7 +62,7 @@ public class ConfigurationLogicDozModServerToDozModClient
 	 * @param args input arguments for the validation.
 	 * @throws TransformationException validation has failed.
 	 */
-	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?> config,
+	private void validateInputs( VirtualizationConfiguration config,
 			ConfigurationDataDozModServerToDozModClient args )
 			throws TransformationException
 	{
@@ -122,7 +121,7 @@ public class ConfigurationLogicDozModServerToDozModClient
 	}
 
 	@Override
-	public void transform( VirtualizationConfiguration<?, ?, ?, ?> config,
+	public void transform( VirtualizationConfiguration config,
 			ConfigurationDataDozModServerToDozModClient args )
 			throws TransformationException
 	{
@@ -187,11 +186,6 @@ public class ConfigurationLogicDozModServerToDozModClient
 		config.addCdrom( "" );
 		// append second CDROM drive connected to the host's physical drive
 		config.addCdrom( null );
-
-		// set maximum USB speed
-		if ( config.getMaxUsbSpeed() != UsbSpeed.USB3_0 ) {
-			config.setMaxUsbSpeed( UsbSpeed.USB2_0 );
-		}
 
 		// apply settings to edit virtualized system locally
 		try {

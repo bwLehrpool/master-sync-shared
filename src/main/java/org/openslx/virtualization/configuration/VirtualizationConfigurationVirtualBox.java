@@ -5,70 +5,29 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.thrifthelper.TConst;
+import org.openslx.util.Util;
 import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder;
+import org.openslx.virtualization.hardware.VirtOptionValue;
+import org.openslx.virtualization.hardware.ConfigurationGroups;
+import org.openslx.virtualization.hardware.Ethernet;
+import org.openslx.virtualization.hardware.SoundCard;
+import org.openslx.virtualization.hardware.Usb;
 import org.openslx.virtualization.virtualizer.VirtualizerVirtualBox;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-class VBoxSoundCardMeta
-{
-	public final boolean isPresent;
-	public final String value;
-
-	public VBoxSoundCardMeta( boolean present, String val )
-	{
-		isPresent = present;
-		value = val;
-	}
-}
-
-class VBoxDDAccelMeta
-{
-	public final boolean isPresent;
-
-	public VBoxDDAccelMeta( boolean present )
-	{
-		isPresent = present;
-	}
-}
-
-class VBoxEthernetDevTypeMeta
-{
-	public final String value;
-	public final boolean isPresent;
-
-	public VBoxEthernetDevTypeMeta( boolean present, String val )
-	{
-		value = val;
-		isPresent = present;
-	}
-}
-
-class VBoxUsbSpeedMeta
-{
-	public final String value;
-	public final int speed;
-
-	public VBoxUsbSpeedMeta( String value, int speed )
-	{
-		this.value = value;
-		this.speed = speed;
-	}
-}
-
-public class VirtualizationConfigurationVirtualBox
-		extends VirtualizationConfiguration<VBoxSoundCardMeta, VBoxDDAccelMeta, VBoxEthernetDevTypeMeta, VBoxUsbSpeedMeta>
+public class VirtualizationConfigurationVirtualBox extends VirtualizationConfiguration
 {
 	/**
 	 * File name extension for VirtualBox virtualization configuration files..
@@ -349,69 +308,69 @@ public class VirtualizationConfigurationVirtualBox
 	{
 		return config.changeAttribute( "/VirtualBox/Machine/Hardware/CPU", "count", Integer.toString( nrOfCores ) );
 	}
-
-	@Override
-	public void setSoundCard( org.openslx.virtualization.configuration.VirtualizationConfiguration.SoundCardType type )
+	
+	class VBoxSoundCardModel extends VirtOptionValue
 	{
-		VBoxSoundCardMeta sound = soundCards.get( type );
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled",
-				Boolean.toString( sound.isPresent ) );
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "controller", sound.value );
-	}
 
-	@Override
-	public VirtualizationConfiguration.SoundCardType getSoundCard()
-	{
-		// initialize here to type None to avoid all null pointer exceptions thrown for unknown user written sound cards
-		VirtualizationConfiguration.SoundCardType returnsct = VirtualizationConfiguration.SoundCardType.NONE;
-		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/AudioAdapter" ).item( 0 );
-		if ( !x.hasAttribute( "enabled" )
-				|| ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
-			return returnsct;
-		} else {
-			// extra separate case for the non-existing argument}
-			if ( !x.hasAttribute( "controller" ) ) {
-				returnsct = VirtualizationConfiguration.SoundCardType.AC;
-			} else {
-				String controller = x.getAttribute( "controller" );
-				VBoxSoundCardMeta soundMeta = null;
-				for ( VirtualizationConfiguration.SoundCardType type : VirtualizationConfiguration.SoundCardType
-						.values() ) {
-					soundMeta = soundCards.get( type );
-					if ( soundMeta != null ) {
-						if ( controller.equals( soundMeta.value ) ) {
-							returnsct = type;
-						}
-					}
-				}
-			}
+		public VBoxSoundCardModel( String id, String displayName )
+		{
+			super( id, displayName );
 		}
-		return returnsct;
-	}
 
-	@Override
-	public void setDDAcceleration( VirtualizationConfiguration.DDAcceleration type )
-	{
-		VBoxDDAccelMeta accel = ddacc.get( type );
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/Display", "accelerate3D",
-				Boolean.toString( accel.isPresent ) );
-	}
-
-	@Override
-	public VirtualizationConfiguration.DDAcceleration getDDAcceleration()
-	{
-		VirtualizationConfiguration.DDAcceleration returndda = null;
-		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/Display" ).item( 0 );
-		if ( x.hasAttribute( "accelerate3D" ) ) {
-			if ( x.getAttribute( "accelerate3D" ).equals( "true" ) ) {
-				returndda = VirtualizationConfiguration.DDAcceleration.ON;
-			} else {
-				returndda = VirtualizationConfiguration.DDAcceleration.OFF;
+		@Override
+		public void apply()
+		{
+			// XXX I guess this "present" hack will be nicer with enum too
+			if ( Util.isEmptyString( this.id ) ) {
+				config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", "false" );
+				return;
 			}
-		} else {
-			returndda = VirtualizationConfiguration.DDAcceleration.OFF;
+			config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", "true" );
+			config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "controller", this.id );
 		}
-		return returndda;
+
+		@Override
+		public boolean isActive()
+		{
+			Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/AudioAdapter" ).item( 0 );
+			if ( !x.hasAttribute( "enabled" )
+					|| ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
+				return Util.isEmptyString( this.id ); // XXX enum
+			}
+			String val = "AC97";
+			if ( x.hasAttribute( "controller" ) ) {
+				val = x.getAttribute( "controller" );
+			}
+			return val.equals( this.id );
+		}
+		
+	}
+	
+	class VBoxAccel3D extends VirtOptionValue
+	{
+
+		public VBoxAccel3D( String id, String displayName )
+		{
+			super( id, displayName );
+		}
+
+		@Override
+		public void apply()
+		{
+			config.changeAttribute( "/VirtualBox/Machine/Hardware/Display", "accelerate3D", this.id );
+		}
+
+		@Override
+		public boolean isActive()
+		{
+			Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/Display" ).item( 0 );
+			String val = "false";
+			if ( x.hasAttribute( "accelerate3D" ) ) {
+				val = x.getAttribute( "accelerate3D" );
+			}
+			return val.equalsIgnoreCase( this.id );
+		}
+		
 	}
 
 	/**
@@ -434,80 +393,86 @@ public class VirtualizationConfigurationVirtualBox
 		// Virtual Box uses only one virtual hardware version and can't be changed
 		return null;
 	}
-
-	@Override
-	public void setEthernetDevType( int cardIndex, EthernetDevType type )
+	
+	class VBoxNicModel extends VirtOptionValue
 	{
-		String index = "0";
-		VBoxEthernetDevTypeMeta nic = networkCards.get( type );
-		// cardIndex is not used yet...maybe later needed for different network cards
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "enabled",
-				Boolean.toString( nic.isPresent ) );
-		config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "type",
-				nic.value );
-	}
+		
+		private final int cardIndex;
 
-	@Override
-	public VirtualizationConfiguration.EthernetDevType getEthernetDevType( int cardIndex )
-	{
-		VirtualizationConfiguration.EthernetDevType returnedt = VirtualizationConfiguration.EthernetDevType.NONE;
-		Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/Network/Adapter" ).item( 0 );
-		if ( !x.hasAttribute( "enabled" )
-				|| ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equals( "false" ) ) ) {
-			return returnedt;
-		} else {
-			// extra separate case for the non-existing argument}
-			if ( !x.hasAttribute( "type" ) ) {
-				returnedt = VirtualizationConfiguration.EthernetDevType.PCNETFAST3;
-			} else {
-				String temp = x.getAttribute( "type" );
-				VBoxEthernetDevTypeMeta etherMeta = null;
-				for ( VirtualizationConfiguration.EthernetDevType type : VirtualizationConfiguration.EthernetDevType
-						.values() ) {
-					etherMeta = networkCards.get( type );
-					if ( etherMeta != null ) {
-						if ( temp.equals( etherMeta.value ) ) {
-							returnedt = type;
-						}
-					}
-				}
-			}
+		public VBoxNicModel( int cardIndex, String id, String displayName )
+		{
+			super( id, displayName );
+			this.cardIndex = cardIndex;
 		}
-		return returnedt;
+
+		@Override
+		public void apply()
+		{
+			String index = Integer.toString( this.cardIndex );
+			String dev = this.id;
+			boolean present = true;
+			if ( "".equals( this.id ) ) {
+				// none type needs to have a valid value; it takes the value of pcnetcpi2;
+				// if value is left null or empty vm will not start because value is not valid
+				dev = "Am79C970A";
+				present = false;
+			}
+			config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "enabled",
+					Boolean.toString( present ) );
+			config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "type",
+					dev );
+		}
+
+		@Override
+		public boolean isActive()
+		{
+			Element x = (Element)config.findNodes( "/VirtualBox/Machine/Hardware/Network/Adapter" ).item( 0 );
+			if ( !x.hasAttribute( "enabled" )
+					|| ( x.hasAttribute( "enabled" ) && x.getAttribute( "enabled" ).equalsIgnoreCase( "false" ) ) ) {
+				return Util.isEmptyString( this.id );
+			}
+			// Has NIC
+			if ( !x.hasAttribute( "type" ) ) {
+				return "Am79C973".equals( this.id );
+			}
+			return x.getAttribute( "type" ).equals( this.id );
+		}
+		
 	}
 
 	public void registerVirtualHW()
 	{
+		List<VirtOptionValue> list;
 		// none type needs to have a valid value; it takes the value of AC97; if value is left null or empty vm will not start because value is not valid
 		// TODO: Maybe just remove the entire section from the XML? Same for ethernet...
-		soundCards.put( VirtualizationConfiguration.SoundCardType.NONE, new VBoxSoundCardMeta( false, "AC97" ) );
-		soundCards.put( VirtualizationConfiguration.SoundCardType.SOUND_BLASTER, new VBoxSoundCardMeta( true, "SB16" ) );
-		soundCards.put( VirtualizationConfiguration.SoundCardType.HD_AUDIO, new VBoxSoundCardMeta( true, "HDA" ) );
-		soundCards.put( VirtualizationConfiguration.SoundCardType.AC, new VBoxSoundCardMeta( true, "AC97" ) );
+		list = new ArrayList<>();
+		list.add( new VBoxSoundCardModel( "AC97", SoundCard.NONE ) );
+		list.add( new VBoxSoundCardModel( "SB16", SoundCard.SOUND_BLASTER ) );
+		list.add( new VBoxSoundCardModel( "HDA", SoundCard.HD_AUDIO ) );
+		list.add( new VBoxSoundCardModel( "AC97", SoundCard.AC ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.SOUND_CARD_MODEL, list ) );
 
-		ddacc.put( VirtualizationConfiguration.DDAcceleration.OFF, new VBoxDDAccelMeta( false ) );
-		ddacc.put( VirtualizationConfiguration.DDAcceleration.ON, new VBoxDDAccelMeta( true ) );
+		list = new ArrayList<>();
+		list.add( new VBoxAccel3D( "true", "3D" ) );
+		list.add( new VBoxAccel3D( "false", "2D" ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.GFX_TYPE, list ) );
 
-		// none type needs to have a valid value; it takes the value of pcnetcpi2; if value is left null or empty vm will not start because value is not valid
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.NONE,
-				new VBoxEthernetDevTypeMeta( false, "Am79C970A" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETPCI2,
-				new VBoxEthernetDevTypeMeta( true, "Am79C970A" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PCNETFAST3,
-				new VBoxEthernetDevTypeMeta( true, "Am79C973" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000MTD,
-				new VBoxEthernetDevTypeMeta( true, "82540EM" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000TS,
-				new VBoxEthernetDevTypeMeta( true, "82543GC" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PRO1000MTS,
-				new VBoxEthernetDevTypeMeta( true, "82545EM" ) );
-		networkCards.put( VirtualizationConfiguration.EthernetDevType.PARAVIRT,
-				new VBoxEthernetDevTypeMeta( true, "virtio" ) );
+		list = new ArrayList<>();
+		list.add( new VBoxNicModel( 0, "", Ethernet.NONE ) );
+		list.add( new VBoxNicModel( 0, "Am79C970A", Ethernet.PCNETPCI2 ) );
+		list.add( new VBoxNicModel( 0, "Am79C973", Ethernet.PCNETFAST3 ) );
+		list.add( new VBoxNicModel( 0, "82540EM", Ethernet.PRO1000MTD ) );
+		list.add( new VBoxNicModel( 0, "82543GC", Ethernet.PRO1000TS ) );
+		list.add( new VBoxNicModel( 0, "82545EM", Ethernet.PRO1000MTS ) );
+		list.add( new VBoxNicModel( 0, "virtio", Ethernet.PARAVIRT ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.NIC_MODEL, list ) );
 
-		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.NONE, new VBoxUsbSpeedMeta( null, 0 ) );
-		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB1_1, new VBoxUsbSpeedMeta( "OHCI", 1 ) );
-		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB2_0, new VBoxUsbSpeedMeta( "EHCI", 2 ) );
-		usbSpeeds.put( VirtualizationConfiguration.UsbSpeed.USB3_0, new VBoxUsbSpeedMeta( "XHCI", 3 ) );
+		list = new ArrayList<>();
+		list.add( new VBoxUsbSpeed( null, Usb.NONE ) );
+		list.add( new VBoxUsbSpeed( "OHCI", Usb.USB1_1 ) );
+		list.add( new VBoxUsbSpeed( "EHCI", Usb.USB2_0 ) );
+		list.add( new VBoxUsbSpeed( "XHCI", Usb.USB3_0 ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.USB_SPEED, list ) );
 	}
 
 	@Override
@@ -540,51 +505,56 @@ public class VirtualizationConfigurationVirtualBox
 
 		this.removeEnhancedNetworkAdapters();
 	}
-
-	@Override
-	public void setMaxUsbSpeed( VirtualizationConfiguration.UsbSpeed speed )
+	
+	class VBoxUsbSpeed extends VirtOptionValue
 	{
-		// Wipe existing ones
-		config.removeNodes( "/VirtualBox/Machine/Hardware", "USB" );
-		if ( speed == null || speed == VirtualizationConfiguration.UsbSpeed.NONE ) {
-			// Add marker so we know it's not an old config and we really want no USB
-			Element node = config.createNodeRecursive( "/VirtualBox/OpenSLX/USB" );
-			if ( node != null ) {
-				node.setAttribute( "disabled", "true" );
-			}
-			return; // NO USB
-		}
-		Element node = config.createNodeRecursive( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller" );
-		VBoxUsbSpeedMeta vboxSpeed = usbSpeeds.get( speed );
-		node.setAttribute( "type", vboxSpeed.value );
-		node.setAttribute( "name", vboxSpeed.value );
-		if ( speed == UsbSpeed.USB2_0 ) {
-			// If EHCI (2.0) is selected, VBox adds an OHCI controller too...
-			node.setAttribute( "type", "OHCI" );
-			node.setAttribute( "name", "OHCI" );
-		}
-	}
 
-	@Override
-	public VirtualizationConfiguration.UsbSpeed getMaxUsbSpeed()
-	{
-		NodeList nodes = config.findNodes( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller/@type" );
-		int maxSpeed = 0;
-		VirtualizationConfiguration.UsbSpeed maxItem = VirtualizationConfiguration.UsbSpeed.NONE;
-		for ( int i = 0; i < nodes.getLength(); ++i ) {
-			if ( nodes.item( i ).getNodeType() != Node.ATTRIBUTE_NODE ) {
-				LOGGER.info( "Not ATTRIBUTE type" );
-				continue;
-			}
-			String type = ( (Attr)nodes.item( i ) ).getValue();
-			for ( Entry<VirtualizationConfiguration.UsbSpeed, VBoxUsbSpeedMeta> s : usbSpeeds.entrySet() ) {
-				if ( s.getValue().speed > maxSpeed && type.equals( s.getValue().value ) ) {
-					maxSpeed = s.getValue().speed;
-					maxItem = s.getKey();
+		public VBoxUsbSpeed( String id, String displayName )
+		{
+			super( id, displayName );
+		}
+
+		@Override
+		public void apply()
+		{
+			// Wipe existing ones
+			config.removeNodes( "/VirtualBox/Machine/Hardware", "USB" );
+			if ( Util.isEmptyString( this.id ) ) {
+				// Add marker so we know it's not an old config and we really want no USB
+				Element node = config.createNodeRecursive( "/VirtualBox/OpenSLX/USB" );
+				if ( node != null ) {
+					node.setAttribute( "disabled", "true" );
 				}
+				return; // NO USB
+			}
+			Element node = config.createNodeRecursive( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller" );
+			node.setAttribute( "type", this.id );
+			node.setAttribute( "name", this.id );
+			if ( this.id.equals( "EHCI" ) ) { // XXX "mechanically" ported, could make a special class for this special case
+				// If EHCI (2.0) is selected, VBox adds an OHCI controller too...
+				// XXX Isn't this broken anyways, it's working on the same node as above *facepalm*
+				node.setAttribute( "type", "OHCI" );
+				node.setAttribute( "name", "OHCI" );
 			}
 		}
-		return maxItem;
+
+		@Override
+		public boolean isActive()
+		{
+			// XXX not technically correct wrt max speed
+			NodeList nodes = config.findNodes( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller/@type" );
+			for ( int i = 0; i < nodes.getLength(); ++i ) {
+				if ( nodes.item( i ).getNodeType() != Node.ATTRIBUTE_NODE ) {
+					LOGGER.info( "Not ATTRIBUTE type" );
+					continue;
+				}
+				String type = ( (Attr)nodes.item( i ) ).getValue();
+				if ( type.equals( this.id ) )
+					return true;
+			}
+			return Util.isEmptyString( this.id );
+		}
+
 	}
 
 	@Override

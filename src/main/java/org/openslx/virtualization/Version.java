@@ -5,6 +5,8 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.openslx.util.Util;
+
 /**
  * Represents a version information.
  * 
@@ -28,7 +30,7 @@ public class Version implements Comparable<Version>
 	 *   5.10.13
 	 * </pre>
 	 */
-	private static final String VERSION_NUMBER_REGEX = "^(\\d+)(?:\\.(\\d+)(?:\\.(\\d+))?)?$";
+	private static final Pattern VERSION_NUMBER_REGEX = Pattern.compile( "^(\\d+)(?:\\.(\\d+)(?:\\.(\\d+))?)?$" );
 
 	/**
 	 * Major number of the version.
@@ -236,11 +238,10 @@ public class Version implements Comparable<Version>
 	{
 		final Version parsedVersion;
 
-		if ( version == null || version.isEmpty() ) {
+		if ( Util.isEmptyString( version ) ) {
 			parsedVersion = null;
 		} else {
-			final Pattern versionPattern = Pattern.compile( Version.VERSION_NUMBER_REGEX );
-			final Matcher versionMatcher = versionPattern.matcher( version );
+			final Matcher versionMatcher = VERSION_NUMBER_REGEX.matcher( version );
 
 			if ( versionMatcher.find() ) {
 				final String majorStr = versionMatcher.group( 1 );
@@ -262,7 +263,7 @@ public class Version implements Comparable<Version>
 	@Override
 	public String toString()
 	{
-		if ( this.getName() == null || this.getName().isEmpty() ) {
+		if ( Util.isEmptyString( this.getName() ) ) {
 			return String.format( "%d.%d", this.getMajor(), this.getMinor() );
 		} else {
 			return String.format( "%d.%d %s", this.getMajor(), this.getMinor(), this.getName() );

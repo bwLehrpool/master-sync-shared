@@ -2,7 +2,6 @@ package org.openslx.virtualization.configuration.logic;
 
 import org.openslx.virtualization.configuration.VirtualizationConfiguration;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.EtherType;
-import org.openslx.virtualization.configuration.VirtualizationConfiguration.UsbSpeed;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationException;
 import org.openslx.virtualization.configuration.data.ConfigurationDataDozModServerToStatelessClient;
 import org.openslx.virtualization.configuration.transformation.TransformationException;
@@ -54,7 +53,7 @@ public class ConfigurationLogicDozModServerToStatelessClient
 	 * @param args input arguments for the validation.
 	 * @throws TransformationException validation has failed.
 	 */
-	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?> config,
+	private void validateInputs( VirtualizationConfiguration config,
 			ConfigurationDataDozModServerToStatelessClient args )
 			throws TransformationException
 	{
@@ -66,7 +65,7 @@ public class ConfigurationLogicDozModServerToStatelessClient
 	}
 
 	@Override
-	public void transform( VirtualizationConfiguration<?, ?, ?, ?> config,
+	public void transform( VirtualizationConfiguration config,
 			ConfigurationDataDozModServerToStatelessClient args )
 			throws TransformationException
 	{
@@ -103,7 +102,8 @@ public class ConfigurationLogicDozModServerToStatelessClient
 
 		// disable USB if necessary
 		if ( !args.hasUsbAccess() ) {
-			config.setMaxUsbSpeed( UsbSpeed.NONE );
+			// XXX TODO find best way to do this without explicit method
+			// config.setMaxUsbSpeed( UsbSpeed.NONE );
 		}
 	}
 }

@@ -47,7 +47,7 @@ public class ConfigurationLogicDozModClientToDozModServer
 	 * @param args input arguments for the validation.
 	 * @throws TransformationException validation has failed.
 	 */
-	private void validateInputs( VirtualizationConfiguration<?, ?, ?, ?> config,
+	private void validateInputs( VirtualizationConfiguration config,
 			ConfigurationDataDozModClientToDozModServer args )
 			throws TransformationException
 	{
@@ -59,7 +59,7 @@ public class ConfigurationLogicDozModClientToDozModServer
 	}
 
 	@Override
-	public void transform( VirtualizationConfiguration<?, ?, ?, ?> config,
+	public void transform( VirtualizationConfiguration config,
 			ConfigurationDataDozModClientToDozModServer args )
 			throws TransformationException
 	{

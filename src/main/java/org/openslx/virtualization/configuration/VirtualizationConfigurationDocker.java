@@ -1,33 +1,17 @@
 package org.openslx.virtualization.configuration;
 
-import org.apache.log4j.Logger;
-import org.openslx.bwlp.thrift.iface.OperatingSystem;
-import org.openslx.virtualization.Version;
-import org.openslx.virtualization.virtualizer.VirtualizerDocker;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-class DockerSoundCardMeta
-{
-}
+import org.apache.log4j.Logger;
+import org.openslx.bwlp.thrift.iface.OperatingSystem;
+import org.openslx.virtualization.Version;
+import org.openslx.virtualization.virtualizer.VirtualizerDocker;
 
-class DockerDDAccelMeta
-{
-}
-
-class DockerEthernetDevTypeMeta
-{
-}
-
-class DockerUsbSpeedMeta
-{
-}
-
-public class VirtualizationConfigurationDocker extends VirtualizationConfiguration<DockerSoundCardMeta, DockerDDAccelMeta, DockerEthernetDevTypeMeta, DockerUsbSpeedMeta> {
+public class VirtualizationConfigurationDocker extends VirtualizationConfiguration {
 
 	/**
 	 * File name extension for Docker virtualization configuration files.
@@ -145,44 +129,13 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 		return true;
 	}
 
-	@Override public void setSoundCard(SoundCardType type) {
-
+	@Override public void setVirtualizerVersion( Version type )
+	{
 	}
 
-	@Override public SoundCardType getSoundCard() {
-		return SoundCardType.NONE;
-	}
-
-	@Override public void setDDAcceleration(DDAcceleration type) {
-
-	}
-
-	@Override public DDAcceleration getDDAcceleration() {
-		return DDAcceleration.OFF;
-	}
-
-	@Override public void setVirtualizerVersion(Version type) {
-
-	}
-
-	@Override public Version getVirtualizerVersion() {
+	@Override public Version getVirtualizerVersion()
+	{
 		return null;
-	}
-
-	@Override public void setEthernetDevType(int cardIndex, EthernetDevType type) {
-
-	}
-
-	@Override public EthernetDevType getEthernetDevType(int cardIndex) {
-		return EthernetDevType.NONE;
-	}
-
-	@Override public void setMaxUsbSpeed(UsbSpeed speed) {
-
-	}
-
-	@Override public UsbSpeed getMaxUsbSpeed() {
-		return UsbSpeed.NONE;
 	}
 
 	@Override public byte[] getConfigurationAsByteArray() {
@@ -210,4 +163,5 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	public void validate() throws VirtualizationConfigurationException
 	{
 	}
+
 }

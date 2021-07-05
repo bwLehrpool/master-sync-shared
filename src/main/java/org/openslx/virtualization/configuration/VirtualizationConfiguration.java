@@ -5,95 +5,25 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.virtualization.Version;
+import org.openslx.virtualization.hardware.VirtOptionValue;
+import org.openslx.virtualization.hardware.ConfigurationGroups;
 import org.openslx.virtualization.virtualizer.Virtualizer;
 
 /**
  * Describes a configured virtual machine. This class is parsed from a machine
  * description, like a *.vmx for VMware machines.
  */
-public abstract class VirtualizationConfiguration<T, U, W, X>
+public abstract class VirtualizationConfiguration
 {
 	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfiguration.class );
 
-	/*
-	 * Helper types
-	 */
-	protected Map<SoundCardType, T> soundCards = new HashMap<>();
-	protected Map<DDAcceleration, U> ddacc = new HashMap<>();
-	protected Map<EthernetDevType, W> networkCards = new HashMap<>();
-	protected Map<UsbSpeed, X> usbSpeeds = new HashMap<>();
-
 	private final Virtualizer virtualizer;
 
-	/**
-	 * Virtual sound cards types
-	 */
-	public static enum SoundCardType
-	{
-		NONE( "None" ), DEFAULT( "(default)" ), SOUND_BLASTER( "Sound Blaster 16" ), ES( "ES 1371" ), HD_AUDIO(
-				"Intel Integrated HD Audio" ), AC( "Intel ICH Audio Codec 97" );
-
-		public final String displayName;
-
-		private SoundCardType( String dName )
-		{
-			this.displayName = dName;
-		}
-	}
-
-	/**
-	 * 3D acceleration types
-	 */
-	public static enum DDAcceleration
-	{
-		OFF( "Off" ), ON( "On" );
-
-		public final String displayName;
-
-		private DDAcceleration( String dName )
-		{
-			this.displayName = dName;
-		}
-	}
-
-	/**
-	 * Virtual network cards
-	 */
-	public static enum EthernetDevType
-	{
-		AUTO( "(default)" ), PCNET32( "AMD PCnet32" ), E1000( "Intel E1000 (PCI)" ), E1000E(
-				"Intel E1000e (PCI-Express)" ), VMXNET( "VMXnet" ), VMXNET3( "VMXnet 3" ), PCNETPCI2(
-						"PCnet-PCI II" ), PCNETFAST3( "PCnet-FAST III" ), PRO1000MTD(
-								"Intel PRO/1000 MT Desktop" ), PRO1000TS(
-										"Intel PRO/1000 T Server" ), PRO1000MTS( "Intel PRO/1000 MT Server" ), PARAVIRT(
-												"Paravirtualized Network" ), NONE( "No Network Card" );
-
-		public final String displayName;
-
-		private EthernetDevType( String dName )
-		{
-			this.displayName = dName;
-		}
-	}
-
-	public static enum UsbSpeed
-	{
-		NONE( "None" ), USB1_1( "USB 1.1" ), USB2_0( "USB 2.0" ), USB3_0( "USB 3.0" );
-
-		public final String displayName;
-
-		private UsbSpeed( String dName )
-		{
-			this.displayName = dName;
-		}
-	}
 
 	public static enum DriveBusType
 	{
@@ -118,6 +48,30 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	{
 		NAT, BRIDGED, HOST_ONLY;
 	}
+	
+	public static class ConfigurableOptionGroup
+	{
+		public final ConfigurationGroups groupIdentifier;
+
+		public final List<VirtOptionValue> availableOptions;
+
+		public ConfigurableOptionGroup( ConfigurationGroups groupIdentifier, List<VirtOptionValue> availableOptions )
+		{
+			this.groupIdentifier = groupIdentifier;
+			this.availableOptions = Collections.unmodifiableList( availableOptions );
+		}
+		
+		public VirtOptionValue getSelected()
+		{
+			for (VirtOptionValue hw : availableOptions) {
+				if ( hw.isActive() )
+					return hw;
+			}
+			return null;
+		}
+
+	}
+	
 	/*
 	 * Members
 	 */
@@ -131,44 +85,8 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	protected String displayName = null;
 
 	protected boolean isMachineSnapshot;
-
-	/*
-	 * Getters for virtual hardware
-	 */
-	public List<SoundCardType> getSupportedSoundCards()
-	{
-		ArrayList<SoundCardType> availables = new ArrayList<SoundCardType>( soundCards.keySet() );
-		Collections.sort( availables );
-		return availables;
-	}
-
-	public List<DDAcceleration> getSupportedDDAccs()
-	{
-		ArrayList<DDAcceleration> availables = new ArrayList<DDAcceleration>( ddacc.keySet() );
-		Collections.sort( availables );
-		return availables;
-	}
-
-	public List<Version> getSupportedHWVersions()
-	{
-		final List<Version> availables = this.getVirtualizer().getSupportedVersions();
-		Collections.sort( availables );
-		return Collections.unmodifiableList( availables );
-	}
-
-	public List<EthernetDevType> getSupportedEthernetDevices()
-	{
-		ArrayList<EthernetDevType> availables = new ArrayList<EthernetDevType>( networkCards.keySet() );
-		Collections.sort( availables );
-		return availables;
-	}
-
-	public List<UsbSpeed> getSupportedUsbSpeeds()
-	{
-		ArrayList<UsbSpeed> availables = new ArrayList<>( usbSpeeds.keySet() );
-		Collections.sort( availables );
-		return availables;
-	}
+	
+	protected final List<ConfigurableOptionGroup> configurableOptions = new ArrayList<>();
 
 	/**
 	 * Get operating system of this VM.
@@ -217,6 +135,29 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	{
 		return isMachineSnapshot;
 	}
+	
+	private class VersionOption extends VirtOptionValue {
+		
+		private final Version version;
+		
+		public VersionOption( Version version )
+		{
+			super( Integer.toString( version.getVersion() ), version.getName() );
+			this.version = version;
+		}
+		
+		@Override
+		public boolean isActive()
+		{
+			return getVirtualizerVersion().equals( version );
+		}
+		
+		@Override
+		public void apply()
+		{
+			setVirtualizerVersion( version );
+		}
+	}
 
 	/*
 	 * Methods
@@ -234,6 +175,16 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 		}
 
 		// register virtual hardware models for graphical editing of virtual devices (GPU, sound, USB, ...)
+		final List<Version> availables = this.getVirtualizer().getSupportedVersions();
+		//Collections.sort( availables ); // XXX WTF? How did this not break before? It's an unmodifiable collection
+		if ( availables != null ) {
+			// XXX List is null for qemu?
+			List<VirtOptionValue> list = new ArrayList<>();
+			for ( Version ver : availables ) {
+				list.add( new VersionOption( ver ) );
+			}
+			configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.HW_VERSION, list ) );
+		}
 		this.registerVirtualHW();
 	}
 
@@ -245,7 +196,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 * @throws IOException failed to read machine description from specified file.
 	 */
-	public static VirtualizationConfiguration<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, File file )
+	public static VirtualizationConfiguration getInstance( List<OperatingSystem> osList, File file )
 			throws IOException
 	{
 		try {
@@ -281,10 +232,11 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 * @param length length of the byte array given as vmContent
 	 * @return VmMetaData object representing the relevant parts of the given machine description
 	 * @throws IOException failed to read machine description from specified byte stream.
+	 * @throws VirtualizationConfigurationException 
 	 */
-	public static VirtualizationConfiguration<?, ?, ?, ?> getInstance( List<OperatingSystem> osList, byte[] vmContent,
+	public static VirtualizationConfiguration getInstance( List<OperatingSystem> osList, byte[] vmContent,
 			int length )
-			throws IOException
+			throws IOException, VirtualizationConfigurationException
 	{
 		try {
 			return new VirtualizationConfigurationVmware( osList, vmContent, length );
@@ -306,9 +258,7 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.debug( "Not a tar.gz file, for docker container", e );
 		}
-
-		LOGGER.error( "Could not detect any known virtualizer format" );
-		return null;
+		throw new VirtualizationConfigurationException( "Unknown virtualizer config format" );
 	}
 
 	/**
@@ -337,26 +287,10 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	public abstract boolean addCdrom( String image );
 
 	public abstract boolean addCpuCoreCount( int nrOfCores );
-
-	public abstract void setSoundCard( SoundCardType type );
-
-	public abstract SoundCardType getSoundCard();
-
-	public abstract void setDDAcceleration( DDAcceleration type );
-
-	public abstract DDAcceleration getDDAcceleration();
-
+	
 	public abstract void setVirtualizerVersion( Version type );
 
 	public abstract Version getVirtualizerVersion();
-
-	public abstract void setEthernetDevType( int cardIndex, EthernetDevType type );
-
-	public abstract EthernetDevType getEthernetDevType( int cardIndex );
-
-	public abstract void setMaxUsbSpeed( UsbSpeed speed );
-
-	public abstract UsbSpeed getMaxUsbSpeed();
 
 	public abstract byte[] getConfigurationAsByteArray();
 
@@ -418,4 +352,12 @@ public abstract class VirtualizationConfiguration<T, U, W, X>
 	 * Function used to register virtual devices.
 	 */
 	public abstract void registerVirtualHW();
+
+	/**
+	 * Get all config options this virtualizer supports, with all available options.
+	 */
+	public List<ConfigurableOptionGroup> getConfigurableOptions()
+	{
+		return Collections.unmodifiableList( configurableOptions );
+	}
 }

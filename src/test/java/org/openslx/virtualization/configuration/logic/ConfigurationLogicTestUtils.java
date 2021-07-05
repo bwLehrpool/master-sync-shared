@@ -38,9 +38,9 @@ public class ConfigurationLogicTestUtils
 	private static final String REGEX_UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 	private static final String REGEX_SOURCE_FILE_PATHS = "(<source.*file=\")(.*)(\".*>)";
 
-	public static VirtualizationConfiguration<?, ?, ?, ?> newVirtualizationConfigurationInstance( File configFile )
+	public static VirtualizationConfiguration newVirtualizationConfigurationInstance( File configFile )
 	{
-		VirtualizationConfiguration<?, ?, ?, ?> config = null;
+		VirtualizationConfiguration config = null;
 
 		try {
 			config = VirtualizationConfiguration.getInstance( ConfigurationLogicTestUtils.STUB_OS_LIST, configFile );

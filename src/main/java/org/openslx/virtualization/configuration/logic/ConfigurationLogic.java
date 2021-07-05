@@ -14,7 +14,7 @@ import org.openslx.virtualization.configuration.transformation.TransformationGen
  * 
  * @param <T> type of configuration data used as input arguments for a transformation.
  */
-public abstract class ConfigurationLogic<T> extends TransformationGeneric<VirtualizationConfiguration<?, ?, ?, ?>, T>
+public abstract class ConfigurationLogic<T> extends TransformationGeneric<VirtualizationConfiguration, T>
 {
 	/**
 	 * Creates a new generic transformation logic for virtualization configurations.
