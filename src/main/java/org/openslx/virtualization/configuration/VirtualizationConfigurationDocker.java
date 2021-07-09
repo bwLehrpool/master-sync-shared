@@ -106,11 +106,11 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 
 	@Override
 	public boolean addEmptyHddTemplate() {
-		return false;
+		return true;
 	}
 
 	@Override public boolean addHddTemplate(File diskImage, String hddMode, String redoDir) {
-		return false;
+		return true;
 	}
 
 	@Override public boolean addHddTemplate(String diskImagePath, String hddMode, String redoDir) {
@@ -118,7 +118,7 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	}
 
 	@Override public boolean addDefaultNat() {
-		return false;
+		return true;
 	}
 
 	@Override public void setOs(String vendorOsId) {
@@ -126,11 +126,11 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	}
 
 	@Override public boolean addDisplayName(String name) {
-		return false;
+		return true;
 	}
 
 	@Override public boolean addRam(int mem) {
-		return false;
+		return true;
 	}
 
 	@Override public void addFloppy(int index, String image, boolean readOnly) {
@@ -138,11 +138,11 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	}
 
 	@Override public boolean addCdrom(String image) {
-		return false;
+		return true;
 	}
 
 	@Override public boolean addCpuCoreCount(int nrOfCores) {
-		return false;
+		return true;
 	}
 
 	@Override public void setSoundCard(SoundCardType type) {
@@ -190,7 +190,7 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	}
 
 	@Override public boolean addEthernet(EtherType type) {
-		return false;
+		return true;
 	}
 
 	@Override public void transformNonPersistent() throws VirtualizationConfigurationException {
