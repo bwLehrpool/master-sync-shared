@@ -355,11 +355,6 @@ public class VirtualizationConfigurationQemu extends
 	@Override
 	public void transformEditable() throws VirtualizationConfigurationException
 	{
-		// removes all specified boot order entries
-		this.vmConfig.removeBootOrder();
-
-		// removes all source networks of all specified network interfaces
-		this.vmConfig.removeInterfaceDevicesSource();
 	}
 
 	@Override
@@ -428,7 +423,9 @@ public class VirtualizationConfigurationQemu extends
 	@Override
 	public boolean addDefaultNat()
 	{
-		return this.addEthernet( EtherType.NAT );
+		// since network interface was not filtered during VM upload,
+		// do not add or configure any network interface here
+		return true;
 	}
 
 	@Override
