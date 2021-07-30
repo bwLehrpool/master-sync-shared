@@ -22,7 +22,6 @@ import org.openslx.libvirt.domain.device.DiskFloppy;
 import org.openslx.libvirt.domain.device.DiskStorage;
 import org.openslx.libvirt.domain.device.FileSystem;
 import org.openslx.libvirt.domain.device.Graphics;
-import org.openslx.libvirt.domain.device.GraphicsSdl;
 import org.openslx.libvirt.domain.device.GraphicsSpice;
 import org.openslx.libvirt.domain.device.GraphicsVnc;
 import org.openslx.libvirt.domain.device.Hostdev;
@@ -1229,16 +1228,6 @@ public class Domain extends LibvirtXmlDocument
 	public Graphics addGraphicsDevice()
 	{
 		return Graphics.class.cast( this.addDevice( new Graphics() ) );
-	}
-
-	/**
-	 * Adds a virtual machine SDL graphics device to the Libvirt domain XML document.
-	 *
-	 * @return reference to the added SDL graphics device if creation was successful.
-	 */
-	public GraphicsSdl addGraphicsSdlDevice()
-	{
-		return GraphicsSdl.class.cast( this.addDevice( new GraphicsSdl() ) );
 	}
 
 	/**

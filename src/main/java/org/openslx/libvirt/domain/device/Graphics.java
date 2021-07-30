@@ -39,10 +39,7 @@ public class Graphics extends Device
 	{
 		Graphics addedGraphics = null;
 
-		if ( graphics instanceof GraphicsSdl ) {
-			xmlNode.setXmlElementAttributeValue( "type", Type.SDL.toString() );
-			addedGraphics = GraphicsSdl.createInstance( xmlNode );
-		} else if ( graphics instanceof GraphicsSpice ) {
+		if ( graphics instanceof GraphicsSpice ) {
 			xmlNode.setXmlElementAttributeValue( "type", Type.SPICE.toString() );
 			addedGraphics = GraphicsSpice.createInstance( xmlNode );
 		} else if ( graphics instanceof GraphicsVnc ) {
@@ -69,9 +66,6 @@ public class Graphics extends Device
 		}
 
 		switch ( type ) {
-		case SDL:
-			deviceGraphics = GraphicsSdl.newInstance( xmlNode );
-			break;
 		case SPICE:
 			deviceGraphics = GraphicsSpice.newInstance( xmlNode );
 			break;
@@ -92,7 +86,6 @@ public class Graphics extends Device
 	enum Type
 	{
 		// @formatter:off
-		SDL  ( "sdl" ),
 		SPICE( "spice" ),
 		VNC  ( "vnc" );
       // @formatter:on
