@@ -76,7 +76,10 @@ public class Hostdev extends Device
 
 		xmlNode.setXmlElementAttributeValue( "mode", "subsystem" );
 
-		if ( hostdev instanceof HostdevPci ) {
+		if ( hostdev instanceof HostdevMdev ) {
+			xmlNode.setXmlElementAttributeValue( "type", Type.MDEV.toString() );
+			addedHostdev = HostdevPci.createInstance( xmlNode );
+		} else if ( hostdev instanceof HostdevPci ) {
 			xmlNode.setXmlElementAttributeValue( "type", Type.PCI.toString() );
 			addedHostdev = HostdevPci.createInstance( xmlNode );
 		} else if ( hostdev instanceof HostdevUsb ) {
@@ -103,6 +106,9 @@ public class Hostdev extends Device
 		}
 
 		switch ( type ) {
+		case MDEV:
+			deviceHostdev = HostdevMdev.newInstance( xmlNode );
+			break;
 		case PCI:
 			deviceHostdev = HostdevPci.newInstance( xmlNode );
 			break;
@@ -123,8 +129,9 @@ public class Hostdev extends Device
 	enum Type
 	{
 		// @formatter:off
-		PCI( "pci" ),
-		USB( "usb" );
+		MDEV( "mdev" ),
+		PCI ( "pci" ),
+		USB ( "usb" );
 		// @formatter:on
 
 		/**

@@ -25,6 +25,7 @@ import org.openslx.libvirt.domain.device.Graphics;
 import org.openslx.libvirt.domain.device.GraphicsSpice;
 import org.openslx.libvirt.domain.device.GraphicsVnc;
 import org.openslx.libvirt.domain.device.Hostdev;
+import org.openslx.libvirt.domain.device.HostdevMdev;
 import org.openslx.libvirt.domain.device.HostdevPci;
 import org.openslx.libvirt.domain.device.HostdevUsb;
 import org.openslx.libvirt.domain.device.Interface;
@@ -922,6 +923,17 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns list of virtual machine mediated hostdev devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine mediated hostdev devices.
+	 */
+	public ArrayList<HostdevMdev> getHostdevMdevDevices()
+	{
+		return Domain.filterDevices( HostdevMdev.class, this.getDevices() );
+	}
+
+	/**
 	 * Returns list of virtual machine PCI hostdev devices specified in the Libvirt domain XML
 	 * document.
 	 * 
@@ -1168,6 +1180,16 @@ public class Domain extends LibvirtXmlDocument
 	public Hostdev addHostdevDevice()
 	{
 		return Hostdev.class.cast( this.addDevice( new Hostdev() ) );
+	}
+
+	/**
+	 * Adds a virtual machine mediated hostdev device to the Libvirt domain XML document.
+	 *
+	 * @return reference to the added mediated hostdev device if creation was successful.
+	 */
+	public HostdevMdev addHostdevMdevDevice()
+	{
+		return HostdevMdev.class.cast( this.addDevice( new HostdevMdev() ) );
 	}
 
 	/**
