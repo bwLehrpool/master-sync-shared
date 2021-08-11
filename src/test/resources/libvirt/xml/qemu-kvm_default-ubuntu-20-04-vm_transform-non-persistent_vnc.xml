@@ -136,7 +136,6 @@
     <input bus="ps2" type="keyboard"/>
     <graphics autoport="yes" type="vnc">
       <listen type="address"/>
-      <image compression="off"/>
     </graphics>
     <sound model="ich9">
       <address bus="0x00" domain="0x0000" function="0x0" slot="0x1b" type="pci"/>
