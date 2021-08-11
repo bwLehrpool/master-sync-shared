@@ -140,7 +140,7 @@ public class GraphicsSpice extends Graphics
 	 * @author Manuel Bentele
 	 * @version 1.0
 	 */
-	enum ImageCompression
+	public enum ImageCompression
 	{
 		// @formatter:off
 		AUTO_GLZ( "auto_glz" ),
@@ -198,7 +198,7 @@ public class GraphicsSpice extends Graphics
 	 * @author Manuel Bentele
 	 * @version 1.0
 	 */
-	enum StreamingMode
+	public enum StreamingMode
 	{
 		// @formatter:off
 		ALL   ( "all" ),

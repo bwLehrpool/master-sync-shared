@@ -104,7 +104,7 @@ public class Graphics extends Device
 	 * @author Manuel Bentele
 	 * @version 1.0
 	 */
-	enum ListenType
+	public enum ListenType
 	{
 		// @formatter:off
 		NONE   ( "none" ),
