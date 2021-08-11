@@ -32,7 +32,7 @@ public class GraphicsSpice extends Graphics
 	/**
 	 * Returns the state whether OpenGL hardware acceleration is enabled or not.
 	 * 
-	 * @return tate whether OpenGL hardware acceleration is enabled or not.
+	 * @return state whether OpenGL hardware acceleration is enabled or not.
 	 */
 	public boolean isOpenGlEnabled()
 	{
@@ -47,6 +47,68 @@ public class GraphicsSpice extends Graphics
 	public void setOpenGl( boolean enabled )
 	{
 		this.setXmlElementAttributeValueYesNo( "gl", "enable", enabled );
+	}
+
+	/**
+	 * Returns the image compression type.
+	 * 
+	 * @return image compression type.
+	 */
+	public ImageCompression getImageCompression()
+	{
+		final String imageCompression = this.getXmlElementAttributeValue( "image", "compression" );
+		return ImageCompression.fromString( imageCompression );
+	}
+
+	/**
+	 * Sets the image compression type.
+	 * 
+	 * @param type image compression type.
+	 */
+	public void setImageCompression( ImageCompression type )
+	{
+		this.setXmlElementAttributeValue( "image", "compression", type.toString() );
+	}
+
+	/**
+	 * Checks if audio playback compression is enabled or not.
+	 * 
+	 * @return state whether audio playback compression is enabled or not.
+	 */
+	public boolean isPlaybackCompressionOn()
+	{
+		return this.getXmlElementAttributeValueAsBool( "playback", "compression" );
+	}
+
+	/**
+	 * Sets the state whether audio playback compression is enabled or not.
+	 * 
+	 * @param enabled state whether audio playback compression is enabled or not.
+	 */
+	public void setPlaybackCompression( boolean enabled )
+	{
+		this.setXmlElementAttributeValueOnOff( "playback", "compression", enabled );
+	}
+
+	/**
+	 * Returns the streaming mode.
+	 * 
+	 * @return streaming mode type.
+	 */
+	public StreamingMode getStreamingMode()
+	{
+		final String streamingMode = this.getXmlElementAttributeValue( "streaming", "mode" );
+		return StreamingMode.fromString( streamingMode );
+	}
+
+	/**
+	 * Sets the streaming mode.
+	 * 
+	 * @param type streaming mode type.
+	 */
+	public void setStreamingMode( StreamingMode type )
+	{
+		this.setXmlElementAttributeValue( "streaming", "mode", type.toString() );
 	}
 
 	/**
@@ -70,5 +132,118 @@ public class GraphicsSpice extends Graphics
 	public static GraphicsSpice newInstance( LibvirtXmlNode xmlNode )
 	{
 		return new GraphicsSpice( xmlNode );
+	}
+
+	/**
+	 * Image compression type of graphics device.
+	 * 
+	 * @author Manuel Bentele
+	 * @version 1.0
+	 */
+	enum ImageCompression
+	{
+		// @formatter:off
+		AUTO_GLZ( "auto_glz" ),
+		AUTO_LZ ( "auto_lz" ),
+		QUIC    ( "quic" ),
+		GLZ     ( "glz" ),
+		LZ      ( "lz" ),
+		OFF     ( "off" );
+      // @formatter:on
+
+		/**
+		 * Name of graphics device image compression type.
+		 */
+		private String type = null;
+
+		/**
+		 * Creates graphics device image compression type.
+		 * 
+		 * @param type valid name of the graphics device image compression type in a Libvirt domain
+		 *           XML document.
+		 */
+		ImageCompression( String type )
+		{
+			this.type = type;
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.type;
+		}
+
+		/**
+		 * Creates graphics device image compression type from its name with error check.
+		 * 
+		 * @param type name of the graphics device image compression type in a Libvirt domain XML
+		 *           document.
+		 * @return valid graphics device image compression type.
+		 */
+		public static ImageCompression fromString( String type )
+		{
+			for ( ImageCompression t : ImageCompression.values() ) {
+				if ( t.type.equalsIgnoreCase( type ) ) {
+					return t;
+				}
+			}
+
+			return null;
+		}
+	}
+
+	/**
+	 * Streaming mode type of graphics device.
+	 * 
+	 * @author Manuel Bentele
+	 * @version 1.0
+	 */
+	enum StreamingMode
+	{
+		// @formatter:off
+		ALL   ( "all" ),
+		FILTER( "filter" ),
+		OFF   ( "off" );
+      // @formatter:on
+
+		/**
+		 * Name of graphics device image compression type.
+		 */
+		private String type = null;
+
+		/**
+		 * Creates graphics device streaming mode type.
+		 * 
+		 * @param type valid name of the graphics device streaming mode type in a Libvirt domain XML
+		 *           document.
+		 */
+		StreamingMode( String type )
+		{
+			this.type = type;
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.type;
+		}
+
+		/**
+		 * Creates graphics device streaming mode type from its name with error check.
+		 * 
+		 * @param type name of the graphics device streaming mode type in a Libvirt domain XML
+		 *           document.
+		 * @return valid graphics device streaming mode type.
+		 */
+		public static StreamingMode fromString( String type )
+		{
+			for ( StreamingMode t : StreamingMode.values() ) {
+				if ( t.type.equalsIgnoreCase( type ) ) {
+					return t;
+				}
+			}
+
+			return null;
+		}
 	}
 }

@@ -29,6 +29,27 @@ public class Graphics extends Device
 	}
 
 	/**
+	 * Returns the listen type of the graphics device.
+	 * 
+	 * @return listen type of the graphics device.
+	 */
+	public ListenType getListenType()
+	{
+		final String listenType = this.getXmlElementAttributeValue( "listen", "type" );
+		return ListenType.fromString( listenType );
+	}
+
+	/**
+	 * Sets the listen type for the graphics device.
+	 * 
+	 * @param type listen type for the graphics device.
+	 */
+	public void setListenType( ListenType type )
+	{
+		this.setXmlElementAttributeValue( "listen", "type", type.toString() );
+	}
+
+	/**
 	 * Creates a non-existent graphics device as Libvirt XML device element.
 	 * 
 	 * @param graphics graphics device that is created.
@@ -75,6 +96,60 @@ public class Graphics extends Device
 		}
 
 		return deviceGraphics;
+	}
+
+	/**
+	 * Listen type of graphics device.
+	 * 
+	 * @author Manuel Bentele
+	 * @version 1.0
+	 */
+	enum ListenType
+	{
+		// @formatter:off
+		NONE   ( "none" ),
+		ADDRESS( "address" ),
+		NETWORK( "network" ),
+		SOCKET ( "socket" );
+      // @formatter:on
+
+		/**
+		 * Name of graphics device listen type.
+		 */
+		private String type = null;
+
+		/**
+		 * Creates graphics device listen type.
+		 * 
+		 * @param type valid name of the graphics device listen type in a Libvirt domain XML document.
+		 */
+		ListenType( String type )
+		{
+			this.type = type;
+		}
+
+		@Override
+		public String toString()
+		{
+			return this.type;
+		}
+
+		/**
+		 * Creates graphics device listen type from its name with error check.
+		 * 
+		 * @param type name of the graphics device listen type in a Libvirt domain XML document.
+		 * @return valid graphics device listen type.
+		 */
+		public static ListenType fromString( String type )
+		{
+			for ( ListenType t : ListenType.values() ) {
+				if ( t.type.equalsIgnoreCase( type ) ) {
+					return t;
+				}
+			}
+
+			return null;
+		}
 	}
 
 	/**
