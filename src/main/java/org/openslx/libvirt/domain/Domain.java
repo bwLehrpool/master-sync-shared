@@ -977,6 +977,28 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns list of virtual machine SPICE graphic devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine SPICE graphic devices.
+	 */
+	public ArrayList<GraphicsSpice> getGraphicSpiceDevices()
+	{
+		return Domain.filterDevices( GraphicsSpice.class, this.getDevices() );
+	}
+
+	/**
+	 * Returns list of virtual machine VNC graphic devices specified in the Libvirt domain XML
+	 * document.
+	 * 
+	 * @return list of virtual machine VNC graphic devices.
+	 */
+	public ArrayList<GraphicsVnc> getGraphicVncDevices()
+	{
+		return Domain.filterDevices( GraphicsVnc.class, this.getDevices() );
+	}
+
+	/**
 	 * Returns list of virtual machine parallel port devices specified in the Libvirt domain XML
 	 * document.
 	 * 
