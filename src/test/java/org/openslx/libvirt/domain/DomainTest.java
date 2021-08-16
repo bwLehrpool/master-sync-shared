@@ -392,4 +392,25 @@ public class DomainTest
 		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getVideoDevices().size() );
 	}
+
+	@Test
+	@DisplayName( "Get all QEMU command line arguments from libvirt XML file" )
+	public void testGetQemuCmdlnArguments()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_qemu-cmdln.xml" );
+		assertEquals( 2, vm.getQemuCmdlnArguments().size() );
+	}
+
+	@Test
+	@DisplayName( "Set QEMU command line arguments in libvirt XML file" )
+	public void testAddQemuCmdlnArguments()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( 0, vm.getQemuCmdlnArguments().size() );
+
+		vm.addQemuCmdlnArgument( "-set" );
+		vm.addQemuCmdlnArgument( "device.hostdev0.x-igd-opregion=on" );
+
+		assertEquals( 2, vm.getQemuCmdlnArguments().size() );
+	}
 }
