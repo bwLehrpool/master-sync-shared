@@ -100,7 +100,7 @@ public class HostdevMdev extends Hostdev implements HostdevAddressableSource<Hos
 	@Override
 	public void setSource( HostdevMdevDeviceAddress source )
 	{
-		this.setXmlElementAttributeValue( "source/address", "domain", source.getDeviceAddressAsString() );
+		this.setXmlElementAttributeValue( "source/address", "uuid", source.getDeviceAddressAsString() );
 	}
 
 	/**
@@ -109,9 +109,9 @@ public class HostdevMdev extends Hostdev implements HostdevAddressableSource<Hos
 	 * @param xmlNode Libvirt XML node of the Libvirt XML device that is created.
 	 * @return created hostdev mediated device instance.
 	 */
-	public static HostdevPci createInstance( LibvirtXmlNode xmlNode )
+	public static HostdevMdev createInstance( LibvirtXmlNode xmlNode )
 	{
-		return HostdevPci.newInstance( xmlNode );
+		return HostdevMdev.newInstance( xmlNode );
 	}
 
 	/**
@@ -121,9 +121,9 @@ public class HostdevMdev extends Hostdev implements HostdevAddressableSource<Hos
 	 * @param xmlNode existing Libvirt XML hostdev mediated device element.
 	 * @return hostdev mediated device instance.
 	 */
-	public static HostdevPci newInstance( LibvirtXmlNode xmlNode )
+	public static HostdevMdev newInstance( LibvirtXmlNode xmlNode )
 	{
-		return new HostdevPci( xmlNode );
+		return new HostdevMdev( xmlNode );
 	}
 
 	/**

@@ -78,7 +78,7 @@ public class Hostdev extends Device
 
 		if ( hostdev instanceof HostdevMdev ) {
 			xmlNode.setXmlElementAttributeValue( "type", Type.MDEV.toString() );
-			addedHostdev = HostdevPci.createInstance( xmlNode );
+			addedHostdev = HostdevMdev.createInstance( xmlNode );
 		} else if ( hostdev instanceof HostdevPci ) {
 			xmlNode.setXmlElementAttributeValue( "type", Type.PCI.toString() );
 			addedHostdev = HostdevPci.createInstance( xmlNode );
