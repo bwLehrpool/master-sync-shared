@@ -407,6 +407,52 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 		return isVCpuSet;
 	}
 
+	class QemuGfxModel extends VirtOptionValue
+	{
+		public QemuGfxModel( Video.Model model, String displayName )
+		{
+			super( model.toString(), displayName );
+		}
+
+		@Override
+		public void apply()
+		{
+			final ArrayList<Video> videoDevices = vmConfig.getVideoDevices();
+
+			if ( videoDevices.isEmpty() ) {
+				// add new video device with disabled acceleration to VM configuration
+				final Video videoDevice = vmConfig.addVideoDevice();
+				videoDevice.setModel( Video.Model.fromString( this.getId() ) );
+				videoDevice.set2DAcceleration( false );
+				videoDevice.set3DAcceleration( false );
+			} else {
+				// change graphics model of existing video devices
+				for ( final Video videoDevice : videoDevices ) {
+					// remove all old model-related XML attributes
+					videoDevice.removeXmlElement( "model" );
+					// set new model
+					videoDevice.setModel( Video.Model.fromString( this.getId() ) );
+				}
+			}
+		}
+
+		@Override
+		public boolean isActive()
+		{
+			final ArrayList<Video> videoDevices = vmConfig.getVideoDevices();
+			boolean isActive = true;
+
+			for ( final Video videoDevice : videoDevices ) {
+				if ( !videoDevice.getModel().toString().equals( this.getId() ) ) {
+					isActive = false;
+					break;
+				}
+			}
+
+			return isActive;
+		}
+	}
+
 	class QemuGfxType extends VirtOptionValue
 	{
 		public QemuGfxType( String id, String displayName )
@@ -766,9 +812,15 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.SOUND_CARD_MODEL, list ) );
 
 		list = new ArrayList<>();
-		// XXX This would greatly benefit from having more meaningful options for qemu instead of on/off
-		list.add( new QemuGfxType( "false", "langsam" ) );
-		list.add( new QemuGfxType( "true", "3D OpenGL" ) );
+		list.add( new QemuGfxModel( Video.Model.VGA, "VGA" ) );
+		list.add( new QemuGfxModel( Video.Model.QXL, "QXL" ) );
+		list.add( new QemuGfxModel( Video.Model.VMVGA, "VMware VGA" ) );
+		list.add( new QemuGfxModel( Video.Model.VIRTIO, "virtio-gpu" ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.GFX_MODEL, list ) );
+
+		list = new ArrayList<>();
+		list.add( new QemuGfxType( "false", "2D" ) );
+		list.add( new QemuGfxType( "true", "3D" ) );
 		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.GFX_TYPE, list ) );
 
 		list = new ArrayList<>();
