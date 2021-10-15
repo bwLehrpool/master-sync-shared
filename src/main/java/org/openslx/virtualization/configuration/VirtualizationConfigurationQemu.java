@@ -642,8 +642,6 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 		public boolean isActive()
 		{
 			ArrayList<ControllerUsb> usbControllerDevices = vmConfig.getUsbControllerDevices();
-			String maxUsbSpeed = null;
-			int maxUsbSpeedNumeric = 0;
 
 			for ( ControllerUsb usbControllerDevice : usbControllerDevices ) {
 				ControllerUsb.Model usbControllerModel = usbControllerDevice.getModel();
