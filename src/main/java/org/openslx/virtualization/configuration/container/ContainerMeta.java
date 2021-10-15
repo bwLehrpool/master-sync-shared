@@ -5,36 +5,16 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * ContainerMeta is used to store container specific information.
- * An object of this class will be serialized with gson to a json file.
+ * ContainerMeta is used to store container specific information. An object of
+ * this class will be serialized with gson to a json file.
  * <p>
- * TODO remove build_context_method
- * no need to distinguish between methods
- * TODO rename build_context_url to build_context
+ * TODO rename build_context_method to container_image_context, requires update
+ * in database(json)
+ * <p>
+ * TODO rename build_context_url to build_context TODO refactoring build_context
+ * is either a dockerfile or a git url with a dockerfile.
  */
 public class ContainerMeta {
-
-	public enum ContainerImageType implements org.apache.thrift.TEnum {
-		LECTURE("Lecture"), BATCH("Batch"), DATA("Data");
-
-		private final String displayLable;
-
-		ContainerImageType(String name) {
-			this.displayLable = name;
-		}
-
-		public boolean equalNames(String other) {
-			return displayLable.equals(other);
-		}
-
-		@Override public String toString() {
-			return this.displayLable;
-		}
-
-		@Override public int getValue() {
-			return this.ordinal();
-		}
-	}
 
 	private int build_context_method;
 	private String image_repo;
@@ -48,7 +28,7 @@ public class ContainerMeta {
 	public ContainerMeta() {
 
 		image_repo = "";
-		build_context_method = ContainerBuildContextMethod.FILE.ordinal();
+		build_context_method = ContainerImageContext.DOCKERFILE.ordinal();
 		build_context_url = "";
 		image_name = "";
 		run_options = "";
@@ -70,11 +50,11 @@ public class ContainerMeta {
 
 	}
 
-	public int getBuildContextMethod() {
+	public int getContainerImageContext() {
 		return build_context_method;
 	}
 
-	public void setBuildContextMethod(int buildContextMethod) {
+	public void setContainerImageContext(int buildContextMethod) {
 		this.build_context_method = buildContextMethod;
 	}
 
@@ -94,12 +74,12 @@ public class ContainerMeta {
 		this.run_options = run_options;
 	}
 
-	public void setRunCommand(String run_command) {
-		this.run_command = run_command;
-	}
-
 	public String getRunCommand() {
 		return this.run_command;
+	}
+
+	public void setRunCommand(String run_command) {
+		this.run_command = run_command;
 	}
 
 	public String getImageName() {
@@ -130,29 +110,57 @@ public class ContainerMeta {
 		if (image_type == null || image_type.length() == 0)
 			return ContainerImageType.LECTURE;
 
-		// turn string representation into enum-var 'LECTURE' -> ContainerImageType.LECTURE
+		// turn string representation into enum-var 'LECTURE' ->
+		// ContainerImageType.LECTURE
 		return ContainerImageType.valueOf(image_type);
 	}
 
 	public void setImageType(ContainerImageType image_type) {
-		// set constant representation of the enum-var e.g. ContainerImageType.LECTURE -> 'LECTURE'
+		// set constant representation of the enum-var e.g. ContainerImageType.LECTURE
+		// -> 'LECTURE'
 		this.image_type = image_type.name();
 	}
 
-	@Override public boolean equals(Object o) {
+	@Override
+	public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
 		ContainerMeta that = (ContainerMeta) o;
-		return Objects.equals(build_context_url, that.build_context_url) && Objects.equals(image_name,
-				that.image_name) && Objects.equals(run_options, that.run_options) && Objects.equals(
-				run_command, that.run_command) && Objects.equals(bind_mount_config, that.bind_mount_config)
+		return Objects.equals(build_context_url, that.build_context_url) && Objects.equals(image_name, that.image_name)
+				&& Objects.equals(run_options, that.run_options) && Objects.equals(run_command, that.run_command)
+				&& Objects.equals(bind_mount_config, that.bind_mount_config)
 				&& Objects.equals(image_repo, that.image_repo) && Objects.equals(image_type, that.image_type);
 	}
 
-	@Override public int hashCode() {
-		return Objects.hash(build_context_url, image_name, run_options, run_command, bind_mount_config,
-				image_repo, image_type);
+	@Override
+	public int hashCode() {
+		return Objects.hash(build_context_url, image_name, run_options, run_command, bind_mount_config, image_repo,
+				image_type);
+	}
+
+	public enum ContainerImageType implements org.apache.thrift.TEnum {
+		LECTURE("Lecture"), BATCH("Batch"), DATA("Data");
+
+		private final String displayLable;
+
+		ContainerImageType(String name) {
+			this.displayLable = name;
+		}
+
+		public boolean equalNames(String other) {
+			return displayLable.equals(other);
+		}
+
+		@Override
+		public String toString() {
+			return this.displayLable;
+		}
+
+		@Override
+		public int getValue() {
+			return this.ordinal();
+		}
 	}
 }

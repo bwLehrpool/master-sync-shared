@@ -19,7 +19,8 @@ import java.util.zip.GZIPOutputStream;
 public class ContainerDefinition {
 
 	//	TODO database needs a refactoring to store container details
-	//  TODO tar.gz of this object is not useful, for smaller dockerfiles it makes the package lager.
+	//  TODO refatoring: tar.gz of this object is not useful, for smaller dockerfiles it makes the package lager.
+	//		 remove the containerRecipe, ContainerMeta holds in build_context the dockerfile.
 
 	protected static final Logger LOGGER = Logger.getLogger(ContainerDefinition.class);
 
@@ -190,8 +191,8 @@ public class ContainerDefinition {
 		}
 	}
 
-	public ContainerBuildContextMethod getBuildContextMethod() {
-		return ContainerBuildContextMethod.fromInt(containerMeta.getBuildContextMethod());
+	public ContainerImageContext getContainerImageContext() {
+		return ContainerImageContext.fromInt(containerMeta.getContainerImageContext());
 	}
 
 	@Override public boolean equals(Object o) {
