@@ -406,10 +406,9 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		return isVCpuSet;
 	}
-	
+
 	class QemuGfxType extends VirtOptionValue
 	{
-
 		public QemuGfxType( String id, String displayName )
 		{
 			super( id, displayName );
@@ -497,7 +496,6 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 				return this.id.equals( "false" );
 			}
 		}
-		
 	}
 
 	@Override
@@ -535,7 +533,6 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 	class QemuNicModel extends VirtOptionValue
 	{
-		
 		private final int cardIndex;
 
 		public QemuNicModel( int cardIndex, Interface.Model model, String displayName )
@@ -574,10 +571,9 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 			return networkDeviceModel.toString().equals( this.id ); // XXX: enum would allow simple ==
 		}
 	}
-	
+
 	class QemuSoundCardModel extends VirtOptionValue
 	{
-
 		public QemuSoundCardModel( Sound.Model id, String displayName )
 		{
 			super( id.toString(), displayName );
@@ -614,12 +610,11 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 			Sound.Model soundDeviceModel = soundDevices.get( 0 ).getModel();
 			return soundDeviceModel != null && soundDeviceModel.toString().equals( this.id );
 		}
-		
+
 	}
-	
+
 	class QemuUsbSpeed extends VirtOptionValue
 	{
-
 		public QemuUsbSpeed( ControllerUsb.Model id, String displayName )
 		{
 			super( id.toString(), displayName );
@@ -662,7 +657,6 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 			return false;
 		}
-		
 	}
 
 	@Override
