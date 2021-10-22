@@ -505,6 +505,26 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns OS loader defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS loader of the virtual machine.
+	 */
+	public String getOsLoader()
+	{
+		return this.getRootXmlNode().getXmlElementValue( "os/loader" );
+	}
+
+	/**
+	 * Set OS loader in the Libvirt domain XML document.
+	 * 
+	 * @param loader OS loader for the virtual machine.
+	 */
+	public void setOsLoader( String loader )
+	{
+		this.getRootXmlNode().setXmlElementValue( "os/loader", loader );
+	}
+
+	/**
 	 * Operating system types specifiable for a virtual machine in the Libvirt domain XML document.
 	 * 
 	 * @author Manuel Bentele
