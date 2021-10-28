@@ -19,8 +19,8 @@ import java.util.zip.GZIPOutputStream;
 public class ContainerDefinition {
 
 	//	TODO database needs a refactoring to store container details
-	//  TODO tar.gz of this object is not useful, for smaller dockerfiles it makes the package lager.
-
+	//  TODO refatoring: tar.gz of this object is not useful, for smaller dockerfiles it makes the package lager.
+	//		 remove the containerRecipe, ContainerMeta holds in build_context the dockerfile.
 
 	protected static final Logger LOGGER = Logger.getLogger(ContainerDefinition.class);
 
@@ -50,45 +50,6 @@ public class ContainerDefinition {
 		containerRecipe = String.valueOf(containerDef.getContainerRecipe());
 		containerMeta = new ContainerMeta(containerDef.getContainerMeta());
 	}
-
-	public String getContainerRecipe() {
-		return containerRecipe;
-	}
-
-	public void setContainerRecipe(String containerRecipe) {
-		this.containerRecipe = containerRecipe;
-	}
-
-	public void setContainerRecipe(File containerRecipeFile) {
-		this.containerRecipe = readContainerRecipe(containerRecipeFile);
-	}
-
-	public void setContainerRecipe(byte[] rawContainerRecipe) {
-		this.containerRecipe = new String(rawContainerRecipe, StandardCharsets.UTF_8);
-	}
-
-	public void setContainerMeta(byte[] containerMeta) {
-		Gson gson = new GsonBuilder().create();
-		this.containerMeta = gson.fromJson(new JsonReader(
-						new InputStreamReader(new ByteArrayInputStream(containerMeta), StandardCharsets.UTF_8)),
-				ContainerMeta.class);
-	}
-
-	public ContainerMeta getContainerMeta() {
-		return containerMeta;
-	}
-
-//	public VirtualizationConfigurationDocker createVirtualizationConfig() {
-//		byte[] rawContainerRecipe = toByteBuffer().array();
-//		try {
-//			return new VirtualizationConfigurationDocker(MetaDataCache.getOperatingSystems(), rawContainerRecipe,
-//					rawContainerRecipe.length);
-//		} catch (VirtualizationConfigurationException e) {
-//			e.printStackTrace();
-//			LOGGER.error("Could not create ContainerMetaDataDummy");
-//		}
-//		return null;
-//	}
 
 	/**
 	 * Utility function to create a {@link ContainerDefinition} object for a byte array downloaded from the server.
@@ -127,6 +88,33 @@ public class ContainerDefinition {
 		}
 
 		return containerDef;
+	}
+
+	public String getContainerRecipe() {
+		return containerRecipe;
+	}
+
+	public void setContainerRecipe(String containerRecipe) {
+		this.containerRecipe = containerRecipe;
+	}
+
+	public void setContainerRecipe(File containerRecipeFile) {
+		this.containerRecipe = readContainerRecipe(containerRecipeFile);
+	}
+
+	public void setContainerRecipe(byte[] rawContainerRecipe) {
+		this.containerRecipe = new String(rawContainerRecipe, StandardCharsets.UTF_8);
+	}
+
+	public ContainerMeta getContainerMeta() {
+		return containerMeta;
+	}
+
+	public void setContainerMeta(byte[] containerMeta) {
+		Gson gson = new GsonBuilder().create();
+		this.containerMeta = gson.fromJson(new JsonReader(
+						new InputStreamReader(new ByteArrayInputStream(containerMeta), StandardCharsets.UTF_8)),
+				ContainerMeta.class);
 	}
 
 	/**
@@ -172,7 +160,7 @@ public class ContainerDefinition {
 
 			// replace windows by unix EOL
 			recipe = rawRecipe.replaceAll("\\r\\n", "\n");
-			
+
 			bis.close();
 
 		} catch (IOException e) {
@@ -187,10 +175,7 @@ public class ContainerDefinition {
 	 * @param destDir destination directory for containerRecipe and containerMeta.
 	 */
 	public void saveLocal(File destDir) {
-
 		writeFile(destDir, containerRecipe, CONTAINER_FILE);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		writeFile(destDir, gson.toJson(containerMeta), CONTAINER_META_FILE);
 	}
 
 	private void writeFile(File destDir, String fileContent, String filename) {
@@ -206,8 +191,8 @@ public class ContainerDefinition {
 		}
 	}
 
-	public ContainerBuildContextMethod getBuildContextMethod() {
-		return ContainerBuildContextMethod.fromInt(containerMeta.getBuildContextMethod());
+	public ContainerImageContext getContainerImageContext() {
+		return ContainerImageContext.fromInt(containerMeta.getContainerImageContext());
 	}
 
 	@Override public boolean equals(Object o) {
