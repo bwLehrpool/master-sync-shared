@@ -525,6 +525,26 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns OS Nvram defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS Nvram of the virtual machine.
+	 */
+	public String getOsNvram()
+	{
+		return this.getRootXmlNode().getXmlElementValue( "os/nvram" );
+	}
+
+	/**
+	 * Set OS Nvram in the Libvirt domain XML document.
+	 * 
+	 * @param nvram OS Nvram for the virtual machine.
+	 */
+	public void setOsNvram( String nvram )
+	{
+		this.getRootXmlNode().setXmlElementValue( "os/nvram", nvram );
+	}
+
+	/**
 	 * Operating system types specifiable for a virtual machine in the Libvirt domain XML document.
 	 * 
 	 * @author Manuel Bentele
@@ -1473,6 +1493,18 @@ public class Domain extends LibvirtXmlDocument
 	{
 		for ( Disk diskDevice : this.getDiskDevices() ) {
 			diskDevice.removeStorage();
+		}
+	}
+
+	/**
+	 * Removes specified Nvram file in the Libvirt domain XML document.
+	 */
+	public void removeOsNvram()
+	{
+		final Node nvramElement = this.getRootXmlNode().getXmlElement( "os/nvram" );
+
+		if ( nvramElement != null ) {
+			nvramElement.getParentNode().removeChild( nvramElement );
 		}
 	}
 

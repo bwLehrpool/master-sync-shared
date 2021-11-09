@@ -794,6 +794,9 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 	{
 		// removes all referenced storage files of all specified CDROMs, Floppy drives and HDDs
 		this.vmConfig.removeDiskDevicesStorage();
+
+		// remove specified NVRAM file of OS loader (firmware)
+		this.vmConfig.removeOsNvram();
 	}
 
 	@Override
