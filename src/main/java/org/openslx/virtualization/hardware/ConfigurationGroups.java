@@ -6,6 +6,7 @@ public enum ConfigurationGroups
 	NIC_MODEL( "E0VirtDev" ), 
 	USB_SPEED( "maxUSBSpeed" ), 
 	SOUND_CARD_MODEL( "sound" ), 
+	GFX_MODEL( "graphics" ), 
 	GFX_TYPE( "3DAcceleration" ), 
 	HW_VERSION( "HWVersion" );
 

@@ -1,5 +1,8 @@
 package org.openslx.libvirt.domain.device;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.openslx.libvirt.xml.LibvirtXmlNode;
 
 /**
@@ -47,6 +50,66 @@ public class Graphics extends Device
 	public void setListenType( ListenType type )
 	{
 		this.setXmlElementAttributeValue( "listen", "type", type.toString() );
+	}
+
+	/**
+	 * Returns the listen address of the graphics device.
+	 * 
+	 * @return listen address of the graphics device.
+	 */
+	public InetAddress getListenAddress()
+	{
+		InetAddress parsedListenAddress = null;
+
+		if ( this.getListenType() == ListenType.ADDRESS ) {
+			// only read listen address, if address listen type is set
+			final String rawListenAddress = this.getXmlElementAttributeValue( "listen", "address" );
+
+			try {
+				parsedListenAddress = InetAddress.getByName( rawListenAddress );
+			} catch ( UnknownHostException e ) {
+				parsedListenAddress = null;
+			}
+		}
+
+		return parsedListenAddress;
+	}
+
+	/**
+	 * Sets the listen address for the graphics device.
+	 * 
+	 * @param listenAddress listen address for the graphics device.
+	 */
+	public void setListenAddress( InetAddress listenAddress )
+	{
+		if ( this.getListenType() == ListenType.ADDRESS && listenAddress != null ) {
+			// only set listen address, if address listen type is set
+			this.setXmlElementAttributeValue( "listen", "address", listenAddress.getHostAddress() );
+		}
+	}
+
+	/**
+	 * Returns the listen port of the graphics device.
+	 * 
+	 * @return listen port of the graphics device.
+	 */
+	public int getListenPort()
+	{
+		final String listenPort = this.getXmlElementAttributeValue( "port" );
+		return Integer.valueOf( listenPort );
+	}
+
+	/**
+	 * Sets the listen port for the graphics device.
+	 * 
+	 * @param listenPort listen port for the graphics device.
+	 */
+	public void setListenPort( int listenPort )
+	{
+		if ( this.getListenType() == ListenType.ADDRESS ) {
+			// only set listen port, if address listen type is set
+			this.setXmlElementAttributeValue( "port", Integer.toString( listenPort ) );
+		}
 	}
 
 	/**

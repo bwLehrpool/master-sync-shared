@@ -8,6 +8,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.xml.XMLConstants;
+
 import org.openslx.libvirt.domain.device.Device;
 import org.openslx.libvirt.domain.device.Controller;
 import org.openslx.libvirt.domain.device.ControllerFloppy;
@@ -42,6 +44,8 @@ import org.openslx.libvirt.xml.LibvirtXmlNode;
 import org.openslx.libvirt.xml.LibvirtXmlResources;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlValidationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -56,6 +60,16 @@ import org.xml.sax.InputSource;
  */
 public class Domain extends LibvirtXmlDocument
 {
+	/**
+	 * XML namespace URI for QEMU command line elements in the Libvirt domain XML document.
+	 */
+	private static final String XMLNS_QEMU_NS_URI = "http://libvirt.org/schemas/domain/qemu/1.0";
+
+	/**
+	 * XML namespace prefix for QEMU command line elements in the Libvirt domain XML document.
+	 */
+	private static final String XMLNS_QEMU_NS_PREFIX = "qemu";
+
 	/**
 	 * Creates Libvirt domain XML document from {@link String} providing Libvirt domain XML content.
 	 * 
@@ -488,6 +502,46 @@ public class Domain extends LibvirtXmlDocument
 	public void setOsMachine( String machine )
 	{
 		this.getRootXmlNode().setXmlElementAttributeValue( "os/type", "machine", machine );
+	}
+
+	/**
+	 * Returns OS loader defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS loader of the virtual machine.
+	 */
+	public String getOsLoader()
+	{
+		return this.getRootXmlNode().getXmlElementValue( "os/loader" );
+	}
+
+	/**
+	 * Set OS loader in the Libvirt domain XML document.
+	 * 
+	 * @param loader OS loader for the virtual machine.
+	 */
+	public void setOsLoader( String loader )
+	{
+		this.getRootXmlNode().setXmlElementValue( "os/loader", loader );
+	}
+
+	/**
+	 * Returns OS Nvram defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS Nvram of the virtual machine.
+	 */
+	public String getOsNvram()
+	{
+		return this.getRootXmlNode().getXmlElementValue( "os/nvram" );
+	}
+
+	/**
+	 * Set OS Nvram in the Libvirt domain XML document.
+	 * 
+	 * @param nvram OS Nvram for the virtual machine.
+	 */
+	public void setOsNvram( String nvram )
+	{
+		this.getRootXmlNode().setXmlElementValue( "os/nvram", nvram );
 	}
 
 	/**
@@ -1052,6 +1106,35 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns the values of QEMU command line arguments from the Libvirt domain XML document.
+	 * 
+	 * @return values of QEMU command line arguments from the Libvirt domain XML document.
+	 */
+	public ArrayList<String> getQemuCmdlnArguments()
+	{
+		final Document xmlDocument = this.getRootXmlNode().getXmlDocument();
+		final ArrayList<String> qemuCmdlnArgs = new ArrayList<String>();
+
+		final NodeList qemuCmdlnNodes = xmlDocument.getElementsByTagNameNS( XMLNS_QEMU_NS_URI, "commandline" );
+		if ( qemuCmdlnNodes.getLength() > 0 ) {
+			final Node qemuCmdlnNode = qemuCmdlnNodes.item( 0 );
+			final NodeList qemuCmdlnArgNodes = qemuCmdlnNode.getChildNodes();
+			for ( int i = 0; i < qemuCmdlnArgNodes.getLength(); i++ ) {
+				final Node qemuCmdlnArgNode = qemuCmdlnArgNodes.item( i );
+				if ( qemuCmdlnArgNode.getNodeType() == Node.ELEMENT_NODE ) {
+					final Element qemuCmdlnArgElement = Element.class.cast( qemuCmdlnArgNode );
+					final String value = qemuCmdlnArgElement.getAttribute( "value" );
+					if ( value != null && !value.isEmpty() ) {
+						qemuCmdlnArgs.add( value );
+					}
+				}
+			}
+		}
+
+		return qemuCmdlnArgs;
+	}
+
+	/**
 	 * Adds a virtual machine device to the Libvirt domain XML document.
 	 *
 	 * @param device virtual machine device that is added to the Libvirt domain XML document.
@@ -1345,6 +1428,39 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Adds an given value as QEMU command line argument to the Libvirt domain XML document.
+	 * 
+	 * @param value QEMU command line argument value.
+	 */
+	public void addQemuCmdlnArgument( final String value )
+	{
+		final Element rootElement = Element.class.cast( this.getRootXmlNode().getXmlBaseNode() );
+		final Document xmlDocument = this.getRootXmlNode().getXmlDocument();
+		final Element qemuCmdlnElement;
+
+		final NodeList qemuCmdlnNodes = rootElement.getElementsByTagNameNS( XMLNS_QEMU_NS_URI, "commandline" );
+		if ( qemuCmdlnNodes.getLength() < 1 ) {
+			// add missing <domain xmlns:qemu="..."> namespace attribute
+			rootElement.setAttributeNS( XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+					XMLConstants.XMLNS_ATTRIBUTE + ":" + XMLNS_QEMU_NS_PREFIX, XMLNS_QEMU_NS_URI );
+			// add missing <qemu:commandline> element
+			qemuCmdlnElement = xmlDocument.createElementNS( XMLNS_QEMU_NS_URI, "commandline" );
+			qemuCmdlnElement.setPrefix( XMLNS_QEMU_NS_PREFIX );
+			rootElement.appendChild( qemuCmdlnElement );
+		} else {
+			// use available <qemu:commandline> element
+			final Node qemuCmdlnNode = qemuCmdlnNodes.item( 0 );
+			assert ( qemuCmdlnNode.getNodeType() == Node.ELEMENT_NODE );
+			qemuCmdlnElement = Element.class.cast( qemuCmdlnNode );
+		}
+
+		// append <qemu:arg value='...'> element with attribute
+		final Element qemuCmdlnArgElement = xmlDocument.createElementNS( XMLNS_QEMU_NS_URI, "arg" );
+		qemuCmdlnArgElement.setAttribute( "value", value );
+		qemuCmdlnElement.appendChild( qemuCmdlnArgElement );
+	}
+
+	/**
 	 * Removes boot oder entries in the Libvirt domain XML document.
 	 */
 	public void removeBootOrder()
@@ -1377,6 +1493,18 @@ public class Domain extends LibvirtXmlDocument
 	{
 		for ( Disk diskDevice : this.getDiskDevices() ) {
 			diskDevice.removeStorage();
+		}
+	}
+
+	/**
+	 * Removes specified Nvram file in the Libvirt domain XML document.
+	 */
+	public void removeOsNvram()
+	{
+		final Node nvramElement = this.getRootXmlNode().getXmlElement( "os/nvram" );
+
+		if ( nvramElement != null ) {
+			nvramElement.getParentNode().removeChild( nvramElement );
 		}
 	}
 

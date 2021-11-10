@@ -33,7 +33,6 @@ public class VirtualizerQemu extends Virtualizer
 	 */
 	private static final List<Version> VIRTUALIZER_SUPPORTED_VERSIONS = Collections.unmodifiableList(
 			Arrays.asList(
-					new Version( Short.valueOf( "2" ), Short.valueOf( "1" ), "QEMU 2.1" ),
 					new Version( Short.valueOf( "2" ), Short.valueOf( "4" ), "QEMU 2.4" ),
 					new Version( Short.valueOf( "2" ), Short.valueOf( "5" ), "QEMU 2.5" ),
 					new Version( Short.valueOf( "2" ), Short.valueOf( "6" ), "QEMU 2.6" ),
@@ -44,7 +43,12 @@ public class VirtualizerQemu extends Virtualizer
 					new Version( Short.valueOf( "3" ), Short.valueOf( "1" ), "QEMU 3.1" ),
 					new Version( Short.valueOf( "4" ), Short.valueOf( "0" ), "QEMU 4.0" ),
 					new Version( Short.valueOf( "4" ), Short.valueOf( "1" ), "QEMU 4.1" ),
-					new Version( Short.valueOf( "4" ), Short.valueOf( "2" ), "QEMU 4.2" ) ) );
+					new Version( Short.valueOf( "4" ), Short.valueOf( "2" ), "QEMU 4.2" ),
+					new Version( Short.valueOf( "5" ), Short.valueOf( "0" ), "QEMU 5.0" ),
+					new Version( Short.valueOf( "5" ), Short.valueOf( "1" ), "QEMU 5.1" ),
+					new Version( Short.valueOf( "5" ), Short.valueOf( "2" ), "QEMU 5.2" ),
+					new Version( Short.valueOf( "6" ), Short.valueOf( "0" ), "QEMU 6.0" ),
+					new Version( Short.valueOf( "6" ), Short.valueOf( "1" ), "QEMU 6.1" ) ) );
 
 	/**
 	 * Creates a new QEMU virtualizer.

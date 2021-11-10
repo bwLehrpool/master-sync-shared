@@ -245,10 +245,12 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		if ( storageDiskDevice == null ) {
 			// HDD does not exist, so create new storage (HDD) device
+			final BusType devBusType = BusType.VIRTIO;
+			final String targetDevName = VirtualizationConfigurationQemuUtils.createDeviceName( this.vmConfig,
+					devBusType );
 			storageDiskDevice = this.vmConfig.addDiskStorageDevice();
 			storageDiskDevice.setReadOnly( false );
-			storageDiskDevice.setBusType( BusType.VIRTIO );
-			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "vd", index );
+			storageDiskDevice.setBusType( devBusType );
 			storageDiskDevice.setTargetDevice( targetDevName );
 
 			if ( diskImagePath == null || diskImagePath.isEmpty() ) {
@@ -319,9 +321,11 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		if ( floppyDiskDevice == null ) {
 			// floppy device does not exist, so create new floppy device
+			final BusType devBusType = BusType.FDC;
+			final String targetDevName = VirtualizationConfigurationQemuUtils.createDeviceName( this.vmConfig,
+					devBusType );
 			floppyDiskDevice = this.vmConfig.addDiskFloppyDevice();
-			floppyDiskDevice.setBusType( BusType.FDC );
-			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "fd", index );
+			floppyDiskDevice.setBusType( devBusType );
 			floppyDiskDevice.setTargetDevice( targetDevName );
 			floppyDiskDevice.setReadOnly( readOnly );
 
@@ -364,9 +368,11 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		if ( cdromDiskDevice == null ) {
 			// CDROM device does not exist, so create new CDROM device
+			final BusType devBusType = BusType.SATA;
+			final String targetDevName = VirtualizationConfigurationQemuUtils.createDeviceName( this.vmConfig,
+					devBusType );
 			cdromDiskDevice = this.vmConfig.addDiskCdromDevice();
-			cdromDiskDevice.setBusType( BusType.SATA );
-			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "sd", index );
+			cdromDiskDevice.setBusType( devBusType );
 			cdromDiskDevice.setTargetDevice( targetDevName );
 			cdromDiskDevice.setReadOnly( true );
 
@@ -406,10 +412,55 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		return isVCpuSet;
 	}
-	
+
+	class QemuGfxModel extends VirtOptionValue
+	{
+		public QemuGfxModel( Video.Model model, String displayName )
+		{
+			super( model.toString(), displayName );
+		}
+
+		@Override
+		public void apply()
+		{
+			final ArrayList<Video> videoDevices = vmConfig.getVideoDevices();
+
+			if ( videoDevices.isEmpty() ) {
+				// add new video device with disabled acceleration to VM configuration
+				final Video videoDevice = vmConfig.addVideoDevice();
+				videoDevice.setModel( Video.Model.fromString( this.getId() ) );
+				videoDevice.set2DAcceleration( false );
+				videoDevice.set3DAcceleration( false );
+			} else {
+				// change graphics model of existing video devices
+				for ( final Video videoDevice : videoDevices ) {
+					// remove all old model-related XML attributes
+					videoDevice.removeXmlElement( "model" );
+					// set new model
+					videoDevice.setModel( Video.Model.fromString( this.getId() ) );
+				}
+			}
+		}
+
+		@Override
+		public boolean isActive()
+		{
+			final ArrayList<Video> videoDevices = vmConfig.getVideoDevices();
+			boolean isActive = true;
+
+			for ( final Video videoDevice : videoDevices ) {
+				if ( !videoDevice.getModel().toString().equals( this.getId() ) ) {
+					isActive = false;
+					break;
+				}
+			}
+
+			return isActive;
+		}
+	}
+
 	class QemuGfxType extends VirtOptionValue
 	{
-
 		public QemuGfxType( String id, String displayName )
 		{
 			super( id, displayName );
@@ -497,7 +548,6 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 				return this.id.equals( "false" );
 			}
 		}
-		
 	}
 
 	@Override
@@ -535,7 +585,6 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 	class QemuNicModel extends VirtOptionValue
 	{
-		
 		private final int cardIndex;
 
 		public QemuNicModel( int cardIndex, Interface.Model model, String displayName )
@@ -574,10 +623,9 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 			return networkDeviceModel.toString().equals( this.id ); // XXX: enum would allow simple ==
 		}
 	}
-	
+
 	class QemuSoundCardModel extends VirtOptionValue
 	{
-
 		public QemuSoundCardModel( Sound.Model id, String displayName )
 		{
 			super( id.toString(), displayName );
@@ -614,12 +662,11 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 			Sound.Model soundDeviceModel = soundDevices.get( 0 ).getModel();
 			return soundDeviceModel != null && soundDeviceModel.toString().equals( this.id );
 		}
-		
+
 	}
-	
+
 	class QemuUsbSpeed extends VirtOptionValue
 	{
-
 		public QemuUsbSpeed( ControllerUsb.Model id, String displayName )
 		{
 			super( id.toString(), displayName );
@@ -647,8 +694,6 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 		public boolean isActive()
 		{
 			ArrayList<ControllerUsb> usbControllerDevices = vmConfig.getUsbControllerDevices();
-			String maxUsbSpeed = null;
-			int maxUsbSpeedNumeric = 0;
 
 			for ( ControllerUsb usbControllerDevice : usbControllerDevices ) {
 				ControllerUsb.Model usbControllerModel = usbControllerDevice.getModel();
@@ -662,7 +707,6 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 			return false;
 		}
-		
 	}
 
 	@Override
@@ -756,6 +800,9 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 	{
 		// removes all referenced storage files of all specified CDROMs, Floppy drives and HDDs
 		this.vmConfig.removeDiskDevicesStorage();
+
+		// remove specified NVRAM file of OS loader (firmware)
+		this.vmConfig.removeOsNvram();
 	}
 
 	@Override
@@ -774,9 +821,15 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.SOUND_CARD_MODEL, list ) );
 
 		list = new ArrayList<>();
-		// XXX This would greatly benefit from having more meaningful options for qemu instead of on/off
-		list.add( new QemuGfxType( "false", "langsam" ) );
-		list.add( new QemuGfxType( "true", "3D OpenGL" ) );
+		list.add( new QemuGfxModel( Video.Model.VGA, "VGA" ) );
+		list.add( new QemuGfxModel( Video.Model.QXL, "QXL" ) );
+		list.add( new QemuGfxModel( Video.Model.VMVGA, "VMware VGA" ) );
+		list.add( new QemuGfxModel( Video.Model.VIRTIO, "virtio-gpu" ) );
+		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.GFX_MODEL, list ) );
+
+		list = new ArrayList<>();
+		list.add( new QemuGfxType( "false", "2D" ) );
+		list.add( new QemuGfxType( "true", "3D" ) );
 		configurableOptions.add( new ConfigurableOptionGroup( ConfigurationGroups.GFX_TYPE, list ) );
 
 		list = new ArrayList<>();

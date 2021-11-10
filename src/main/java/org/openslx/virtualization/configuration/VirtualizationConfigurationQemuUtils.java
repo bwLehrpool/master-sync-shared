@@ -1,9 +1,11 @@
 package org.openslx.virtualization.configuration;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.openslx.libvirt.domain.Domain;
 import org.openslx.libvirt.domain.device.Disk;
 import org.openslx.libvirt.domain.device.Disk.BusType;
 import org.openslx.virtualization.Version;
@@ -109,7 +111,7 @@ public class VirtualizationConfigurationQemuUtils
 	 * @param deviceNumber number of the device.
 	 * @return alphabetical device name.
 	 */
-	public static String createAlphabeticalDeviceName( String devicePrefix, int deviceNumber )
+	private static String createAlphabeticalDeviceName( String devicePrefix, int deviceNumber )
 	{
 		if ( deviceNumber < 0 || deviceNumber >= ( 'z' - 'a' ) ) {
 			String errorMsg = new String( "Device number is out of range to be able to create a valid device name." );
@@ -117,6 +119,42 @@ public class VirtualizationConfigurationQemuUtils
 		}
 
 		return devicePrefix + Character.valueOf( (char) ( 'a' + deviceNumber ) ).toString();
+	}
+
+	/**
+	 * Creates an alphabetical device name for a disk device with a bus <i>type</i> that is unique in
+	 * a Libvirt domain XML configuration.
+	 * 
+	 * @param config Libvirt domain XML configuration.
+	 * @param type device type for device name.
+	 * @return alphabetical device name.
+	 */
+	public static String createDeviceName( final Domain config, final BusType type ) throws IllegalArgumentException
+	{
+		final String devicePrefix;
+		final int deviceNumber;
+
+		switch ( type ) {
+		case FDC:
+			devicePrefix = "fd";
+			break;
+		case IDE:
+			devicePrefix = "hd";
+			break;
+		case SATA:
+			devicePrefix = "sd";
+			break;
+		case VIRTIO:
+			devicePrefix = "vd";
+			break;
+		default:
+			return null;
+		}
+
+		final Predicate<Disk> bySpecifiedBusType = d -> d.getBusType() == type;
+		deviceNumber = Long.valueOf( config.getDiskDevices().stream().filter( bySpecifiedBusType ).count() ).intValue();
+
+		return VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( devicePrefix, deviceNumber );
 	}
 
 	/**

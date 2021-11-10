@@ -50,6 +50,26 @@ public class HostdevMdev extends Hostdev implements HostdevAddressableSource<Hos
 	}
 
 	/**
+	 * Checks whether the hostdev mediated device memory framebuffer is on or off.
+	 * 
+	 * @return state whether the hostdev mediated device memory framebuffer is on or off.
+	 */
+	public boolean isMemoryFramebufferOn()
+	{
+		return this.getXmlElementAttributeValueAsBool( "ramfb" );
+	}
+
+	/**
+	 * Sets the state of the hostdev mediated device memory framebuffer.
+	 * 
+	 * @param on state whether the hostdev mediated device memory framebuffer is on or off.
+	 */
+	public void setMemoryFramebufferOn( boolean on )
+	{
+		this.setXmlElementAttributeValueOnOff( "ramfb", on );
+	}
+
+	/**
 	 * Returns the hostdev mediated device model.
 	 * 
 	 * @return hostdev mediated device model.
@@ -80,7 +100,7 @@ public class HostdevMdev extends Hostdev implements HostdevAddressableSource<Hos
 	@Override
 	public void setSource( HostdevMdevDeviceAddress source )
 	{
-		this.setXmlElementAttributeValue( "source/address", "domain", source.getDeviceAddressAsString() );
+		this.setXmlElementAttributeValue( "source/address", "uuid", source.getDeviceAddressAsString() );
 	}
 
 	/**
@@ -89,9 +109,9 @@ public class HostdevMdev extends Hostdev implements HostdevAddressableSource<Hos
 	 * @param xmlNode Libvirt XML node of the Libvirt XML device that is created.
 	 * @return created hostdev mediated device instance.
 	 */
-	public static HostdevPci createInstance( LibvirtXmlNode xmlNode )
+	public static HostdevMdev createInstance( LibvirtXmlNode xmlNode )
 	{
-		return HostdevPci.newInstance( xmlNode );
+		return HostdevMdev.newInstance( xmlNode );
 	}
 
 	/**
@@ -101,9 +121,9 @@ public class HostdevMdev extends Hostdev implements HostdevAddressableSource<Hos
 	 * @param xmlNode existing Libvirt XML hostdev mediated device element.
 	 * @return hostdev mediated device instance.
 	 */
-	public static HostdevPci newInstance( LibvirtXmlNode xmlNode )
+	public static HostdevMdev newInstance( LibvirtXmlNode xmlNode )
 	{
-		return new HostdevPci( xmlNode );
+		return new HostdevMdev( xmlNode );
 	}
 
 	/**
@@ -112,7 +132,7 @@ public class HostdevMdev extends Hostdev implements HostdevAddressableSource<Hos
 	 * @author Manuel Bentele
 	 * @version 1.0
 	 */
-	enum Model
+	public enum Model
 	{
 		// @formatter:off
 		VFIO_PCI( "vfio-pci" ),

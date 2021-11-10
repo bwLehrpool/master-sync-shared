@@ -238,6 +238,40 @@ public class DomainTest
 	}
 
 	@Test
+	@DisplayName( "Get VM's OS loader from libvirt XML file" )
+	public void testGetOsLoader()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
+		assertEquals( "/usr/share/edk2-ovmf/x64/OVMF_CODE.fd", vm.getOsLoader() );
+	}
+
+	@Test
+	@DisplayName( "Set VM's OS loader in libvirt XML file" )
+	public void testSetOsLoader()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
+		vm.setOsLoader( "/usr/share/qemu/edk2-x86_64-code.fd" );
+		assertEquals( "/usr/share/qemu/edk2-x86_64-code.fd", vm.getOsLoader() );
+	}
+
+	@Test
+	@DisplayName( "Get VM's OS Nvram from libvirt XML file" )
+	public void testGetOsNvram()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
+		assertEquals( "/var/lib/libvirt/nvram/guest_VARS.fd", vm.getOsNvram() );
+	}
+
+	@Test
+	@DisplayName( "Set VM's OS Nvram in libvirt XML file" )
+	public void testSetOsNvram()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
+		vm.setOsNvram( "/tmp/nvram-tmp/tmp_VARS.fd" );
+		assertEquals( "/tmp/nvram-tmp/tmp_VARS.fd", vm.getOsNvram() );
+	}
+
+	@Test
 	@DisplayName( "Get VM CPU model from libvirt XML file" )
 	public void testGetCpuModel()
 	{
@@ -391,5 +425,26 @@ public class DomainTest
 	{
 		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getVideoDevices().size() );
+	}
+
+	@Test
+	@DisplayName( "Get all QEMU command line arguments from libvirt XML file" )
+	public void testGetQemuCmdlnArguments()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_qemu-cmdln.xml" );
+		assertEquals( 2, vm.getQemuCmdlnArguments().size() );
+	}
+
+	@Test
+	@DisplayName( "Set QEMU command line arguments in libvirt XML file" )
+	public void testAddQemuCmdlnArguments()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( 0, vm.getQemuCmdlnArguments().size() );
+
+		vm.addQemuCmdlnArgument( "-set" );
+		vm.addQemuCmdlnArgument( "device.hostdev0.x-igd-opregion=on" );
+
+		assertEquals( 2, vm.getQemuCmdlnArguments().size() );
 	}
 }

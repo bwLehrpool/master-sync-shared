@@ -1,5 +1,7 @@
 package org.openslx.libvirt.domain.device;
 
+import java.net.InetAddress;
+
 import org.openslx.libvirt.xml.LibvirtXmlNode;
 
 /**
@@ -10,6 +12,16 @@ import org.openslx.libvirt.xml.LibvirtXmlNode;
  */
 public class GraphicsSpice extends Graphics
 {
+	/**
+	 * Default address of a SPICE graphics listener.
+	 */
+	public static final InetAddress DEFAULT_ADDRESS = InetAddress.getLoopbackAddress();
+
+	/**
+	 * Default port of a SPICE graphics listener.
+	 */
+	public static final int DEFAULT_PORT = 5900;
+
 	/**
 	 * Creates an empty graphics SPICE device.
 	 */

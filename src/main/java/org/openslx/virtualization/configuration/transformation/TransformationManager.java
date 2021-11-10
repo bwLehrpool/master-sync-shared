@@ -2,6 +2,8 @@ package org.openslx.virtualization.configuration.transformation;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
+
 /**
  * A transformation manager is a class to manage several transformations and their application.
  * 
@@ -31,6 +33,11 @@ public class TransformationManager<T, R>
 	 * Reference to the input arguments for all registered transformations.
 	 */
 	private R args;
+
+	/**
+	 * Logger instance to log messages.
+	 */
+	private static final Logger LOGGER = Logger.getLogger( TransformationManager.class );
 
 	/**
 	 * Create a transformation manager.
@@ -63,6 +70,9 @@ public class TransformationManager<T, R>
 	 */
 	public void register( Transformation<T, R> transformation, boolean enabled )
 	{
+		LOGGER.debug( "Register transformation '" + transformation.getName() + "' and "
+				+ ( enabled ? "enable" : "do not enable" ) + " it" );
+
 		transformation.setEnabled( enabled );
 		this.transformations.add( transformation );
 	}
@@ -107,6 +117,7 @@ public class TransformationManager<T, R>
 	public void transform() throws TransformationException
 	{
 		for ( Transformation<T, R> transformation : this.transformations ) {
+			LOGGER.debug( "Apply transformation '" + transformation.getName() + "'" );
 			try {
 				transformation.apply( this.config, this.args );
 			} catch ( TransformationException e ) {
