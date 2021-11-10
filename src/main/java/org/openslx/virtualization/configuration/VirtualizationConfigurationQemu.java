@@ -245,10 +245,12 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		if ( storageDiskDevice == null ) {
 			// HDD does not exist, so create new storage (HDD) device
+			final BusType devBusType = BusType.VIRTIO;
+			final String targetDevName = VirtualizationConfigurationQemuUtils.createDeviceName( this.vmConfig,
+					devBusType );
 			storageDiskDevice = this.vmConfig.addDiskStorageDevice();
 			storageDiskDevice.setReadOnly( false );
-			storageDiskDevice.setBusType( BusType.VIRTIO );
-			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "vd", index );
+			storageDiskDevice.setBusType( devBusType );
 			storageDiskDevice.setTargetDevice( targetDevName );
 
 			if ( diskImagePath == null || diskImagePath.isEmpty() ) {
@@ -319,9 +321,11 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		if ( floppyDiskDevice == null ) {
 			// floppy device does not exist, so create new floppy device
+			final BusType devBusType = BusType.FDC;
+			final String targetDevName = VirtualizationConfigurationQemuUtils.createDeviceName( this.vmConfig,
+					devBusType );
 			floppyDiskDevice = this.vmConfig.addDiskFloppyDevice();
-			floppyDiskDevice.setBusType( BusType.FDC );
-			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "fd", index );
+			floppyDiskDevice.setBusType( devBusType );
 			floppyDiskDevice.setTargetDevice( targetDevName );
 			floppyDiskDevice.setReadOnly( readOnly );
 
@@ -364,9 +368,11 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		if ( cdromDiskDevice == null ) {
 			// CDROM device does not exist, so create new CDROM device
+			final BusType devBusType = BusType.SATA;
+			final String targetDevName = VirtualizationConfigurationQemuUtils.createDeviceName( this.vmConfig,
+					devBusType );
 			cdromDiskDevice = this.vmConfig.addDiskCdromDevice();
-			cdromDiskDevice.setBusType( BusType.SATA );
-			String targetDevName = VirtualizationConfigurationQemuUtils.createAlphabeticalDeviceName( "sd", index );
+			cdromDiskDevice.setBusType( devBusType );
 			cdromDiskDevice.setTargetDevice( targetDevName );
 			cdromDiskDevice.setReadOnly( true );
 
