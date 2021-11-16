@@ -323,6 +323,74 @@ public class DomainTest
 	}
 
 	@Test
+	@DisplayName( "Get VM CPU dies from libvirt XML file" )
+	public void testGetCpuDies()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		assertEquals( 2, vm.getCpuDies() );
+	}
+
+	@Test
+	@DisplayName( "Set VM CPU dies in libvirt XML file" )
+	public void testSetCpuDies()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		vm.setCpuDies( 3 );
+		assertEquals( 3, vm.getCpuDies() );
+	}
+
+	@Test
+	@DisplayName( "Get VM CPU sockets from libvirt XML file" )
+	public void testGetCpuSockets()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		assertEquals( 3, vm.getCpuSockets() );
+	}
+
+	@Test
+	@DisplayName( "Set VM CPU sockets in libvirt XML file" )
+	public void testSetCpuSockets()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		vm.setCpuSockets( 2 );
+		assertEquals( 2, vm.getCpuSockets() );
+	}
+
+	@Test
+	@DisplayName( "Get VM CPU cores from libvirt XML file" )
+	public void testGetCpuCores()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		assertEquals( 4, vm.getCpuCores() );
+	}
+
+	@Test
+	@DisplayName( "Set VM CPU cores in libvirt XML file" )
+	public void testSetCpuCores()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		vm.setCpuCores( 8 );
+		assertEquals( 8, vm.getCpuCores() );
+	}
+
+	@Test
+	@DisplayName( "Get VM CPU threads from libvirt XML file" )
+	public void testGetCpuThreads()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		assertEquals( 1, vm.getCpuThreads() );
+	}
+
+	@Test
+	@DisplayName( "Set VM CPU threads in libvirt XML file" )
+	public void testSetCpuThreads()
+	{
+		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		vm.setCpuThreads( 2 );
+		assertEquals( 2, vm.getCpuThreads() );
+	}
+
+	@Test
 	@DisplayName( "Get VM emulator binary from libvirt XML file" )
 	public void testGetDevicesEmulator()
 	{

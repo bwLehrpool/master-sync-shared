@@ -768,6 +768,90 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns the number of virtual machine CPU dies defined in the Libvirt domain XML document.
+	 * 
+	 * @return number of virtual machine CPU dies.
+	 */
+	public int getCpuDies()
+	{
+		final String numDies = this.getRootXmlNode().getXmlElementAttributeValue( "cpu/topology", "dies" );
+		return Integer.valueOf( numDies );
+	}
+
+	/**
+	 * Set number of virtual machine CPU dies in the Libvirt domain XML document.
+	 * 
+	 * @param number virtual machine CPU dies.
+	 */
+	public void setCpuDies( int number )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "cpu/topology", "dies", Integer.toString( number ) );
+	}
+
+	/**
+	 * Returns the number of virtual machine CPU sockets defined in the Libvirt domain XML document.
+	 * 
+	 * @return number of virtual machine CPU sockets.
+	 */
+	public int getCpuSockets()
+	{
+		final String numSockets = this.getRootXmlNode().getXmlElementAttributeValue( "cpu/topology", "sockets" );
+		return Integer.valueOf( numSockets );
+	}
+
+	/**
+	 * Set number of virtual machine CPU dies in the Libvirt domain XML document.
+	 * 
+	 * @param number virtual machine CPU dies.
+	 */
+	public void setCpuSockets( int number )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "cpu/topology", "sockets", Integer.toString( number ) );
+	}
+
+	/**
+	 * Returns the number of virtual machine CPU cores defined in the Libvirt domain XML document.
+	 * 
+	 * @return number of virtual machine CPU cores.
+	 */
+	public int getCpuCores()
+	{
+		final String numCores = this.getRootXmlNode().getXmlElementAttributeValue( "cpu/topology", "cores" );
+		return Integer.valueOf( numCores );
+	}
+
+	/**
+	 * Set number of virtual machine CPU cores in the Libvirt domain XML document.
+	 * 
+	 * @param number virtual machine CPU cores.
+	 */
+	public void setCpuCores( int number )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "cpu/topology", "cores", Integer.toString( number ) );
+	}
+
+	/**
+	 * Returns the number of virtual machine CPU threads defined in the Libvirt domain XML document.
+	 * 
+	 * @return number of virtual machine CPU threads.
+	 */
+	public int getCpuThreads()
+	{
+		final String numThreads = this.getRootXmlNode().getXmlElementAttributeValue( "cpu/topology", "threads" );
+		return Integer.valueOf( numThreads );
+	}
+
+	/**
+	 * Set number of virtual machine CPU threads in the Libvirt domain XML document.
+	 * 
+	 * @param number virtual machine CPU threads.
+	 */
+	public void setCpuThreads( int number )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "cpu/topology", "threads", Integer.toString( number ) );
+	}
+
+	/**
 	 * Returns the file name of the emulator binary defined in the Libvirt domain XML document.
 	 * 
 	 * @return file name of the emulator binary.
