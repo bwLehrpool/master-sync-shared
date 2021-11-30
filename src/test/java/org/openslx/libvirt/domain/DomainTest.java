@@ -28,12 +28,12 @@ public class DomainTest
 		LogManager.getRootLogger().setLevel( Level.OFF );
 	}
 
-	private Domain newDomainInstance( String xmlFileName )
+	public static Domain getDomain( String xmlFileName )
 	{
 		Domain domain = null;
 
 		try {
-			domain = new Domain( LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName ) );
+			domain = new Domain( LibvirtXmlTestResources.getLibvirtXmlStream( xmlFileName ) );
 		} catch ( LibvirtXmlDocumentException | LibvirtXmlSerializationException | LibvirtXmlValidationException e ) {
 			String errorMsg = new String( "Cannot prepare requested Libvirt domain XML file from the resources folder" );
 			fail( errorMsg );
@@ -46,7 +46,7 @@ public class DomainTest
 	@DisplayName( "Get VM type from libvirt XML file" )
 	public void testGetType()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( Domain.Type.KVM.toString(), vm.getType().toString() );
 	}
 
@@ -54,7 +54,7 @@ public class DomainTest
 	@DisplayName( "Set VM type from libvirt XML file" )
 	public void testSetType()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setType( Domain.Type.QEMU );
 		assertEquals( Domain.Type.QEMU.toString(), vm.getType().toString() );
 	}
@@ -63,7 +63,7 @@ public class DomainTest
 	@DisplayName( "Get VM name from libvirt XML file" )
 	public void testGetName()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( "ubuntu-20-04", vm.getName() );
 	}
 
@@ -71,7 +71,7 @@ public class DomainTest
 	@DisplayName( "Set VM name in libvirt XML file" )
 	public void testSetName()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setName( "ubuntu-18-04" );
 		assertEquals( "ubuntu-18-04", vm.getName() );
 	}
@@ -80,7 +80,7 @@ public class DomainTest
 	@DisplayName( "Get VM title from libvirt XML file" )
 	public void testGetTitle()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( "Ubuntu 20.04", vm.getTitle() );
 	}
 
@@ -88,7 +88,7 @@ public class DomainTest
 	@DisplayName( "Set VM title in libvirt XML file" )
 	public void testSetTitle()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setTitle( "Ubuntu 18.04" );
 		assertEquals( "Ubuntu 18.04", vm.getTitle() );
 	}
@@ -97,7 +97,7 @@ public class DomainTest
 	@DisplayName( "Get VM description from libvirt XML file" )
 	public void testGetDescription()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( "Ubuntu 20.04 desktop installation", vm.getDescription() );
 	}
 
@@ -105,7 +105,7 @@ public class DomainTest
 	@DisplayName( "Set VM description in libvirt XML file" )
 	public void testSetDescription()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setDescription( "Ubuntu 18.04 server installation" );
 		assertEquals( "Ubuntu 18.04 server installation", vm.getDescription() );
 	}
@@ -114,7 +114,7 @@ public class DomainTest
 	@DisplayName( "Get VM libosinfo operating system identifier in libvirt XML file" )
 	public void testGetLibOsInfoOsId()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( "http://ubuntu.com/ubuntu/20.04", vm.getLibOsInfoOsId() );
 	}
 
@@ -122,7 +122,7 @@ public class DomainTest
 	@DisplayName( "Get VM UUID from libvirt XML file" )
 	public void testGetUuid()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( "8dc5433c-0228-49e4-b019-fa2b606aa544", vm.getUuid() );
 	}
 
@@ -130,7 +130,7 @@ public class DomainTest
 	@DisplayName( "Set VM UUID in libvirt XML file" )
 	public void testSetUuid()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setUuid( "5ab08167-3d95-400e-ac83-e6af8d150971" );
 		assertEquals( "5ab08167-3d95-400e-ac83-e6af8d150971", vm.getUuid() );
 	}
@@ -139,7 +139,7 @@ public class DomainTest
 	@DisplayName( "Get VM memory from libvirt XML file" )
 	public void testGetMemory()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( new BigInteger( "4294967296" ).toString(), vm.getMemory().toString() );
 	}
 
@@ -147,7 +147,7 @@ public class DomainTest
 	@DisplayName( "Set VM memory in libvirt XML file" )
 	public void testSetMemory()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setMemory( new BigInteger( "12073740288" ) );
 		assertEquals( new BigInteger( "12073740288" ).toString(), vm.getMemory().toString() );
 	}
@@ -156,7 +156,7 @@ public class DomainTest
 	@DisplayName( "Get current VM memory from libvirt XML file" )
 	public void testGetCurrentMemory()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( new BigInteger( "4294967296" ).toString(), vm.getCurrentMemory().toString() );
 	}
 
@@ -164,7 +164,7 @@ public class DomainTest
 	@DisplayName( "Set current VM memory in libvirt XML file" )
 	public void testSetCurrentMemory()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setCurrentMemory( new BigInteger( "8087237632" ) );
 		assertEquals( new BigInteger( "8087237632" ).toString(), vm.getCurrentMemory().toString() );
 	}
@@ -173,7 +173,7 @@ public class DomainTest
 	@DisplayName( "Get VM number of vCpus from libvirt XML file" )
 	public void testGetVCpu()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 2, vm.getVCpu() );
 	}
 
@@ -181,7 +181,7 @@ public class DomainTest
 	@DisplayName( "Set VM number of vCpus in libvirt XML file" )
 	public void testSetVCpu()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setVCpu( 4 );
 		assertEquals( 4, vm.getVCpu() );
 	}
@@ -190,7 +190,7 @@ public class DomainTest
 	@DisplayName( "Get VM's OS type from libvirt XML file" )
 	public void testGetOsType()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( OsType.HVM.toString(), vm.getOsType().toString() );
 	}
 
@@ -198,7 +198,7 @@ public class DomainTest
 	@DisplayName( "Set VM's OS type in libvirt XML file" )
 	public void testSetOsType()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setOsType( OsType.XEN );
 		assertEquals( OsType.XEN.toString(), vm.getOsType().toString() );
 	}
@@ -207,7 +207,7 @@ public class DomainTest
 	@DisplayName( "Get VM's OS architecture from libvirt XML file" )
 	public void testGetOsArch()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( "x86_64", vm.getOsArch() );
 	}
 
@@ -215,7 +215,7 @@ public class DomainTest
 	@DisplayName( "Set VM's OS architecture in libvirt XML file" )
 	public void testSetOsArch()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setOsArch( "aarch" );
 		assertEquals( "aarch", vm.getOsArch() );
 	}
@@ -224,7 +224,7 @@ public class DomainTest
 	@DisplayName( "Get VM's OS machine from libvirt XML file" )
 	public void testGetOsMachine()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( "pc-q35-5.1", vm.getOsMachine() );
 	}
 
@@ -232,7 +232,7 @@ public class DomainTest
 	@DisplayName( "Set VM's OS machine in libvirt XML file" )
 	public void testSetOsMachine()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setOsMachine( "pc" );
 		assertEquals( "pc", vm.getOsMachine() );
 	}
@@ -241,7 +241,7 @@ public class DomainTest
 	@DisplayName( "Get VM's OS loader from libvirt XML file" )
 	public void testGetOsLoader()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
 		assertEquals( "/usr/share/edk2-ovmf/x64/OVMF_CODE.fd", vm.getOsLoader() );
 	}
 
@@ -249,7 +249,7 @@ public class DomainTest
 	@DisplayName( "Set VM's OS loader in libvirt XML file" )
 	public void testSetOsLoader()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
 		vm.setOsLoader( "/usr/share/qemu/edk2-x86_64-code.fd" );
 		assertEquals( "/usr/share/qemu/edk2-x86_64-code.fd", vm.getOsLoader() );
 	}
@@ -258,7 +258,7 @@ public class DomainTest
 	@DisplayName( "Get VM's OS Nvram from libvirt XML file" )
 	public void testGetOsNvram()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
 		assertEquals( "/var/lib/libvirt/nvram/guest_VARS.fd", vm.getOsNvram() );
 	}
 
@@ -266,7 +266,7 @@ public class DomainTest
 	@DisplayName( "Set VM's OS Nvram in libvirt XML file" )
 	public void testSetOsNvram()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_uefi.xml" );
 		vm.setOsNvram( "/tmp/nvram-tmp/tmp_VARS.fd" );
 		assertEquals( "/tmp/nvram-tmp/tmp_VARS.fd", vm.getOsNvram() );
 	}
@@ -275,7 +275,7 @@ public class DomainTest
 	@DisplayName( "Get VM CPU model from libvirt XML file" )
 	public void testGetCpuModel()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertNull( vm.getCpuModel() );
 	}
 
@@ -283,7 +283,7 @@ public class DomainTest
 	@DisplayName( "Set VM CPU model in libvirt XML file" )
 	public void testSetCpuModel()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setCpuModel( "core2duo" );
 		assertEquals( "core2duo", vm.getCpuModel() );
 	}
@@ -292,7 +292,7 @@ public class DomainTest
 	@DisplayName( "Get VM CPU mode from libvirt XML file" )
 	public void testGetCpuModelMode()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( CpuMode.HOST_MODEL.toString(), vm.getCpuMode().toString() );
 	}
 
@@ -300,7 +300,7 @@ public class DomainTest
 	@DisplayName( "Set VM CPU mode in libvirt XML file" )
 	public void testSetCpuModelMode()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setCpuMode( CpuMode.HOST_PASSTHROUGH );
 		assertEquals( CpuMode.HOST_PASSTHROUGH.toString(), vm.getCpuMode().toString() );
 	}
@@ -309,7 +309,7 @@ public class DomainTest
 	@DisplayName( "Get VM CPU check from libvirt XML file" )
 	public void testGetCpuCheck()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( CpuCheck.PARTIAL.toString(), vm.getCpuCheck().toString() );
 	}
 
@@ -317,7 +317,7 @@ public class DomainTest
 	@DisplayName( "Set VM CPU check in libvirt XML file" )
 	public void testSetCpuCheck()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setCpuCheck( CpuCheck.NONE );
 		assertEquals( CpuCheck.NONE.toString(), vm.getCpuCheck().toString() );
 	}
@@ -326,7 +326,7 @@ public class DomainTest
 	@DisplayName( "Get VM CPU dies from libvirt XML file" )
 	public void testGetCpuDies()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
 		assertEquals( 2, vm.getCpuDies() );
 	}
 
@@ -334,7 +334,7 @@ public class DomainTest
 	@DisplayName( "Set VM CPU dies in libvirt XML file" )
 	public void testSetCpuDies()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
 		vm.setCpuDies( 3 );
 		assertEquals( 3, vm.getCpuDies() );
 	}
@@ -343,7 +343,7 @@ public class DomainTest
 	@DisplayName( "Get VM CPU sockets from libvirt XML file" )
 	public void testGetCpuSockets()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
 		assertEquals( 3, vm.getCpuSockets() );
 	}
 
@@ -351,7 +351,7 @@ public class DomainTest
 	@DisplayName( "Set VM CPU sockets in libvirt XML file" )
 	public void testSetCpuSockets()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
 		vm.setCpuSockets( 2 );
 		assertEquals( 2, vm.getCpuSockets() );
 	}
@@ -360,7 +360,7 @@ public class DomainTest
 	@DisplayName( "Get VM CPU cores from libvirt XML file" )
 	public void testGetCpuCores()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
 		assertEquals( 4, vm.getCpuCores() );
 	}
 
@@ -368,7 +368,7 @@ public class DomainTest
 	@DisplayName( "Set VM CPU cores in libvirt XML file" )
 	public void testSetCpuCores()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
 		vm.setCpuCores( 8 );
 		assertEquals( 8, vm.getCpuCores() );
 	}
@@ -377,7 +377,7 @@ public class DomainTest
 	@DisplayName( "Get VM CPU threads from libvirt XML file" )
 	public void testGetCpuThreads()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
 		assertEquals( 1, vm.getCpuThreads() );
 	}
 
@@ -385,7 +385,7 @@ public class DomainTest
 	@DisplayName( "Set VM CPU threads in libvirt XML file" )
 	public void testSetCpuThreads()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_cpu-topology.xml" );
 		vm.setCpuThreads( 2 );
 		assertEquals( 2, vm.getCpuThreads() );
 	}
@@ -394,7 +394,7 @@ public class DomainTest
 	@DisplayName( "Get VM emulator binary from libvirt XML file" )
 	public void testGetDevicesEmulator()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( "/usr/bin/qemu-system-x86_64", vm.getDevicesEmulator() );
 	}
 
@@ -402,7 +402,7 @@ public class DomainTest
 	@DisplayName( "Set VM emulator binary in libvirt XML file" )
 	public void testSetDevicesEmulator()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		vm.setDevicesEmulator( "/usr/bin/qemu-system-i386" );
 		assertEquals( "/usr/bin/qemu-system-i386", vm.getDevicesEmulator() );
 	}
@@ -411,7 +411,7 @@ public class DomainTest
 	@DisplayName( "Get all VM devices from libvirt XML file" )
 	public void testGetDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 22, vm.getDevices().size() );
 	}
 
@@ -419,7 +419,7 @@ public class DomainTest
 	@DisplayName( "Get all VM controller devices from libvirt XML file" )
 	public void testGetControllerDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 14, vm.getControllerDevices().size() );
 	}
 
@@ -427,7 +427,7 @@ public class DomainTest
 	@DisplayName( "Get all VM disk devices from libvirt XML file" )
 	public void testGetDiskDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 3, vm.getDiskDevices().size() );
 	}
 
@@ -435,7 +435,7 @@ public class DomainTest
 	@DisplayName( "Get all VM file system devices from libvirt XML file" )
 	public void testGetFileSystemDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 0, vm.getFileSystemDevices().size() );
 	}
 
@@ -443,7 +443,7 @@ public class DomainTest
 	@DisplayName( "Get all VM hostdev devices from libvirt XML file" )
 	public void testGetHostdevDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 0, vm.getHostdevDevices().size() );
 	}
 
@@ -451,7 +451,7 @@ public class DomainTest
 	@DisplayName( "Get all VM interface devices from libvirt XML file" )
 	public void testGetInterfaceDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getInterfaceDevices().size() );
 	}
 
@@ -459,7 +459,7 @@ public class DomainTest
 	@DisplayName( "Get all VM graphic devices from libvirt XML file" )
 	public void testGetGraphicDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getGraphicDevices().size() );
 	}
 
@@ -467,7 +467,7 @@ public class DomainTest
 	@DisplayName( "Get all VM parallel port devices from libvirt XML file" )
 	public void testGetParallelDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 0, vm.getParallelDevices().size() );
 	}
 
@@ -475,7 +475,7 @@ public class DomainTest
 	@DisplayName( "Get all VM serial port devices from libvirt XML file" )
 	public void testGetSerialDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getSerialDevices().size() );
 	}
 
@@ -483,7 +483,7 @@ public class DomainTest
 	@DisplayName( "Get all VM sound devices from libvirt XML file" )
 	public void testGetSoundDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getSoundDevices().size() );
 	}
 
@@ -491,7 +491,7 @@ public class DomainTest
 	@DisplayName( "Get all VM video devices from libvirt XML file" )
 	public void testGetVideoDevices()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getVideoDevices().size() );
 	}
 
@@ -499,7 +499,7 @@ public class DomainTest
 	@DisplayName( "Get all QEMU command line arguments from libvirt XML file" )
 	public void testGetQemuCmdlnArguments()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm_qemu-cmdln.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm_qemu-cmdln.xml" );
 		assertEquals( 2, vm.getQemuCmdlnArguments().size() );
 	}
 
@@ -507,7 +507,7 @@ public class DomainTest
 	@DisplayName( "Set QEMU command line arguments in libvirt XML file" )
 	public void testAddQemuCmdlnArguments()
 	{
-		Domain vm = this.newDomainInstance( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 0, vm.getQemuCmdlnArguments().size() );
 
 		vm.addQemuCmdlnArgument( "-set" );

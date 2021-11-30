@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
+import org.openslx.firmware.FirmwareException;
+import org.openslx.firmware.QemuFirmwareUtil;
 import org.openslx.libvirt.domain.Domain;
 import org.openslx.libvirt.domain.DomainUtils;
 import org.openslx.libvirt.domain.device.ControllerUsb;
@@ -206,6 +208,32 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 	@Override
 	public void transformEditable() throws VirtualizationConfigurationException
 	{
+	}
+
+	public void transformOsLoader() throws VirtualizationConfigurationException
+	{
+		final String sourceOsLoader = this.vmConfig.getOsLoader();
+		final String sourceOsArch = this.vmConfig.getOsArch();
+		final String sourceOsMachine = this.vmConfig.getOsMachine();
+
+		// transform OS loader for local editing
+		// check if OS loader is specified
+		if ( sourceOsLoader != null && !sourceOsLoader.isEmpty() ) {
+			// OS loader is specified so transform path to specified firmware path
+			// First, lookup QEMU firmware loader for target
+			String targetOsLoader = null;
+			try {
+				targetOsLoader = QemuFirmwareUtil.lookupTargetOsLoaderDefaultFwSpecDir( sourceOsLoader, sourceOsArch,
+						sourceOsMachine );
+			} catch ( FirmwareException e ) {
+				throw new VirtualizationConfigurationException( e.getLocalizedMessage() );
+			}
+
+			// Second, set target QEMU firmware loader if specified
+			if ( targetOsLoader != null && !targetOsLoader.isEmpty() ) {
+				this.vmConfig.setOsLoader( targetOsLoader );
+			}
+		}
 	}
 
 	@Override
