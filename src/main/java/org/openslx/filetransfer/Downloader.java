@@ -12,12 +12,13 @@ import javax.net.ssl.SSLContext;
 
 import net.jpountz.lz4.LZ4FastDecompressor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Downloader extends Transfer
 {
 
-	private static final Logger log = Logger.getLogger( Downloader.class );
+	private static final Logger log = LogManager.getLogger( Downloader.class );
 	
 	private final LZ4FastDecompressor decompressor = lz4factory.fastDecompressor();
 	

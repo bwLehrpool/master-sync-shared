@@ -2,12 +2,13 @@ package org.openslx.util;
 
 import java.io.File;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FsUtil
 {
 	
-	private static final Logger LOGGER = Logger.getLogger( FsUtil.class );
+	private static final Logger LOGGER = LogManager.getLogger( FsUtil.class );
 
 	public static String getRelativePath( File absolutePath, File parentDir )
 	{

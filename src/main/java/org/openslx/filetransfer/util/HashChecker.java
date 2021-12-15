@@ -9,7 +9,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class HashChecker
 {
@@ -17,7 +18,7 @@ public class HashChecker
 	public static final int CALC_HASH = 2;
 	public static final int CALC_CRC32 = 4;
 	
-	private static final Logger LOGGER = Logger.getLogger( HashChecker.class );
+	private static final Logger LOGGER = LogManager.getLogger( HashChecker.class );
 
 	private final BlockingQueue<HashTask> queue;
 

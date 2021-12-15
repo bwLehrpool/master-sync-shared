@@ -21,7 +21,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.util.Util;
 import org.openslx.util.XmlHelper;
 import org.openslx.virtualization.Version;
@@ -39,7 +40,7 @@ import org.xml.sax.SAXException;
  */
 public class VirtualizationConfigurationVirtualboxFileFormat
 {
-	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVirtualboxFileFormat.class );
+	private static final Logger LOGGER = LogManager.getLogger( VirtualizationConfigurationVirtualboxFileFormat.class );
 
 	// key information set during initial parsing of the XML file
 	private String osName = new String();

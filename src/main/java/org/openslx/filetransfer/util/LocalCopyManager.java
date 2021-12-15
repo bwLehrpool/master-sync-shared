@@ -9,7 +9,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.filetransfer.LocalChunkSource.ChunkSource;
 import org.openslx.filetransfer.LocalChunkSource.SourceFile;
 import org.openslx.util.Util;
@@ -17,7 +18,7 @@ import org.openslx.util.Util;
 public class LocalCopyManager extends Thread
 {
 
-	private static final Logger LOGGER = Logger.getLogger( LocalCopyManager.class );
+	private static final Logger LOGGER = LogManager.getLogger( LocalCopyManager.class );
 
 	private FileChunk currentChunk = null;
 

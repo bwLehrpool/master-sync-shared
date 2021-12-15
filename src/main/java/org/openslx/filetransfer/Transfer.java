@@ -15,7 +15,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import net.jpountz.lz4.LZ4Factory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.openslx.util.Util;
 
 public abstract class Transfer

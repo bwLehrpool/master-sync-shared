@@ -20,7 +20,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -28,7 +29,7 @@ import org.xml.sax.SAXException;
 
 public class XmlHelper
 {
-	private final static Logger LOGGER = Logger.getLogger( XmlHelper.class );
+	private final static Logger LOGGER = LogManager.getLogger( XmlHelper.class );
 
 	// TODO check thread-safety
 	private static final XPath XPath = XPathFactory.newInstance().newXPath();

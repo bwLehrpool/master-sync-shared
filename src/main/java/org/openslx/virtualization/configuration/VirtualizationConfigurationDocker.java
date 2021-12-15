@@ -6,7 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.virtualization.Version;
 import org.openslx.virtualization.virtualizer.VirtualizerDocker;
@@ -18,7 +19,7 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	 */
 	private static final String FILE_NAME_EXTENSION = null;
 
-	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationDocker.class);
+	private static final Logger LOGGER = LogManager.getLogger( VirtualizationConfigurationDocker.class);
 
 	/**
 	 * containerDefinition is a serialized tar.gz archive and represents a

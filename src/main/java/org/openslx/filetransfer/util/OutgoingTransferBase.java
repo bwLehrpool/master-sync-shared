@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.TransferInformation;
 import org.openslx.filetransfer.Uploader;
 
@@ -17,7 +18,7 @@ public abstract class OutgoingTransferBase extends AbstractTransfer
 	 * Constants
 	 */
 
-	private static final Logger LOGGER = Logger.getLogger( OutgoingTransferBase.class );
+	private static final Logger LOGGER = LogManager.getLogger( OutgoingTransferBase.class );
 
 	private static final long INACTIVITY_TIMEOUT = TimeUnit.MINUTES.toMillis( 5 );
 

@@ -16,7 +16,8 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.util.Util;
 
 class KeyValuePair
@@ -34,7 +35,7 @@ class KeyValuePair
 public class VirtualizationConfigurationVmwareFileFormat
 {
 
-	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVmwareFileFormat.class );
+	private static final Logger LOGGER = LogManager.getLogger( VirtualizationConfigurationVmwareFileFormat.class );
 
 	private Map<String, ConfigEntry> entries = new TreeMap<>( String.CASE_INSENSITIVE_ORDER );
 

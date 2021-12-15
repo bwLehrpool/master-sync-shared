@@ -8,8 +8,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.math.BigInteger;
 import java.util.List;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ public class CapabilitiesTest
 	public static void setUp()
 	{
 		// disable logging with log4j
-		LogManager.getRootLogger().setLevel( Level.OFF );
+		Configurator.setRootLevel( Level.OFF );
 	}
 
 	private Capabilities newCapabilitiesInstance( String xmlFileName )

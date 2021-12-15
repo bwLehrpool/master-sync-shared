@@ -2,7 +2,8 @@ package org.openslx.virtualization.configuration.transformation;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A transformation manager is a class to manage several transformations and their application.
@@ -37,7 +38,7 @@ public class TransformationManager<T, R>
 	/**
 	 * Logger instance to log messages.
 	 */
-	private static final Logger LOGGER = Logger.getLogger( TransformationManager.class );
+	private static final Logger LOGGER = LogManager.getLogger( TransformationManager.class );
 
 	/**
 	 * Create a transformation manager.

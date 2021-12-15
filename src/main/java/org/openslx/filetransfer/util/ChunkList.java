@@ -10,14 +10,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.zip.CRC32;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.filetransfer.LocalChunkSource.ChunkSource;
 import org.openslx.util.ThriftUtil;
 
 public class ChunkList
 {
 
-	private static final Logger LOGGER = Logger.getLogger( ChunkList.class );
+	private static final Logger LOGGER = LogManager.getLogger( ChunkList.class );
 
 	/**
 	 * Here we keep a list of all chunks in the proper order, in case we quickly need to access one

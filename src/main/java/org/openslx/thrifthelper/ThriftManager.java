@@ -8,7 +8,8 @@ import java.net.Socket;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -23,7 +24,7 @@ import org.openslx.util.Util;
 public class ThriftManager<T>
 {
 
-	private final static Logger LOGGER = Logger.getLogger( ThriftManager.class );
+	private final static Logger LOGGER = LogManager.getLogger( ThriftManager.class );
 
 	public interface ErrorCallback
 	{

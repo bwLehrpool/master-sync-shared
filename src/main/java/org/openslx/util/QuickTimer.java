@@ -3,7 +3,8 @@ package org.openslx.util;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This is a global, static {@link Timer} you can use anywhere for repeating
@@ -15,7 +16,7 @@ import org.apache.log4j.Logger;
  */
 public class QuickTimer {
 	
-	private static final Logger LOGGER = Logger.getLogger(QuickTimer.class);
+	private static final Logger LOGGER = LogManager.getLogger(QuickTimer.class);
 
 	private static final Timer timer = new Timer("QuickTimer", true);
 

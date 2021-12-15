@@ -13,11 +13,12 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class AsymKeyHolder
 {
-	private static final Logger LOG = Logger.getLogger( AsymKeyHolder.class );
+	private static final Logger LOG = LogManager.getLogger( AsymKeyHolder.class );
 
 	private static RSAPrivateKey privKey = null;
 	private static RSAPublicKey pubKey = null;

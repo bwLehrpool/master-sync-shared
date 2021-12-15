@@ -9,7 +9,8 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.thrift.TException;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.transport.TTransportException;
@@ -18,7 +19,7 @@ import org.openslx.thrifthelper.ThriftManager.ErrorCallback;
 class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 {
 
-	private final static Logger LOGGER = Logger.getLogger( ThriftHandler.class );
+	private final static Logger LOGGER = LogManager.getLogger( ThriftHandler.class );
 
 	protected interface WantClientCallback<T>
 	{

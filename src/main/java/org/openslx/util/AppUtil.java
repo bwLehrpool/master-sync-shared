@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 public class AppUtil
 {

@@ -12,7 +12,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
@@ -32,7 +33,7 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	 */
 	public static final String FILE_NAME_EXTENSION = "vmx";
 
-	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfigurationVmware.class );
+	private static final Logger LOGGER = LogManager.getLogger( VirtualizationConfigurationVmware.class );
 
 	private static final Pattern HDD_PATTERN = Pattern.compile( "^(ide\\d|scsi\\d|sata\\d|nvme\\d):?(\\d?)\\.(.*)",
 			Pattern.CASE_INSENSITIVE );

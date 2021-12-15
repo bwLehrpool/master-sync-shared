@@ -3,7 +3,9 @@ package org.openslx.virtualization.configuration.container;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.kamranzafar.jtar.TarEntry;
 import org.kamranzafar.jtar.TarInputStream;
 import org.kamranzafar.jtar.TarOutputStream;
@@ -22,7 +24,7 @@ public class ContainerDefinition {
 	//  TODO refatoring: tar.gz of this object is not useful, for smaller dockerfiles it makes the package lager.
 	//		 remove the containerRecipe, ContainerMeta holds in build_context the dockerfile.
 
-	protected static final Logger LOGGER = Logger.getLogger(ContainerDefinition.class);
+	protected static final Logger LOGGER = LogManager.getLogger(ContainerDefinition.class);
 
 	protected static final String CONTAINER_FILE = "dockerfile";
 	protected static final String CONTAINER_META_FILE = "container_meta.json";

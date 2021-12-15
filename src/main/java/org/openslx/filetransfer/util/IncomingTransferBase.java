@@ -14,7 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.TransferState;
 import org.openslx.bwlp.thrift.iface.TransferStatus;
 import org.openslx.filetransfer.DataReceivedCallback;
@@ -30,7 +31,7 @@ import org.openslx.util.ThriftUtil;
 public abstract class IncomingTransferBase extends AbstractTransfer implements HashCheckCallback
 {
 
-	private static final Logger LOGGER = Logger.getLogger( IncomingTransferBase.class );
+	private static final Logger LOGGER = LogManager.getLogger( IncomingTransferBase.class );
 
 	/**
 	 * Remote peer is uploading, so on our end, we have Downloaders

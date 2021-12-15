@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.virtualization.Version;
 import org.openslx.virtualization.hardware.VirtOptionValue;
@@ -20,7 +21,7 @@ import org.openslx.virtualization.virtualizer.Virtualizer;
  */
 public abstract class VirtualizationConfiguration
 {
-	private static final Logger LOGGER = Logger.getLogger( VirtualizationConfiguration.class );
+	private static final Logger LOGGER = LogManager.getLogger( VirtualizationConfiguration.class );
 
 	private final Virtualizer virtualizer;
 

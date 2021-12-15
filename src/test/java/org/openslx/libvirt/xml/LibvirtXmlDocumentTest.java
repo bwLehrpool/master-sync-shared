@@ -13,8 +13,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ public class LibvirtXmlDocumentTest
 	public static void setUp()
 	{
 		// disable logging with log4j
-		LogManager.getRootLogger().setLevel( Level.OFF );
+		Configurator.setRootLevel( Level.OFF );
 	}
 
 	private LibvirtXmlDocument newLibvirtXmlDocumentInstance( String xmlFileName )

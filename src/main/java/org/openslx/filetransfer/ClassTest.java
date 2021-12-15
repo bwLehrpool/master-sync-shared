@@ -28,8 +28,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.apache.log4j.BasicConfigurator;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.DefaultConfiguration;
 
 public class ClassTest
 {
@@ -39,15 +39,10 @@ public class ClassTest
 	private static String inFile;
 	private static String outFile;
 
-	static {
-		// This is a temporary workaround for this annoying log4j error msg.
-		// Initializing the logger before anything else is done.
-		BasicConfigurator.configure();
-		LoggerFactory.getLogger( "ROOT" );
-	}
-
 	public static void main( String[] args ) throws Exception
 	{
+		Configurator.initialize(new DefaultConfiguration());
+
 		if ( args.length != 4 ) {
 			System.out.println( "Need 4 argument: <keystore> <passphrase> <infile> <outfile>" );
 			System.exit( 1 );

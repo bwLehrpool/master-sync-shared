@@ -13,7 +13,8 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openslx.util.PrioThreadFactory;
 
 public class Listener
@@ -29,7 +30,7 @@ public class Listener
 
 	private static final byte CONNECTING_PEER_WANTS_TO_UPLOAD = 85; // hex - code 'U' = 85.
 	private static final byte CONNECTING_PEER_WANTS_TO_DOWNLOAD = 68; // hex - code 'D' = 68.
-	private static Logger log = Logger.getLogger( Listener.class );
+	private static Logger log = LogManager.getLogger( Listener.class );
 
 	/***********************************************************************/
 	/**

@@ -2,12 +2,13 @@ package org.openslx.util;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class GenericDataCache<T>
 {
 
-	private static final Logger LOGGER = Logger.getLogger( GenericDataCache.class );
+	private static final Logger LOGGER = LogManager.getLogger( GenericDataCache.class );
 
 	/**
 	 * How long the cached data is valid after fetching
