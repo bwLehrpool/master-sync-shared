@@ -12,6 +12,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<thrift.program>${basedir}/src/main/thrift/bwlp.thrift</thrift.program>
+		<thrift.outputDir>${basedir}/src/main/java</thrift.outputDir>
 	</properties>
 
 	<distributionManagement>
@@ -26,6 +28,42 @@
 			<url>http://mltk-services.ruf.uni-freiburg.de:8081/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<profiles>
+		<profile>
+			<id>thrift:generate</id>
+			<build>
+				<defaultGoal>validate</defaultGoal>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>thrift:gen</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<executable>thrift</executable>
+							<arguments>
+								<argument>--gen</argument>
+								<argument>java</argument>
+								<argument>-v</argument>
+								<argument>-out</argument>
+								<argument>${thrift.outputDir}</argument>
+								<argument>${thrift.program}</argument>
+							</arguments>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
