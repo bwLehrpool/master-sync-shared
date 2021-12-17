@@ -71,15 +71,6 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.10</version>
-				<configuration>
-					<workspace>${basedir}</workspace>
-					<workspaceCodeStylesURL>file://${basedir}/extras/eclipse-code-style.xml</workspaceCodeStylesURL>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M5</version>
 			</plugin>
