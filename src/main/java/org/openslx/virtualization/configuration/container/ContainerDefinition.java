@@ -6,17 +6,14 @@ import com.google.gson.stream.JsonReader;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.kamranzafar.jtar.TarEntry;
-import org.kamranzafar.jtar.TarInputStream;
-import org.kamranzafar.jtar.TarOutputStream;
-import org.openslx.util.TarArchiveUtil;
+import org.openslx.util.Util;
+import org.openslx.util.TarArchiveUtil.TarArchiveReader;
+import org.openslx.util.TarArchiveUtil.TarArchiveWriter;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class ContainerDefinition {
 
@@ -64,26 +61,15 @@ public class ContainerDefinition {
 		ContainerDefinition containerDef = new ContainerDefinition();
 
 		try {
-			TarInputStream tis = new TarInputStream(
-					new GZIPInputStream(new BufferedInputStream(new ByteArrayInputStream(rawTarData))));
+			TarArchiveReader tarReader = new TarArchiveReader(new ByteArrayInputStream(rawTarData), true, true);
 
-			TarEntry entry;
-
-			while ((entry = tis.getNextEntry()) != null) {
-				byte[] rawData = new byte[1024];
-				ByteArrayOutputStream output = new ByteArrayOutputStream();
-				int count;
-
-				// read everything from the TarInputStream for the current Entry
-				while ((count = tis.read(rawData)) != -1) {
-					output.write(rawData, 0, count);
-				}
-
-				if (entry.getName().equals(CONTAINER_FILE))
-					containerDef.setContainerRecipe(output.toByteArray());
-				if (entry.getName().equals(CONTAINER_META_FILE))
-					containerDef.setContainerMeta(output.toByteArray());
+			while (tarReader.hasNextEntry()) {
+				if (tarReader.getEntryName().equals(CONTAINER_FILE))
+					containerDef.setContainerRecipe(tarReader.readCurrentEntry());
+				if (tarReader.getEntryName().equals(CONTAINER_META_FILE))
+					containerDef.setContainerMeta(tarReader.readCurrentEntry());
 			}
+			tarReader.close();
 
 		} catch (IOException e) {
 			LOGGER.error("Could not create a ContainerDefinition Object for rawTarData", e);
@@ -127,18 +113,15 @@ public class ContainerDefinition {
 	public ByteBuffer toByteBuffer() {
 
 		ByteBuffer containerDef = null;
-
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			TarOutputStream output = new TarOutputStream(new GZIPOutputStream(baos));
-
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			TarArchiveUtil.tarPutFile(output, CONTAINER_META_FILE, gson.toJson(containerMeta));
-			TarArchiveUtil.tarPutFile(output, CONTAINER_FILE, containerRecipe);
-			output.close();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {			
+			TarArchiveWriter tarWriter = new TarArchiveWriter(baos);
+			tarWriter.writeFile(CONTAINER_META_FILE, gson.toJson(containerMeta));
+			tarWriter.writeFile(CONTAINER_FILE, containerRecipe);
+			Util.safeClose(tarWriter);
 
 			containerDef = ByteBuffer.wrap(baos.toByteArray());
-
 		} catch (IOException e) {
 			LOGGER.warn("Could not create a tar file", e);
 		}
