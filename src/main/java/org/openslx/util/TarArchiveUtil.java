@@ -1,9 +1,8 @@
 package org.openslx.util;
 
-import org.kamranzafar.jtar.TarEntry;
-import org.kamranzafar.jtar.TarHeader;
-import org.kamranzafar.jtar.TarInputStream;
-import org.kamranzafar.jtar.TarOutputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -23,9 +21,8 @@ public class TarArchiveUtil {
 
 	public static class TarArchiveReader implements AutoCloseable {
 		private boolean isCompressed;
-		private final TarInputStream tarInputStream;
-
-		private TarEntry currentEntry = null;
+		private final TarArchiveInputStream tarInputStream;
+		private TarArchiveEntry currentEntry = null;
 
 		public TarArchiveReader(InputStream in) throws IOException {
 			this(in,true,false);
@@ -43,11 +40,11 @@ public class TarArchiveUtil {
 				stream = new GZIPInputStream(stream);
 			}
 
-			this.tarInputStream = new TarInputStream(stream);
+			this.tarInputStream = new TarArchiveInputStream(stream);
 		}
 
 		public boolean hasNextEntry() throws IOException {
-			this.currentEntry = this.tarInputStream.getNextEntry();
+			this.currentEntry = this.tarInputStream.getNextTarEntry();
 			if (this.currentEntry != null) {
 				return true;
 			} else {
@@ -56,6 +53,9 @@ public class TarArchiveUtil {
 		}
 
 		public String getEntryName() {
+			if (this.currentEntry == null)
+				return null;
+				
 			return this.currentEntry.getName();
 		}
 
@@ -82,7 +82,8 @@ public class TarArchiveUtil {
 	{
 		private boolean isBuffered;
 		private boolean isCompressed;
-		private final TarOutputStream tarOutputStream;
+		// private final TarOutputStream tarOutputStream;
+		private final TarArchiveOutputStream tarOutputStream;
 	
 		public TarArchiveWriter (OutputStream out) throws IOException {
 			this(out, true, true);
@@ -102,7 +103,7 @@ public class TarArchiveUtil {
 				stream = new GZIPOutputStream(stream);
 			}
 
-			this.tarOutputStream = new TarOutputStream(stream);
+			this.tarOutputStream = new TarArchiveOutputStream(stream);
 		}
 
 		public void writeFile(String filename, String data) throws IOException {
@@ -121,13 +122,18 @@ public class TarArchiveUtil {
 		private void putFile(String filename, byte[] data) throws IOException {
 			if (data == null)
 				return;
-			tarOutputStream.putNextEntry(new TarEntry(TarHeader.createHeader(filename,
-				data.length, Util.unixTime(), false, 0644)));
+			
+			TarArchiveEntry entry = new TarArchiveEntry(filename);
+			entry.setSize(data.length);
+			entry.setModTime(System.currentTimeMillis());
+			entry.setMode(0644);
+			tarOutputStream.putArchiveEntry(entry);
 			tarOutputStream.write(data);
+			tarOutputStream.closeArchiveEntry();
 		}
 
 		@Override
-		public void close() throws Exception {
+		public void close() throws IOException {
 			tarOutputStream.close();
 		}
 	}
