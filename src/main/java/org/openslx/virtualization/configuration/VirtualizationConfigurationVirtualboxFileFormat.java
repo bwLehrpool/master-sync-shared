@@ -23,6 +23,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openslx.util.Resources;
 import org.openslx.util.Util;
 import org.openslx.util.XmlHelper;
 import org.openslx.virtualization.Version;
@@ -72,7 +73,8 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	/**
 	 * Path to the VirtualBox file format schemas within the *.jar file.
 	 */
-	private final static String FILE_FORMAT_SCHEMA_PREFIX_PATH = File.separator + "virtualbox" + File.separator + "xsd";
+	private final static String FILE_FORMAT_SCHEMA_PREFIX_PATH = Resources.PATH_SEPARATOR + "virtualbox"
+			+ Resources.PATH_SEPARATOR + "xsd";
 
 	// list of nodes to automatically remove when reading the vbox file
 	private static String[] blacklist = {

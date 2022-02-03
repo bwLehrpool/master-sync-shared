@@ -14,11 +14,12 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.commons.io.FileUtils;
+import org.openslx.util.Resources;
 
 public class QemuFirmwareTestResources
 {
-	private static final String QEMU_PREFIX_PATH = File.separator + "qemu";
-	private static final String QEMU_PREFIX_PATH_FW = QEMU_PREFIX_PATH + File.separator + "firmware";
+	private static final String QEMU_PREFIX_PATH = Resources.PATH_SEPARATOR + "qemu";
+	private static final String QEMU_PREFIX_PATH_FW = QEMU_PREFIX_PATH + Resources.PATH_SEPARATOR + "firmware";
 
 	private static final String QEMU_TEMP_PREFIX = "qemu-";
 
@@ -37,7 +38,7 @@ public class QemuFirmwareTestResources
 
 	private static String getResourceDirectory( Class<?> clazz, String resourceDir ) throws IOException
 	{
-		final String fwDirPath = resourceDir.substring( 1 ).concat( File.separator );
+		final String fwDirPath = resourceDir.substring( 1 ).concat( Resources.PATH_SEPARATOR );
 		final URL fwResource = clazz.getResource( resourceDir );
 		final File fwDirectory;
 		String fwDirectoryPath = null;
@@ -65,7 +66,7 @@ public class QemuFirmwareTestResources
 
 			// copy each file from the Jar to the temporary directory
 			fileNames.forEach( fileName -> {
-				final String resourceFileName = resourceDir + File.separator + fileName;
+				final String resourceFileName = resourceDir + Resources.PATH_SEPARATOR + fileName;
 				final File tempFile = new File( fwDirectory.getPath() + File.separator + fileName );
 				final InputStream fileInput = QemuFirmwareTestResources.class.getResourceAsStream( resourceFileName );
 				try {
@@ -93,7 +94,7 @@ public class QemuFirmwareTestResources
 
 	public static File getQemuFirmwareSpecFile( String fileName )
 	{
-		final String fwSpecFilePath = QEMU_PREFIX_PATH_FW + File.separator + fileName;
+		final String fwSpecFilePath = QEMU_PREFIX_PATH_FW + Resources.PATH_SEPARATOR + fileName;
 		final URL fwSpecFileUrl = QemuFirmwareTestResources.class.getResource( fwSpecFilePath );
 		return new File( fwSpecFileUrl.getFile() );
 	}

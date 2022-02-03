@@ -1,7 +1,8 @@
 package org.openslx.libvirt.xml;
 
-import java.io.File;
 import java.io.InputStream;
+
+import org.openslx.util.Resources;
 
 /**
  * Collection of resource utils for a Libvirt XML document.
@@ -14,32 +15,33 @@ public final class LibvirtXmlResources
 	/**
 	 * File path prefix of the absolute path to the libvirt resource folder in a *.jar file.
 	 */
-	private static final String LIBVIRT_PREFIX_PATH = File.separator + "libvirt";
+	private static final String LIBVIRT_PREFIX_PATH = Resources.PATH_SEPARATOR + "libvirt";
 
 	/**
 	 * File path prefix of the absolute path to the libosinfo resource folder in a *.jar file.
 	 */
-	private static final String LIBOSINFO_PREFIX_PATH = File.separator + "libvirt" + File.separator + "libosinfo";
+	private static final String LIBOSINFO_PREFIX_PATH = Resources.PATH_SEPARATOR + "libvirt" + Resources.PATH_SEPARATOR
+			+ "libosinfo";
 
 	/**
 	 * File path prefix of the absolute path to the libvirt XSL resource folder in a *.jar file.
 	 */
-	private static final String LIBVIRT_PREFIX_PATH_XSL = LIBVIRT_PREFIX_PATH + File.separator + "xsl";
+	private static final String LIBVIRT_PREFIX_PATH_XSL = LIBVIRT_PREFIX_PATH + Resources.PATH_SEPARATOR + "xsl";
 
 	/**
 	 * File path prefix of the absolute path to the libvirt RNG resource folder in a *.jar file.
 	 */
-	private static final String LIBVIRT_PREFIX_PATH_RNG = LIBVIRT_PREFIX_PATH + File.separator + "rng";
+	private static final String LIBVIRT_PREFIX_PATH_RNG = LIBVIRT_PREFIX_PATH + Resources.PATH_SEPARATOR + "rng";
 
 	/**
 	 * File path prefix of the absolute path to the libosinfo RNG resource folder in a *.jar file.
 	 */
-	private static final String LIBOSINFO_PREFIX_PATH_RNG = LIBOSINFO_PREFIX_PATH + File.separator + "rng";
-	
+	private static final String LIBOSINFO_PREFIX_PATH_RNG = LIBOSINFO_PREFIX_PATH + Resources.PATH_SEPARATOR + "rng";
+
 	/**
 	 * File path prefix of the absolute path to the libosinfo XML resource folder in a *.jar file.
 	 */
-	private static final String LIBOSINFO_PREFIX_PATH_XML = LIBOSINFO_PREFIX_PATH + File.separator + "xml";
+	private static final String LIBOSINFO_PREFIX_PATH_XML = LIBOSINFO_PREFIX_PATH + Resources.PATH_SEPARATOR + "xml";
 
 	/**
 	 * Returns a Libvirt resource as stream.
@@ -50,7 +52,7 @@ public final class LibvirtXmlResources
 	 */
 	private static InputStream getLibvirtResource( String prefix, String fileName )
 	{
-		final String path = prefix + File.separator + fileName;
+		final String path = prefix + Resources.PATH_SEPARATOR + fileName;
 		return LibvirtXmlResources.class.getResourceAsStream( path );
 	}
 
