@@ -56,7 +56,7 @@ public class ConfigurationLogicDozModServerToDozModClientTest
 		final String transformedConfig = config.getConfigurationAsString();
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
-		assertTrue( ConfigurationLogicTestUtils.isLibvirtContentEqual( expectedTransformedConfig, transformedConfig ) );
+		ConfigurationLogicTestUtils.assertXmlLibvirtEqual( expectedTransformedConfig, transformedConfig );
 		assertDoesNotThrow( () -> config.validate() );
 	}
 
@@ -77,8 +77,7 @@ public class ConfigurationLogicDozModServerToDozModClientTest
 		final String transformedConfig = config.getConfigurationAsString();
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
-		assertTrue(
-				ConfigurationLogicTestUtils.isVirtualBoxContentEqual( expectedTransformedConfig, transformedConfig ) );
+		ConfigurationLogicTestUtils.assertXmlVirtualBoxEqual( expectedTransformedConfig, transformedConfig );
 
 		// do not validate the VirtualBox configuration afterwards, since the inserted network configuration
 		// leads to an invalid DOM although the created output after the transformation is as expected
@@ -103,7 +102,7 @@ public class ConfigurationLogicDozModServerToDozModClientTest
 		final String transformedConfig = config.getConfigurationAsString();
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
-		assertTrue( ConfigurationLogicTestUtils.isContentEqual( expectedTransformedConfig, transformedConfig ) );
+		ConfigurationLogicTestUtils.assertVmxVmwareEqual( expectedTransformedConfig, transformedConfig );
 		assertDoesNotThrow( () -> config.validate() );
 	}
 }

@@ -746,7 +746,7 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 			return null;
 		} else {
 			// append newline at the end of the XML content to match the structure of an original Libvirt XML file
-			configuration += System.lineSeparator();
+			//configuration += LibvirtXmlDocument.LINE_SEPARATOR;
 			return configuration.getBytes( StandardCharsets.UTF_8 );
 		}
 	}

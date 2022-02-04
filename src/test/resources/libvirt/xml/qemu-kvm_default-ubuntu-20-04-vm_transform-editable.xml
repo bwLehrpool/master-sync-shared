@@ -54,18 +54,18 @@
       <address bus="0" controller="0" target="0" type="drive" unit="0"/>
       <readonly/>
     </disk>
-    <controller index="0" model="ich9-uhci1" type="usb">
+    <controller index="0" model="ich9-ehci1" type="usb">
       <address bus="0x00" domain="0x0000" function="0x7" slot="0x1d" type="pci"/>
     </controller>
-    <controller index="0" model="ich9-uhci2" type="usb">
+    <controller index="0" model="ich9-uhci1" type="usb">
       <master startport="0"/>
       <address bus="0x00" domain="0x0000" function="0x0" multifunction="on" slot="0x1d" type="pci"/>
     </controller>
-    <controller index="0" model="ich9-uhci3" type="usb">
+    <controller index="0" model="ich9-uhci2" type="usb">
       <master startport="2"/>
       <address bus="0x00" domain="0x0000" function="0x1" slot="0x1d" type="pci"/>
     </controller>
-    <controller index="0" model="ich9-ehci1" type="usb">
+    <controller index="0" model="ich9-uhci3" type="usb">
       <master startport="4"/>
       <address bus="0x00" domain="0x0000" function="0x2" slot="0x1d" type="pci"/>
     </controller>

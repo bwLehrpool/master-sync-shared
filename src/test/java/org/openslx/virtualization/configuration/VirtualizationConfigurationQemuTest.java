@@ -31,6 +31,7 @@ import org.openslx.libvirt.domain.device.DiskCdrom;
 import org.openslx.libvirt.domain.device.DiskFloppy;
 import org.openslx.libvirt.domain.device.DiskStorage;
 import org.openslx.libvirt.domain.device.Interface;
+import org.openslx.libvirt.xml.LibvirtXmlDocumentTest;
 import org.openslx.libvirt.xml.LibvirtXmlTestResources;
 import org.openslx.virtualization.Version;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration.ConfigurableOptionGroup;
@@ -179,8 +180,8 @@ public class VirtualizationConfigurationQemuTest
 
 		assertNotNull( unfilteredXmlConfig );
 
-		final int lengthUnfilteredXmlConfig = unfilteredXmlConfig.split( System.lineSeparator() ).length;
-		final int lengthOriginalXmlConfig = originalXmlConfig.split( System.lineSeparator() ).length;
+		final long lengthUnfilteredXmlConfig = LibvirtXmlDocumentTest.countLinesFromString( unfilteredXmlConfig );
+		final long lengthOriginalXmlConfig = LibvirtXmlDocumentTest.countLinesFromString( originalXmlConfig );
 
 		assertEquals( lengthOriginalXmlConfig, lengthUnfilteredXmlConfig );
 

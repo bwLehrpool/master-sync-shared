@@ -1,5 +1,6 @@
 package org.openslx.virtualization.configuration.logic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedReader;
@@ -7,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.virtualization.configuration.VirtualizationConfiguration;
+import org.xmlunit.assertj.XmlAssert;
 
 public class ConfigurationLogicTestUtils
 {
@@ -68,23 +71,9 @@ public class ConfigurationLogicTestUtils
 		return content;
 	}
 
-	public static boolean isContentEqual( String expectedContent, String actualContent )
+	public static void assertXmlEqual( String expectedXml, String actualXml ) throws AssertionError
 	{
-		final BufferedReader bfrContent1 = new BufferedReader( new StringReader( expectedContent ) );
-		final BufferedReader bfrContent2 = new BufferedReader( new StringReader( actualContent ) );
-		final List<String> linesContent1 = bfrContent1.lines().collect( Collectors.toList() );
-		final List<String> linesContent2 = bfrContent2.lines().collect( Collectors.toList() );
-
-		Collections.sort( linesContent1 );
-		Collections.sort( linesContent2 );
-
-		boolean ret = linesContent1.equals( linesContent2 );
-		if ( !ret ) {
-			System.out.println( "----- UNEXPECTED OUTPUT: -------------\n" );
-			System.out.println( actualContent );
-			System.out.println( "--------------------------------------\n" );
-		}
-		return ret;
+		XmlAssert.assertThat( expectedXml ).and( actualXml ).ignoreComments().areIdentical();
 	}
 
 	public static String removeSourceFilePaths( String content )
@@ -105,21 +94,55 @@ public class ConfigurationLogicTestUtils
 		return matcherUuidContent.replaceAll( "" );
 	}
 
-	public static boolean isLibvirtContentEqual( String content1, String content2 )
+	public static void assertXmlLibvirtEqual( String expectedXml, String actualXml ) throws AssertionError
 	{
 		// replace all source file paths with the empty String
-		final String filteredContent1 = ConfigurationLogicTestUtils.removeSourceFilePaths( content1 );
-		final String filteredContent2 = ConfigurationLogicTestUtils.removeSourceFilePaths( content2 );
+		final String filteredXml1 = ConfigurationLogicTestUtils.removeSourceFilePaths( expectedXml );
+		final String filteredXml2 = ConfigurationLogicTestUtils.removeSourceFilePaths( actualXml );
 
-		return ConfigurationLogicTestUtils.isContentEqual( filteredContent1, filteredContent2 );
+		ConfigurationLogicTestUtils.assertXmlEqual( filteredXml1, filteredXml2 );
 	}
 
-	public static boolean isVirtualBoxContentEqual( String content1, String content2 )
+	public static void assertXmlVirtualBoxEqual( String expectedXml, String actualXml ) throws AssertionError
 	{
 		// replace all UUIDs with the empty String
-		final String filteredContent1 = ConfigurationLogicTestUtils.removeUuid( content1 );
-		final String filteredContent2 = ConfigurationLogicTestUtils.removeUuid( content2 );
+		final String filteredXml1 = ConfigurationLogicTestUtils.removeUuid( expectedXml );
+		final String filteredXml2 = ConfigurationLogicTestUtils.removeUuid( actualXml );
 
-		return ConfigurationLogicTestUtils.isContentEqual( filteredContent1, filteredContent2 );
+		ConfigurationLogicTestUtils.assertXmlEqual( filteredXml1, filteredXml2 );
+	}
+
+	public static void assertVmxVmwareEqual( String expectedVmx, String actualVmx ) throws AssertionError
+	{
+		final BufferedReader bfrVmx1 = new BufferedReader( new StringReader( expectedVmx ) );
+		final BufferedReader bfrVmx2 = new BufferedReader( new StringReader( actualVmx ) );
+		final List<String> linesVmx1 = bfrVmx1.lines().collect( Collectors.toList() );
+		final List<String> linesVmx2 = bfrVmx2.lines().collect( Collectors.toList() );
+
+		// check output size first
+		if ( linesVmx1.size() != linesVmx2.size() ) {
+			// create list of items that are expected but missing in the actual output
+			final List<String> missingItems;
+			final String missingItemsDesc;
+
+			if ( linesVmx1.size() > linesVmx2.size() ) {
+				missingItemsDesc = "The following items are expected but missing in the actual output";
+				missingItems = new ArrayList<String>( linesVmx1 );
+				missingItems.removeAll( linesVmx2 );
+			} else {
+				missingItemsDesc = "The following items are not expected but occuring in the actual output";
+				missingItems = new ArrayList<String>( linesVmx2 );
+				missingItems.removeAll( linesVmx1 );
+			}
+
+			throw new AssertionError( String.format(
+					"VMX output size is not satisfied: Expected %d lines, but output has %d lines!\n"
+							+ "%s:\n"
+							+ "%s",
+					linesVmx1.size(), linesVmx2.size(), missingItemsDesc, missingItems ) );
+		}
+
+		// check the content of the output line by line
+		assertEquals( linesVmx1, linesVmx2 );
 	}
 }

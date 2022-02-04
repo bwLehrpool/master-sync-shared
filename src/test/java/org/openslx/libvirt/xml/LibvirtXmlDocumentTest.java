@@ -7,9 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
@@ -78,6 +82,22 @@ public class LibvirtXmlDocumentTest
 		return document;
 	}
 
+	private static long countLines( Reader input ) throws IOException
+	{
+		final BufferedReader bfrContent = new BufferedReader( input );
+		return bfrContent.lines().count();
+	}
+
+	public static long countLinesFromString( String input ) throws IOException
+	{
+		return LibvirtXmlDocumentTest.countLines( new StringReader( input ) );
+	}
+
+	public static long countLinesFromFile( File input ) throws IOException
+	{
+		return LibvirtXmlDocumentTest.countLines( new FileReader( input ) );
+	}
+
 	@Test
 	@DisplayName( "Read libvirt XML file to String" )
 	public void testReadXmlFileToString() throws LibvirtXmlSerializationException, IOException
@@ -86,12 +106,11 @@ public class LibvirtXmlDocumentTest
 		File originalXmlFile = LibvirtXmlTestResources.getLibvirtXmlFile( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 
 		final String readXmlContent = vm.toXml();
-		final String originalXmlContent = FileUtils.readFileToString( originalXmlFile, StandardCharsets.UTF_8 );
 
 		assertNotNull( readXmlContent );
 
-		final int lengthReadXmlContent = readXmlContent.split( System.lineSeparator() ).length;
-		final int lengthOriginalXmlContent = originalXmlContent.split( System.lineSeparator() ).length;
+		final long lengthReadXmlContent = LibvirtXmlDocumentTest.countLinesFromString( readXmlContent );
+		final long lengthOriginalXmlContent = LibvirtXmlDocumentTest.countLinesFromFile( originalXmlFile );
 
 		assertEquals( lengthOriginalXmlContent, lengthReadXmlContent );
 	}
@@ -111,8 +130,8 @@ public class LibvirtXmlDocumentTest
 
 		assertNotNull( readXmlContent );
 
-		final int lengthReadXmlContent = readXmlContent.split( System.lineSeparator() ).length;
-		final int lengthOriginalXmlContent = originalXmlContent.split( System.lineSeparator() ).length;
+		final long lengthReadXmlContent = LibvirtXmlDocumentTest.countLinesFromString( readXmlContent );
+		final long lengthOriginalXmlContent = LibvirtXmlDocumentTest.countLinesFromString( originalXmlContent );
 
 		assertEquals( lengthOriginalXmlContent, lengthReadXmlContent );
 	}

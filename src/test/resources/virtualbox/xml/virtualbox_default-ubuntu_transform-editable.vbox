@@ -18,6 +18,11 @@
         <IOAPIC enabled="true"/>
         <SmbiosUuidLittleEndian enabled="true"/>
       </BIOS>
+      <USB>
+        <Controllers>
+          <Controller name="OHCI" type="OHCI"/>
+        </Controllers>
+      </USB>
       <Network>
         <Adapter MACAddress="080027B86D12" enabled="true" slot="0" type="82540EM">
           <NAT/>
@@ -26,11 +31,6 @@
       <AudioAdapter codec="AD1980" driver="Pulse" enabled="true" enabledIn="false"/>
       <RTC localOrUTC="UTC"/>
       <Clipboard/>
-      <USB>
-        <Controllers>
-          <Controller name="OHCI" type="OHCI"/>
-        </Controllers>
-      </USB>
     </Hardware>
     <StorageControllers>
       <StorageController Bootable="true" PortCount="2" name="IDE" type="PIIX4" useHostIOCache="true"/>

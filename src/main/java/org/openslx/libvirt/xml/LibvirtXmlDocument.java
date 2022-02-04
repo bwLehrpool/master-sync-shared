@@ -312,7 +312,7 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 			DOMSource source = new DOMSource( this.xmlDocument );
 			StreamResult xmlString = new StreamResult( xmlWriter );
 			this.xmlTransformer.transform( source, xmlString );
-			xml = xmlWriter.toString() + System.lineSeparator();
+			xml = xmlWriter.toString();
 			xmlWriter.close();
 		} catch ( TransformerException | IOException e ) {
 			throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );
@@ -337,7 +337,6 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 			DOMSource source = new DOMSource( this.xmlDocument );
 			StreamResult xmlStream = new StreamResult( xmlWriter );
 			this.xmlTransformer.transform( source, xmlStream );
-			xmlWriter.append( System.lineSeparator() );
 			xmlWriter.close();
 		} catch ( TransformerException | IOException e ) {
 			throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );

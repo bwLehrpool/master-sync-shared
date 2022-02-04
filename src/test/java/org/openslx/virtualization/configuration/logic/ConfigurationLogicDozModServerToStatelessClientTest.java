@@ -50,7 +50,7 @@ public class ConfigurationLogicDozModServerToStatelessClientTest
 		final String transformedConfig = config.getConfigurationAsString();
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
-		assertTrue( ConfigurationLogicTestUtils.isContentEqual( expectedTransformedConfig, transformedConfig ) );
+		ConfigurationLogicTestUtils.assertXmlEqual( expectedTransformedConfig, transformedConfig );
 		assertDoesNotThrow( () -> config.validate() );
 	}
 
@@ -71,8 +71,7 @@ public class ConfigurationLogicDozModServerToStatelessClientTest
 		final String transformedConfig = config.getConfigurationAsString();
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
-		assertTrue(
-				ConfigurationLogicTestUtils.isVirtualBoxContentEqual( expectedTransformedConfig, transformedConfig ) );
+		ConfigurationLogicTestUtils.assertXmlVirtualBoxEqual( expectedTransformedConfig, transformedConfig );
 
 		// do not validate the VirtualBox configuration afterwards, since the inserted
 		// place holders do not match valid primitive values from the XML schema
@@ -97,7 +96,7 @@ public class ConfigurationLogicDozModServerToStatelessClientTest
 		final String transformedConfig = config.getConfigurationAsString();
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
-		assertTrue( ConfigurationLogicTestUtils.isContentEqual( expectedTransformedConfig, transformedConfig ) );
+		ConfigurationLogicTestUtils.assertVmxVmwareEqual( expectedTransformedConfig, transformedConfig );
 		assertDoesNotThrow( () -> config.validate() );
 	}
 }
