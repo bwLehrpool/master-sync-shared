@@ -1,20 +1,21 @@
 package org.openslx.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class AppUtil
 {
+
+	private final static Logger LOGGER = LogManager.getLogger( AppUtil.class );
+
 	private static final int PROPERTY_MAX_WIDTH = 30;
 
 	private static final String MANIFEST_REVISION_VERSION = "Revision-Version";
@@ -38,30 +39,30 @@ public class AppUtil
 	private static final String PROPERTY_JAVA_VERSION = "java.version";
 	private static final String PROPERTY_JAVA_VERSION_VM = "java.vm.version";
 	private static final String PROPERTY_JAVA_VERSION_RUNTIME = "java.runtime.version";
+	
+	private static Attributes manifestAttributes = null;
 
 	private static String getManifestValue( final String entry )
 	{
-		File jarFile = null;
-		InputStream jarFileStream = null;
-		JarInputStream jarStream = null;
-		String value = null;
+		if ( manifestAttributes == null ) {
+			InputStream jarFileStream = null;
+			JarInputStream jarStream = null;
+			// Do this so in case of failure, we won't open the jar again and again and spam exceptions to the log
+			manifestAttributes = new Attributes();
 
-		try {
-			final String jarFilename = AppUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-			jarFile = new File( jarFilename );
-			jarFileStream = new FileInputStream( jarFile );
-			jarStream = new JarInputStream( jarFileStream );
-
-			final Manifest mf = jarStream.getManifest();
-			value = mf.getMainAttributes().getValue( entry );
-		} catch ( URISyntaxException | IOException e ) {
-			return value;
-		} finally {
-			Util.safeClose( jarStream );
-			Util.safeClose( jarFileStream );
+			try {
+				jarFileStream = AppUtil.class.getProtectionDomain().getCodeSource().getLocation().openStream();
+				jarStream = new JarInputStream( jarFileStream );
+				final Manifest mf = jarStream.getManifest();
+				manifestAttributes = mf.getMainAttributes();
+			} catch ( Exception e ) {
+				LOGGER.warn( "Cannot read jar/manifest attributes", e );
+			} finally {
+				Util.safeClose( jarStream, jarFileStream );
+			}
 		}
 
-		return value;
+		return manifestAttributes.getValue( entry );
 	}
 
 	public static String getRevisionVersion()
