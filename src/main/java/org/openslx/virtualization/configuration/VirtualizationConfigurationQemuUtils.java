@@ -114,7 +114,7 @@ public class VirtualizationConfigurationQemuUtils
 	private static String createAlphabeticalDeviceName( String devicePrefix, int deviceNumber )
 	{
 		if ( deviceNumber < 0 || deviceNumber >= ( 'z' - 'a' ) ) {
-			String errorMsg = new String( "Device number is out of range to be able to create a valid device name." );
+			String errorMsg = "Device number is out of range to be able to create a valid device name.";
 			throw new IllegalArgumentException( errorMsg );
 		}
 

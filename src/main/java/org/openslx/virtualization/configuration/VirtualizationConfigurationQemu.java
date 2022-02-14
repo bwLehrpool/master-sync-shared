@@ -115,7 +115,7 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		try {
 			// read and parse Libvirt domain XML configuration document
-			this.vmConfig = new Domain( new String( vmContent ) );
+			this.vmConfig = new Domain( new String( vmContent, StandardCharsets.UTF_8 ) );
 		} catch ( LibvirtXmlDocumentException | LibvirtXmlSerializationException | LibvirtXmlValidationException e ) {
 			throw new VirtualizationConfigurationException( e.getLocalizedMessage() );
 		}
@@ -239,7 +239,7 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 	@Override
 	public boolean addEmptyHddTemplate()
 	{
-		return this.addHddTemplate( new String(), null, null );
+		return this.addHddTemplate( "", null, null );
 	}
 
 	@Override

@@ -210,7 +210,7 @@ public class DiskImageQcow2 extends DiskImage
 		// check QCOW2 file format version
 		if ( qcowVersion < 2 || qcowVersion > 3 ) {
 			// QCOW2 disk image does not contain a valid QCOW2 version
-			final String errorMsg = new String( "Invalid QCOW2 version in header found!" );
+			final String errorMsg = "Invalid QCOW2 version in header found!";
 			throw new DiskImageException( errorMsg );
 		}
 

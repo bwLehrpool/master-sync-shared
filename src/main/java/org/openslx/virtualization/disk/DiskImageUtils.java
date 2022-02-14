@@ -119,11 +119,11 @@ public class DiskImageUtils
 	 * @param diskImage file to a disk storing the image content.
 	 * @param offset offset in bytes for reading <code>numBytes</code> bytes.
 	 * @param numBytes number of bytes to read at <code>offset</code>.
-	 * @return read bytes from the disk image file as {@link String}.
+	 * @return read bytes from the disk image file as {@link byte[]}.
 	 * 
-	 * @throws DiskImageException unable to read two bytes from the disk image file.
+	 * @throws DiskImageException unable to read bytes from the disk image file.
 	 */
-	public static String readBytesAsString( RandomAccessFile diskImage, long offset, int numBytes )
+	public static byte[] readBytesAsArray( RandomAccessFile diskImage, long offset, int numBytes )
 			throws DiskImageException
 	{
 		final long imageSize = DiskImageUtils.getImageSize( diskImage );
@@ -139,6 +139,6 @@ public class DiskImageUtils
 			}
 		}
 
-		return new String( values );
+		return values;
 	}
 }

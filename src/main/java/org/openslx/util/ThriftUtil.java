@@ -41,6 +41,7 @@ public class ThriftUtil {
 		BufferedReader reader;
 		StringBuffer content = new StringBuffer("");
 		try {
+			// Why is a generic function to convert a buffer to string CALLING A VMWARE SPECIFIC FUNCTION!?
 			reader = VirtualizationConfigurationVmwareFileFormat.getVmxReader(bytes, bytes.length);
 			String line="";
 			while ((line=reader.readLine()) != null) {

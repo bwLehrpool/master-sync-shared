@@ -1,6 +1,8 @@
 package org.openslx.virtualization.disk;
 
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import org.openslx.virtualization.Version;
 
@@ -16,6 +18,10 @@ public class DiskImageVdi extends DiskImage
 	 * Big endian representation of the little endian VDI magic bytes (signature).
 	 */
 	private static final int VDI_MAGIC = 0x7f10dabe;
+	/**
+	 * Just 16 null-bytes
+	 */
+	private static final byte[] ZERO_UUID = new byte[16];
 
 	/**
 	 * Creates a new VDI disk image from an existing VDI image file.
@@ -73,10 +79,9 @@ public class DiskImageVdi extends DiskImage
 		final RandomAccessFile diskFile = this.getDiskImage();
 
 		// if parent UUID is set, the VDI file is a snapshot
-		final String parentUuid = DiskImageUtils.readBytesAsString( diskFile, 440, 16 );
-		final String zeroUuid = new String( new byte[ 16 ] );
+		byte[] parentUuid = DiskImageUtils.readBytesAsArray( diskFile, 440, 16 );
 
-		return !zeroUuid.equals( parentUuid );
+		return !Arrays.equals( ZERO_UUID, parentUuid );
 	}
 
 	@Override
@@ -94,7 +99,9 @@ public class DiskImageVdi extends DiskImage
 	public String getDescription() throws DiskImageException
 	{
 		final RandomAccessFile diskFile = this.getDiskImage();
-		return DiskImageUtils.readBytesAsString( diskFile, 84, 256 );
+		byte[] data = DiskImageUtils.readBytesAsArray( diskFile, 84, 256 );
+		// This will replace invalid chars. Maybe use CharsetDecoder and fall back to latin1 on error
+		return new String( data, StandardCharsets.UTF_8 );
 	}
 
 	@Override

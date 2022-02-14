@@ -117,12 +117,22 @@ public class VirtualizationConfigurationVmwareFileFormat
 	public static BufferedReader getVmxReader( byte[] vmxContent, int length ) throws IOException
 	{
 		Charset cs = getCharset( vmxContent, length );
+		if ( cs == null )
+			cs = StandardCharsets.UTF_8; // YES BECAUSE THIS IS NOT VMX AND EVERYTHING IS SHIT
 		return new BufferedReader( new InputStreamReader( new ByteArrayInputStream( vmxContent, 0, length ), cs ) );
 	}
 
+	/**
+	 * Get charset of config. Returns null if input doesn't look like a vmx file.
+	 * @param vmxContent
+	 * @param length
+	 * @return
+	 */
 	public static Charset getCharset( byte[] vmxContent, int length )
 	{
 		String csName = detectCharset( new ByteArrayInputStream( vmxContent, 0, length ) );
+		if ( csName == null )
+			return null;
 		Charset cs = null;
 		try {
 			cs = Charset.forName( csName );
@@ -146,8 +156,9 @@ public class VirtualizationConfigurationVmwareFileFormat
 		return ret;
 	}
 
-	public static String detectCharset( InputStream is )
+	private static String detectCharset( InputStream is )
 	{
+		boolean isVmware = false;
 		try {
 			BufferedReader csDetectReader = new BufferedReader( new InputStreamReader( is, StandardCharsets.ISO_8859_1 ) );
 			String line;
@@ -158,10 +169,15 @@ public class VirtualizationConfigurationVmwareFileFormat
 				if ( entry.key.equals( ".encoding" ) || entry.key.equals( "encoding" ) ) {
 					return entry.value;
 				}
+				if ( entry.key.equals( "virtualHW.version" ) || entry.key.equals( "memsize" ) || entry.key.equals( "displayName") ) {
+					isVmware = true;
+				}
 			}
 		} catch ( Exception e ) {
 			LOGGER.warn( "Could not detect charset, fallback to latin1", e );
 		}
+		if ( !isVmware )
+			return null;
 		// Dumb fallback
 		return "ISO-8859-1";
 	}

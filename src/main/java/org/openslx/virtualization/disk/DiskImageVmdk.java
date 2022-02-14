@@ -1,6 +1,7 @@
 package org.openslx.virtualization.disk;
 
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 
 import org.openslx.util.Util;
 import org.openslx.virtualization.configuration.VirtualizationConfigurationVmwareFileFormat;
@@ -117,15 +118,15 @@ public class DiskImageVmdk extends DiskImage
 			// get content of descriptor file embedded into the VMDK disk image
 			final long vmdkDescriptorOffset = vmdkDescriptorSectorOffset * DiskImageVmdk.VMDK_SECTOR_SIZE;
 			final long vmdkDescriptorSizeMax = vmdkDescriptorSectorSize * DiskImageVmdk.VMDK_SECTOR_SIZE;
-			final String descriptorStr = DiskImageUtils.readBytesAsString( diskFile, vmdkDescriptorOffset,
-					Long.valueOf( vmdkDescriptorSizeMax ).intValue() );
+			final String descriptorStr = new String ( DiskImageUtils.readBytesAsArray( diskFile, vmdkDescriptorOffset,
+					Long.valueOf( vmdkDescriptorSizeMax ).intValue() ), StandardCharsets.US_ASCII );
 
 			// get final length of the content within the sectors to be able to trim all 'zero' characters
 			final int vmdkDescriptorSize = descriptorStr.indexOf( 0 );
 
 			// if final length of the content is invalid, throw an exception 
 			if ( vmdkDescriptorSize > vmdkDescriptorSizeMax || vmdkDescriptorSize < 0 ) {
-				final String errorMsg = new String( "Embedded descriptor size in VMDK disk image is invalid!" );
+				final String errorMsg = "Embedded descriptor size in VMDK disk image is invalid!";
 				throw new DiskImageException( errorMsg );
 			}
 

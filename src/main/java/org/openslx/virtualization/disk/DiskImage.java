@@ -136,7 +136,7 @@ public abstract class DiskImage implements Closeable
 			throw e;
 		}
 		Util.safeClose( fileHandle );
-		final String errorMsg = new String( "File '" + diskImagePath.getAbsolutePath() + "' is not a valid disk image!" );
+		final String errorMsg = "File '" + diskImagePath.getAbsolutePath() + "' is not a valid disk image!";
 		throw new DiskImageException( errorMsg );
 	}
 

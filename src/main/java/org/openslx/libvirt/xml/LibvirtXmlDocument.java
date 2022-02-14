@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -74,7 +75,7 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 			domFactory.setNamespaceAware( true );
 			this.domBuilder = domFactory.newDocumentBuilder();
 		} catch ( ParserConfigurationException e ) {
-			String errorMsg = new String( "Setting up XML context for reading from the Libvirt XML document failed." );
+			String errorMsg = "Setting up XML context for reading from the Libvirt XML document failed.";
 			throw new LibvirtXmlDocumentException( errorMsg );
 		}
 
@@ -91,8 +92,9 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 			InputStream xslOutputSchemaStream = LibvirtXmlResources.getLibvirtXsl( "xml-output-transformation.xsl" );
 			StreamSource xslOutputSchema = new StreamSource( xslOutputSchemaStream );
 			this.xmlTransformer = transformerFactory.newTransformer( xslOutputSchema );
+			this.xmlTransformer.setOutputProperty( OutputKeys.ENCODING, "UTF-8" );
 		} catch ( TransformerConfigurationException e ) {
-			String errorMsg = new String( "Setting up XML context for writing to the Libvirt XML document failed." );
+			String errorMsg = "Setting up XML context for writing to the Libvirt XML document failed.";
 			throw new LibvirtXmlDocumentException( errorMsg );
 		}
 
@@ -101,7 +103,7 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 			try {
 				this.rngValidator = new LibvirtXmlSchemaValidator( rngSchema );
 			} catch ( SAXException e ) {
-				String errorMsg = new String( "Setting up XML context for validating to the Libvirt XML document failed." );
+				String errorMsg = "Setting up XML context for validating to the Libvirt XML document failed.";
 				e.printStackTrace();
 				throw new LibvirtXmlDocumentException( errorMsg );
 			}

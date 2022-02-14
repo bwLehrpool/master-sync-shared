@@ -122,8 +122,8 @@ public class TransformationManager<T, R>
 			try {
 				transformation.apply( this.config, this.args );
 			} catch ( TransformationException e ) {
-				final String errorMsg = new String(
-						"Error in configuration filter '" + transformation.getName() + "': " + e.getLocalizedMessage() );
+				final String errorMsg =
+						"Error in configuration filter '" + transformation.getName() + "': " + e.getLocalizedMessage();
 				throw new TransformationException( errorMsg );
 			}
 		}
@@ -136,7 +136,7 @@ public class TransformationManager<T, R>
 	 */
 	private String showTransformations()
 	{
-		String transformationSummary = new String();
+		String transformationSummary = "";
 		final int maxFilterNumCharacters = ( this.transformations.size() + 1 ) / 10;
 
 		for ( int i = 0; i < this.transformations.size(); i++ ) {

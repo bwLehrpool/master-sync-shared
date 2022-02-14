@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
@@ -106,7 +107,7 @@ class LibvirtXmlSchemaResourceInput implements LSInput
 				int inputLength = this.inputStream.available();
 				byte[] input = new byte[ inputLength ];
 				this.inputStream.read( input );
-				data = new String( input );
+				data = new String( input, StandardCharsets.UTF_8 );
 			} catch ( IOException e ) {
 				e.printStackTrace();
 			}

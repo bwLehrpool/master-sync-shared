@@ -73,8 +73,8 @@ public class Video extends Device
 				// only set acceleration on supported Virtio GPUs
 				this.setXmlElementAttributeValueYesNo( "model/acceleration", "accel2d", acceleration );
 			} else {
-				String errorMsg = new String(
-						"Video card model '" + model.toString() + "' does not support enabled 2D hardware acceleration." );
+				String errorMsg =
+						"Video card model '" + model.toString() + "' does not support enabled 2D hardware acceleration.";
 				throw new IllegalArgumentException( errorMsg );
 			}
 		}
@@ -103,8 +103,8 @@ public class Video extends Device
 			// only set acceleration on supported Virtio GPUs
 			this.setXmlElementAttributeValueYesNo( "model/acceleration", "accel3d", acceleration );
 		} else {
-			String errorMsg = new String(
-					"Video card model '" + model.toString() + "' does not support enabled 3D hardware acceleration." );
+			String errorMsg =
+					"Video card model '" + model.toString() + "' does not support enabled 3D hardware acceleration.";
 			throw new IllegalArgumentException( errorMsg );
 		}
 	}

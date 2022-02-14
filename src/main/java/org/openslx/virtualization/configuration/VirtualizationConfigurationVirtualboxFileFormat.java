@@ -44,7 +44,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	private static final Logger LOGGER = LogManager.getLogger( VirtualizationConfigurationVirtualboxFileFormat.class );
 
 	// key information set during initial parsing of the XML file
-	private String osName = new String();
+	private String osName = "";
 	private ArrayList<HardDisk> hddsArray = new ArrayList<HardDisk>();
 
 	// XPath and DOM parsing related members
