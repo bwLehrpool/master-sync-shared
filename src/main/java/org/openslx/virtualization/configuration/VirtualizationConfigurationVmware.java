@@ -55,11 +55,12 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 				"^time\\.synchronize",
 				"^bios\\.bootDelay", "^rtc\\.", "^xhci[.:]", "^usb_xhci[.:]", "\\.deviceType$", "\\.port$", "\\.parent$",
 				"^usb[.:]",
-				"^firmware", "^hpet", "^vm\\.genid" };
-		STATELESS_WHITELIST_PATTERN = Pattern.compile( String.join( "|", list1 ).toLowerCase(), Pattern.CASE_INSENSITIVE );
+				"^firmware", "^hpet", "^vm\\.genid",
+				"^svga\\.graphicsMemoryKB$" };
+		STATELESS_WHITELIST_PATTERN = Pattern.compile( String.join( "|", list1 ), Pattern.CASE_INSENSITIVE );
 		// LOWERCASE - Upload privacy filter
 		String[] list2 = { "^displayname$", "^extendedconfigfile$", "^gui\\.", "^nvram$", "^memsize$" };
-		PRIVACY_BLACKLIST_PATTERN = Pattern.compile( String.join( "|", list2 ).toLowerCase(), Pattern.CASE_INSENSITIVE );
+		PRIVACY_BLACKLIST_PATTERN = Pattern.compile( String.join( "|", list2 ), Pattern.CASE_INSENSITIVE );
 	}
 
 	public static enum EthernetType
