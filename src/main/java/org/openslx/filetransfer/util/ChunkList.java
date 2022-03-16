@@ -415,6 +415,35 @@ public class ChunkList
 		return sb.toString();
 	}
 
+	public synchronized String getStats()
+	{
+		int complete = 0, copying = 0, hashing = 0, missing = 0, qfc = 0, uploading = 0;
+		for ( FileChunk chunk : allChunks ) {
+			switch ( chunk.status ) {
+			case COMPLETE:
+				complete++;
+				break;
+			case COPYING:
+				copying++;
+				break;
+			case HASHING:
+				hashing++;
+				break;
+			case MISSING:
+				missing++;
+				break;
+			case QUEUED_FOR_COPY:
+				qfc++;
+				break;
+			case UPLOADING:
+				uploading++;
+				break;
+			}
+		}
+		return "(" + allChunks.size() + ":" + completeChunks.size() + "/" + pendingChunks.size() + "/" + missingChunks.size() + ")"
+				+ " (" + complete + "/" + copying + "/" + hashing + "/" + missing + "/" + qfc + "/" + uploading + ")";
+	}
+
 	public synchronized boolean isEmpty()
 	{
 		return allChunks.isEmpty();

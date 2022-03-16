@@ -154,7 +154,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 	@Override
 	public final int getActiveConnectionCount()
 	{
-		return downloads.size();
+		synchronized ( downloads ) {
+			return downloads.size();
+		}
 	}
 
 	public final boolean hashesEqual( List<ByteBuffer> blockHashes )
@@ -390,7 +392,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				currentChunk = chunks.getMissing();
 			} catch ( InterruptedException e ) {
 				Thread.currentThread().interrupt();
-				LOGGER.info("Incoming transfer connection was interrupted");
+				LOGGER.info( "Incoming transfer connection was interrupted" );
 				return null;
 			}
 			if ( currentChunk == null ) {
@@ -464,6 +466,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				@Override
 				public void run()
 				{
+					int active;
 					try {
 						CbHandler cbh = new CbHandler( connection );
 						if ( connection.download( cbh, cbh ) ) {
@@ -482,7 +485,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 								}
 								chunkStatusChanged( cbh.currentChunk );
 							}
-							LOGGER.debug( "Connection for " + getTmpFileName().getAbsolutePath() + " dropped" );
+							LOGGER.info( "Connection for " + getTmpFileName().getAbsolutePath() + " dropped prematurely" );
 						}
 						if ( state != TransferState.FINISHED && state != TransferState.ERROR ) {
 							lastActivityTime.set( System.currentTimeMillis() );
@@ -490,6 +493,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 					} finally {
 						synchronized ( downloads ) {
 							downloads.remove( connection );
+							active = downloads.size();
 						}
 					}
 					if ( chunks.isComplete() ) {
@@ -500,6 +504,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 						if ( localCopyManager != null ) {
 							localCopyManager.trigger();
 						}
+						LOGGER.info( "Downloader disconnected, " + active + " still running. " + chunks.getStats() );
+					} else {
+						LOGGER.info( "Downloader disconnected, state=" + state + ". " + chunks.getStats() );
 					}
 				}
 			} );
