@@ -216,11 +216,11 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 	public void updateBlockHashList( List<byte[]> hashList )
 	{
 		if ( state != TransferState.IDLE && state != TransferState.WORKING ) {
-			LOGGER.debug( this.getId() + ": Rejecting block hash list in state " + state );
+			LOGGER.info( this.getId() + ": Rejecting block hash list in state " + state );
 			return;
 		}
 		if ( hashList == null ) {
-			LOGGER.debug( this.getId() + ": Rejecting null block hash list" );
+			LOGGER.info( this.getId() + ": Rejecting null block hash list" );
 			return;
 		}
 		int firstNew = chunks.updateSha1Sums( hashList );
@@ -564,7 +564,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 	public void hashCheckDone( HashResult result, byte[] data, FileChunk chunk )
 	{
 		if ( state != TransferState.IDLE && state != TransferState.WORKING ) {
-			LOGGER.debug( "hashCheckDone called in bad state " + state.name() );
+			LOGGER.warn( "hashCheckDone called in bad state " + state.name() );
 			return;
 		}
 		switch ( result ) {
@@ -618,7 +618,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		try {
 			data = loadChunkFromFile( chunk );
 		} catch ( EOFException e1 ) {
-			LOGGER.warn( "Cannot queue unhashed chunk: file too short. Marking is invalid." );
+			LOGGER.warn( "Cannot queue unhashed chunk: file too short. Marking as invalid." );
 			chunks.markFailed( chunk );
 			chunkStatusChanged( chunk );
 			return;

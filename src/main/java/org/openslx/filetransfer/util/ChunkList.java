@@ -205,7 +205,7 @@ public class ChunkList
 					missingChunks.addAll( append );
 				}
 			} catch ( Exception e ) {
-				LOGGER.warn( "chunk clone list if messed up", e );
+				LOGGER.warn( "chunk clone list is messed up", e );
 			}
 		}
 	}
