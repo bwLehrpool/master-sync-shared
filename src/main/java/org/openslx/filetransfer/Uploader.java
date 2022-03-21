@@ -136,6 +136,18 @@ public class Uploader extends Transfer
 				this.close( "Could not open given file for reading.", callback, true );
 				return false;
 			}
+			byte[] data = null;
+			// Cannot go above 500000 for backwards compat
+			for ( int bufsiz = 500; bufsiz >= 100 && data == null; bufsiz -= 100 ) {
+				try {
+					data = new byte[ bufsiz * 1000 ];
+				} catch ( OutOfMemoryError e ) {
+				}
+			}
+			if ( data == null ) {
+				this.close( "Could not allocate buffer for reading.", callback, true );
+				return false;
+			}
 			while ( !Thread.currentThread().isInterrupted() ) { // Loop as long as remote peer is requesting chunks from this file
 				// Read meta data of remote peer - either new range, or it's telling us it's done
 				MetaData meta = readMetaData();
@@ -158,14 +170,14 @@ public class Uploader extends Transfer
 						return false;
 					}
 				} catch ( IOException e ) {
-					this.close( "Could not get current length of file " + filename, callback, false );
+					this.close( "Could not get current length of file " + filename, callback, false, e );
 					return false;
 				}
 				// Seek to requested chunk
 				try {
 					file.seek( requestedRange.startOffset );
 				} catch ( IOException e ) {
-					this.close( "Could not seek to start of requested range in given file (" + requestedRange.startOffset + ")", callback, true );
+					this.close( "Could not seek to start of requested range in given file (" + requestedRange.startOffset + ")", callback, true, e );
 					return false;
 				}
 				// Send confirmation of range and compression mode we're about to send
@@ -185,7 +197,6 @@ public class Uploader extends Transfer
 					return false;
 				}
 				// Finally send requested chunk
-				byte[] data = new byte[ 500000 ]; // 500kb
 				int hasRead = 0;
 				int length = requestedRange.getLength();
 				while ( hasRead < length ) {
@@ -193,7 +204,7 @@ public class Uploader extends Transfer
 					try {
 						ret = file.read( data, 0, Math.min( length - hasRead, data.length ) );
 					} catch ( IOException e ) {
-						this.close( "Error reading from file ", callback, true );
+						this.close( "Error reading from file ", callback, true, e );
 						return false;
 					}
 					if ( ret == -1 ) {
@@ -204,7 +215,7 @@ public class Uploader extends Transfer
 					try {
 						outStr.write( data, 0, ret );
 					} catch ( IOException e ) {
-						this.close( "Sending payload failed" );
+						this.close( "Sending payload failed", e );
 						return false;
 					}
 					if ( callback != null )

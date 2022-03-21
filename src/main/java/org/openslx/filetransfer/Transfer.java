@@ -219,11 +219,17 @@ public abstract class Transfer
 	 */
 	protected void close( String error, UploadStatusCallback callback, boolean sendToPeer )
 	{
+		close( error, callback, sendToPeer, null );
+	}
+
+	protected void close( String error, UploadStatusCallback callback, boolean sendToPeer, Exception e )
+	{
 		if ( error != null ) {
 			if ( sendToPeer )
 				sendErrorCode( error );
 			if ( callback != null )
 				callback.uploadError( error );
+			log.info( "Closing with error '" + error + "'", e );
 		}
 		synchronized ( transferSocket ) {
 			safeClose( dataFromServer, outStream, transferSocket );
@@ -232,7 +238,12 @@ public abstract class Transfer
 
 	protected void close( String error )
 	{
-		close( error, null, false );
+		close( error, null );
+	}
+
+	protected void close( String error, Exception e )
+	{
+		close( error, null, false, e );
 	}
 
 	public void cancel()

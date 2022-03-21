@@ -116,6 +116,7 @@ public class Downloader extends Transfer
 				compressed += compressedLength;
 				uncompressed += decompressedLength;
 				if ( decompressedLength > len ) {
+					// TODO: Partial reads with buffering, if remote payload is larger than our buffer
 					throw new RuntimeException( "This should never happen! ;)" );
 				}
 				if ( decompressedLength == compressedLength ) {
@@ -168,6 +169,19 @@ public class Downloader extends Transfer
 		}
 		FileRange requestedRange;
 		try {
+			byte[] incoming = new byte[ 500000 ];
+			/* TODO once the Lz4InputStream can handle small buffer sizes / partial reads
+			for ( int bufsiz = 600; bufsiz >= 100 && incoming == null; bufsiz -= 100 ) {
+				try {
+					incoming = new byte[ bufsiz * 1024 ];
+				} catch ( OutOfMemoryError e ) {
+				}
+			}
+			if ( incoming == null ) {
+				log.error( "Could not allocate buffer for receiving." );
+				return false;
+			}
+			*/
 			while ( ( requestedRange = rangeCallback.get() ) != null ) {
 				if ( requestedRange.startOffset < 0 || requestedRange.startOffset >= requestedRange.endOffset ) {
 					log.error( "Callback supplied bad range (" + requestedRange.startOffset + " to " + requestedRange.endOffset + ")" );
@@ -197,7 +211,6 @@ public class Downloader extends Transfer
 				int chunkLength = requestedRange.getLength();
 				// If the uploader sets the COMPRESS field, assume compressed chunk
 				InputStream inStream = meta.peerWantsCompression() ? compressedIn : dataFromServer;
-				byte[] incoming = new byte[ 500000 ]; // 500kb
 				int hasRead = 0;
 				while ( hasRead < chunkLength ) {
 					int ret;
@@ -208,7 +221,7 @@ public class Downloader extends Transfer
 							return false;
 						}
 					} catch ( IOException e ) {
-						log.error( "Could not read payload from socket" );
+						log.error( "Could not read payload from socket", e );
 						sendErrorCode( "payload read error" );
 						return false;
 					}
