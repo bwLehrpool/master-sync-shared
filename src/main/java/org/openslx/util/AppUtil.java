@@ -40,6 +40,8 @@ public class AppUtil
 	private static final String PROPERTY_JAVA_VERSION_VM = "java.vm.version";
 	private static final String PROPERTY_JAVA_VERSION_RUNTIME = "java.runtime.version";
 	
+	private static final String PROPERTY_JAVA_MEMORY_LIMIT = "java.runtime.memory";
+	
 	private static Attributes manifestAttributes = null;
 
 	private static String getManifestValue( final String entry )
@@ -127,6 +129,15 @@ public class AppUtil
 
 	public static void logHeader( final Logger logger, final String appName, final String appVersion )
 	{
+		final String mem;
+		long limit = Runtime.getRuntime().maxMemory() / ( 1024l * 1024 );
+		if ( limit > 99999999 ) {
+			mem = "-";
+		} else if ( limit >= 2048 ) {
+			mem = String.format( "%.1fG", limit / 1024f );
+		} else {
+			mem = limit + "M";
+		}
 		logger.info( "-------------------------------------------------------------------------------" );
 		logger.info( appName );
 		logger.info( "-------------------------------------------------------------------------------" );
@@ -143,6 +154,7 @@ public class AppUtil
 		logJavaProperty( logger, AppUtil.PROPERTY_JAVA_VERSION );
 		logJavaProperty( logger, AppUtil.PROPERTY_JAVA_VERSION_VM );
 		logJavaProperty( logger, AppUtil.PROPERTY_JAVA_VERSION_RUNTIME );
+		logProperty( logger, AppUtil.PROPERTY_JAVA_MEMORY_LIMIT, mem );
 		logger.info( "-------------------------------------------------------------------------------" );
 	}
 }
