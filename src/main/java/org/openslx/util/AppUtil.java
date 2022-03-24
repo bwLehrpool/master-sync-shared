@@ -31,6 +31,7 @@ public class AppUtil
 	private static final String PROPERTY_APP_BUILD_JDK = "app.build.jdk";
 
 	private static final String PROPERTY_JAVA_OS_NAME = "os.name";
+	private static final String PROPERTY_JAVA_OS_ARCH = "os.arch";
 
 	private static final String PROPERTY_JAVA_SPEC_VENDOR = "java.specification.vendor";
 	private static final String PROPERTY_JAVA_SPEC_NAME = "java.specification.name";
@@ -41,6 +42,8 @@ public class AppUtil
 	private static final String PROPERTY_JAVA_VERSION_RUNTIME = "java.runtime.version";
 	
 	private static final String PROPERTY_JAVA_MEMORY_LIMIT = "java.runtime.memory";
+	
+	private static final String PROPERTY_JAVA_BITNESS = "sun.arch.data.model";
 	
 	private static Attributes manifestAttributes = null;
 
@@ -129,6 +132,7 @@ public class AppUtil
 
 	public static void logHeader( final Logger logger, final String appName, final String appVersion )
 	{
+		// Format maximum VM memory
 		final String mem;
 		long limit = Runtime.getRuntime().maxMemory() / ( 1024l * 1024 );
 		if ( limit > 99999999 ) {
@@ -154,6 +158,8 @@ public class AppUtil
 		logJavaProperty( logger, AppUtil.PROPERTY_JAVA_VERSION );
 		logJavaProperty( logger, AppUtil.PROPERTY_JAVA_VERSION_VM );
 		logJavaProperty( logger, AppUtil.PROPERTY_JAVA_VERSION_RUNTIME );
+		logJavaProperty( logger, AppUtil.PROPERTY_JAVA_BITNESS );
+		logJavaProperty( logger, AppUtil.PROPERTY_JAVA_OS_ARCH );
 		logProperty( logger, AppUtil.PROPERTY_JAVA_MEMORY_LIMIT, mem );
 		logger.info( "-------------------------------------------------------------------------------" );
 	}
