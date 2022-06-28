@@ -150,7 +150,11 @@ public abstract class VirtualizationConfiguration
 		@Override
 		public boolean isActive()
 		{
-			return getVirtualizerVersion().equals( version );
+			try {
+				return getVirtualizerVersion().equals( version );
+			} catch (NullPointerException e) {
+				return false;
+			}
 		}
 		
 		@Override
