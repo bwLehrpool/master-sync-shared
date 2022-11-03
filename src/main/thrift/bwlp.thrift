@@ -425,6 +425,8 @@ struct SatelliteConfig {
 	10: optional SscMode serverSideCopy,
 	// Students are allowed to download non-restricted images?
 	11: optional bool allowStudentDownload,
+	// Size limit for VM uploads (0 = unlimited)
+	12: optional i64 vmSizeLimit,
 }
 
 struct SatelliteStatus {
