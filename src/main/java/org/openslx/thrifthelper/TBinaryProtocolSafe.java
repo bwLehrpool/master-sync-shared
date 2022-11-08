@@ -1,7 +1,9 @@
 package org.openslx.thrifthelper;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+
+import javax.net.ssl.SSLException;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -10,6 +12,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.protocol.TProtocolFactory;
 import org.apache.thrift.transport.TTransport;
+import org.apache.thrift.transport.TTransportException;
 
 /**
  * Binary protocol implementation for thrift.
@@ -61,18 +64,38 @@ public class TBinaryProtocolSafe extends TBinaryProtocol
 
 	public TBinaryProtocolSafe(TTransport trans, boolean strictRead, boolean strictWrite)
 	{
-		super( trans );
-		strictRead_ = strictRead;
-		strictWrite_ = strictWrite;
+		super( trans, maxLen, maxLen, strictRead, strictWrite );
 	}
 
-	/**
+	/*
 	 * Reading methods.
 	 */
-
+	
+	@Override
 	public TMessage readMessageBegin() throws TException
 	{
-		int size = readI32();
+		int size;
+		try {
+			size = readI32();
+		} catch ( TTransportException e ) {
+			// Do this to suppress certain SSL handshake errors that result from port scanning and service probing
+			if ( e.getCause() instanceof SSLException ) {
+				String m = e.getCause().getMessage();
+				// We still want SSL errors that help diagnosing more specific SSL errors that relate to actual
+				// SSL handshake attempts, like incompatible TLS versions or ciphers.
+				if ( m.contains( "Remote host terminated the handshake" )
+						|| m.contains( "Unsupported or unrecognized SSL message" ) ) {
+					// Fake an END_OF_FILE exception, as the logException() method in the server class will
+					// ignore there. Let's hope it will stay ignored in the future.
+					throw new TTransportException( TTransportException.END_OF_FILE );
+				}
+			} else if ( e.getMessage().contains( "larger than max length" ) ) {
+				// Also fake, since this one prints a whole stack trace compared to the other
+				// message by AbstractNonblockingServer
+				throw new TTransportException( TTransportException.END_OF_FILE );
+			}
+			throw e;
+		}
 		if ( size > maxLen )
 			throw new TProtocolException( TProtocolException.SIZE_LIMIT, "Payload too big." );
 		if ( size < 0 ) {
@@ -89,24 +112,22 @@ public class TBinaryProtocolSafe extends TBinaryProtocol
 		}
 	}
 
+	@Override
 	public String readString() throws TException
 	{
 		int size = readI32();
 		if ( size > maxLen )
 			throw new TProtocolException( TProtocolException.SIZE_LIMIT, "Payload too big." );
 		if ( trans_.getBytesRemainingInBuffer() >= size ) {
-			try {
-				String s = new String( trans_.getBuffer(), trans_.getBufferPosition(), size, "UTF-8" );
-				trans_.consumeBuffer( size );
-				return s;
-			} catch ( UnsupportedEncodingException e ) {
-				throw new TException( "JVM DOES NOT SUPPORT UTF-8" );
-			}
+			String s = new String( trans_.getBuffer(), trans_.getBufferPosition(), size, StandardCharsets.UTF_8 );
+			trans_.consumeBuffer( size );
+			return s;
 		}
 
 		return readStringBody( size );
 	}
 
+	@Override
 	public ByteBuffer readBinary() throws TException
 	{
 		int size = readI32();

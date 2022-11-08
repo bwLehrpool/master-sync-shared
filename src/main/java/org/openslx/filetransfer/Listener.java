@@ -138,7 +138,11 @@ public class Listener
 										Transfer.safeClose( connection );
 									}
 								} catch ( Exception e ) {
-									log.warn( "Error accepting client", e );
+									String m = e.getMessage();
+									if ( !m.contains( "Remote host terminated the handshake" )
+											&& !m.contains( "Unsupported or unrecognized SSL message" ) ) {
+										log.warn( "Error accepting client", e );
+									}
 									Transfer.safeClose( connection );
 								}
 							}
