@@ -1,5 +1,6 @@
 package org.openslx.thrifthelper;
 
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
@@ -89,6 +90,9 @@ public class TBinaryProtocolSafe extends TBinaryProtocol
 					// ignore there. Let's hope it will stay ignored in the future.
 					throw new TTransportException( TTransportException.END_OF_FILE );
 				}
+			} else if ( e.getCause() instanceof SocketException && e.getCause().getMessage().contains( " timed out" ) ) {
+				// Faaaake
+				throw new TTransportException( TTransportException.END_OF_FILE );
 			} else if ( e.getMessage().contains( "larger than max length" ) ) {
 				// Also fake, since this one prints a whole stack trace compared to the other
 				// message by AbstractNonblockingServer
