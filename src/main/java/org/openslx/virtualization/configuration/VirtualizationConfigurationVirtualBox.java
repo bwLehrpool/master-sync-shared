@@ -533,7 +533,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 			node.setAttribute( "name", this.id );
 			if ( this.id.equals( "EHCI" ) ) { // XXX "mechanically" ported, could make a special class for this special case
 				// If EHCI (2.0) is selected, VBox adds an OHCI controller too...
-				// XXX Isn't this broken anyways, it's working on the same node as above *facepalm*
+				node = config.addNewNode( "/VirtualBox/Machine/Hardware/USB/Controllers", "Controller" );
 				node.setAttribute( "type", "OHCI" );
 				node.setAttribute( "name", "OHCI" );
 			}
@@ -542,18 +542,38 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		@Override
 		public boolean isActive()
 		{
-			// XXX not technically correct wrt max speed
 			NodeList nodes = config.findNodes( "/VirtualBox/Machine/Hardware/USB/Controllers/Controller/@type" );
+			LOGGER.info( "Found USB attribute nodes:" + nodes.getLength() );
+			/* Again, we need an ugly special case here for USB 2.0, which creates two entries in the
+			 * XML, one EHCI and one OHCI. If we simply look for "our" type and return true, both
+			 * OHCI and EHCI would return true, and what ends up getting selected in the UI is more or
+			 * less undefined. So we need to put more brains in here and special-case the whole EHCI/OHCI
+			 * detection, and not return true if this.id is OHCI, and we have a controller node with type
+			 * OHCI, but also another node with type EHCI...
+			 */
+			boolean ohci = false, ehci = false;
 			for ( int i = 0; i < nodes.getLength(); ++i ) {
 				if ( nodes.item( i ).getNodeType() != Node.ATTRIBUTE_NODE ) {
-					LOGGER.info( "Not ATTRIBUTE type" );
+					LOGGER.info( "Not ATTRIBUTE type (" + nodes.item( i ).getClass().getSimpleName() + ")" );
 					continue;
 				}
 				String type = ( (Attr)nodes.item( i ) ).getValue();
-				if ( type.equals( this.id ) )
+				LOGGER.info( "Found USB node with type " + type );
+				if ( type.equals( "EHCI" ) ) {
+					ehci = true;
+				} else if ( type.equals( "OHCI" ) ) {
+					ohci = true;
+				} else if ( type.equals( this.id ) )
 					return true;
 			}
-			return Util.isEmptyString( this.id );
+			if ( ehci && "EHCI".equals( this.id ) )
+				return true;
+			if ( ohci && !ehci && "OHCI".equals( this.id ) )
+				return true;
+			if ( config.findNodes( "/VirtualBox/OpenSLX/USB/@disabled" ).getLength() > 0 ) {
+				return Util.isEmptyString( this.id );
+			}
+			return false;
 		}
 
 	}

@@ -628,7 +628,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 * @param childName name of the node to be added
 	 * @return the newly added Node
 	 */
-	public Node addNewNode( String parentXPath, String childName )
+	public Element addNewNode( String parentXPath, String childName )
 	{
 		NodeList possibleParents = findNodes( parentXPath );
 		if ( possibleParents == null || possibleParents.getLength() != 1 ) {
