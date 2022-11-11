@@ -92,8 +92,14 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 
 	public static enum PlaceHolder
 	{
-		FLOPPYUUID( "%VM_FLOPPY_UUID%" ), FLOPPYLOCATION( "%VM_FLOPPY_LOCATION%" ), CPU( "%VM_CPU_CORES%" ), MEMORY( "%VM_RAM%" ), MACHINEUUID( "%VM_MACHINE_UUID%" ), NETWORKMAC(
-				"%VM_NIC_MAC%" ), HDDLOCATION( "%VM_HDD_LOCATION%" ), HDDUUID( "%VM_HDD_UUID_" );
+		FLOPPYUUID( "%VM_FLOPPY_UUID%" ),
+		FLOPPYLOCATION( "%VM_FLOPPY_LOCATION%" ),
+		CPU( "%VM_CPU_CORES%" ),
+		MEMORY( "%VM_RAM%" ),
+		MACHINEUUID( "%VM_MACHINE_UUID%" ),
+		NETWORKMAC( "%VM_NIC_MAC%" ),
+		HDDLOCATION( "%VM_HDD_LOCATION%" ),
+		HDDUUID( "%VM_HDD_UUID_" );
 
 		private final String holderName;
 
