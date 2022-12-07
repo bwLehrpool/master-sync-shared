@@ -20,12 +20,12 @@
 		<repository>
 			<id>mltk-repo</id>
 			<name>mltk-services repo</name>
-			<url>http://mltk-services.ruf.uni-freiburg.de:8081/nexus/content/repositories/releases/</url>
+			<url>https://mltk-services.ruf.uni-freiburg.de/nexus/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>mltk-repo</id>
 			<name>mltk-services repo</name>
-			<url>http://mltk-services.ruf.uni-freiburg.de:8081/nexus/content/repositories/snapshots/</url>
+			<url>https://mltk-services.ruf.uni-freiburg.de/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
