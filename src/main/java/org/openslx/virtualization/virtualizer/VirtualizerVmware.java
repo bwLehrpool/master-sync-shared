@@ -47,7 +47,8 @@ public class VirtualizerVmware extends Virtualizer
 					new Version( Short.valueOf( "16" ), "Workstation/Player 15.1, Fusion 11.1" ),
 					new Version( Short.valueOf( "17" ), "Workstation/Player 16, Fusion 12" ),
 					new Version( Short.valueOf( "18" ), "Workstation/Player 16.1, Fusion 12.1" ),
-					new Version( Short.valueOf( "19" ), "Workstation/Player 16.2, Fusion 12.2" ) ) );
+					new Version( Short.valueOf( "19" ), "Workstation/Player 16.2, Fusion 12.2" ),
+					new Version( Short.valueOf( "20" ), "Workstation/Player 17, Fusion 13" ) ) );
 
 	/**
 	 * Creates a new VMware virtualizer.
