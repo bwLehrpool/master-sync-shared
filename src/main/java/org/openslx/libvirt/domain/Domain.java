@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
 
-import org.openslx.libvirt.domain.device.Device;
 import org.openslx.libvirt.domain.device.Controller;
 import org.openslx.libvirt.domain.device.ControllerFloppy;
 import org.openslx.libvirt.domain.device.ControllerIde;
@@ -18,6 +17,7 @@ import org.openslx.libvirt.domain.device.ControllerPci;
 import org.openslx.libvirt.domain.device.ControllerSata;
 import org.openslx.libvirt.domain.device.ControllerScsi;
 import org.openslx.libvirt.domain.device.ControllerUsb;
+import org.openslx.libvirt.domain.device.Device;
 import org.openslx.libvirt.domain.device.Disk;
 import org.openslx.libvirt.domain.device.DiskCdrom;
 import org.openslx.libvirt.domain.device.DiskFloppy;
@@ -44,10 +44,13 @@ import org.openslx.libvirt.xml.LibvirtXmlNode;
 import org.openslx.libvirt.xml.LibvirtXmlResources;
 import org.openslx.libvirt.xml.LibvirtXmlSerializationException;
 import org.openslx.libvirt.xml.LibvirtXmlValidationException;
+import org.openslx.util.XmlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 
 /**
@@ -1542,6 +1545,60 @@ public class Domain extends LibvirtXmlDocument
 		final Element qemuCmdlnArgElement = xmlDocument.createElementNS( XMLNS_QEMU_NS_URI, "arg" );
 		qemuCmdlnArgElement.setAttribute( "value", value );
 		qemuCmdlnElement.appendChild( qemuCmdlnArgElement );
+	}
+
+	public void addGvtg( String optionalRomfile )
+	{
+		final Element rootElement = Element.class.cast( this.getRootXmlNode().getXmlBaseNode() );
+		final Document xmlDocument = this.getRootXmlNode().getXmlDocument();
+		final Element qemuOverrideElement;
+
+		final NodeList qemuCmdlnNodes = rootElement.getElementsByTagNameNS( XMLNS_QEMU_NS_URI, "override" );
+		if ( qemuCmdlnNodes.getLength() < 1 ) {
+			// add missing <domain xmlns:qemu="..."> namespace attribute
+			rootElement.setAttributeNS( XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+					XMLConstants.XMLNS_ATTRIBUTE + ":" + XMLNS_QEMU_NS_PREFIX, XMLNS_QEMU_NS_URI );
+			// add missing <qemu:override> element
+			qemuOverrideElement = xmlDocument.createElementNS( XMLNS_QEMU_NS_URI, "override" );
+			qemuOverrideElement.setPrefix( XMLNS_QEMU_NS_PREFIX );
+			rootElement.appendChild( qemuOverrideElement );
+		} else {
+			// use available <qemu:override> element
+			final Node qemuOverrideNode = qemuCmdlnNodes.item( 0 );
+			assert ( qemuOverrideNode.getNodeType() == Node.ELEMENT_NODE );
+			qemuOverrideElement = Element.class.cast( qemuOverrideNode );
+		}
+
+		// Get device subnode
+		Element qemuDeviceElement = XmlHelper.getOrCreateElement( xmlDocument, qemuOverrideElement,
+				XMLNS_QEMU_NS_URI, XMLNS_QEMU_NS_PREFIX, "device", "alias", "hostdev0" );
+		//
+		DOMImplementationLS domImplLS = (DOMImplementationLS)xmlDocument.getImplementation();
+		LSSerializer serializer = domImplLS.createLSSerializer();
+		String str = serializer.writeToString( qemuOverrideElement );
+		//
+		Element qemuFrontendElement = XmlHelper.getOrCreateElement( xmlDocument, qemuDeviceElement,
+				XMLNS_QEMU_NS_URI, XMLNS_QEMU_NS_PREFIX, "frontend", null, null );
+		// Properties
+		Element prop;
+		prop = XmlHelper.getOrCreateElement( xmlDocument, qemuFrontendElement,
+				XMLNS_QEMU_NS_URI, XMLNS_QEMU_NS_PREFIX, "property", "name", "x-igd-opregion" );
+		prop.setAttribute( "type", "bool" );
+		prop.setAttribute( "value", "true" );
+		prop = XmlHelper.getOrCreateElement( xmlDocument, qemuFrontendElement,
+				XMLNS_QEMU_NS_URI, XMLNS_QEMU_NS_PREFIX, "property", "name", "driver" );
+		prop.setAttribute( "type", "string" );
+		prop.setAttribute( "value", "vfio-pci-nohotplug" );
+		prop = XmlHelper.getOrCreateElement( xmlDocument, qemuFrontendElement,
+				XMLNS_QEMU_NS_URI, XMLNS_QEMU_NS_PREFIX, "property", "name", "ramfb" );
+		prop.setAttribute( "type", "bool" );
+		prop.setAttribute( "value", "true" );
+		if ( optionalRomfile != null ) {
+			prop = XmlHelper.getOrCreateElement( xmlDocument, qemuFrontendElement,
+					XMLNS_QEMU_NS_URI, XMLNS_QEMU_NS_PREFIX, "property", "name", "romfile" );
+			prop.setAttribute( "type", "string" );
+			prop.setAttribute( "value", optionalRomfile );
+		}
 	}
 
 	/**

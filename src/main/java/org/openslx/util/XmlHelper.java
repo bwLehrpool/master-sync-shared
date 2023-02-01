@@ -22,7 +22,9 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -157,4 +159,42 @@ public class XmlHelper
 			return null;
 		}
 	}
+
+	public static Element getOrCreateElement( Document doc, Element parent, String nsUri, String nsName,
+			String name, String attrName, String attrValue )
+	{
+		final NodeList childList = parent.getElementsByTagNameNS( nsUri, name );
+		Element element = null;
+		outer: for ( int i = 0; i < childList.getLength(); ++i ) {
+			Node n = childList.item( i );
+			if ( n.getNodeType() != Node.ELEMENT_NODE )
+				continue;
+			if ( attrName != null && attrValue != null ) {
+				for ( int ai = 0; ai < n.getAttributes().getLength(); ++ai ) {
+					Node attr = n.getAttributes().item( ai );
+					if ( attr.getNodeType() != Attr.ELEMENT_NODE )
+						continue;
+					Attr a = (Attr)attr;
+					if ( !attrName.equals( a.getLocalName() ) || !attrValue.equals( a.getValue() ) )
+						continue;
+					element = (Element)n;
+					break outer;
+				}
+			} else {
+				element = (Element)n;
+				break;
+			}
+		}
+		if ( element == null ) {
+			// Need a new <qemu:device alias="hostdev0">
+			element = doc.createElementNS( nsUri, name );
+			element.setPrefix( nsName );
+			if ( attrName != null && attrValue != null ) {
+				element.setAttribute( attrName, attrValue );
+			}
+			parent.appendChild( element );
+		}
+		return element;
+	}
+
 }
