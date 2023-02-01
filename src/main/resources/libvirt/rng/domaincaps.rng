@@ -38,6 +38,9 @@
           <ref name="cpu"/>
         </optional>
         <optional>
+          <ref name="memoryBacking"/>
+        </optional>
+        <optional>
           <ref name="devices"/>
         </optional>
         <optional>
@@ -153,15 +156,22 @@
           </attribute>
           <optional>
             <attribute name="deprecated">
-              <choice>
-                <value>yes</value>
-                <value>no</value>
-              </choice>
+              <ref name="virYesNo"/>
             </attribute>
           </optional>
+          <attribute name='vendor'>
+            <text/>
+          </attribute>
           <text/>
         </element>
       </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="memoryBacking">
+    <element name="memoryBacking">
+      <ref name="supported"/>
+      <ref name="enum"/>
     </element>
   </define>
 
@@ -181,6 +191,18 @@
       </optional>
       <optional>
         <ref name="rng"/>
+      </optional>
+      <optional>
+        <ref name="filesystem"/>
+      </optional>
+      <optional>
+        <ref name="tpm"/>
+      </optional>
+      <optional>
+        <ref name="redirdev"/>
+      </optional>
+      <optional>
+        <ref name="channel"/>
       </optional>
     </element>
   </define>
@@ -220,6 +242,34 @@
     </element>
   </define>
 
+  <define name="filesystem">
+    <element name="filesystem">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
+  <define name="tpm">
+    <element name="tpm">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
+  <define name="redirdev">
+    <element name="redirdev">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
+  <define name="channel">
+    <element name="channel">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
   <define name="features">
     <element name="features">
       <optional>
@@ -238,7 +288,16 @@
         <ref name="backup"/>
       </optional>
       <optional>
+        <ref name="s390-pv"/>
+      </optional>
+      <optional>
         <ref name="sev"/>
+      </optional>
+      <optional>
+        <ref name="sgx"/>
+      </optional>
+      <optional>
+        <ref name="hyperv"/>
       </optional>
     </element>
   </define>
@@ -274,6 +333,12 @@
     </element>
   </define>
 
+  <define name="s390-pv">
+    <element name="s390-pv">
+      <ref name="supported"/>
+    </element>
+  </define>
+
   <define name="sev">
     <element name="sev">
       <ref name="supported"/>
@@ -284,7 +349,60 @@
         <element name="reducedPhysBits">
           <data type="unsignedInt"/>
         </element>
+        <element name="maxGuests">
+          <data type="unsignedInt"/>
+        </element>
+        <element name="maxESGuests">
+          <data type="unsignedInt"/>
+        </element>
       </optional>
+    </element>
+  </define>
+
+  <define name="sgx">
+    <element name="sgx">
+      <ref name="supported"/>
+      <optional>
+        <element name="flc">
+          <ref name="virYesNo"/>
+        </element>
+        <element name="sgx1">
+          <ref name="virYesNo"/>
+        </element>
+        <element name="sgx2">
+          <ref name="virYesNo"/>
+        </element>
+        <element name="section_size">
+          <attribute name="unit">
+            <value>KiB</value>
+          </attribute>
+          <data type="unsignedLong"/>
+        </element>
+        <optional>
+          <element name="sections">
+            <zeroOrMore>
+              <element name="section">
+                <attribute name="node">
+                  <data type="unsignedInt"/>
+                </attribute>
+                <attribute name="size">
+                  <data type="unsignedLong"/>
+                </attribute>
+                <attribute name="unit">
+                  <value>KiB</value>
+                </attribute>
+              </element>
+            </zeroOrMore>
+          </element>
+        </optional>
+      </optional>
+    </element>
+  </define>
+
+  <define name="hyperv">
+    <element name="hyperv">
+      <ref name="supported"/>
+      <ref name="enum"/>
     </element>
   </define>
 

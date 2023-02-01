@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-  <!-- Grammar for accepting a domain element, both as top level, and
-       also suitable for inclusion in domainsnapshot.rng -->
+  <!-- inactiveDomain element grammar is included into domainsnapshot.rng -->
   <start>
-    <ref name="domain"/>
+    <ref name="inactiveDomain"/>
   </start>
 
   <include href="domainoverrides.rng"/>

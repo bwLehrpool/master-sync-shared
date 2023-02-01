@@ -250,6 +250,11 @@
             <attribute name="target">
               <ref name="unsignedInt"/>
             </attribute>
+            <optional>
+              <attribute name="cache">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </optional>
             <attribute name="type">
               <choice>
                 <value>access</value>
@@ -300,31 +305,49 @@
     </element>
   </define>
 
+  <define name="cpuMaxPhysAddr">
+    <element name="maxphysaddr">
+      <attribute name="mode">
+        <choice>
+          <value>emulate</value>
+          <value>passthrough</value>
+        </choice>
+      </attribute>
+      <optional>
+        <attribute name="bits">
+          <ref name="unsignedInt"/>
+        </attribute>
+      </optional>
+    </element>
+  </define>
+
   <define name="hostcpu">
     <element name="cpu">
-      <element name="arch">
-        <ref name="archnames"/>
-      </element>
-      <optional>
-        <element name="features">
-          <optional>
-            <element name="pae"><empty/></element>
-          </optional>
-          <optional>
-            <element name="nonpae"><empty/></element>
-          </optional>
-          <optional>
-            <element name="vmx"><empty/></element>
-          </optional>
-          <optional>
-            <element name="svm"><empty/></element>
-          </optional>
+      <interleave>
+        <element name="arch">
+          <ref name="archnames"/>
         </element>
-      </optional>
-      <optional>
-        <element name="model">
-          <text/>
-        </element>
+        <optional>
+          <element name="features">
+            <optional>
+              <element name="pae"><empty/></element>
+            </optional>
+            <optional>
+              <element name="nonpae"><empty/></element>
+            </optional>
+            <optional>
+              <element name="vmx"><empty/></element>
+            </optional>
+            <optional>
+              <element name="svm"><empty/></element>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <element name="model">
+            <text/>
+          </element>
+        </optional>
         <optional>
           <element name="vendor">
             <text/>
@@ -334,6 +357,19 @@
           <element name="microcode">
             <attribute name="version">
               <ref name="positiveInteger"/>
+            </attribute>
+          </element>
+        </optional>
+        <optional>
+          <element name="signature">
+            <attribute name="family">
+              <ref name="positiveInteger"/>
+            </attribute>
+            <attribute name="model">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="stepping">
+              <ref name="unsignedInt"/>
             </attribute>
           </element>
         </optional>
@@ -352,6 +388,9 @@
         </optional>
         <optional>
           <ref name="cpuTopology"/>
+        </optional>
+        <optional>
+          <ref name="cpuMaxPhysAddr"/>
         </optional>
         <zeroOrMore>
           <element name="feature">
@@ -375,7 +414,7 @@
             </attribute>
           </element>
         </zeroOrMore>
-      </optional>
+      </interleave>
     </element>
   </define>
 
@@ -413,6 +452,9 @@
         </optional>
         <optional>
           <ref name="cpuCache"/>
+        </optional>
+        <optional>
+          <ref name="cpuMaxPhysAddr"/>
         </optional>
       </interleave>
     </element>

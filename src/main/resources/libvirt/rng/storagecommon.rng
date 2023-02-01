@@ -13,19 +13,30 @@
           <value>default</value>
           <value>qcow</value>
           <value>luks</value>
+          <value>luks2</value>
         </choice>
       </attribute>
-      <interleave>
-        <ref name="secret"/>
-        <optional>
-          <element name="cipher">
-            <ref name="keycipher"/>
-          </element>
-          <element name="ivgen">
-            <ref name="keyivgen"/>
-          </element>
-        </optional>
-      </interleave>
+      <optional>
+        <attribute name="engine">
+          <choice>
+            <value>qemu</value>
+            <value>librbd</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <interleave>
+          <ref name="secret"/>
+          <optional>
+            <element name="cipher">
+              <ref name="keycipher"/>
+            </element>
+            <element name="ivgen">
+              <ref name="keyivgen"/>
+            </element>
+          </optional>
+        </interleave>
+      </optional>
     </element>
   </define>
 
@@ -110,11 +121,23 @@
       </data>
     </element>
   </define>
+
+  <define name="clusterSize">
+    <element name="clusterSize">
+      <ref name="scaledInteger"/>
+    </element>
+  </define>
+
   <define name="fileFormatFeatures">
     <element name="features">
       <interleave>
         <optional>
           <element name="lazy_refcounts">
+            <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name="extended_l2">
             <empty/>
           </element>
         </optional>

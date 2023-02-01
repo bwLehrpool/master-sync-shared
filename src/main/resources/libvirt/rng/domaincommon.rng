@@ -6,6 +6,7 @@
   <include href="networkcommon.rng"/>
   <include href="cputypes.rng"/>
   <include href="nwfilter_params.rng"/>
+  <include href="privatedata.rng"/>
 
   <!--
     description and title element, may be placed anywhere under the root
@@ -33,74 +34,89 @@
     -->
   <define name="domain">
     <element name="domain">
-      <ref name="hvs"/>
-      <interleave>
-        <ref name="ids"/>
-        <optional>
-          <ref name="title"/>
-        </optional>
-        <optional>
-          <ref name="description"/>
-        </optional>
-        <optional>
-          <ref name="metadata"/>
-        </optional>
-        <optional>
-          <ref name="guestcpu"/>
-        </optional>
-        <zeroOrMore>
-          <ref name="sysinfo"/>
-        </zeroOrMore>
-        <ref name="os"/>
-        <ref name="clock"/>
-        <ref name="resources"/>
-        <ref name="features"/>
-        <ref name="events"/>
-        <optional>
-          <ref name="pm"/>
-        </optional>
-        <optional>
-          <ref name="perf"/>
-        </optional>
-        <optional>
-          <ref name="idmap"/>
-        </optional>
-        <optional>
-          <ref name="devices"/>
-        </optional>
-        <zeroOrMore>
-          <ref name="seclabel"/>
-        </zeroOrMore>
-        <optional>
-          <ref name="qemucmdline"/>
-        </optional>
-        <optional>
-          <ref name="qemucapabilities"/>
-        </optional>
-        <optional>
-          <ref name="qemudeprecation"/>
-        </optional>
-        <optional>
-          <ref name="lxcsharens"/>
-        </optional>
-        <optional>
-          <ref name="keywrap"/>
-        </optional>
-        <optional>
-          <ref name="launchSecurity"/>
-        </optional>
-        <optional>
-          <ref name="bhyvecmdline"/>
-        </optional>
-        <optional>
-          <ref name="xencmdline"/>
-        </optional>
-        <optional>
-          <ref name="vmwaredatacenterpath"/>
-        </optional>
-      </interleave>
+      <ref name="domaincontents"/>
     </element>
   </define>
+
+  <!-- this element is used as a child of a snapshot definition -->
+  <define name="inactiveDomain">
+    <element name="inactiveDomain">
+      <ref name="domaincontents"/>
+    </element>
+  </define>
+
+  <define name="domaincontents">
+    <ref name="hvs"/>
+    <interleave>
+      <ref name="ids"/>
+      <optional>
+        <ref name="title"/>
+      </optional>
+      <optional>
+        <ref name="description"/>
+      </optional>
+      <optional>
+        <ref name="metadata"/>
+      </optional>
+      <optional>
+        <ref name="guestcpu"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="sysinfo"/>
+      </zeroOrMore>
+      <ref name="os"/>
+      <ref name="clock"/>
+      <ref name="resources"/>
+      <ref name="features"/>
+      <ref name="events"/>
+      <optional>
+        <ref name="pm"/>
+      </optional>
+      <optional>
+        <ref name="perf"/>
+      </optional>
+      <optional>
+        <ref name="idmap"/>
+      </optional>
+      <optional>
+        <ref name="devices"/>
+      </optional>
+      <zeroOrMore>
+        <ref name="seclabel"/>
+      </zeroOrMore>
+      <optional>
+        <ref name="qemucmdline"/>
+      </optional>
+      <optional>
+        <ref name="qemucapabilities"/>
+      </optional>
+      <optional>
+        <ref name="qemudeprecation"/>
+      </optional>
+      <optional>
+        <ref name="qemuoverride"/>
+      </optional>
+      <optional>
+        <ref name="lxcsharens"/>
+      </optional>
+      <optional>
+        <ref name="keywrap"/>
+      </optional>
+      <optional>
+        <ref name="launchSecurity"/>
+      </optional>
+      <optional>
+        <ref name="bhyvecmdline"/>
+      </optional>
+      <optional>
+        <ref name="xencmdline"/>
+      </optional>
+      <optional>
+        <ref name="vmwaredatacenterpath"/>
+      </optional>
+    </interleave>
+  </define>
+
   <define name="seclabel">
     <element name="seclabel">
       <optional>
@@ -230,6 +246,7 @@
         <value>phyp</value> <!-- NOT USED ANYMORE -->
         <value>vz</value>
         <value>bhyve</value>
+        <value>hvf</value>
       </choice>
     </attribute>
   </define>
@@ -265,110 +282,119 @@
     </choice>
   </define>
   <define name="oshvm">
-    <optional>
-      <ref name="bootloader"/>
-    </optional>
-    <element name="os">
-      <interleave>
-        <optional>
-          <attribute name="firmware">
-            <choice>
-              <value>bios</value>
-              <value>efi</value>
-            </choice>
-          </attribute>
-        </optional>
-        <ref name="ostypehvm"/>
-        <optional>
-          <element name="firmware">
-            <oneOrMore>
-              <element name="feature">
-                <attribute name="enabled">
+    <interleave>
+      <optional>
+        <ref name="bootloader"/>
+      </optional>
+      <element name="os">
+        <interleave>
+          <optional>
+            <attribute name="firmware">
+              <choice>
+                <value>bios</value>
+                <value>efi</value>
+              </choice>
+            </attribute>
+          </optional>
+          <ref name="ostypehvm"/>
+          <optional>
+            <element name="firmware">
+              <oneOrMore>
+                <element name="feature">
+                  <attribute name="enabled">
+                    <ref name="virYesNo"/>
+                  </attribute>
+                  <attribute name="name">
+                    <choice>
+                      <value>enrolled-keys</value>
+                      <value>secure-boot</value>
+                    </choice>
+                  </attribute>
+                </element>
+              </oneOrMore>
+            </element>
+          </optional>
+          <optional>
+            <element name="loader">
+              <optional>
+                <attribute name="readonly">
                   <ref name="virYesNo"/>
                 </attribute>
-                <attribute name="name">
+              </optional>
+              <optional>
+                <attribute name="secure">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="type">
                   <choice>
-                    <value>enrolled-keys</value>
-                    <value>secure-boot</value>
+                    <value>rom</value>
+                    <value>pflash</value>
                   </choice>
                 </attribute>
-              </element>
-            </oneOrMore>
-          </element>
-        </optional>
-        <optional>
-          <element name="loader">
-            <optional>
-              <attribute name="readonly">
-                <choice>
-                  <value>yes</value>
-                  <value>no</value>
-                </choice>
-              </attribute>
-            </optional>
-            <optional>
-              <attribute name="secure">
-                <choice>
-                  <value>yes</value>
-                  <value>no</value>
-                </choice>
-              </attribute>
-            </optional>
-            <optional>
-              <attribute name="type">
-                <choice>
-                  <value>rom</value>
-                  <value>pflash</value>
-                </choice>
-              </attribute>
-            </optional>
-            <optional>
-              <ref name="absFilePath"/>
-            </optional>
-          </element>
-        </optional>
-        <optional>
-          <element name="nvram">
-            <optional>
-              <attribute name="template">
+              </optional>
+              <optional>
+                <attribute name="stateless">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
+              <optional>
                 <ref name="absFilePath"/>
+              </optional>
+            </element>
+          </optional>
+          <optional>
+            <element name="nvram">
+              <optional>
+                <attribute name="template">
+                  <ref name="absFilePath"/>
+                </attribute>
+              </optional>
+              <optional>
+                <choice>
+                  <group>
+                    <ref name="absFilePath"/>
+                  </group>
+                  <group>
+                    <ref name="diskSource"/>
+                  </group>
+                </choice>
+              </optional>
+            </element>
+          </optional>
+          <optional>
+            <ref name="osbootkernel"/>
+          </optional>
+          <zeroOrMore>
+            <ref name="osbootdev"/>
+          </zeroOrMore>
+          <optional>
+            <element name="bootmenu">
+              <attribute name="enable">
+                <ref name="virYesNo"/>
               </attribute>
-            </optional>
-            <optional>
-              <ref name="absFilePath"/>
-            </optional>
-          </element>
-        </optional>
-        <optional>
-          <ref name="osbootkernel"/>
-        </optional>
-        <zeroOrMore>
-          <ref name="osbootdev"/>
-        </zeroOrMore>
-        <optional>
-          <element name="bootmenu">
-            <attribute name="enable">
-              <ref name="virYesNo"/>
-            </attribute>
-            <optional>
-              <attribute name="timeout">
-                <ref name="unsignedShort"/>
-              </attribute>
-            </optional>
-          </element>
-        </optional>
-        <optional>
-          <ref name="smbios"/>
-        </optional>
-        <optional>
-          <ref name="bios"/>
-        </optional>
-        <optional>
-          <ref name="acpiTable"/>
-        </optional>
-      </interleave>
-    </element>
+              <optional>
+                <attribute name="timeout">
+                  <ref name="unsignedShort"/>
+                </attribute>
+              </optional>
+            </element>
+          </optional>
+          <optional>
+            <ref name="smbios"/>
+          </optional>
+          <optional>
+            <ref name="bios"/>
+          </optional>
+          <optional>
+            <ref name="acpiTable"/>
+          </optional>
+        </interleave>
+      </element>
+    </interleave>
   </define>
+
   <define name="ostypexen">
     <element name="type">
       <optional>
@@ -416,15 +442,15 @@
 
   <define name="osexe">
     <element name="os">
-      <element name="type">
-        <optional>
-          <attribute name="arch">
-            <ref name="archnames"/>
-          </attribute>
-        </optional>
-        <value>exe</value>
-      </element>
       <interleave>
+        <element name="type">
+          <optional>
+            <attribute name="arch">
+              <ref name="archnames"/>
+            </attribute>
+          </optional>
+          <value>exe</value>
+        </element>
         <optional>
           <element name="init">
             <ref name="absFilePath"/>
@@ -482,40 +508,58 @@
 
   <define name="launchSecurity">
     <element name="launchSecurity">
-      <attribute name="type">
-        <value>sev</value>
-      </attribute>
-      <interleave>
-        <optional>
-          <element name="cbitpos">
-            <data type="unsignedInt"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="reducedPhysBits">
-            <data type="unsignedInt"/>
-          </element>
-        </optional>
-        <element name="policy">
-          <ref name="hexuint"/>
-        </element>
-        <optional>
-          <element name="handle">
-            <ref name="unsignedInt"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="dhCert">
-            <data type="string"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="session">
-            <data type="string"/>
-          </element>
-        </optional>
-      </interleave>
+      <choice>
+        <group>
+          <ref name="launchSecuritySEV"/>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>s390-pv</value>
+          </attribute>
+        </group>
+      </choice>
     </element>
+  </define>
+
+  <define name="launchSecuritySEV">
+    <attribute name="type">
+      <value>sev</value>
+    </attribute>
+    <optional>
+      <attribute name="kernelHashes">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <interleave>
+      <optional>
+        <element name="cbitpos">
+          <data type="unsignedInt"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="reducedPhysBits">
+          <data type="unsignedInt"/>
+        </element>
+      </optional>
+      <element name="policy">
+        <ref name="hexuint"/>
+      </element>
+      <optional>
+        <element name="handle">
+          <ref name="unsignedInt"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="dhCert">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="session">
+          <data type="string"/>
+        </element>
+      </optional>
+    </interleave>
   </define>
 
   <!--
@@ -560,6 +604,17 @@
           </attribute>
         </element>
       </oneOrMore>
+    </element>
+  </define>
+
+  <define name="fibrechannel">
+    <element name="fibrechannel">
+      <attribute name="appid">
+        <data type="string">
+          <!-- All printable characters -->
+          <param name="pattern">[&#x20;-&#x7E;]{1,128}</param>
+        </data>
+      </attribute>
     </element>
   </define>
 
@@ -716,12 +771,19 @@
             </optional>
             <optional>
               <element name="allocation">
-                <attribute name="mode">
-                  <choice>
-                    <value>immediate</value>
-                    <value>ondemand</value>
-                  </choice>
-                </attribute>
+                <optional>
+                  <attribute name="mode">
+                    <choice>
+                      <value>immediate</value>
+                      <value>ondemand</value>
+                    </choice>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="threads">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
               </element>
             </optional>
             <optional>
@@ -795,8 +857,33 @@
               <attribute name="id">
                 <ref name="unsignedInt"/>
               </attribute>
+              <optional>
+                <attribute name="thread_pool_min">
+                  <ref name="unsignedInt"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="thread_pool_max">
+                  <ref name="unsignedInt"/>
+                </attribute>
+              </optional>
             </element>
           </zeroOrMore>
+        </element>
+      </optional>
+
+      <optional>
+        <element name="defaultiothread">
+          <optional>
+            <attribute name="thread_pool_min">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="thread_pool_max">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
         </element>
       </optional>
 
@@ -873,30 +960,32 @@
   <!-- All the memory/swap related tunables would go in the memtune -->
   <define name="memtune">
     <element name="memtune">
-      <!-- Maximum memory the VM can use -->
-      <optional>
-        <element name="hard_limit">
-          <ref name="scaledInteger"/>
-        </element>
-      </optional>
-      <!-- Minimum memory ascertained for the VM during contention -->
-      <optional>
-        <element name="soft_limit">
-          <ref name="scaledInteger"/>
-        </element>
-      </optional>
-      <!-- Minimum amount of memory required to start the VM -->
-      <optional>
-        <element name="min_guarantee">
-          <ref name="scaledInteger"/>
-        </element>
-      </optional>
-      <!-- Maximum swap area the VM can use -->
-      <optional>
-        <element name="swap_hard_limit">
-          <ref name="scaledInteger"/>
-        </element>
-      </optional>
+      <interleave>
+        <!-- Maximum memory the VM can use -->
+        <optional>
+          <element name="hard_limit">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <!-- Minimum memory ascertained for the VM during contention -->
+        <optional>
+          <element name="soft_limit">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <!-- Minimum amount of memory required to start the VM -->
+        <optional>
+          <element name="min_guarantee">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <!-- Maximum swap area the VM can use -->
+        <optional>
+          <element name="swap_hard_limit">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+      </interleave>
     </element>
   </define>
 
@@ -1006,6 +1095,11 @@
             <attribute name="vcpus">
               <ref name="cpuset"/>
             </attribute>
+            <optional>
+              <attribute name="id">
+                <data type="string"/>
+              </attribute>
+            </optional>
             <oneOrMore>
               <choice>
                 <element name="cache">
@@ -1154,9 +1248,14 @@
 
   <define name="respartition">
     <element name="resource">
-      <element name="partition">
-        <ref name="absFilePath"/>
-      </element>
+      <optional>
+        <element name="partition">
+          <ref name="absFilePath"/>
+        </element>
+      </optional>
+      <optional>
+        <ref name="fibrechannel"/>
+      </optional>
     </element>
   </define>
 
@@ -1207,6 +1306,14 @@
                 </choice>
               </attribute>
             </optional>
+          </group>
+          <group>
+            <attribute name="offset">
+              <value>absolute</value>
+            </attribute>
+            <attribute name="start">
+              <ref name="unsignedLong"/>
+            </attribute>
           </group>
         </choice>
         <zeroOrMore>
@@ -1405,7 +1512,7 @@
       <optional>
         <ref name="diskAuth"/>
       </optional>
-      <ref name="target"/>
+      <ref name="diskTarget"/>
       <optional>
         <ref name="deviceBoot"/>
       </optional>
@@ -1429,6 +1536,11 @@
       </optional>
       <optional>
         <element name="transient">
+          <optional>
+            <attribute name="shareBacking">
+              <ref name='virYesNo'/>
+            </attribute>
+          </optional>
           <empty/>
         </element>
       </optional>
@@ -1487,6 +1599,7 @@
         <value>no</value>
         <value>internal</value>
         <value>external</value>
+        <value>manual</value>
       </choice>
     </attribute>
   </define>
@@ -1586,6 +1699,7 @@
     <interleave>
       <ref name="storageSourceExtra"/>
       <ref name="diskBackingChain"/>
+      <ref name="privateDataDeviceDisk"/>
     </interleave>
   </define>
 
@@ -1638,7 +1752,7 @@
 
   <define name="diskSourceSlice">
     <attribute name="offset">
-      <ref name="positiveInteger"/>
+      <ref name="unsignedInt"/>
     </attribute>
     <attribute name="size">
       <ref name="positiveInteger"/>
@@ -1661,6 +1775,7 @@
         </element>
       </element>
     </optional>
+    <ref name="privateDataStorageSource"/>
   </define>
 
   <define name="diskSource">
@@ -1691,6 +1806,9 @@
                 <ref name="vmwarePath"/>
               </choice>
             </attribute>
+            <optional>
+              <attribute name="fdgroup"/>
+            </optional>
           </optional>
           <ref name="diskSourceCommon"/>
           <optional>
@@ -1877,22 +1995,24 @@
   </define>
 
   <define name="diskSourceNetworkProtocolPropsCommon">
-    <optional>
-      <element name="readahead">
-        <attribute name="size">
-          <ref name="positiveInteger"/>
-        </attribute>
-        <empty/>
-      </element>
-    </optional>
-    <optional>
-      <element name="timeout">
-        <attribute name="seconds">
-          <ref name="positiveInteger"/>
-        </attribute>
-        <empty/>
-      </element>
-    </optional>
+    <interleave>
+      <optional>
+        <element name="readahead">
+          <attribute name="size">
+            <ref name="positiveInteger"/>
+          </attribute>
+          <empty/>
+        </element>
+      </optional>
+      <optional>
+        <element name="timeout">
+          <attribute name="seconds">
+            <ref name="positiveInteger"/>
+          </attribute>
+          <empty/>
+        </element>
+      </optional>
+    </interleave>
   </define>
 
   <define name="diskSourceNetworkProtocolSSLVerify">
@@ -1946,7 +2066,10 @@
           <ref name="diskSourceNetworkProtocolHTTPCookies"/>
         </optional>
         <ref name="diskSourceNetworkProtocolPropsCommon"/>
-        </interleave>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
@@ -1971,6 +2094,9 @@
           <ref name="diskSourceNetworkProtocolHTTPCookies"/>
         </optional>
         <ref name="diskSourceNetworkProtocolPropsCommon"/>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -1993,6 +2119,31 @@
           <ref name="diskSourceNetworkProtocolSSLVerify"/>
         </optional>
         <ref name="diskSourceNetworkProtocolPropsCommon"/>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="diskSourceNetworkProtocolFTP">
+    <element name="source">
+      <interleave>
+        <attribute name="protocol">
+          <choice>
+            <value>ftp</value>
+          </choice>
+        </attribute>
+        <attribute name="name"/>
+        <ref name="diskSourceCommon"/>
+        <ref name="diskSourceNetworkHost"/>
+        <optional>
+          <ref name="encryption"/>
+        </optional>
+        <ref name="diskSourceNetworkProtocolPropsCommon"/>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -2003,7 +2154,6 @@
         <attribute name="protocol">
           <choice>
             <value>sheepdog</value>
-            <value>ftp</value>
             <value>tftp</value>
           </choice>
         </attribute>
@@ -2031,6 +2181,9 @@
           <attribute name="tls">
             <ref name="virYesNo"/>
           </attribute>
+        </optional>
+        <optional>
+          <attribute name="tlsHostname"/>
         </optional>
         <ref name="diskSourceCommon"/>
         <ref name="diskSourceNetworkHost"/>
@@ -2107,6 +2260,7 @@
       <ref name="diskSourceNetworkProtocolHTTP"/>
       <ref name="diskSourceNetworkProtocolHTTPS"/>
       <ref name="diskSourceNetworkProtocolFTPS"/>
+      <ref name="diskSourceNetworkProtocolFTP"/>
       <ref name="diskSourceNetworkProtocolSimple"/>
       <ref name="diskSourceNetworkProtocolVxHS"/>
       <ref name="diskSourceNetworkProtocolNFS"/>
@@ -2200,15 +2354,16 @@
     </element>
   </define>
 
-  <define name="diskTarget">
+  <define name="diskTargetDev">
     <data type="string">
       <param name="pattern">(ioemu:)?(fd|hd|sd|vd|xvd|ubd)[a-zA-Z0-9_]+</param>
     </data>
   </define>
-  <define name="target">
+
+  <define name="diskTarget">
     <element name="target">
       <attribute name="dev">
-        <ref name="diskTarget"/>
+        <ref name="diskTargetDev"/>
       </attribute>
       <optional>
         <attribute name="bus">
@@ -2321,6 +2476,11 @@
       </optional>
       <optional>
         <attribute name="queues">
+          <ref name="positiveInteger"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="queue_size">
           <ref name="positiveInteger"/>
         </attribute>
       </optional>
@@ -2543,103 +2703,105 @@
             <attribute name="type">
               <value>pci</value>
             </attribute>
-            <optional>
-              <element name="model">
-                <attribute name="name">
-                  <choice>
-                    <!-- implementations of "pci-root" -->
-                    <value>spapr-pci-host-bridge</value>
-                    <!-- implementations of "pci-bridge" -->
-                    <value>pci-bridge</value>
-                    <!-- implementations of "dmi-to-pci-bridge" -->
-                    <value>i82801b11-bridge</value>
-                    <!-- implementations of "pcie-to-pci-bridge" -->
-                    <value>pcie-pci-bridge</value>
-                    <!-- implementations of "pcie-root-port" -->
-                    <value>ioh3420</value>
-                    <value>pcie-root-port</value>
-                    <!-- implementations of "pcie-switch-upstream-port" -->
-                    <value>x3130-upstream</value>
-                    <!-- implementations of "pcie-switch-downstream-port" -->
-                    <value>xio3130-downstream</value>
-                    <!-- implementations of "pci-expander-bus" -->
-                    <value>pxb</value>
-                    <!-- implementations of "pcie-expander-bus" -->
-                    <value>pxb-pcie</value>
-                  </choice>
-                </attribute>
-                <empty/>
-              </element>
-            </optional>
-            <optional>
-              <element name="target">
-                <optional>
-                  <attribute name="chassisNr">
-                    <ref name="uint8"/>
+            <interleave>
+              <optional>
+                <element name="model">
+                  <attribute name="name">
+                    <choice>
+                      <!-- implementations of "pci-root" -->
+                      <value>spapr-pci-host-bridge</value>
+                      <!-- implementations of "pci-bridge" -->
+                      <value>pci-bridge</value>
+                      <!-- implementations of "dmi-to-pci-bridge" -->
+                      <value>i82801b11-bridge</value>
+                      <!-- implementations of "pcie-to-pci-bridge" -->
+                      <value>pcie-pci-bridge</value>
+                      <!-- implementations of "pcie-root-port" -->
+                      <value>ioh3420</value>
+                      <value>pcie-root-port</value>
+                      <!-- implementations of "pcie-switch-upstream-port" -->
+                      <value>x3130-upstream</value>
+                      <!-- implementations of "pcie-switch-downstream-port" -->
+                      <value>xio3130-downstream</value>
+                      <!-- implementations of "pci-expander-bus" -->
+                      <value>pxb</value>
+                      <!-- implementations of "pcie-expander-bus" -->
+                      <value>pxb-pcie</value>
+                    </choice>
                   </attribute>
-                </optional>
-                <optional>
-                  <attribute name="chassis">
-                    <ref name="uint8"/>
+                  <empty/>
+                </element>
+              </optional>
+              <optional>
+                <element name="target">
+                  <optional>
+                    <attribute name="chassisNr">
+                      <ref name="uint8"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="chassis">
+                      <ref name="uint8"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="port">
+                      <ref name="uint8"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="busNr">
+                      <ref name="uint8"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="index">
+                      <ref name="uint8"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="hotplug">
+                      <ref name="virOnOff"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <element name="node">
+                      <ref name="unsignedInt"/>
+                    </element>
+                  </optional>
+                </element>
+              </optional>
+              <!-- *-root controllers have an optional element "pcihole64"-->
+              <choice>
+                <group>
+                  <attribute name="model">
+                    <choice>
+                      <value>pci-root</value>
+                      <value>pcie-root</value>
+                    </choice>
                   </attribute>
-                </optional>
-                <optional>
-                  <attribute name="port">
-                    <ref name="uint8"/>
+                  <optional>
+                    <element name="pcihole64">
+                      <ref name="scaledInteger"/>
+                    </element>
+                  </optional>
+                </group>
+                <group>
+                  <attribute name="model">
+                    <choice>
+                      <value>pci-bridge</value>
+                      <value>dmi-to-pci-bridge</value>
+                      <value>pcie-to-pci-bridge</value>
+                      <value>pcie-root-port</value>
+                      <value>pcie-switch-upstream-port</value>
+                      <value>pcie-switch-downstream-port</value>
+                      <value>pci-expander-bus</value>
+                      <value>pcie-expander-bus</value>
+                    </choice>
                   </attribute>
-                </optional>
-                <optional>
-                  <attribute name="busNr">
-                    <ref name="uint8"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="index">
-                    <ref name="uint8"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="hotplug">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <element name="node">
-                    <ref name="unsignedInt"/>
-                  </element>
-                </optional>
-              </element>
-            </optional>
-            <!-- *-root controllers have an optional element "pcihole64"-->
-            <choice>
-              <group>
-                <attribute name="model">
-                  <choice>
-                    <value>pci-root</value>
-                    <value>pcie-root</value>
-                  </choice>
-                </attribute>
-                <optional>
-                  <element name="pcihole64">
-                    <ref name="scaledInteger"/>
-                  </element>
-                </optional>
-              </group>
-              <group>
-                <attribute name="model">
-                  <choice>
-                    <value>pci-bridge</value>
-                    <value>dmi-to-pci-bridge</value>
-                    <value>pcie-to-pci-bridge</value>
-                    <value>pcie-root-port</value>
-                    <value>pcie-switch-upstream-port</value>
-                    <value>pcie-switch-downstream-port</value>
-                    <value>pci-expander-bus</value>
-                    <value>pcie-expander-bus</value>
-                  </choice>
-                </attribute>
-              </group>
-            </choice>
+                </group>
+              </choice>
+            </interleave>
           </group>
           <!-- virtio-serial has optional "ports" and "vectors" -->
           <group>
@@ -2712,207 +2874,212 @@
       </interleave>
     </element>
   </define>
+
+  <define name="filesystemCommon">
+    <interleave>
+      <element name="target">
+        <attribute name="dir"/>
+        <empty/>
+      </element>
+      <optional>
+        <attribute name="accessmode">
+          <choice>
+            <value>passthrough</value>
+            <value>mapped</value>
+            <value>squash</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="multidevs">
+          <choice>
+            <value>default</value>
+            <value>remap</value>
+            <value>forbid</value>
+            <value>warn</value>
+          </choice>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="fmode">
+          <ref name="createMode"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="dmode">
+          <ref name="createMode"/>
+        </attribute>
+      </optional>
+      <optional>
+        <element name="readonly">
+          <empty/>
+        </element>
+      </optional>
+      <optional>
+        <ref name="deviceBoot"/>
+      </optional>
+      <optional>
+        <ref name="alias"/>
+      </optional>
+      <optional>
+        <ref name="acpi"/>
+      </optional>
+      <optional>
+        <ref name="address"/>
+      </optional>
+      <optional>
+        <element name="space_hard_limit">
+          <ref name="scaledInteger"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="space_soft_limit">
+          <ref name="scaledInteger"/>
+        </element>
+      </optional>
+    </interleave>
+  </define>
+
   <define name="filesystem">
     <element name="filesystem">
-      <interleave>
-        <choice>
-          <group>
-            <attribute name="type">
-              <value>file</value>
-            </attribute>
-            <interleave>
-              <optional>
-                <ref name="fsDriver"/>
-              </optional>
-              <element name="source">
-                <attribute name="file">
-                  <ref name="absFilePath"/>
-                </attribute>
-                <empty/>
-              </element>
-            </interleave>
-          </group>
-          <group>
-            <attribute name="type">
-              <value>block</value>
-            </attribute>
-            <interleave>
-              <optional>
-                <ref name="fsDriver"/>
-              </optional>
-              <element name="source">
-                <attribute name="dev">
-                  <ref name="absFilePath"/>
-                </attribute>
-                <empty/>
-              </element>
-            </interleave>
-          </group>
-          <group>
-            <!-- type="mount" is default -->
+      <optional>
+        <attribute name="model">
+          <choice>
+            <value>virtio</value>
+            <value>virtio-transitional</value>
+            <value>virtio-non-transitional</value>
+          </choice>
+        </attribute>
+      </optional>
+      <choice>
+        <group>
+          <attribute name="type">
+            <value>file</value>
+          </attribute>
+          <interleave>
             <optional>
-              <attribute name="type">
-                <value>mount</value>
-              </attribute>
+              <ref name="fsDriver"/>
             </optional>
-            <interleave>
-              <optional>
-                <ref name="fsDriver"/>
-              </optional>
-              <optional>
-                <ref name="fsBinary"/>
-              </optional>
-              <element name="source">
-              <choice>
-              <group>
-                <attribute name="dir">
-                  <ref name="absDirPath"/>
-                </attribute>
-              </group>
-              <group>
-              <attribute name="socket">
+            <element name="source">
+              <attribute name="file">
                 <ref name="absFilePath"/>
               </attribute>
-              </group>
-              </choice>
-                <empty/>
-              </element>
-            </interleave>
-          </group>
-          <group>
-            <optional>
-              <attribute name="type">
-                <value>bind</value>
-              </attribute>
-            </optional>
-            <interleave>
-              <optional>
-                <ref name="fsDriver"/>
-              </optional>
-              <element name="source">
-                <attribute name="dir">
-                  <ref name="absDirPath"/>
-                </attribute>
-                <empty/>
-              </element>
-            </interleave>
-          </group>
-          <group>
-            <attribute name="type">
-              <value>template</value>
-            </attribute>
-            <interleave>
-              <optional>
-                <ref name="fsDriver"/>
-              </optional>
-              <element name="source">
-                <attribute name="name">
-                  <ref name="genericName"/>
-                </attribute>
-                <empty/>
-              </element>
-            </interleave>
-          </group>
-          <group>
-            <attribute name="type">
-              <value>ram</value>
-            </attribute>
-            <interleave>
-              <optional>
-                <ref name="fsDriver"/>
-              </optional>
-              <element name="source">
-                <attribute name="usage">
-                  <ref name="unsignedLong"/>
-                </attribute>
-                <optional>
-                  <attribute name="units">
-                    <ref name="unit"/>
-                  </attribute>
-                </optional>
-                <empty/>
-              </element>
-            </interleave>
-          </group>
-        </choice>
-        <interleave>
-          <optional>
-          <element name="target">
-            <attribute name="dir"/>
-            <empty/>
-          </element>
-          </optional>
-          <optional>
-            <attribute name="accessmode">
-              <choice>
-                <value>passthrough</value>
-                <value>mapped</value>
-                <value>squash</value>
-              </choice>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="multidevs">
-              <choice>
-                <value>default</value>
-                <value>remap</value>
-                <value>forbid</value>
-                <value>warn</value>
-              </choice>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="fmode">
-              <ref name="createMode"/>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="dmode">
-              <ref name="createMode"/>
-            </attribute>
-          </optional>
-          <optional>
-            <element name="readonly">
               <empty/>
             </element>
-          </optional>
-          <optional>
-            <ref name="deviceBoot"/>
-          </optional>
-          <optional>
-            <ref name="alias"/>
-          </optional>
-          <optional>
-            <ref name="acpi"/>
-          </optional>
-          <optional>
-            <ref name="address"/>
-          </optional>
-        </interleave>
-        <interleave>
-          <optional>
-            <element name="space_hard_limit">
-              <ref name="scaledInteger"/>
-            </element>
-          </optional>
-          <optional>
-            <element name="space_soft_limit">
-              <ref name="scaledInteger"/>
-            </element>
-          </optional>
-        </interleave>
-        <optional>
-          <attribute name="model">
-            <choice>
-              <value>virtio</value>
-              <value>virtio-transitional</value>
-              <value>virtio-non-transitional</value>
-            </choice>
+            <ref name="filesystemCommon"/>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>block</value>
           </attribute>
-        </optional>
-      </interleave>
+          <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
+            <element name="source">
+              <attribute name="dev">
+                <ref name="absFilePath"/>
+              </attribute>
+              <empty/>
+            </element>
+            <ref name="filesystemCommon"/>
+          </interleave>
+        </group>
+        <group>
+          <!-- type="mount" is default -->
+          <optional>
+            <attribute name="type">
+              <value>mount</value>
+            </attribute>
+          </optional>
+          <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
+            <optional>
+              <ref name="fsBinary"/>
+            </optional>
+            <element name="source">
+              <choice>
+                <group>
+                  <attribute name="dir">
+                    <ref name="absDirPath"/>
+                  </attribute>
+                </group>
+                <group>
+                  <attribute name="socket">
+                    <ref name="absFilePath"/>
+                  </attribute>
+                </group>
+              </choice>
+              <empty/>
+            </element>
+            <ref name="filesystemCommon"/>
+          </interleave>
+        </group>
+        <group>
+          <optional>
+            <attribute name="type">
+              <value>bind</value>
+            </attribute>
+          </optional>
+          <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
+            <element name="source">
+              <attribute name="dir">
+                <ref name="absDirPath"/>
+              </attribute>
+              <empty/>
+            </element>
+            <ref name="filesystemCommon"/>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>template</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
+            <element name="source">
+              <attribute name="name">
+                <ref name="genericName"/>
+              </attribute>
+              <empty/>
+            </element>
+            <ref name="filesystemCommon"/>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>ram</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="fsDriver"/>
+            </optional>
+            <element name="source">
+              <attribute name="usage">
+                <ref name="unsignedLong"/>
+              </attribute>
+              <optional>
+                <attribute name="units">
+                  <ref name="unit"/>
+                </attribute>
+              </optional>
+              <empty/>
+            </element>
+            <ref name="filesystemCommon"/>
+          </interleave>
+        </group>
+      </choice>
     </element>
   </define>
+
   <define name="fsDriver">
     <element name="driver">
       <!-- Annoying inconsistency. "disk" uses "name"
@@ -3006,6 +3173,15 @@
             <optional>
               <attribute name="flock">
                 <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <element name="thread_pool">
+            <optional>
+              <attribute name="size">
+                <data type="integer"/>
               </attribute>
             </optional>
           </element>
@@ -3142,6 +3318,14 @@
             <value>user</value>
           </attribute>
           <interleave>
+            <optional>
+              <element name="source">
+                <attribute name="dev">
+                  <ref name="deviceName"/>
+                </attribute>
+                <empty/>
+              </element>
+            </optional>
             <ref name="interface-options"/>
           </interleave>
         </group>
@@ -3290,6 +3474,36 @@
           </interleave>
         </group>
 
+        <group>
+          <attribute name="type">
+            <value>null</value>
+          </attribute>
+          <ref name="interface-options"/>
+        </group>
+
+        <group>
+          <attribute name="type">
+            <value>vds</value>
+          </attribute>
+          <interleave>
+            <element name="source">
+              <attribute name="switchid">
+                <ref name="UUID"/>
+              </attribute>
+              <attribute name="portid">
+                <data type="long"/>
+              </attribute>
+              <attribute name="portgroupid">
+                <data type="string"/>
+              </attribute>
+              <attribute name="connectionid">
+                <data type="long"/>
+              </attribute>
+            </element>
+            <ref name="interface-options"/>
+          </interleave>
+        </group>
+
       </choice>
       <optional>
         <attribute name="trustGuestRxFilters">
@@ -3378,6 +3592,7 @@
         </element>
       </optional>
       <ref name="interface-ip-info"/>
+      <ref name="interface-port-forwards"/>
       <optional>
         <element name="script">
           <attribute name="path">
@@ -3415,12 +3630,24 @@
       <optional>
         <element name="backend">
           <optional>
+            <attribute name="type">
+              <choice>
+                <value>passt</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
             <attribute name="tap">
               <ref name="absFilePath"/>
             </attribute>
           </optional>
           <optional>
             <attribute name="vhost">
+              <ref name="absFilePath"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="logFile">
               <ref name="absFilePath"/>
             </attribute>
           </optional>
@@ -3548,6 +3775,16 @@
                 </optional>
               </element>
             </optional>
+            <optional>
+              <attribute name="rss">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="rss_hash_report">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
           </interleave>
         </element>
       </optional>
@@ -3600,31 +3837,80 @@
       All ip-related info for either the host or guest side of an interface
   -->
   <define name="interface-ip-info">
+    <interleave>
+      <zeroOrMore>
+        <element name="ip">
+          <attribute name="address">
+            <ref name="ipAddr"/>
+          </attribute>
+          <optional>
+            <attribute name="family">
+              <ref name="addr-family"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="prefix">
+              <ref name="ipPrefix"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="peer">
+              <ref name="ipAddr"/>
+            </attribute>
+          </optional>
+          <empty/>
+        </element>
+      </zeroOrMore>
+      <zeroOrMore>
+        <ref name="route"/>
+      </zeroOrMore>
+    </interleave>
+  </define>
+
+  <define name="interface-port-forwards">
     <zeroOrMore>
-      <element name="ip">
-        <attribute name="address">
-          <ref name="ipAddr"/>
+      <element name="portForward">
+        <attribute name="proto">
+          <choice>
+            <value>tcp</value>
+            <value>udp</value>
+          </choice>
         </attribute>
         <optional>
-          <attribute name="family">
-            <ref name="addr-family"/>
-          </attribute>
-        </optional>
-        <optional>
-          <attribute name="prefix">
-            <ref name="ipPrefix"/>
-          </attribute>
-        </optional>
-        <optional>
-          <attribute name="peer">
+          <attribute name="address">
             <ref name="ipAddr"/>
           </attribute>
         </optional>
-        <empty/>
+        <optional>
+          <attribute name="dev">
+            <ref name="deviceName"/>
+          </attribute>
+        </optional>
+        <interleave>
+          <zeroOrMore>
+            <element name="range">
+              <attribute name="start">
+                <ref name="PortNumber"/>
+              </attribute>
+              <optional>
+                <attribute name="end">
+                  <ref name="PortNumber"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="to">
+                  <ref name="PortNumber"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="exclude">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
+            </element>
+          </zeroOrMore>
+        </interleave>
       </element>
-    </zeroOrMore>
-    <zeroOrMore>
-      <ref name="route"/>
     </zeroOrMore>
   </define>
 
@@ -3913,23 +4199,10 @@
               </element>
             </optional>
             <optional>
-              <element name="clipboard">
-                <attribute name="copypaste">
-                  <ref name="virYesNo"/>
-                </attribute>
-                <empty/>
-              </element>
+              <ref name="clipboard"/>
             </optional>
             <optional>
-              <element name="mouse">
-                <attribute name="mode">
-                  <choice>
-                    <value>server</value>
-                    <value>client</value>
-                  </choice>
-                </attribute>
-                <empty/>
-              </element>
+              <ref name="mousemode"/>
             </optional>
             <optional>
               <element name="filetransfer">
@@ -3950,6 +4223,46 @@
                   </attribute>
                 </optional>
                 <empty/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>dbus</value>
+          </attribute>
+          <optional>
+            <choice>
+              <group>
+                <attribute name="address">
+                  <ref name="dbusAddr"/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="p2p">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </group>
+            </choice>
+          </optional>
+          <interleave>
+            <optional>
+              <element name="gl">
+                <attribute name="enable">
+                  <ref name="virYesNo"/>
+                </attribute>
+                <optional>
+                  <attribute name="rendernode">
+                    <ref name="absFilePath"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+            <optional>
+              <element name="audio">
+                <attribute name="id">
+                  <ref name="uint8"/>
+                </attribute>
               </element>
             </optional>
           </interleave>
@@ -4018,6 +4331,25 @@
     </element>
   </define>
 
+  <define name="clipboard">
+    <element name="clipboard">
+      <attribute name="copypaste">
+        <ref name="virYesNo"/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+  <define name="mousemode">
+    <element name="mouse">
+      <attribute name="mode">
+        <choice>
+          <value>server</value>
+          <value>client</value>
+        </choice>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
   <define name="listenElements">
     <zeroOrMore>
       <element name="listen">
@@ -4359,6 +4691,7 @@
         <value>spapr-vio-serial</value>
         <value>system-serial</value>
         <value>sclp-serial</value>
+        <value>isa-debug</value>
       </choice>
     </attribute>
   </define>
@@ -4375,6 +4708,7 @@
           <value>16550a</value>
           <value>sclpconsole</value>
           <value>sclplmconsole</value>
+          <value>isa-debugcon</value>
         </choice>
       </attribute>
     </element>
@@ -4416,6 +4750,8 @@
       <value>spicevmc</value>
       <value>spiceport</value>
       <value>nmdm</value>
+      <value>qemu-vdagent</value>
+      <value>dbus</value>
     </choice>
   </define>
 
@@ -4464,74 +4800,85 @@
       <ref name="qemucdevSrcTypeChoice"/>
     </attribute>
   </define>
+
   <define name="qemucdevSrcDef">
-    <zeroOrMore>
-      <element name="source">
-        <optional>
-          <attribute name="mode"/>
-        </optional>
-        <optional>
-          <attribute name="path"/>
-        </optional>
-        <optional>
-          <attribute name="host"/>
-        </optional>
-        <optional>
-          <attribute name="service"/>
-        </optional>
-        <optional>
-          <attribute name="channel"/>
-        </optional>
-        <optional>
-          <attribute name="master"/>
-        </optional>
-        <optional>
-          <attribute name="slave"/>
-        </optional>
-        <optional>
-          <attribute name="append">
-            <ref name="virOnOff"/>
+    <interleave>
+      <zeroOrMore>
+        <element name="source">
+          <optional>
+            <attribute name="mode"/>
+          </optional>
+          <optional>
+            <attribute name="path"/>
+          </optional>
+          <optional>
+            <attribute name="host"/>
+          </optional>
+          <optional>
+            <attribute name="service"/>
+          </optional>
+          <optional>
+            <attribute name="channel"/>
+          </optional>
+          <optional>
+            <attribute name="master"/>
+          </optional>
+          <optional>
+            <attribute name="slave"/>
+          </optional>
+          <optional>
+            <attribute name="append">
+              <ref name="virOnOff"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="tls">
+              <ref name="virYesNo"/>
+            </attribute>
+          </optional>
+          <optional>
+            <ref name="reconnect"/>
+          </optional>
+          <interleave>
+            <zeroOrMore>
+              <ref name="devSeclabel"/>
+            </zeroOrMore>
+            <optional>
+              <ref name="clipboard"/>
+            </optional>
+            <optional>
+              <ref name="mousemode"/>
+            </optional>
+          </interleave>
+        </element>
+      </zeroOrMore>
+      <optional>
+        <element name="protocol">
+          <optional>
+            <attribute name="type">
+              <choice>
+                <value>raw</value>
+                <value>telnet</value>
+                <value>telnets</value>
+                <value>tls</value>
+              </choice>
+            </attribute>
+          </optional>
+        </element>
+      </optional>
+      <optional>
+        <element name="log">
+          <attribute name="file">
+            <ref name="absFilePath"/>
           </attribute>
-        </optional>
-        <optional>
-          <attribute name="tls">
-            <ref name="virYesNo"/>
-          </attribute>
-        </optional>
-        <optional>
-          <ref name="reconnect"/>
-        </optional>
-        <zeroOrMore>
-          <ref name="devSeclabel"/>
-        </zeroOrMore>
-      </element>
-    </zeroOrMore>
-    <optional>
-      <element name="protocol">
-        <optional>
-          <attribute name="type">
-            <choice>
-              <value>raw</value>
-              <value>telnet</value>
-              <value>telnets</value>
-              <value>tls</value>
-            </choice>
-          </attribute>
-        </optional>
-      </element>
-    </optional>
-    <optional>
-      <element name="log">
-        <attribute name="file">
-          <ref name="absFilePath"/>
-        </attribute>
-        <optional>
-          <attribute name="append">
-            <ref name="virOnOff"/>
-          </attribute>
-        </optional>
-      </element>
-    </optional>
+          <optional>
+            <attribute name="append">
+              <ref name="virOnOff"/>
+            </attribute>
+          </optional>
+        </element>
+      </optional>
+    </interleave>
   </define>
   <!--
       The description for a console
@@ -4764,11 +5111,21 @@
     <ref name="audiocommonchild"/>
   </define>
 
+  <define name="audiodbus">
+    <ref name="audiocommonattr"/>
+    <ref name="audiocommonchild"/>
+  </define>
+
   <define name="audio">
     <element name="audio">
       <attribute name="id">
         <ref name="uint8"/>
       </attribute>
+      <optional>
+        <attribute name="timerPeriod">
+          <ref name="uint32"/>
+        </attribute>
+      </optional>
       <choice>
         <group>
           <attribute name="type">
@@ -4783,6 +5140,23 @@
             <optional>
               <element name="output">
                 <ref name="audionone"/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>dbus</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiodbus"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiodbus"/>
               </element>
             </optional>
           </interleave>
@@ -4965,35 +5339,37 @@
   </define>
   <define name="watchdog">
     <element name="watchdog">
-      <attribute name="model">
-        <choice>
-          <value>i6300esb</value>
-          <value>ib700</value>
-          <value>diag288</value>
-        </choice>
-      </attribute>
-      <optional>
-        <attribute name="action">
+      <interleave>
+        <attribute name="model">
           <choice>
-            <value>reset</value>
-            <value>shutdown</value>
-            <value>poweroff</value>
-            <value>pause</value>
-            <value>none</value>
-            <value>dump</value>
-            <value>inject-nmi</value>
+            <value>i6300esb</value>
+            <value>ib700</value>
+            <value>diag288</value>
           </choice>
         </attribute>
-      </optional>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="acpi"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+        <optional>
+          <attribute name="action">
+            <choice>
+              <value>reset</value>
+              <value>shutdown</value>
+              <value>poweroff</value>
+              <value>pause</value>
+              <value>none</value>
+              <value>dump</value>
+              <value>inject-nmi</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
     </element>
   </define>
   <define name="nvram">
@@ -5177,9 +5553,6 @@
           <ref name="alias"/>
         </optional>
         <optional>
-          <ref name="acpi"/>
-        </optional>
-        <optional>
           <ref name="address"/>
         </optional>
       </interleave>
@@ -5221,9 +5594,6 @@
         </group>
       </choice>
       <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
         <ref name="acpi"/>
       </optional>
       <optional>
@@ -5249,16 +5619,15 @@
           </choice>
         </attribute>
       </optional>
-      <ref name="tpm-backend"/>
-      <optional>
-        <ref name="alias"/>
-      </optional>
-      <optional>
-        <ref name="acpi"/>
-      </optional>
-      <optional>
-        <ref name="address"/>
-      </optional>
+      <interleave>
+        <ref name="tpm-backend"/>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
@@ -5273,17 +5642,23 @@
         </group>
         <group>
           <attribute name="type">
-             <value>emulator</value>
+            <value>emulator</value>
           </attribute>
-          <ref name="tpm-backend-emulator-encryption"/>
+          <interleave>
+            <ref name="tpm-backend-emulator-encryption"/>
+            <ref name="tpm-backend-emulator-active-pcr-banks"/>
+          </interleave>
           <optional>
             <attribute name="persistent_state">
-              <choice>
-                <value>yes</value>
-                <value>no</value>
-              </choice>
-           </attribute>
+              <ref name="virYesNo"/>
+            </attribute>
           </optional>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>external</value>
+          </attribute>
+          <ref name="tpm-external-source"/>
         </group>
       </choice>
       <optional>
@@ -5309,12 +5684,57 @@
     </optional>
   </define>
 
+  <define name="tpm-external-source">
+    <optional>
+      <element name="source">
+        <attribute name="type">
+          <value>unix</value>
+        </attribute>
+        <attribute name="path">
+          <ref name="filePath"/>
+        </attribute>
+        <attribute name="mode">
+          <value>connect</value>
+        </attribute>
+      </element>
+    </optional>
+  </define>
+
   <define name="tpm-backend-emulator-encryption">
     <optional>
       <element name="encryption">
         <attribute name="secret">
           <ref name="UUID"/>
         </attribute>
+      </element>
+    </optional>
+  </define>
+
+  <define name="tpm-backend-emulator-active-pcr-banks">
+    <optional>
+      <element name="active_pcr_banks">
+        <interleave>
+          <optional>
+            <element name="sha1">
+              <empty/>
+            </element>
+          </optional>
+          <optional>
+            <element name="sha256">
+              <empty/>
+            </element>
+          </optional>
+          <optional>
+            <element name="sha384">
+              <empty/>
+            </element>
+          </optional>
+          <optional>
+            <element name="sha512">
+              <empty/>
+            </element>
+          </optional>
+        </interleave>
       </element>
     </optional>
   </define>
@@ -5368,37 +5788,49 @@
         <choice>
           <value>intel</value>
           <value>smmuv3</value>
+          <value>virtio</value>
         </choice>
       </attribute>
-      <optional>
-        <element name="driver">
-          <optional>
-            <attribute name="intremap">
-              <ref name="virOnOff"/>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="caching_mode">
-              <ref name="virOnOff"/>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="eim">
-              <ref name="virOnOff"/>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="iotlb">
-              <ref name="virOnOff"/>
-            </attribute>
-          </optional>
-          <optional>
-            <attribute name="aw_bits">
-              <ref name="uint8"/>
-            </attribute>
-          </optional>
-        </element>
-      </optional>
+      <interleave>
+        <optional>
+          <element name="driver">
+            <optional>
+              <attribute name="intremap">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="caching_mode">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="eim">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="iotlb">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="aw_bits">
+                <ref name="uint8"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <ref name="acpi"/>
+        </optional>
+        <optional>
+          <ref name="address"/>
+        </optional>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
@@ -5443,6 +5875,38 @@
               </attribute>
             </element>
           </group>
+          <group>
+            <attribute name="type">
+              <value>evdev</value>
+            </attribute>
+            <element name="source">
+              <attribute name="dev">
+                <ref name="absFilePath"/>
+              </attribute>
+              <optional>
+                <attribute name="grab">
+                  <value>all</value>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="grabToggle">
+                  <choice>
+                    <value>ctrl-ctrl</value>
+                    <value>alt-alt</value>
+                    <value>shift-shift</value>
+                    <value>meta-meta</value>
+                    <value>scrolllock</value>
+                    <value>ctrl-scrolllock</value>
+                  </choice>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="repeat">
+                  <ref name="virOnOff"/>
+                </attribute>
+              </optional>
+            </element>
+          </group>
         </choice>
         <optional>
           <attribute name="model">
@@ -5475,9 +5939,6 @@
           <ref name="alias"/>
         </optional>
         <optional>
-          <ref name="acpi"/>
-        </optional>
-        <optional>
           <ref name="address"/>
         </optional>
       </interleave>
@@ -5495,9 +5956,6 @@
         <ref name="qemucdevSrcDef"/>
         <optional>
           <ref name="alias"/>
-        </optional>
-        <optional>
-          <ref name="acpi"/>
         </optional>
         <optional>
           <ref name="address"/>
@@ -5637,6 +6095,15 @@
     <element name="source">
       <optional>
         <ref name="startupPolicy"/>
+      </optional>
+      <optional>
+        <attribute name="guestReset">
+          <choice>
+            <value>off</value>
+            <value>uninitialized</value>
+            <value>on</value>
+          </choice>
+        </attribute>
       </optional>
       <choice>
         <group>
@@ -5983,7 +6450,7 @@
     </element>
   </define>
   <!--
-      A set of optional features: PAE, APIC, ACPI, GIC,
+      A set of optional features: PAE, APIC, ACPI, GIC, TCG,
       HyperV Enlightenment, KVM features, paravirtual spinlocks and HAP support
     -->
   <define name="features">
@@ -6122,6 +6589,9 @@
           </optional>
           <optional>
             <ref name="ibs"/>
+          </optional>
+          <optional>
+            <ref name="tcgfeatures"/>
           </optional>
         </interleave>
       </element>
@@ -6411,6 +6881,16 @@
     </element>
   </define>
 
+  <define name="tcgfeatures">
+    <element name="tcg">
+      <optional>
+        <element name="tb-cache">
+          <ref name="scaledInteger"/>
+        </element>
+      </optional>
+    </element>
+  </define>
+
   <define name="address">
     <element name="address">
       <choice>
@@ -6521,6 +7001,8 @@
           <value>dimm</value>
           <value>nvdimm</value>
           <value>virtio-pmem</value>
+          <value>virtio-mem</value>
+          <value>sgx-epc</value>
         </choice>
       </attribute>
       <optional>
@@ -6606,6 +7088,21 @@
         <optional>
           <element name="node">
             <ref name="unsignedInt"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="block">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="requested">
+            <ref name="scaledInteger"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="current">
+            <ref name="scaledInteger"/>
           </element>
         </optional>
         <optional>
@@ -6715,6 +7212,11 @@
         <ref name="virOnOff"/>
       </attribute>
     </optional>
+    <optional>
+      <attribute name="page_per_vq">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
   </define>
 
   <define name="usbmaster">
@@ -6744,57 +7246,60 @@
 
   <define name="diskMirror">
     <element name="mirror">
-      <choice>
-        <group> <!-- old format, for block copy back-compat -->
-          <attribute name="file">
-            <ref name="absFilePath"/>
-          </attribute>
-          <optional>
-            <attribute name="format">
-              <ref name="storageFormat"/>
+      <interleave>
+        <choice>
+          <group> <!-- old format, for block copy back-compat -->
+            <attribute name="file">
+              <ref name="absFilePath"/>
             </attribute>
-          </optional>
-          <optional>
+            <optional>
+              <attribute name="format">
+                <ref name="storageFormat"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="job">
+                <value>copy</value>
+              </attribute>
+            </optional>
+            <optional>
+              <interleave>
+                <ref name="diskSourceFile"/>
+                <optional>
+                  <ref name="diskFormat"/>
+                </optional>
+              </interleave>
+            </optional>
+          </group>
+          <group> <!-- preferred format -->
             <attribute name="job">
-              <value>copy</value>
+              <choice>
+                <value>copy</value>
+                <value>active-commit</value>
+              </choice>
             </attribute>
-          </optional>
-          <optional>
             <interleave>
-              <ref name="diskSourceFile"/>
+              <ref name="diskSource"/>
               <optional>
                 <ref name="diskFormat"/>
               </optional>
             </interleave>
-          </optional>
-        </group>
-        <group> <!-- preferred format -->
-          <attribute name="job">
+          </group>
+        </choice>
+        <optional>
+          <attribute name="ready">
             <choice>
-              <value>copy</value>
-              <value>active-commit</value>
+              <value>yes</value>
+              <value>abort</value>
+              <value>pivot</value>
             </choice>
           </attribute>
-          <interleave>
-            <ref name="diskSource"/>
-            <optional>
-              <ref name="diskFormat"/>
-            </optional>
-          </interleave>
-        </group>
-      </choice>
-      <optional>
-        <attribute name="ready">
-          <choice>
-            <value>yes</value>
-            <value>abort</value>
-            <value>pivot</value>
-          </choice>
-        </attribute>
-      </optional>
-      <ref name="diskBackingChain"/>
+        </optional>
+        <ref name="diskBackingChain"/>
+      </interleave>
     </element>
   </define>
+
   <define name="diskAuth">
     <element name="auth">
       <attribute name="username">
@@ -6957,90 +7462,107 @@
   <!-- Optional HyperV Enlightenment features -->
   <define name="hyperv">
     <element name="hyperv">
-      <interleave>
-        <optional>
-          <element name="relaxed">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="vapic">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="spinlocks">
-            <ref name="featurestate"/>
+      <choice>
+        <attribute name="mode">
+          <value>passthrough</value>
+        </attribute>
+        <group>
+          <optional>
+            <attribute name="mode">
+              <value>custom</value>
+            </attribute>
+          </optional>
+          <interleave>
             <optional>
-              <attribute name="retries">
-                <data type="unsignedInt"/>
-              </attribute>
+              <element name="relaxed">
+                <ref name="featurestate"/>
+              </element>
             </optional>
-          </element>
-        </optional>
-        <optional>
-          <element name="vpindex">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="runtime">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="synic">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="stimer">
-            <ref name="stimer"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="reset">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="vendor_id">
-            <ref name="featurestate"/>
             <optional>
-              <attribute name="value">
-                <data type="string">
-                  <param name="pattern">[^,]{0,12}</param>
-                </data>
-              </attribute>
+              <element name="vapic">
+                <ref name="featurestate"/>
+              </element>
             </optional>
-          </element>
-        </optional>
-        <optional>
-          <element name="frequencies">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="reenlightenment">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="tlbflush">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="ipi">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="evmcs">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-      </interleave>
+            <optional>
+              <element name="spinlocks">
+                <ref name="featurestate"/>
+                <optional>
+                  <attribute name="retries">
+                    <data type="unsignedInt"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+            <optional>
+              <element name="vpindex">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="runtime">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="synic">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="stimer">
+                <ref name="stimer"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="reset">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="vendor_id">
+                <ref name="featurestate"/>
+                <optional>
+                  <attribute name="value">
+                    <data type="string">
+                      <param name="pattern">[^,]{0,12}</param>
+                    </data>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+            <optional>
+              <element name="frequencies">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="reenlightenment">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="tlbflush">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="ipi">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="evmcs">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="avic">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
     </element>
   </define>
 
@@ -7075,6 +7597,21 @@
         <optional>
           <element name="poll-control">
             <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="pv-ipi">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+        <optional>
+          <element name="dirty-ring">
+            <ref name="featurestate"/>
+            <optional>
+              <attribute name="size">
+                <data type="unsignedInt"/>
+              </attribute>
+            </optional>
           </element>
         </optional>
       </interleave>
@@ -7381,6 +7918,45 @@
     </element>
   </define>
 
+  <define name="qemuoverrideproperty">
+    <element name="property" ns="http://libvirt.org/schemas/domain/qemu/1.0">
+      <attribute name="name"/>
+      <attribute name="type">
+        <choice>
+          <value>string</value>
+          <value>signed</value>
+          <value>unsigned</value>
+          <value>bool</value>
+          <value>remove</value>
+        </choice>
+      </attribute>
+      <optional>
+        <attribute name="value"/>
+      </optional>
+    </element>
+  </define>
+
+  <define name="qemuoverride">
+    <element name="override" ns="http://libvirt.org/schemas/domain/qemu/1.0">
+      <interleave>
+        <zeroOrMore>
+          <element name="device">
+            <attribute name="alias"/>
+            <interleave>
+              <optional>
+                <element name="frontend">
+                  <zeroOrMore>
+                    <ref name="qemuoverrideproperty"/>
+                  </zeroOrMore>
+                </element>
+              </optional>
+            </interleave>
+          </element>
+        </zeroOrMore>
+      </interleave>
+    </element>
+  </define>
+
 
   <!--
        Optional hypervisor extensions in their own namespace:
@@ -7640,9 +8216,6 @@
       <interleave>
         <optional>
           <ref name="alias"/>
-        </optional>
-        <optional>
-          <ref name="acpi"/>
         </optional>
         <optional>
           <ref name="address"/>
