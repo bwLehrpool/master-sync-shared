@@ -35,7 +35,6 @@ package fi.iki.elonen;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -69,6 +68,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openslx.util.PrioThreadFactory;
+import org.openslx.util.Util;
 
 /**
  * A simple, tiny, nicely embeddable HTTP server in Java
@@ -144,61 +144,47 @@ public abstract class NanoHTTPD implements Runnable
 	 * re-processing.
 	 */
 	private static final String QUERY_STRING_PARAMETER = "NanoHttpd.QUERY_STRING";
-	private final String hostname;
-	private final int myPort;
-	private ServerSocket myServerSocket;
+	private final ServerSocket myServerSocket;
 	private Set<Socket> openConnections = new HashSet<Socket>();
 	/**
 	 * Pluggable strategy for asynchronously executing requests.
 	 */
-	private AsyncRunner asyncRunner;
+	private final ExecutorService asyncRunner;
 
 	protected int maxRequestSize = 0;
 
 	/**
 	 * Constructs an HTTP server on given port.
 	 */
-	public NanoHTTPD( int port )
+	public NanoHTTPD( int port ) throws IOException
 	{
 		this( null, port );
+	}
+
+	public NanoHTTPD( String hostname, int port ) throws IOException
+	{
+		this( hostname, port, new ThreadPoolExecutor( 2, 24, 1, TimeUnit.MINUTES,
+				new ArrayBlockingQueue<Runnable>( 16 ), new PrioThreadFactory( "httpd", Thread.NORM_PRIORITY ) ) );
 	}
 
 	/**
 	 * Constructs an HTTP server on given hostname and port.
 	 */
-	public NanoHTTPD( String hostname, int port )
+	public NanoHTTPD( String hostname, int port, ExecutorService executor ) throws IOException
 	{
-		this.hostname = hostname;
-		this.myPort = port;
-		setAsyncRunner( new DefaultAsyncRunner() );
-	}
-
-	protected static final void safeClose( Closeable closeable )
-	{
-		if ( closeable != null ) {
-			try {
-				closeable.close();
-			} catch ( IOException e ) {
-			}
-		}
+		this.asyncRunner = executor;
+		myServerSocket = new ServerSocket();
+		myServerSocket.setReuseAddress( true );
+		myServerSocket.bind( ( hostname != null ) ? new InetSocketAddress( hostname, port )
+				: new InetSocketAddress( port ) );
 	}
 
 	/**
 	 * Start the server.
-	 * 
-	 * @throws IOException if the socket is in use.
 	 */
 	@Override
 	public void run()
 	{
-		try {
-			myServerSocket = new ServerSocket();
-			myServerSocket.setReuseAddress( true );
-			myServerSocket.bind( ( hostname != null ) ? new InetSocketAddress( hostname, myPort )
-					: new InetSocketAddress( myPort ) );
-		} catch ( Exception e ) {
-			throw new RuntimeException( e );
-		}
 
 		do {
 			try {
@@ -206,7 +192,7 @@ public abstract class NanoHTTPD implements Runnable
 				registerConnection( finalAccept );
 				finalAccept.setSoTimeout( SOCKET_READ_TIMEOUT );
 				final InputStream inputStream = finalAccept.getInputStream();
-				asyncRunner.exec( new Runnable() {
+				asyncRunner.execute( new Runnable() {
 					@Override
 					public void run()
 					{
@@ -218,6 +204,11 @@ public abstract class NanoHTTPD implements Runnable
 							while ( !finalAccept.isClosed() && !finalAccept.isInputShutdown() ) {
 								session.execute();
 							}
+						} catch ( RejectedExecutionException e ) {
+							try {
+								outputStream.write( "HTTP/1.1 503 Overloaded\r\nConnection: Close\r\n\r\n".getBytes() );
+							} catch ( Exception e2 ) {
+							}
 						} catch ( Exception e ) {
 							// When the socket is closed by the client, we throw our own SocketException
 							// to break the  "keep alive" loop above.
@@ -226,9 +217,7 @@ public abstract class NanoHTTPD implements Runnable
 								e.printStackTrace();
 							}
 						} finally {
-							safeClose( outputStream );
-							safeClose( inputStream );
-							safeClose( finalAccept );
+							Util.safeClose( outputStream, inputStream, finalAccept );
 							unRegisterConnection( finalAccept );
 						}
 					}
@@ -250,7 +239,7 @@ public abstract class NanoHTTPD implements Runnable
 	public void stop()
 	{
 		try {
-			safeClose( myServerSocket );
+			Util.safeClose( myServerSocket );
 			closeAllConnections();
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -284,7 +273,7 @@ public abstract class NanoHTTPD implements Runnable
 	public synchronized void closeAllConnections()
 	{
 		for ( Socket socket : openConnections ) {
-			safeClose( socket );
+			Util.safeClose( socket );
 		}
 	}
 
@@ -432,16 +421,6 @@ public abstract class NanoHTTPD implements Runnable
 	// ------------------------------------------------------------------------------- //
 
 	/**
-	 * Pluggable strategy for asynchronously executing requests.
-	 * 
-	 * @param asyncRunner new strategy for handling threads.
-	 */
-	public void setAsyncRunner( AsyncRunner asyncRunner )
-	{
-		this.asyncRunner = asyncRunner;
-	}
-
-	/**
 	 * HTTP Request methods, with the ability to decode a <code>String</code>
 	 * back to its enum value.
 	 */
@@ -460,37 +439,7 @@ public abstract class NanoHTTPD implements Runnable
 		}
 	}
 
-	/**
-	 * Pluggable strategy for asynchronously executing requests.
-	 */
-	public interface AsyncRunner
-	{
-		void exec( Runnable code );
-	}
-
 	// ------------------------------------------------------------------------------- //
-
-	/**
-	 * Default threading strategy for NanoHTTPD.
-	 * <p/>
-	 * <p>
-	 * Uses a thread pool.
-	 * </p>
-	 */
-	public static class DefaultAsyncRunner implements AsyncRunner
-	{
-		private ExecutorService pool = new ThreadPoolExecutor( 2, 24, 1, TimeUnit.MINUTES,
-				new ArrayBlockingQueue<Runnable>( 16 ), new PrioThreadFactory( "httpd", Thread.NORM_PRIORITY ) );
-
-		@Override
-		public void exec( Runnable code )
-		{
-			try {
-				pool.execute( code );
-			} catch ( RejectedExecutionException e ) {
-			}
-		}
-	}
 
 	/**
 	 * HTTP response. Return one of these from serve().
@@ -638,7 +587,7 @@ public abstract class NanoHTTPD implements Runnable
 			if ( sb.length() != 0 ) {
 				outputStream.write( sb.toString().getBytes( StandardCharsets.UTF_8 ) );
 			}
-			safeClose( data );
+			Util.safeClose( data );
 		}
 
 		protected int sendContentLengthHeaderIfNotAlreadyPresent( StringBuilder sb,
@@ -981,11 +930,11 @@ public abstract class NanoHTTPD implements Runnable
 				Response r = new Response( Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT,
 						"SERVER INTERNAL ERROR: IOException: " + ioe.getMessage() );
 				r.send( outputStream );
-				safeClose( outputStream );
+				Util.safeClose( outputStream );
 			} catch ( ResponseException re ) {
 				Response r = new Response( re.getStatus(), MIME_PLAINTEXT, re.getMessage() );
 				r.send( outputStream );
-				safeClose( outputStream );
+				Util.safeClose( outputStream );
 			}
 		}
 
