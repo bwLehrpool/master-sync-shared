@@ -1573,10 +1573,6 @@ public class Domain extends LibvirtXmlDocument
 		Element qemuDeviceElement = XmlHelper.getOrCreateElement( xmlDocument, qemuOverrideElement,
 				XMLNS_QEMU_NS_URI, XMLNS_QEMU_NS_PREFIX, "device", "alias", "hostdev0" );
 		//
-		DOMImplementationLS domImplLS = (DOMImplementationLS)xmlDocument.getImplementation();
-		LSSerializer serializer = domImplLS.createLSSerializer();
-		String str = serializer.writeToString( qemuOverrideElement );
-		//
 		Element qemuFrontendElement = XmlHelper.getOrCreateElement( xmlDocument, qemuDeviceElement,
 				XMLNS_QEMU_NS_URI, XMLNS_QEMU_NS_PREFIX, "frontend", null, null );
 		// Properties
