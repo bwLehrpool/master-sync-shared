@@ -161,10 +161,25 @@ public abstract class NanoHTTPD implements Runnable
 		this( null, port );
 	}
 
+	/**
+	 * @param hostname Address to listen on
+	 * @param port Port to listen on
+	 */
 	public NanoHTTPD( String hostname, int port ) throws IOException
 	{
-		this( hostname, port, new ThreadPoolExecutor( 2, 24, 1, TimeUnit.MINUTES,
-				new ArrayBlockingQueue<Runnable>( 16 ), new PrioThreadFactory( "httpd", Thread.NORM_PRIORITY ) ) );
+		this( hostname, port, 24, 16 );
+	}
+
+	/**
+	 * @param hostname Address to listen on
+	 * @param port Port to listen on
+	 * @param maxThreads Maximum number of threads to spawn before we start queuing requests
+	 * @param maxQueue Maximum number of requests we queue before we start rejecting them with 503
+	 */
+	public NanoHTTPD( String hostname, int port, int maxThreads, int maxQueue ) throws IOException
+	{
+		this( hostname, port, new ThreadPoolExecutor( 2, maxThreads, 1, TimeUnit.MINUTES,
+				new ArrayBlockingQueue<Runnable>( maxQueue ), new PrioThreadFactory( "httpd", Thread.NORM_PRIORITY ) ) );
 	}
 
 	/**
