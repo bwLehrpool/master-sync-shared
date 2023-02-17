@@ -63,10 +63,10 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.openslx.util.GrowingThreadPoolExecutor;
 import org.openslx.util.PrioThreadFactory;
 import org.openslx.util.Util;
 
@@ -178,8 +178,8 @@ public abstract class NanoHTTPD implements Runnable
 	 */
 	public NanoHTTPD( String hostname, int port, int maxThreads, int maxQueue ) throws IOException
 	{
-		this( hostname, port, new ThreadPoolExecutor( 2, maxThreads, 1, TimeUnit.MINUTES,
-				new ArrayBlockingQueue<Runnable>( maxQueue ), new PrioThreadFactory( "httpd", Thread.NORM_PRIORITY ) ) );
+		this( hostname, port, new GrowingThreadPoolExecutor( 2, maxThreads, 1, TimeUnit.MINUTES,
+				new ArrayBlockingQueue<Runnable>( maxQueue ), new PrioThreadFactory( "httpd" ) ) );
 	}
 
 	/**
