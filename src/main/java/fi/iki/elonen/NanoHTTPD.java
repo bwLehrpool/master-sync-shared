@@ -555,7 +555,7 @@ public abstract class NanoHTTPD implements Runnable
 		/**
 		 * Sends given response to the socket.
 		 */
-		protected void send( OutputStream outputStream ) throws IOException
+		protected void send( OutputStream outputStream, boolean close ) throws IOException
 		{
 			String mime = mimeType;
 
@@ -586,7 +586,7 @@ public abstract class NanoHTTPD implements Runnable
 				sb.append( "\r\n" );
 			}
 
-			sendConnectionHeaderIfNotAlreadyPresent( sb, header );
+			sendConnectionHeaderIfNotAlreadyPresent( sb, header, close );
 
 			if ( requestMethod != Method.HEAD && chunkedTransfer ) {
 				sendAsChunked( outputStream, sb );
@@ -624,8 +624,15 @@ public abstract class NanoHTTPD implements Runnable
 			return size;
 		}
 
-		protected void sendConnectionHeaderIfNotAlreadyPresent( StringBuilder sb, Map<String, String> header )
+		protected void sendConnectionHeaderIfNotAlreadyPresent( StringBuilder sb, Map<String, String> header, boolean close )
 		{
+			if ( close ) {
+				if ( !headerAlreadySent( header, "connection" ) ) {
+					sb.append( "Connection: close\r\n" );
+				}
+				return;
+			}
+			// Client wants keep-alive
 			if ( !headerAlreadySent( header, "connection" ) ) {
 				sb.append( "Connection: keep-alive\r\n" );
 			}
@@ -863,6 +870,7 @@ public abstract class NanoHTTPD implements Runnable
 		@Override
 		public void execute() throws IOException
 		{
+			boolean close = true;
 			try {
 				// Read the first 8192 bytes.
 				// The full header should fit in here.
@@ -926,6 +934,7 @@ public abstract class NanoHTTPD implements Runnable
 				}
 
 				uri = pre.get( "uri" );
+				close = "close".equalsIgnoreCase( headers.get( "connection" ) );
 
 				// Ok, now do the serve()
 				Response r = serve( this );
@@ -934,7 +943,10 @@ public abstract class NanoHTTPD implements Runnable
 							"SERVER INTERNAL ERROR: Serve() returned a null response." );
 				} else {
 					r.setRequestMethod( method );
-					r.send( outputStream );
+					r.send( outputStream, close );
+				}
+				if ( close ) {
+					Util.safeClose( outputStream );
 				}
 			} catch ( SocketException e ) {
 				// throw it out to close socket object (finalAccept)
@@ -944,11 +956,11 @@ public abstract class NanoHTTPD implements Runnable
 			} catch ( IOException ioe ) {
 				Response r = new Response( Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT,
 						"SERVER INTERNAL ERROR: IOException: " + ioe.getMessage() );
-				r.send( outputStream );
+				r.send( outputStream, close );
 				Util.safeClose( outputStream );
 			} catch ( ResponseException re ) {
 				Response r = new Response( re.getStatus(), MIME_PLAINTEXT, re.getMessage() );
-				r.send( outputStream );
+				r.send( outputStream, close );
 				Util.safeClose( outputStream );
 			}
 		}
