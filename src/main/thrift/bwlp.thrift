@@ -708,6 +708,9 @@ service MasterServer {
 	void invalidateSession(1: Token sessionId)
 		throws (1:TInvalidTokenException ex),
 
+	ClientSessionData getSessionFromAccessCode(1: string accessCode)
+		throws (1:TNotFoundException notFound, 2:TAuthorizationException auth),
+
 	/*
 	 * Server (Satellite) calls
 	 */
