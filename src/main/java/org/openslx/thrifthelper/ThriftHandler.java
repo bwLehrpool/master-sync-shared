@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.thrift.TException;
 import org.apache.thrift.TServiceClient;
+import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.transport.TTransportException;
 import org.openslx.thrifthelper.ThriftManager.ErrorCallback;
 
@@ -73,7 +74,8 @@ class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 						return method.invoke( client, args );
 					} catch ( InvocationTargetException e ) {
 						cause = e.getCause();
-						if ( cause != null && ! ( cause instanceof TException ) ) {
+						if ( cause != null && ! ( cause instanceof TTransportException )
+								&& ! ( cause instanceof TProtocolException ) ) {
 							throw cause;
 						}
 						freeClient( client );
