@@ -9,6 +9,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.xml.XMLConstants;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.openslx.libvirt.domain.device.Controller;
 import org.openslx.libvirt.domain.device.ControllerFloppy;
@@ -49,8 +52,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.InputSource;
 
 /**
@@ -86,6 +87,7 @@ public class Domain extends LibvirtXmlDocument
 			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
 	{
 		super( xml, LibvirtXmlResources.getLibvirtRng( "domain.rng" ) );
+		this.assertDomainType();
 	}
 
 	/**
@@ -101,6 +103,7 @@ public class Domain extends LibvirtXmlDocument
 			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
 	{
 		super( xml, LibvirtXmlResources.getLibvirtRng( "domain.rng" ) );
+		this.assertDomainType();
 	}
 
 	/**
@@ -117,6 +120,7 @@ public class Domain extends LibvirtXmlDocument
 			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
 	{
 		super( xml, LibvirtXmlResources.getLibvirtRng( "domain.rng" ) );
+		this.assertDomainType();
 	}
 
 	/**
@@ -133,6 +137,26 @@ public class Domain extends LibvirtXmlDocument
 			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
 	{
 		super( xml, LibvirtXmlResources.getLibvirtRng( "domain.rng" ) );
+		this.assertDomainType();
+	}
+
+	/**
+	 * Quick sanity check whether this could be a libvirt domain file at all.
+	 * We just check if the root node is called domain and has the attribute type.
+	 * 
+	 * @throws LibvirtXmlValidationException If this is not met.
+	 */
+	private void assertDomainType() throws LibvirtXmlValidationException
+	{
+		try {
+			XPathExpression expr = XmlHelper.compileXPath( "/domain[@type]" );
+			Object nodesObject = expr.evaluate( this.getRootXmlNode().getXmlDocument(), XPathConstants.NODESET );
+			NodeList nodes = (NodeList)nodesObject;
+			if ( nodes.getLength() == 0 )
+				throw new LibvirtXmlValidationException( "Root element isn't <domain type=...>" );
+		} catch ( XPathExpressionException e ) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
