@@ -117,10 +117,9 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	 * 
 	 * @throws LibvirtXmlDocumentException creation of XML context failed.
 	 * @throws LibvirtXmlSerializationException serialization of the XML content failed.
-	 * @throws LibvirtXmlValidationException XML content is not a valid Libvirt XML.
 	 */
 	public LibvirtXmlDocument( String xml )
-			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
+			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException
 	{
 		this( xml, null );
 	}
@@ -133,14 +132,12 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	 * 
 	 * @throws LibvirtXmlDocumentException creation of XML context failed.
 	 * @throws LibvirtXmlSerializationException serialization of the XML content failed.
-	 * @throws LibvirtXmlValidationException XML content is not a valid Libvirt XML.
 	 */
 	public LibvirtXmlDocument( String xml, InputStream rngSchema )
-			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
+			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException
 	{
 		this.createXmlContext( rngSchema );
 		this.fromXml( xml );
-		this.validateXml();
 	}
 
 	/**
@@ -150,10 +147,9 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	 * 
 	 * @throws LibvirtXmlDocumentException creation of XML context failed.
 	 * @throws LibvirtXmlSerializationException serialization of the XML content failed.
-	 * @throws LibvirtXmlValidationException XML content is not a valid Libvirt XML.
 	 */
 	public LibvirtXmlDocument( File xml )
-			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
+			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException
 	{
 		this( xml, null );
 	}
@@ -166,14 +162,12 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	 * 
 	 * @throws LibvirtXmlDocumentException creation of XML context failed.
 	 * @throws LibvirtXmlSerializationException serialization of the XML content failed.
-	 * @throws LibvirtXmlValidationException XML content is not a valid Libvirt XML.
 	 */
 	public LibvirtXmlDocument( File xml, InputStream rngSchema )
-			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
+			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException
 	{
 		this.createXmlContext( rngSchema );
 		this.fromXml( xml );
-		this.validateXml();
 	}
 
 	/**
@@ -183,10 +177,9 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	 * 
 	 * @throws LibvirtXmlDocumentException creation of XML context failed.
 	 * @throws LibvirtXmlSerializationException serialization of the XML content failed.
-	 * @throws LibvirtXmlValidationException XML content is not a valid Libvirt XML.
 	 */
 	public LibvirtXmlDocument( InputStream xml )
-			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
+			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException
 	{
 		this( xml, null );
 	}
@@ -199,14 +192,12 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	 * 
 	 * @throws LibvirtXmlDocumentException creation of XML context failed.
 	 * @throws LibvirtXmlSerializationException serialization of the XML content failed.
-	 * @throws LibvirtXmlValidationException XML content is not a valid Libvirt XML.
 	 */
 	public LibvirtXmlDocument( InputStream xml, InputStream rngSchema )
-			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
+			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException
 	{
 		this.createXmlContext( rngSchema );
 		this.fromXml( xml );
-		this.validateXml();
 	}
 
 	/**
@@ -216,10 +207,9 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	 * 
 	 * @throws LibvirtXmlDocumentException creation of XML context failed.
 	 * @throws LibvirtXmlSerializationException serialization of the XML content failed.
-	 * @throws LibvirtXmlValidationException XML content is not a valid Libvirt XML.
 	 */
 	public LibvirtXmlDocument( InputSource xml )
-			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
+			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException
 	{
 		this( xml, null );
 	}
@@ -232,14 +222,12 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 	 * 
 	 * @throws LibvirtXmlDocumentException creation of XML context failed.
 	 * @throws LibvirtXmlSerializationException serialization of the XML content failed.
-	 * @throws LibvirtXmlValidationException XML content is not a valid Libvirt XML.
 	 */
 	public LibvirtXmlDocument( InputSource xml, InputStream rngSchema )
-			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException, LibvirtXmlValidationException
+			throws LibvirtXmlDocumentException, LibvirtXmlSerializationException
 	{
 		this.createXmlContext( rngSchema );
 		this.fromXml( xml );
-		this.validateXml();
 	}
 
 	/**

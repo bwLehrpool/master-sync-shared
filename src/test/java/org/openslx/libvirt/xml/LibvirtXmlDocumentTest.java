@@ -152,7 +152,8 @@ public class LibvirtXmlDocumentTest
 	public void testValidateIncorrectXmlFile()
 	{
 		Executable validateXmlDocument = () -> {
-			this.newLibvirtXmlDocumentValidationInstance( "qemu-kvm_default-ubuntu-20-04-vm-invalid.xml", "domain.rng" );
+			LibvirtXmlDocument doc = this.newLibvirtXmlDocumentValidationInstance( "qemu-kvm_default-ubuntu-20-04-vm-invalid.xml", "domain.rng" );
+			doc.validateXml();
 		};
 
 		assertThrows( LibvirtXmlValidationException.class, validateXmlDocument );
