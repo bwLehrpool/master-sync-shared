@@ -34,6 +34,9 @@ public class VirtualizationConfigurationQemuUtils
 	{
 		DriveBusType type = null;
 
+		if ( busType == null )
+			return null;
+
 		switch ( busType ) {
 		case IDE:
 			type = DriveBusType.IDE;
