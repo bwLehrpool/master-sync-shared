@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,8 +78,10 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	private final static String FILE_FORMAT_SCHEMA_PREFIX_PATH = Resources.PATH_SEPARATOR + "virtualbox"
 			+ Resources.PATH_SEPARATOR + "xsd";
 
+	public static final String DUMMY_VALUE = "[dummy]";
+
 	// list of nodes to automatically remove when reading the vbox file
-	private static String[] blacklist = {
+	private static final String[] BLACKLIST = {
 			"/VirtualBox/Machine/Hardware/GuestProperties",
 			"/VirtualBox/Machine/Hardware/VideoCapture",
 			"/VirtualBox/Machine/Hardware/HID",
@@ -89,31 +93,13 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 			"/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice[not(@type='HardDisk')]",
 			"/VirtualBox/Machine/MediaRegistry/FloppyImages",
 			"/VirtualBox/Machine/MediaRegistry/DVDImages" };
-
-	public static enum PlaceHolder
+	
+	public static enum MatchMode
 	{
-		FLOPPYUUID( "%VM_FLOPPY_UUID%" ),
-		FLOPPYLOCATION( "%VM_FLOPPY_LOCATION%" ),
-		CPU( "%VM_CPU_CORES%" ),
-		MEMORY( "%VM_RAM%" ),
-		MACHINEUUID( "%VM_MACHINE_UUID%" ),
-		NETWORKMAC( "%VM_NIC_MAC%" ),
-		HDDLOCATION( "%VM_HDD_LOCATION%" ),
-		HDDUUID( "%VM_HDD_UUID_" );
-
-		private final String holderName;
-
-		private PlaceHolder( String name )
-		{
-			this.holderName = name;
-		}
-
-		@Override
-		public String toString()
-		{
-			return holderName;
-		}
-	}
+		EXACTLY_ONE,
+		MULTIPLE,
+		FIRST_ONLY,
+	};
 
 	/**
 	 * Creates a vbox configuration by constructing a DOM from the given VirtualBox machine
@@ -213,7 +199,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 			this.validate();
 		} catch ( VirtualizationConfigurationException e ) {
 			// do not print output of failed validation if placeholders are available
-			// since thoses placeholder values violate the defined UUID pattern
+			// since those placeholder values violate the defined UUID pattern
 			if ( !this.checkForPlaceholders() ) {
 				final String errorMsg = "XML configuration is not a valid VirtualBox v" + version.toString()
 						+ " configuration: " + e.getLocalizedMessage();
@@ -228,6 +214,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 			ensureHardwareUuid();
 			setOsType();
 			fixUsb(); // Since we now support selecting specific speed
+			removeUnusedHdds();
 			if ( checkForPlaceholders() ) {
 				return;
 			}
@@ -293,6 +280,42 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 		controller.setAttribute( "name", "EHCI" );
 		controller.setAttribute( "type", "EHCI" );
 	}
+	
+	/**
+	 * Remove any HDDs from MediaRegistry that aren't being used
+	 */
+	private void removeUnusedHdds()
+	{
+		Set<String> existing = new HashSet<>();
+		NodeList list = findNodes( "/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice/Image" );
+		if ( list != null && list.getLength() != 0 ) {
+			for ( int i = 0; i < list.getLength(); ++i ) {
+				Node item = list.item( i );
+				if ( ! ( item instanceof Element ) )
+					continue;
+				Element e = (Element)item;
+				String uuid = e.getAttribute( "uuid" );
+				if ( Util.isEmptyString( uuid ) )
+					continue;
+				existing.add( uuid );
+			}
+		}
+		// Now check registry
+		list = findNodes( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk" );
+		if ( list != null && list.getLength() != 0 ) {
+			for ( int i = 0; i < list.getLength(); ++i ) {
+				Node item = list.item( i );
+				if ( ! ( item instanceof Element ) )
+					continue;
+				Element e = (Element)item;
+				String uuid = e.getAttribute( "uuid" );
+				if ( !existing.contains( uuid ) ) {
+					LOGGER.info( "Removing unused HDD " + uuid + " from MediaRegistry" );
+					e.getParentNode().removeChild( e );
+				}
+			}
+		}
+	}
 
 	/**
 	 * Saves the machine's uuid as hardware uuid to prevent VMs from
@@ -339,46 +362,11 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 */
 	public void addPlaceHolders()
 	{
-		// placeholder for the machine uuid
-		changeAttribute( "/VirtualBox/Machine", "uuid", PlaceHolder.MACHINEUUID.toString() );
-
 		// placeholder for the location of the virtual hdd
-		changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "location", PlaceHolder.HDDLOCATION.toString() );
-
-		// placeholder for the memory
-		changeAttribute( "/VirtualBox/Machine/Hardware/Memory", "RAMSize", PlaceHolder.MEMORY.toString() );
-
-		// placeholder for the CPU
-		changeAttribute( "/VirtualBox/Machine/Hardware/CPU", "count", PlaceHolder.CPU.toString() );
-
-		// placeholder for the MACAddress
-		changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']", "MACAddress", PlaceHolder.NETWORKMAC.toString() );
-
-		NodeList hdds = findNodes( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk" );
-		for ( int i = 0; i < hdds.getLength(); i++ ) {
-			Element hdd = (Element)hdds.item( i );
-			if ( hdd == null )
-				continue;
-			String hddUuid = hdd.getAttribute( "uuid" );
-			hdd.setAttribute( "uuid", PlaceHolder.HDDUUID.toString() + i + "%" );
-			final NodeList images;
-			if ( this.getVersion().isSmallerThan( Version.valueOf( "1.17" ) ) ) {
-				images = findNodes( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image" );
-			} else {
-				images = findNodes(
-						"/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice/Image" );
-			}
-
-			for ( int j = 0; j < images.getLength(); j++ ) {
-				Element image = (Element)images.item( j );
-				if ( image == null )
-					continue;
-				if ( hddUuid.equals( image.getAttribute( "uuid" ) ) ) {
-					image.setAttribute( "uuid", PlaceHolder.HDDUUID.toString() + i + "%" );
-					break;
-				}
-			}
-		}
+		changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "location", DUMMY_VALUE, MatchMode.MULTIPLE );
+		// in case it already has a snapshot
+		changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk/HardDisk", "location", DUMMY_VALUE, MatchMode.MULTIPLE );
+		changeAttribute( "/VirtualBox/Machine", "snapshotFolder", DUMMY_VALUE, MatchMode.FIRST_ONLY );
 	}
 
 	/**
@@ -394,7 +382,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 			Element hdd = (Element)hdds.item( i );
 			if ( hdd == null )
 				continue;
-			if ( hdd.getAttribute( "location" ).equals( PlaceHolder.HDDLOCATION.toString() ) ) {
+			if ( hdd.getAttribute( "location" ).equals( DUMMY_VALUE ) ) {
 				return true;
 			}
 		}
@@ -410,7 +398,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	private void removeBlacklistedElements() throws XPathExpressionException
 	{
 		// iterate over the blackList
-		for ( String blackedTag : blacklist ) {
+		for ( String blackedTag : BLACKLIST ) {
 			XPathExpression blackedExpr = XmlHelper.compileXPath( blackedTag );
 			NodeList blackedNodes = (NodeList)blackedExpr.evaluate( this.doc, XPathConstants.NODESET );
 			for ( int i = 0; i < blackedNodes.getLength(); i++ ) {
@@ -576,25 +564,36 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	}
 
 	/**
-	 * Function used to change the value of an attribute of given element.
-	 * The given xpath to the element needs to find a single node, or this function will return
-	 * false. If only one element was found, it will return the result of calling addAttributeToNode.
-	 * Note that due to the way setAttribute() works, this function to create the attribute if it
-	 * doesn't exists.
+	 * Function used to change the value of an attribute of given element(s).
 	 *
 	 * @param elementXPath given as an xpath expression
 	 * @param attribute attribute to change
 	 * @param value to set the attribute to
-	 * @return state of the change operation whether the attribute was changed successful or not.
+	 * @param mode what to do if multiple nodes match XPath
+	 * @return state of the change operation whether the attribute was changed successfully or not.
 	 */
-	public boolean changeAttribute( String elementXPath, String attribute, String value )
+	public boolean changeAttribute( String elementXPath, String attribute, String value, MatchMode mode )
 	{
 		NodeList nodes = findNodes( elementXPath );
-		if ( nodes == null || nodes.getLength() != 1 ) {
-			LOGGER.error( "No unique node could be found for: " + elementXPath );
+		if ( nodes == null || nodes.getLength() == 0 ) {
+			if ( mode != MatchMode.MULTIPLE ) {
+				LOGGER.error( "No node could be found for: " + elementXPath );
+			}
 			return false;
 		}
-		return addAttributeToNode( nodes.item( 0 ), attribute, value );
+		if ( nodes.getLength() != 1 && ( mode == MatchMode.EXACTLY_ONE ) ) {
+			LOGGER.error( "Multiple nodes found for: " + elementXPath );
+			return false;
+		}
+		boolean ret = true;
+		for ( int i = 0; i < nodes.getLength(); ++i ) {
+			if ( !addAttributeToNode( nodes.item( i ), attribute, value ) ) {
+				ret = false;
+			}
+			if ( mode == MatchMode.FIRST_ONLY )
+				break;
+		}
+		return ret;
 	}
 
 	/**

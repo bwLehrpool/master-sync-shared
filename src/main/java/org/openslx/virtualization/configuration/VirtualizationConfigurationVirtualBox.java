@@ -16,12 +16,12 @@ import org.openslx.bwlp.thrift.iface.OperatingSystem;
 import org.openslx.thrifthelper.TConst;
 import org.openslx.util.Util;
 import org.openslx.virtualization.Version;
-import org.openslx.virtualization.configuration.VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder;
-import org.openslx.virtualization.hardware.VirtOptionValue;
+import org.openslx.virtualization.configuration.VirtualizationConfigurationVirtualboxFileFormat.MatchMode;
 import org.openslx.virtualization.hardware.ConfigurationGroups;
 import org.openslx.virtualization.hardware.Ethernet;
 import org.openslx.virtualization.hardware.SoundCard;
 import org.openslx.virtualization.hardware.Usb;
+import org.openslx.virtualization.hardware.VirtOptionValue;
 import org.openslx.virtualization.virtualizer.VirtualizerVirtualBox;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -110,7 +110,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	@Override
 	public void transformPrivacy() throws VirtualizationConfigurationException
 	{
-
+		config.addPlaceHolders();
 	}
 
 	@Override
@@ -122,15 +122,16 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	@Override
 	public boolean addEmptyHddTemplate()
 	{
-		return this.addHddTemplate( "%VM_DISK_PATH%", "%VM_DISK_MODE%", "%VM_DISK_REDOLOGDIR%" );
+		return this.addHddTemplate( VirtualizationConfigurationVirtualboxFileFormat.DUMMY_VALUE,
+				VirtualizationConfigurationVirtualboxFileFormat.DUMMY_VALUE,
+				VirtualizationConfigurationVirtualboxFileFormat.DUMMY_VALUE );
 	}
 
 	@Override
 	public boolean addHddTemplate( String diskImage, String hddMode, String redoDir )
 	{
-		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk[@location='"
-				+ PlaceHolder.HDDLOCATION.toString() + "']", "location", diskImage );
-		config.changeAttribute( "/VirtualBox/Machine", "snapshotFolder", redoDir );
+		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "location", diskImage, MatchMode.FIRST_ONLY );
+		config.changeAttribute( "/VirtualBox/Machine", "snapshotFolder", redoDir, MatchMode.FIRST_ONLY );
 		return true;
 	}
 
@@ -138,15 +139,15 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	public boolean addHddTemplate( File diskImage, String hddMode, String redoDir )
 	{
 		String diskImagePath = diskImage.getName();
-		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "location", diskImagePath );
+		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "location", diskImagePath, MatchMode.FIRST_ONLY );
 
 		UUID newhdduuid = UUID.randomUUID();
 
 		// patching the new uuid in the vbox config file here
 		String vboxUUid = "{" + newhdduuid.toString() + "}";
-		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "uuid", vboxUUid );
+		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "uuid", vboxUUid, MatchMode.FIRST_ONLY );
 		config.changeAttribute( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image", "uuid",
-				vboxUUid );
+				vboxUUid, MatchMode.FIRST_ONLY );
 
 		// the order of the UUID is BIG_ENDIAN but we need to change the order of the first 8 Bytes
 		// to be able to write them to the vdi file... the PROBLEM here is that the first 8 
@@ -179,7 +180,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 			newMachineUuid = UUID.randomUUID();
 		}
 		String machineUUid = "{" + newMachineUuid.toString() + "}";
-		return config.changeAttribute( "/VirtualBox/Machine", "uuid", machineUUid );
+		return config.changeAttribute( "/VirtualBox/Machine", "uuid", machineUUid, MatchMode.EXACTLY_ONE );
 	}
 
 	@Override
@@ -200,7 +201,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 				LOGGER.error( "Failed to set network adapter to NAT." );
 				status = false;
 			} else {
-				status = config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']", "MACAddress", "080027B86D12" );
+				status = config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='0']", "MACAddress",
+						"080027B86D12", MatchMode.EXACTLY_ONE );
 			}
 		} else {
 			status = false;
@@ -212,7 +214,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	@Override
 	public void setOs( String vendorOsId )
 	{
-		config.changeAttribute( "/VirtualBox/Machine", "OSType", vendorOsId );
+		config.changeAttribute( "/VirtualBox/Machine", "OSType", vendorOsId, MatchMode.EXACTLY_ONE );
 
 		final OperatingSystem os = VirtualizationConfigurationUtils.getOsOfVirtualizerFromList( this.osList,
 				TConst.VIRT_VIRTUALBOX, vendorOsId );
@@ -222,13 +224,14 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	@Override
 	public boolean addDisplayName( String name )
 	{
-		return config.changeAttribute( "/VirtualBox/Machine", "name", name );
+		return config.changeAttribute( "/VirtualBox/Machine", "name", name, MatchMode.EXACTLY_ONE );
 	}
 
 	@Override
 	public boolean addRam( int mem )
 	{
-		return config.changeAttribute( "/VirtualBox/Machine/Hardware/Memory", "RAMSize", Integer.toString( mem ) );
+		return config.changeAttribute( "/VirtualBox/Machine/Hardware/Memory", "RAMSize",
+				Integer.toString( mem ), MatchMode.EXACTLY_ONE );
 	}
 
 	@Override
@@ -277,7 +280,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 				return;
 			}
 			floppyImage.setAttribute( "uuid",
-					VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYUUID.toString() );
+					VirtualizationConfigurationVirtualboxFileFormat.DUMMY_VALUE );
 			// register the image in the media registry
 			Element floppyImages = (Element)config.addNewNode( "/VirtualBox/Machine/MediaRegistry", "FloppyImages" );
 			if ( floppyImages == null ) {
@@ -291,9 +294,9 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 				return;
 			}
 			floppyImageReg.setAttribute( "uuid",
-					VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYUUID.toString() );
+					VirtualizationConfigurationVirtualboxFileFormat.DUMMY_VALUE );
 			floppyImageReg.setAttribute( "location",
-					VirtualizationConfigurationVirtualboxFileFormat.PlaceHolder.FLOPPYLOCATION.toString() );
+					VirtualizationConfigurationVirtualboxFileFormat.DUMMY_VALUE );
 		}
 	}
 
@@ -307,7 +310,8 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	@Override
 	public boolean addCpuCoreCount( int nrOfCores )
 	{
-		return config.changeAttribute( "/VirtualBox/Machine/Hardware/CPU", "count", Integer.toString( nrOfCores ) );
+		return config.changeAttribute( "/VirtualBox/Machine/Hardware/CPU", "count",
+				Integer.toString( nrOfCores ), MatchMode.EXACTLY_ONE );
 	}
 	
 	class VBoxSoundCardModel extends VirtOptionValue
@@ -323,11 +327,11 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		{
 			// XXX I guess this "present" hack will be nicer with enum too
 			if ( Util.isEmptyString( this.id ) ) {
-				config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", "false" );
+				config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", "false", MatchMode.MULTIPLE );
 				return;
 			}
-			config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", "true" );
-			config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "controller", this.id );
+			config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "enabled", "true", MatchMode.FIRST_ONLY );
+			config.changeAttribute( "/VirtualBox/Machine/Hardware/AudioAdapter", "controller", this.id, MatchMode.FIRST_ONLY );
 		}
 
 		@Override
@@ -358,7 +362,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		@Override
 		public void apply()
 		{
-			config.changeAttribute( "/VirtualBox/Machine/Hardware/Display", "accelerate3D", this.id );
+			config.changeAttribute( "/VirtualBox/Machine/Hardware/Display", "accelerate3D", this.id, MatchMode.EXACTLY_ONE );
 		}
 
 		@Override
@@ -419,9 +423,9 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 				present = false;
 			}
 			config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "enabled",
-					Boolean.toString( present ) );
+					Boolean.toString( present ), MatchMode.EXACTLY_ONE );
 			config.changeAttribute( "/VirtualBox/Machine/Hardware/Network/Adapter[@slot='" + index + "']", "type",
-					dev );
+					dev, MatchMode.EXACTLY_ONE );
 		}
 
 		@Override
