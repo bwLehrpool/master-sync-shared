@@ -38,7 +38,6 @@ public class ConfigurationLogicTestUtils
 			new OperatingSystem( 11, "Windows 2000 Professional", null, "x86",     4096,   4 ) ) );
 	// @formatter:on
 
-	private static final String REGEX_UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 	private static final String REGEX_SOURCE_FILE_PATHS = "(<source.*file=\")(.*)(\".*>)";
 
 	public static VirtualizationConfiguration newVirtualizationConfigurationInstance( File configFile )
@@ -73,25 +72,16 @@ public class ConfigurationLogicTestUtils
 
 	public static void assertXmlEqual( String expectedXml, String actualXml ) throws AssertionError
 	{
-		XmlAssert.assertThat( expectedXml ).and( actualXml ).ignoreComments().areIdentical();
+		XmlAssert.assertThat( actualXml ).and( expectedXml ).ignoreComments().areIdentical();
 	}
 
-	public static String removeSourceFilePaths( String content )
+	private static String removeSourceFilePaths( String content )
 	{
 		final Pattern patternSourceFilePaths = Pattern.compile( ConfigurationLogicTestUtils.REGEX_SOURCE_FILE_PATHS );
 		final Matcher matcherSourceFilePathsContent = patternSourceFilePaths.matcher( content );
 
 		// replace all source file paths with the empty String
 		return matcherSourceFilePathsContent.replaceAll( "$1$3" );
-	}
-
-	public static String removeUuid( String content )
-	{
-		final Pattern patternUuid = Pattern.compile( ConfigurationLogicTestUtils.REGEX_UUID );
-		final Matcher matcherUuidContent = patternUuid.matcher( content );
-
-		// replace all UUIDs with the empty String
-		return matcherUuidContent.replaceAll( "" );
 	}
 
 	public static void assertXmlLibvirtEqual( String expectedXml, String actualXml ) throws AssertionError
@@ -105,11 +95,7 @@ public class ConfigurationLogicTestUtils
 
 	public static void assertXmlVirtualBoxEqual( String expectedXml, String actualXml ) throws AssertionError
 	{
-		// replace all UUIDs with the empty String
-		final String filteredXml1 = ConfigurationLogicTestUtils.removeUuid( expectedXml );
-		final String filteredXml2 = ConfigurationLogicTestUtils.removeUuid( actualXml );
-
-		ConfigurationLogicTestUtils.assertXmlEqual( filteredXml1, filteredXml2 );
+		ConfigurationLogicTestUtils.assertXmlEqual( expectedXml, actualXml );
 	}
 
 	public static void assertVmxVmwareEqual( String expectedVmx, String actualVmx ) throws AssertionError

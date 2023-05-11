@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><VirtualBox xmlns="http://www.virtualbox.org/" version="1.16-linux">
-  <Machine xmlns="http://www.virtualbox.org/" OSType="Ubuntu_64" lastStateChange="2021-04-28T09:11:13Z" name="Test" snapshotFolder="[dummy]" uuid="{}">
+  <Machine xmlns="http://www.virtualbox.org/" OSType="Ubuntu_64" lastStateChange="2021-04-28T09:11:13Z" name="Test" snapshotFolder="[dummy]" uuid="{b36f101a-a45d-41cb-8bd4-3908e75e081b}">
     <MediaRegistry>
       <HardDisks>
-        <HardDisk format="VDI" location="[dummy]" type="Normal" uuid="{}"/>
+        <HardDisk format="VDI" location="[dummy]" type="Normal" uuid="{46282ce8-090a-4219-87f2-c1700bd0ce6a}"/>
       </HardDisks>
     </MediaRegistry>
-    <Hardware uuid="{}">
+    <Hardware uuid="{b36f101a-a45d-41cb-8bd4-3908e75e081b}">
       <CPU>
         <PAE enabled="false"/>
         <LongMode enabled="true"/>
@@ -36,7 +36,7 @@
       <StorageController Bootable="true" PortCount="2" name="IDE" type="PIIX4" useHostIOCache="true"/>
       <StorageController Bootable="true" IDE0MasterEmulationPort="0" IDE0SlaveEmulationPort="1" IDE1MasterEmulationPort="2" IDE1SlaveEmulationPort="3" PortCount="1" name="SATA" type="AHCI" useHostIOCache="false">
         <AttachedDevice device="0" hotpluggable="false" port="0" type="HardDisk">
-          <Image uuid="{}"/>
+          <Image uuid="{46282ce8-090a-4219-87f2-c1700bd0ce6a}"/>
         </AttachedDevice>
       </StorageController>
     </StorageControllers>

@@ -342,7 +342,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 		NodeList hwNodes = findNodes( "/VirtualBox/Machine/Hardware" );
 		int count = hwNodes.getLength();
 		if ( count != 1 ) {
-			throw new VirtualizationConfigurationException( "Zero or more '/VirtualBox/Machine/Hardware' node were found, should never happen!" );
+			throw new VirtualizationConfigurationException( "Zero or > 1 '/VirtualBox/Machine/Hardware' node were found, should never happen!" );
 		}
 		Element hw = (Element)hwNodes.item( 0 );
 		String hwUuid = hw.getAttribute( "uuid" );
