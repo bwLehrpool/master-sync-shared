@@ -287,7 +287,13 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	private void removeUnusedHdds()
 	{
 		Set<String> existing = new HashSet<>();
-		NodeList list = findNodes( "/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice/Image" );
+		String path;
+		if ( this.getVersion().isSmallerThan( Version.valueOf( "1.17" ) ) ) {
+			path = "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image";
+		} else {
+			path = "/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice/Image";
+		}
+		NodeList list = findNodes( path );
 		if ( list != null && list.getLength() != 0 ) {
 			for ( int i = 0; i < list.getLength(); ++i ) {
 				Node item = list.item( i );
