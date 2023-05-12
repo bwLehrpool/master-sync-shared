@@ -71,7 +71,7 @@ public class ConfigurationLogicDozModServerToStatelessClientTest
 		final String transformedConfig = config.getConfigurationAsString();
 		final String expectedTransformedConfig = ConfigurationLogicTestUtils.readFileToString( expectedConfig );
 
-		ConfigurationLogicTestUtils.assertXmlVirtualBoxEqual( expectedTransformedConfig, transformedConfig );
+		ConfigurationLogicTestUtils.assertXmlEqual( expectedTransformedConfig, transformedConfig );
 
 		// do not validate the VirtualBox configuration afterwards, since the inserted
 		// place holders do not match valid primitive values from the XML schema

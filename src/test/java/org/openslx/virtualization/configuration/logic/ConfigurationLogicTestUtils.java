@@ -38,7 +38,8 @@ public class ConfigurationLogicTestUtils
 			new OperatingSystem( 11, "Windows 2000 Professional", null, "x86",     4096,   4 ) ) );
 	// @formatter:on
 
-	private static final String REGEX_SOURCE_FILE_PATHS = "(<source.*file=\")(.*)(\".*>)";
+	private static final String REGEX_UUID = "<(Machine|HardDisk|Image)(.*)[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+	private static final String REGEX_SOURCE_FILE_PATHS = "(<source.*file=\")([^\"]*)";
 
 	public static VirtualizationConfiguration newVirtualizationConfigurationInstance( File configFile )
 	{
@@ -81,7 +82,16 @@ public class ConfigurationLogicTestUtils
 		final Matcher matcherSourceFilePathsContent = patternSourceFilePaths.matcher( content );
 
 		// replace all source file paths with the empty String
-		return matcherSourceFilePathsContent.replaceAll( "$1$3" );
+		return matcherSourceFilePathsContent.replaceAll( "$1" );
+	}
+
+	private static String removeUuid( String content )
+	{
+		final Pattern patternUuid = Pattern.compile( ConfigurationLogicTestUtils.REGEX_UUID );
+		final Matcher matcherUuidContent = patternUuid.matcher( content );
+
+		// replace all UUIDs with the empty String
+		return matcherUuidContent.replaceAll( "<$1$200000000-0000-0000-0000-000000000000" );
 	}
 
 	public static void assertXmlLibvirtEqual( String expectedXml, String actualXml ) throws AssertionError
@@ -95,7 +105,10 @@ public class ConfigurationLogicTestUtils
 
 	public static void assertXmlVirtualBoxEqual( String expectedXml, String actualXml ) throws AssertionError
 	{
-		ConfigurationLogicTestUtils.assertXmlEqual( expectedXml, actualXml );
+		// replace all UUIDs with the zero UUID in the generated XML as it's random
+		final String actualXmlFiltered = ConfigurationLogicTestUtils.removeUuid( actualXml );
+
+		ConfigurationLogicTestUtils.assertXmlEqual( expectedXml, actualXmlFiltered );
 	}
 
 	public static void assertVmxVmwareEqual( String expectedVmx, String actualVmx ) throws AssertionError
