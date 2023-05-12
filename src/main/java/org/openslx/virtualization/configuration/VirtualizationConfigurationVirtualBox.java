@@ -146,7 +146,7 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 		// patching the new uuid in the vbox config file here
 		String vboxUUid = "{" + newhdduuid.toString() + "}";
 		config.changeAttribute( "/VirtualBox/Machine/MediaRegistry/HardDisks/HardDisk", "uuid", vboxUUid, MatchMode.FIRST_ONLY );
-		config.changeAttribute( "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image", "uuid",
+		config.changeAttribute( config.storageControllersPath() + "/StorageController/AttachedDevice/Image", "uuid",
 				vboxUUid, MatchMode.FIRST_ONLY );
 
 		// the order of the UUID is BIG_ENDIAN but we need to change the order of the first 8 Bytes
@@ -238,10 +238,9 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	public void addFloppy( int index, String image, boolean readOnly )
 	{
 		Element floppyController = null;
-		NodeList matches = (NodeList)config
-				.findNodes( "/VirtualBox/Machine/StorageControllers/StorageController[@name='Floppy']" );
+		NodeList matches = config.findNodes( config.storageControllersPath() + "/StorageController[@name='Floppy']" );
 		if ( matches == null || matches.getLength() == 0 ) {
-			floppyController = (Element)config.addNewNode( "/VirtualBox/Machine/StorageControllers", "StorageController" );
+			floppyController = (Element)config.addNewNode( config.storageControllersPath(), "StorageController" );
 			if ( floppyController == null ) {
 				LOGGER.error( "Failed to add <Image> to floppy device." );
 				return;

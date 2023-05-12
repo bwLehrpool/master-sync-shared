@@ -287,13 +287,7 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	private void removeUnusedHdds()
 	{
 		Set<String> existing = new HashSet<>();
-		String path;
-		if ( this.getVersion().isSmallerThan( Version.valueOf( "1.17" ) ) ) {
-			path = "/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice/Image";
-		} else {
-			path = "/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice/Image";
-		}
-		NodeList list = findNodes( path );
+		NodeList list = findNodes( storageControllersPath() + "/StorageController/AttachedDevice/Image" );
 		if ( list != null && list.getLength() != 0 ) {
 			for ( int i = 0; i < list.getLength(); ++i ) {
 				Node item = list.item( i );
@@ -321,6 +315,13 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 				}
 			}
 		}
+	}
+
+	public String storageControllersPath()
+	{
+		if ( this.getVersion().isSmallerThan( Version.valueOf( "1.17" ) ) )
+			return "/VirtualBox/Machine/StorageControllers";
+		return "/VirtualBox/Machine/Hardware/StorageControllers";
 	}
 
 	/**
@@ -459,14 +460,8 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 	 */
 	public void setHdds() throws XPathExpressionException
 	{
-		final XPathExpression hddsExpr;
-		if ( this.getVersion().isSmallerThan( Version.valueOf( "1.17" ) ) ) {
-			hddsExpr = XmlHelper.compileXPath(
-					"/VirtualBox/Machine/StorageControllers/StorageController/AttachedDevice[@type='HardDisk']/Image" );
-		} else {
-			hddsExpr = XmlHelper.compileXPath(
-					"/VirtualBox/Machine/Hardware/StorageControllers/StorageController/AttachedDevice[@type='HardDisk']/Image" );
-		}
+		final XPathExpression hddsExpr = XmlHelper.compileXPath( storageControllersPath()
+				+ "/StorageController/AttachedDevice[@type='HardDisk']/Image" );
 
 		NodeList nodes = (NodeList)hddsExpr.evaluate( this.doc, XPathConstants.NODESET );
 		if ( nodes == null ) {
