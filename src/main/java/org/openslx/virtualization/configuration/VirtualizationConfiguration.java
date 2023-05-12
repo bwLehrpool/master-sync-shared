@@ -249,6 +249,11 @@ public abstract class VirtualizationConfiguration
 			LOGGER.debug( "Not a VMware file", e );
 		}
 		try {
+			return new VirtualizationConfigurationDocker( osList, vmContent, length );
+		} catch ( VirtualizationConfigurationException e ) {
+			LOGGER.debug( "Not a tar.gz file, for docker container", e );
+		}
+		try {
 			return new VirtualizationConfigurationVirtualBox( osList, vmContent, length );
 		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.debug( "Not a VirtualBox file", e );
@@ -257,11 +262,6 @@ public abstract class VirtualizationConfiguration
 			return new VirtualizationConfigurationQemu( osList, vmContent, length );
 		} catch ( VirtualizationConfigurationException e ) {
 			LOGGER.debug( "Not a Libvirt file", e );
-		}
-		try {
-			return new VirtualizationConfigurationDocker( osList, vmContent, length );
-		} catch ( VirtualizationConfigurationException e ) {
-			LOGGER.debug( "Not a tar.gz file, for docker container", e );
 		}
 		throw new VirtualizationConfigurationException( "Unknown virtualizer config format" );
 	}

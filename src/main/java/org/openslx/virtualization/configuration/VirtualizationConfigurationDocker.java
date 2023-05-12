@@ -75,7 +75,7 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	 */
 	private void checkIsTarGz() throws VirtualizationConfigurationException {
 		if (!((31 == containerDefinition[0]) && (-117 == containerDefinition[1]))) {
-			LOGGER.warn("Not Supported Content.");
+			LOGGER.debug("Not Supported Content.");
 			throw new VirtualizationConfigurationException(
 					"DockerMetaDataDummy: Not tar.gz encoded content!");
 		}
