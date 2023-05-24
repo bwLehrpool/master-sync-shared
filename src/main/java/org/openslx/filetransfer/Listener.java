@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLServerSocketFactory;
 
 import org.apache.logging.log4j.LogManager;
@@ -28,8 +29,8 @@ public class Listener
 	private final ExecutorService processingPool = new ThreadPoolExecutor( 0, 8, 5, TimeUnit.MINUTES, new SynchronousQueue<Runnable>(),
 			new PrioThreadFactory( "BFTP-Init" ) );
 
-	private static final byte CONNECTING_PEER_WANTS_TO_UPLOAD = 85; // hex - code 'U' = 85.
-	private static final byte CONNECTING_PEER_WANTS_TO_DOWNLOAD = 68; // hex - code 'D' = 68.
+	private static final byte CONNECTING_PEER_WANTS_TO_UPLOAD = 85; // ASCII 'U' = 85.
+	private static final byte CONNECTING_PEER_WANTS_TO_DOWNLOAD = 68; // ASCII 'D' = 68.
 	private static Logger log = LogManager.getLogger( Listener.class );
 
 	/***********************************************************************/
@@ -68,8 +69,10 @@ public class Listener
 				SSLServerSocketFactory sslServerSocketFactory = context.getServerSocketFactory();
 				listenSocket = sslServerSocketFactory.createServerSocket();
 			}
+			listenSocket.setSoTimeout( 5000 );
 			listenSocket.setReuseAddress( true );
 			listenSocket.bind( new InetSocketAddress( this.port ) );
+			listenSocket.setSoTimeout( 0 );
 		} catch ( Exception e ) {
 			log.error( "Cannot listen on port " + this.port, e );
 			listenSocket = null;
@@ -83,16 +86,16 @@ public class Listener
 		if ( acceptThread != null )
 			return;
 		final Listener instance = this;
-		acceptThread = new Thread( "BFTP-Listen-" + this.port ) {
+		acceptThread = new Thread( "BFTP:" + this.port ) {
 			@Override
 			public void run()
 			{
 				try {
 					// Run accept loop in own thread
 					while ( !isInterrupted() ) {
-						Socket acceptedSocket = null;
+						final Socket connection;
 						try {
-							acceptedSocket = listenSocket.accept();
+							connection = listenSocket.accept();
 						} catch ( SocketTimeoutException e ) {
 							continue;
 						} catch ( Exception e ) {
@@ -106,14 +109,12 @@ public class Listener
 							continue;
 						}
 						// Handle each accepted connection in a thread pool
-						final Socket connection = acceptedSocket;
 						Runnable handler = new Runnable() {
 							@Override
 							public void run()
 							{
-
 								try {
-									// Give initial byte signalling mode of operation 5 secs to arrive
+									// Give initial byte signaling mode of operation 5 secs to arrive
 									connection.setSoTimeout( 5000 );
 
 									byte[] b = new byte[ 1 ];
@@ -128,29 +129,30 @@ public class Listener
 									if ( b[0] == CONNECTING_PEER_WANTS_TO_UPLOAD ) {
 										// --> start Downloader(socket).
 										Downloader d = new Downloader( connection );
+										// Will take care of connection cleanup
 										incomingEvent.incomingUploadRequest( d );
 									} else if ( b[0] == CONNECTING_PEER_WANTS_TO_DOWNLOAD ) {
 										// --> start Uploader(socket).
 										Uploader u = new Uploader( connection );
+										// Will take care of connection cleanup
 										incomingEvent.incomingDownloadRequest( u );
 									} else {
-										log.debug( "Got invalid init-byte ... close connection" );
+										log.debug( "Got invalid init-byte ... closing connection" );
 										Transfer.safeClose( connection );
 									}
-								} catch ( Exception e ) {
-									String m = e.getMessage();
-									if ( !m.contains( "Remote host terminated the handshake" )
-											&& !m.contains( "Unsupported or unrecognized SSL message" ) ) {
-										log.warn( "Error accepting client", e );
-									}
+								} catch ( SSLException e ) {
 									Transfer.safeClose( connection );
+									log.warn( "SSL error when acceping client " + connection.getInetAddress().getHostAddress() );
+								} catch ( Exception e ) {
+									Transfer.safeClose( connection );
+									log.warn( "Error handling client", e );
 								}
 							}
 						};
 						try {
 							processingPool.execute( handler );
 						} catch ( RejectedExecutionException e ) {
-							Transfer.safeClose( acceptedSocket );
+							Transfer.safeClose( connection );
 						}
 					}
 				} finally {

@@ -75,9 +75,13 @@ public abstract class OutgoingTransferBase extends AbstractTransfer
 				@Override
 				public void run()
 				{
-					boolean ret = connection.upload( sourceFile.getAbsolutePath() );
-					synchronized ( uploads ) {
-						uploads.remove( connection );
+					boolean ret = false;
+					try {
+						ret = connection.upload( sourceFile.getAbsolutePath() );
+					} finally {
+						synchronized ( uploads ) {
+							uploads.remove( connection );
+						}
 					}
 					if ( ret ) {
 						connectFails.set( 0 );

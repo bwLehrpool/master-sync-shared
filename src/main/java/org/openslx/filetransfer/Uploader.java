@@ -66,6 +66,10 @@ public class Uploader extends Transfer
 		return upload( filename, null );
 	}
 	
+	/**
+	 * Compressing output stream that will either write LZ4-compressed data, or if the data
+	 * doesn't compress well, just the original uncompressed data.
+	 */
 	private class Lz4OutStream extends OutputStream
 	{
 		
@@ -73,7 +77,7 @@ public class Uploader extends Transfer
 		
 		private byte[] buffer;
 		
-		private long compressed, uncompressed;
+		private long bytesSentTotal, bytesDecompressedTotal;
 		
 		private int chunksCompressed, chunksUncompressed;
 		
@@ -96,16 +100,17 @@ public class Uploader extends Transfer
 			if ( buffer == null || buffer.length < maxCompressedLength ) {
 				buffer = new byte[ maxCompressedLength ];
 			}
-			uncompressed += decompressedLength;
+			bytesDecompressedTotal += decompressedLength;
 			int compressedLength = compressor.compress( data, off, decompressedLength, buffer, 0, maxCompressedLength );
 			parentStream.writeInt( decompressedLength );
+			// Only send compressed data if we got down to at least ~88% the original size
 			if ( ( compressedLength * 9 / 8 ) < decompressedLength ) {
-				compressed += compressedLength;
+				bytesSentTotal += compressedLength;
 				chunksCompressed++;
 				parentStream.writeInt( compressedLength );
 				parentStream.write( buffer, 0, compressedLength );
 			} else {
-				compressed += decompressedLength;
+				bytesSentTotal += decompressedLength;
 				chunksUncompressed++;
 				parentStream.writeInt( decompressedLength );
 				parentStream.write( data, off, decompressedLength );
@@ -114,10 +119,10 @@ public class Uploader extends Transfer
 		
 		public void printStats()
 		{
-			if ( compressed == 0 )
+			if ( bytesSentTotal == 0 )
 				return;
-			log.info( "Sent bytes: " + compressed + ", decompressed bytes: " + uncompressed );
-			log.info( "Sent compressed: " + chunksCompressed + ", uncompressed: " + chunksUncompressed );
+			log.info( "Bytes sent: " + bytesSentTotal + ", decompressed to: " + bytesDecompressedTotal );
+			log.info( "Chunks sent compressed: " + chunksCompressed + ", uncompressed: " + chunksUncompressed );
 		}
 
 	}
