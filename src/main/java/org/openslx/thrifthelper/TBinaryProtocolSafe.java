@@ -105,9 +105,10 @@ public class TBinaryProtocolSafe extends TBinaryProtocol
 					&& ( e.getCause().getMessage().contains( " timed out" ) || e.getCause().getMessage().contains( "Connection reset" ) ) ) {
 				// Faaaake
 				throw new TTransportException( TTransportException.END_OF_FILE );
-			} else if ( e.getMessage().contains( "larger than max length" ) ) {
+			} else if ( e.getMessage().contains( "larger than max length" ) || e.getMessage().contains( "Read a negative frame size" ) ) {
 				// Also fake, since this one prints a whole stack trace compared to the other
 				// message by AbstractNonblockingServer
+				LOGGER.debug( e.getMessage(), e );
 				throw new TTransportException( TTransportException.END_OF_FILE );
 			}
 			throw e;
@@ -117,7 +118,8 @@ public class TBinaryProtocolSafe extends TBinaryProtocol
 		if ( size < 0 ) {
 			int version = size & VERSION_MASK;
 			if ( version != VERSION_1 ) {
-				throw new TProtocolException( TProtocolException.BAD_VERSION, "Bad version in readMessageBegin" );
+				LOGGER.warn( getIp() + "Bad version (" + version + ") in readMessageBegin" );
+				throw new TTransportException( TTransportException.END_OF_FILE );
 			}
 			return new TMessage( readString(), (byte) ( size & 0x000000ff ), readI32() );
 		} else {
