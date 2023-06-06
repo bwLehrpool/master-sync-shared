@@ -102,7 +102,9 @@ public class TBinaryProtocolSafe extends TBinaryProtocol
 				// ignore there. Let's hope it will stay ignored in the future.
 				throw new TTransportException( TTransportException.END_OF_FILE );
 			} else if ( e.getCause() instanceof SocketException
-					&& ( e.getCause().getMessage().contains( " timed out" ) || e.getCause().getMessage().contains( "Connection reset" ) ) ) {
+					&& ( e.getCause().getMessage().contains( " timed out" )
+							|| e.getCause().getMessage().contains( "Connection reset" )
+							|| e.getCause().getMessage().contains( "Connection or inbound" ) ) ) {
 				// Faaaake
 				throw new TTransportException( TTransportException.END_OF_FILE );
 			} else if ( e.getMessage().contains( "larger than max length" ) || e.getMessage().contains( "Read a negative frame size" ) ) {
