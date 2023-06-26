@@ -8,8 +8,7 @@ import org.openslx.libvirt.xml.LibvirtXmlNode;
  * @author Manuel Bentele
  * @version 1.0
  */
-public class HostdevPci extends Hostdev implements HostdevAddressableSource<HostdevPciDeviceAddress>,
-		HostdevAddressableTarget<HostdevPciDeviceAddress>
+public class HostdevPci extends Hostdev implements HostdevAddressableSource<HostdevPciDeviceAddress>
 {
 	/**
 	 * Creates an empty hostdev PCI device.
@@ -29,46 +28,6 @@ public class HostdevPci extends Hostdev implements HostdevAddressableSource<Host
 		super( xmlNode );
 	}
 
-	/**
-	 * Returns the PCI device address from an address XML element selected by a XPath expression.
-	 * 
-	 * @param expression XPath expression to select the XML address element.
-	 * @return PCI device address from the selected XML address element.
-	 */
-	private HostdevPciDeviceAddress getPciAddress( final String expression )
-	{
-		String pciDomain = this.getXmlElementAttributeValue( expression, "domain" );
-		String pciBus = this.getXmlElementAttributeValue( expression, "bus" );
-		String pciDevice = this.getXmlElementAttributeValue( expression, "slot" );
-		String pciFunction = this.getXmlElementAttributeValue( expression, "function" );
-
-		pciDomain = HostdevUtils.removeHexPrefix( pciDomain );
-		pciBus = HostdevUtils.removeHexPrefix( pciBus );
-		pciDevice = HostdevUtils.removeHexPrefix( pciDevice );
-		pciFunction = HostdevUtils.removeHexPrefix( pciFunction );
-
-		return HostdevPciDeviceAddress.valueOf( pciDomain + ":" + pciBus + ":" + pciDevice + "." + pciFunction );
-	}
-
-	/**
-	 * Sets the PCI device address for an XML address element selected by a XPath expression.
-	 * 
-	 * @param expression XPath expression to select the XML address element.
-	 * @param address PCI device address for the selected XML address element.
-	 */
-	private void setPciAddress( final String expression, final HostdevPciDeviceAddress address )
-	{
-		final String pciDomain = HostdevUtils.appendHexPrefix( address.getPciDomainAsString() );
-		final String pciBus = HostdevUtils.appendHexPrefix( address.getPciBusAsString() );
-		final String pciDevice = HostdevUtils.appendHexPrefix( address.getPciDeviceAsString() );
-		final String pciFunction = HostdevUtils.appendHexPrefix( address.getPciFunctionAsString() );
-
-		this.setXmlElementAttributeValue( expression, "domain", pciDomain );
-		this.setXmlElementAttributeValue( expression, "bus", pciBus );
-		this.setXmlElementAttributeValue( expression, "slot", pciDevice );
-		this.setXmlElementAttributeValue( expression, "function", pciFunction );
-	}
-
 	@Override
 	public HostdevPciDeviceAddress getSource()
 	{
@@ -81,16 +40,14 @@ public class HostdevPci extends Hostdev implements HostdevAddressableSource<Host
 		this.setPciAddress( "source/address", address );
 	}
 
-	@Override
-	public HostdevPciDeviceAddress getTarget()
+	/**
+	 * Set multifunction mode.
+	 * 
+	 * If enabled, the device is said to have multiple functions.
+	 */
+	public void setMultifunction( boolean on )
 	{
-		return this.getPciAddress( "address" );
-	}
-
-	@Override
-	public void setTarget( HostdevPciDeviceAddress address )
-	{
-		this.setPciAddress( "address", address );
+		this.setXmlElementAttributeValueOnOff( "address", "multifunction", on );
 	}
 
 	/**

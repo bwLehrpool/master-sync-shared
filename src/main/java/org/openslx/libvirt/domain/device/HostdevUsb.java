@@ -52,7 +52,7 @@ public class HostdevUsb extends Hostdev implements HostdevAddressableSource<Host
 	}
 
 	@Override
-	public HostdevUsbDeviceAddress getTarget()
+	public HostdevUsbDeviceAddress getPciTarget()
 	{
 		final String usbBus = this.getXmlElementAttributeValue( "address", "bus" );
 		final String usbPort = this.getXmlElementAttributeValue( "address", "port" );
@@ -61,7 +61,7 @@ public class HostdevUsb extends Hostdev implements HostdevAddressableSource<Host
 	}
 
 	@Override
-	public void setTarget( HostdevUsbDeviceAddress address )
+	public void setPciTarget( HostdevUsbDeviceAddress address )
 	{
 		this.setXmlElementAttributeValue( "address", "bus", Integer.toString( address.getUsbBus() ) );
 		this.setXmlElementAttributeValue( "address", "port", Integer.toString( address.getUsbPort() ) );

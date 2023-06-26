@@ -15,12 +15,12 @@ public abstract interface HostdevAddressableTarget<T>
 	 * 
 	 * @return target of the target device (in the virtual machine).
 	 */
-	public T getTarget();
+	public T getPciTarget();
 
 	/**
 	 * Sets the target for the target device (in the virtual machine).
 	 * 
 	 * @param target target for the target device (in the virtual machine).
 	 */
-	public void setTarget( T target );
+	public void setPciTarget( T target );
 }
