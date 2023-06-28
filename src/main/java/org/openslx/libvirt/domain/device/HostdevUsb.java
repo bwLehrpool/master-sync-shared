@@ -8,8 +8,7 @@ import org.openslx.libvirt.xml.LibvirtXmlNode;
  * @author Manuel Bentele
  * @version 1.0
  */
-public class HostdevUsb extends Hostdev implements HostdevAddressableSource<HostdevUsbDeviceDescription>,
-		HostdevAddressableTarget<HostdevUsbDeviceAddress>
+public class HostdevUsb extends Hostdev implements HostdevAddressableSource<HostdevUsbDeviceDescription>
 {
 	/**
 	 * Creates an empty hostdev USB device.
@@ -51,8 +50,7 @@ public class HostdevUsb extends Hostdev implements HostdevAddressableSource<Host
 		this.setXmlElementAttributeValue( "source/address/product", "id", productId );
 	}
 
-	@Override
-	public HostdevUsbDeviceAddress getPciTarget()
+	public HostdevUsbDeviceAddress getUsbTarget()
 	{
 		final String usbBus = this.getXmlElementAttributeValue( "address", "bus" );
 		final String usbPort = this.getXmlElementAttributeValue( "address", "port" );
@@ -60,8 +58,7 @@ public class HostdevUsb extends Hostdev implements HostdevAddressableSource<Host
 		return HostdevUsbDeviceAddress.valueOf( usbBus, usbPort );
 	}
 
-	@Override
-	public void setPciTarget( HostdevUsbDeviceAddress address )
+	public void setUsbTarget( HostdevUsbDeviceAddress address )
 	{
 		this.setXmlElementAttributeValue( "address", "bus", Integer.toString( address.getUsbBus() ) );
 		this.setXmlElementAttributeValue( "address", "port", Integer.toString( address.getUsbPort() ) );
