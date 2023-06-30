@@ -102,8 +102,7 @@ public class ConfigurationLogicDozModServerToStatelessClient
 
 		// disable USB if necessary
 		if ( !args.hasUsbAccess() ) {
-			// XXX TODO find best way to do this without explicit method
-			// config.setMaxUsbSpeed( UsbSpeed.NONE );
+			config.disableUsb();
 		}
 	}
 }

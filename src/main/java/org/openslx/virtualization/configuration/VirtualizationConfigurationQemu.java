@@ -894,4 +894,10 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 			throw new VirtualizationConfigurationException( e.getLocalizedMessage() );
 		}
 	}
+
+	@Override
+	public void disableUsb()
+	{
+		new QemuUsbSpeed( ControllerUsb.Model.NONE, Usb.NONE ).apply();
+	}
 }

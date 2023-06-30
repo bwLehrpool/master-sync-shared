@@ -165,4 +165,10 @@ public class VirtualizationConfigurationDocker extends VirtualizationConfigurati
 	{
 	}
 
+	@Override
+	public void disableUsb()
+	{
+		// Not applicable, maybe some day via USBguard?
+	}
+
 }

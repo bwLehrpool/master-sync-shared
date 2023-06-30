@@ -727,4 +727,10 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	public void validate() throws VirtualizationConfigurationException
 	{
 	}
+
+	@Override
+	public void disableUsb()
+	{
+		new VmWareUsbSpeed( 0, Usb.NONE ).apply();
+	}
 }

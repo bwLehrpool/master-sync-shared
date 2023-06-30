@@ -592,4 +592,10 @@ public class VirtualizationConfigurationVirtualBox extends VirtualizationConfigu
 	{
 		this.config.validate();
 	}
+
+	@Override
+	public void disableUsb()
+	{
+		new VBoxUsbSpeed( null, Usb.NONE ).apply();
+	}
 }

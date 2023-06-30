@@ -293,6 +293,8 @@ public abstract class VirtualizationConfiguration
 
 	public abstract boolean addCpuCoreCount( int nrOfCores );
 	
+	public abstract void disableUsb();
+	
 	public abstract void setVirtualizerVersion( Version type );
 
 	public abstract Version getVirtualizerVersion();
