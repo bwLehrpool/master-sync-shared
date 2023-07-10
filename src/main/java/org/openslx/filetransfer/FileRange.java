@@ -64,4 +64,10 @@ public class FileRange
 		return (int)startOffset ^ Integer.rotateLeft( (int)endOffset, 16 ) ^ (int)(startOffset >> 32);
 	}
 
+	@Override
+	public String toString()
+	{
+		return startOffset + "-" + endOffset;
+	}
+
 }

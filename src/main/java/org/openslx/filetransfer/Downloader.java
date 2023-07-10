@@ -203,8 +203,12 @@ public class Downloader extends Transfer
 					return false;
 				}
 				FileRange remoteRange = meta.getRange();
-				if ( remoteRange == null || !remoteRange.equals( requestedRange ) ) {
-					log.error( "Confirmed range by remote peer does not match requested range, aborting download." );
+				if ( remoteRange == null ) {
+					log.error( "Remote metadata does not contain range confirmation. " + meta );
+				}
+				if ( !remoteRange.equals( requestedRange ) ) {
+					log.error( "Confirmed range by remote peer (" + remoteRange
+							+ ") does not match requested range (" + requestedRange + "), aborting download." );
 					return false;
 				}
 				// Receive requested range

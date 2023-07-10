@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -415,6 +416,21 @@ public abstract class Transfer
 		public boolean peerWantsCompression()
 		{
 			return meta.containsKey( "COMPRESS" );
+		}
+
+		@Override
+		public String toString()
+		{
+			StringBuilder sb = new StringBuilder();
+			for ( Entry<String, String> it : meta.entrySet() ) {
+				if ( sb.length() != 0 ) {
+					sb.append( ' ' );
+				}
+				sb.append( it.getKey() );
+				sb.append( '=' );
+				sb.append( it.getValue() );
+			}
+			return sb.toString();
 		}
 
 	}
