@@ -13,18 +13,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 
-import org.openslx.util.XmlHelper;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -308,14 +302,12 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 			StreamResult xmlString = new StreamResult( xmlWriter );
 			this.xmlTransformer.transform( source, xmlString );
 			xml = xmlWriter.toString();
-			xmlWriter.close();
-		} catch ( TransformerException | IOException e ) {
+		} catch ( Exception e ) {
 			throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );
 		} finally {
 			try {
 				xmlWriter.close();
-			} catch ( IOException e ) {
-				throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );
+			} catch ( Throwable e ) {
 			}
 		}
 
@@ -332,14 +324,13 @@ public abstract class LibvirtXmlDocument implements LibvirtXmlSerializable, Libv
 			DOMSource source = new DOMSource( this.xmlDocument );
 			StreamResult xmlStream = new StreamResult( xmlWriter );
 			this.xmlTransformer.transform( source, xmlStream );
-			xmlWriter.close();
-		} catch ( TransformerException | IOException e ) {
+		} catch ( Exception e ) {
+			e.printStackTrace();
 			throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );
 		} finally {
 			try {
 				xmlWriter.close();
-			} catch ( IOException e ) {
-				throw new LibvirtXmlSerializationException( e.getLocalizedMessage() );
+			} catch ( Throwable e ) {
 			}
 		}
 	}
