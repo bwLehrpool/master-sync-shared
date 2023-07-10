@@ -202,6 +202,10 @@ public class Downloader extends Transfer
 					log.error( "Did not receive meta data from uploading remote peer after requesting range, aborting." );
 					return false;
 				}
+				if ( getRemoteError() != null ) {
+					log.error( "Remote peer sent error: " + getRemoteError() );
+					return false;
+				}
 				FileRange remoteRange = meta.getRange();
 				if ( remoteRange == null ) {
 					log.error( "Remote metadata does not contain range confirmation. " + meta );

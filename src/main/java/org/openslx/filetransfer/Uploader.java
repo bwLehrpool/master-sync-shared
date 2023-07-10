@@ -162,6 +162,10 @@ public class Uploader extends Transfer
 				}
 				if ( meta.isDone() ) // Download complete?
 					break;
+				if ( getRemoteError() != null ) {
+					this.close( "Remote peer sent error: " + getRemoteError(), callback, true );
+					return false;
+				}
 				// Not complete, so there must be another range request
 				FileRange requestedRange = meta.getRange();
 				if ( requestedRange == null ) {

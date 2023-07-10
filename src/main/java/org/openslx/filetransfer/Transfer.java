@@ -24,7 +24,7 @@ public abstract class Transfer
 	protected final Socket transferSocket;
 	protected final DataOutputStream outStream;
 	protected final DataInputStream dataFromServer;
-	protected String ERROR = null;
+	private String remoteError;
 	private boolean shouldGetToken;
 	protected boolean useCompression = true;
 
@@ -170,6 +170,7 @@ public abstract class Transfer
 	 */
 	protected MetaData readMetaData()
 	{
+
 		Map<String, String> entries = new HashMap<>();
 		try {
 			while ( true ) {
@@ -184,7 +185,7 @@ public abstract class Transfer
 					continue;
 				}
 				if ( splitted[0].equals( "ERROR" ) )
-					ERROR = splitted[1];
+					remoteError = splitted[1];
 				if ( entries.containsKey( splitted[0] ) ) {
 					log.warn( "Received meta data key " + splitted[0] + " when already received, ignoring!" );
 				} else {
@@ -193,10 +194,10 @@ public abstract class Transfer
 			}
 		} catch ( SocketTimeoutException ste ) {
 			sendErrorCode( "timeout" );
-			this.close( "Socket Timeout occured in readMetaData. " + ERROR );
+			this.close( "Socket Timeout occured in readMetaData." );
 			return null;
 		} catch ( Exception e ) {
-			this.close( "Exception occured in readMetaData: " + e.toString() + " " + ERROR );
+			this.close( "Exception occured in readMetaData: " + e.toString() );
 			return null;
 		}
 		return new MetaData( entries );
@@ -284,7 +285,7 @@ public abstract class Transfer
 	 */
 	public String getRemoteError()
 	{
-		return ERROR;
+		return remoteError;
 	}
 
 	/**
