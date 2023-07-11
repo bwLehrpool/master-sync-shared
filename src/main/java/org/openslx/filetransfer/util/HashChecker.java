@@ -137,7 +137,12 @@ public class HashChecker
 			chunk.setStatus( ChunkStatus.HASHING );
 		}
 		if ( blocking ) {
+			long pre = System.currentTimeMillis();
 			queue.put( task );
+			long duration = System.currentTimeMillis() - pre;
+			if ( duration > 1000 ) {
+				LOGGER.warn( "HashChecker.queue() took " + duration + "ms" );
+			}
 		} else {
 			if ( !queue.offer( task ) ) {
 				return false;
@@ -224,7 +229,7 @@ public class HashChecker
 
 	public static enum HashResult
 	{
-		NONE, // No hashing tool place
+		NONE, // No hashing took place
 		VALID, // Hash matches
 		INVALID, // Hash does not match
 		FAILURE // Error calculating hash

@@ -440,7 +440,12 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		}
 		// We have no hash checker, or hasher rejected block,
 		// or the hash for the current chunk is unknown - flush to disk
+		long pre = System.currentTimeMillis();
 		writeFileData( currentChunk.range.startOffset, currentChunk.range.getLength(), buffer );
+		long duration = System.currentTimeMillis() - pre;
+		if ( duration > 2000 ) {
+			LOGGER.warn( "Writing chunk to disk before hash check took " + duration + "ms. Storage backend overloaded?" );
+		}
 		chunks.markCompleted( currentChunk, false );
 		chunkStatusChanged( currentChunk );
 		if ( passEx != null )
@@ -584,7 +589,12 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				chunks.markCompleted( chunk, true );
 			} else {
 				try {
+					long pre = System.currentTimeMillis();
 					writeFileData( chunk.range.startOffset, chunk.range.getLength(), data );
+					long duration = System.currentTimeMillis() - pre;
+					if ( duration > 2000 ) {
+						LOGGER.warn( "Writing chunk to disk after hash check took " + duration + "ms. Storage backend overloaded?" );
+					}
 					chunks.markCompleted( chunk, true );
 				} catch ( Exception e ) {
 					LOGGER.warn( "Cannot write to file after hash check", e );
