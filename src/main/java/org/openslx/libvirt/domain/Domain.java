@@ -373,6 +373,16 @@ public class Domain extends LibvirtXmlDocument
 	public void setFeatureKvmHiddenState( boolean on )
 	{
 		this.getRootXmlNode().setXmlElementAttributeValueOnOff( "features/kvm/hidden", "state", on );
+		this.getRootXmlNode().setXmlElement( "cpu" );
+		if ( on ) {
+		Element cpu = this.getRootXmlNode().getXmlElement( "cpu" );
+		XmlHelper.getOrCreateElement( this.getRootXmlNode().getXmlDocument(), cpu,
+				null, null,
+				"feature", "name", "hypervisor" );
+		this.getRootXmlNode().setXmlElementAttributeValue( "cpu/feature", "policy", "disable" );
+		} else {
+			this.getRootXmlNode().removeXmlElement( "cpu/feature[@name='hypervisor']" );
+		}
 	}
 
 	/**
