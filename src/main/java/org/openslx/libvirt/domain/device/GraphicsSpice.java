@@ -20,7 +20,7 @@ public class GraphicsSpice extends Graphics
 	/**
 	 * Default port of a SPICE graphics listener.
 	 */
-	public static final int DEFAULT_PORT = 5900;
+	public static final int DEFAULT_PORT = 59000;
 
 	/**
 	 * Creates an empty graphics SPICE device.
