@@ -731,6 +731,22 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns if the CPU migratable flag is set in the Libvirt domain XML document.
+	 */
+	public boolean getCpuMigratable()
+	{
+		return this.getRootXmlNode().getXmlElementAttributeValueAsBool( "cpu", "migratable" );
+	}
+
+	/**
+	 * Sets if vCPU is migratable in the Libvirt domain XML document.
+	 */
+	public void setCpuMigratable( boolean migratable )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValueOnOff( "cpu", "migratable", migratable );
+	}
+
+	/**
 	 * CPU checks specifiable for a virtual machine in the Libvirt domain XML document.
 	 * 
 	 * @author Manuel Bentele
@@ -1687,6 +1703,34 @@ public class Domain extends LibvirtXmlDocument
 		for ( Interface interfaceDevice : this.getInterfaceDevices() ) {
 			// set empty source to preserve the XML attribute (to prevent XML validation errors)
 			interfaceDevice.setSource( "" );
+		}
+	}
+
+	/**
+	 * Remove any existing CPU pinning and numa config
+	 */
+	public void resetCpuPin()
+	{
+		this.getRootXmlNode().removeXmlElement( "cputune" );
+		this.getRootXmlNode().removeXmlElement( "numatune" );
+	}
+
+	public void addCpuPin( int virtualCore, int hostCore )
+	{
+		final Element rootElement = Element.class.cast( this.getRootXmlNode().getXmlBaseNode() );
+		final Document xmlDocument = this.getRootXmlNode().getXmlDocument();
+		Node cpuTune = this.getRootXmlNode().getXmlElement( "cputune" );
+		if ( cpuTune == null ) {
+			cpuTune = xmlDocument.createElement( "cputune" );
+			rootElement.appendChild( cpuTune );
+		}
+		Element pin = xmlDocument.createElement( "vcpupin" );
+		pin.setAttribute( "vcpu", Integer.toString( virtualCore ) );
+		pin.setAttribute( "cpuset", Integer.toString( hostCore ) );
+		cpuTune.appendChild( pin );
+		Node vcpuNode = this.getRootXmlNode().getXmlElement( "vcpu" );
+		if ( vcpuNode instanceof Element ) {
+			( (Element)vcpuNode ).setAttribute( "placement", "static" );
 		}
 	}
 }

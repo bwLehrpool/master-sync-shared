@@ -133,7 +133,7 @@ public interface LibvirtXmlEditable
 	public default boolean getXmlElementAttributeValueAsBool( String attributeName )
 	{
 		final String attributeValue = this.getXmlElementAttributeValue( attributeName );
-		return "yes".equals( attributeValue ) || "on".equals( attributeValue );
+		return "yes".equals( attributeValue ) || "on".equals( attributeValue ) || "true".equals( attributeName );
 	}
 
 	/**

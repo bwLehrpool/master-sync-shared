@@ -163,7 +163,12 @@ public class XmlHelper
 	public static Element getOrCreateElement( Document doc, Element parent, String nsUri, String nsName,
 			String name, String attrName, String attrValue )
 	{
-		final NodeList childList = parent.getElementsByTagNameNS( nsUri, name );
+		final NodeList childList;
+		if ( nsUri == null ) {
+			childList = parent.getElementsByTagName( name );
+		} else {
+			childList = parent.getElementsByTagNameNS( nsUri, name );
+		}
 		Element element = null;
 		outer: for ( int i = 0; i < childList.getLength(); ++i ) {
 			Node n = childList.item( i );
@@ -187,8 +192,12 @@ public class XmlHelper
 		}
 		if ( element == null ) {
 			// Need a new <qemu:device alias="hostdev0">
-			element = doc.createElementNS( nsUri, name );
-			element.setPrefix( nsName );
+			if ( nsUri == null || nsName == null ) {
+				element = doc.createElement( name );
+			} else {
+				element = doc.createElementNS( nsUri, name );
+				element.setPrefix( nsName );
+			}
 			if ( attrName != null && attrValue != null ) {
 				element.setAttribute( attrName, attrValue );
 			}

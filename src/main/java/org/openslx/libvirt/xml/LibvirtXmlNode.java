@@ -183,7 +183,7 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 	}
 
 	@Override
-	public Node getXmlElement( String expression )
+	public Element getXmlElement( String expression )
 	{
 		String completeExpression = null;
 
@@ -196,7 +196,7 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 		Node node = this.getXmlNode( completeExpression );
 
 		if ( node != null && node.getNodeType() == Node.ELEMENT_NODE ) {
-			return node;
+			return (Element)node;
 		} else {
 			return null;
 		}
@@ -216,8 +216,8 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 				currentNode = this.getXmlNode( partialExpression );
 
 				if ( currentNode == null ) {
-					parentNode.appendChild( this.xmlDocument.createElement( nodeNames[i] ) );
-					currentNode = parentNode.getLastChild();
+					currentNode = this.xmlDocument.createElement( nodeNames[i] );
+					parentNode.appendChild( currentNode );
 				}
 
 				parentNode = currentNode;
