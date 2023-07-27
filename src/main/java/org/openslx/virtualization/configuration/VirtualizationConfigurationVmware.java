@@ -139,7 +139,6 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 				removeEntriesStartingWith( controllerType + ":" + deviceId + "." );
 			}
 		}
-		// TODO check if this machine is in a paused/suspended state
 		this.isMachineSnapshot = false;
 
 		// Add HDD to cleaned vmx
@@ -732,5 +731,11 @@ public class VirtualizationConfigurationVmware extends VirtualizationConfigurati
 	public void disableUsb()
 	{
 		new VmWareUsbSpeed( 0, Usb.NONE ).apply();
+	}
+		
+	@Override
+	public String getSuspendedFile()
+	{
+		return config.get( "checkpoint.vmState" );
 	}
 }

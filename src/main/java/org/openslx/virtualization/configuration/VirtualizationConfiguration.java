@@ -129,12 +129,20 @@ public abstract class VirtualizationConfiguration
 		return displayName;
 	}
 
-	/*
-	 * Getter for isMachineSnapshot
-	 */
 	public boolean isMachineSnapshot()
 	{
 		return isMachineSnapshot;
+	}
+	
+	/**
+	 * Return name of file that indicates this VM is currently suspended.
+	 * The existence of this file means the VM is currently suspended.
+	 * Can be null if this virtualizer doesn't support suspension, or if
+	 * it's already known the VM is not in a suspended state.
+	 */
+	public String getSuspendedFile()
+	{
+		return null;
 	}
 	
 	private class VersionOption extends VirtOptionValue {
