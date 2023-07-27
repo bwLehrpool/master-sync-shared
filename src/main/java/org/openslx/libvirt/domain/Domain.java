@@ -728,6 +728,13 @@ public class Domain extends LibvirtXmlDocument
 	public void setCpuMode( CpuMode mode )
 	{
 		this.getRootXmlNode().setXmlElementAttributeValue( "cpu", "mode", mode.toString() );
+		// Pass through cache information as well, because for some reason this is no the default
+		// when we do CPU host passthrough....
+		if ( mode == CpuMode.HOST_PASSTHROUGH ) {
+			this.getRootXmlNode().setXmlElementAttributeValue( "cpu/cache", "mode", "passthrough" );
+		} else if ( "passthrough".equals( this.getRootXmlNode().getXmlElementAttributeValue( "cpu/cache", "mode" ) ) ) {
+			this.getRootXmlNode().removeXmlElement( "cpu/cache" );
+		}
 	}
 
 	/**
