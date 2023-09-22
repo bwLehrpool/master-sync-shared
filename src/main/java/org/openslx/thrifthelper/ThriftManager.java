@@ -55,6 +55,7 @@ public class ThriftManager<T>
 
 	private static ErrorCallback satErrorCallback = null;
 	private static ErrorCallback masterErrorCallback = null;
+	private static SSLContext satSslContext = null;
 
 	/**
 	 * Sets the address of the master server
@@ -106,6 +107,7 @@ public class ThriftManager<T>
 			LOGGER.error( "Given address is empty." );
 			return false;
 		}
+		satSslContext = ctx;
 		// finally set it
 		satelliteManager = new ThriftManager<SatelliteServer.Iface>( SatelliteServer.Iface.class, SatelliteServer.Client.class,
 				new WantClientCallback<SatelliteServer.Client>() {
@@ -122,6 +124,14 @@ public class ThriftManager<T>
 					}
 				} );
 		return true;
+	}
+	
+	/**
+	 * Get the SSL context used for talking to the satellite server (if any)
+	 */
+	public static SSLContext getSatelliteSslContext()
+	{
+		return satSslContext;
 	}
 
 	/**
