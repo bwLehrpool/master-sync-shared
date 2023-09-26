@@ -249,7 +249,7 @@ public class Downloader extends Transfer
 			compressedIn.printStats();
 			try {
 				transferSocket.shutdownOutput();
-			} catch ( IOException e ) {
+			} catch ( Exception e ) {
 			}
 		} finally {
 			this.close( null );
