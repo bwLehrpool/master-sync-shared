@@ -52,7 +52,7 @@ public abstract class Transfer
 			transferSocket = sslSocketFactory.createSocket();
 		}
 		transferSocket.setSoTimeout( readTimeoutMs );
-		transferSocket.connect( new InetSocketAddress( host, port ) );
+		transferSocket.connect( new InetSocketAddress( host, port ), 4000 );
 
 		outStream = new DataOutputStream( transferSocket.getOutputStream() );
 		dataFromServer = new DataInputStream( transferSocket.getInputStream() );
