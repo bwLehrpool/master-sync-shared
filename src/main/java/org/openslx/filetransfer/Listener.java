@@ -3,6 +3,7 @@ package org.openslx.filetransfer;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -143,7 +144,7 @@ public class Listener
 								} catch ( SSLException e ) {
 									Transfer.safeClose( connection );
 									log.warn( "SSL error when acceping client " + connection.getInetAddress().getHostAddress() );
-								} catch ( SocketTimeoutException e ) {
+								} catch ( SocketException e ) {
 									// No reason to log, probably - connection where client did nothing after connecting.
 								} catch ( Exception e ) {
 									Transfer.safeClose( connection );
