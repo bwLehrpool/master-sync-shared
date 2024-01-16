@@ -176,7 +176,10 @@ class ThriftHandler<T extends TServiceClient> implements InvocationHandler
 		}
 		// No usable existing connection, create new client
 		LOGGER.debug( "Creating new thrift client" );
-		return new TWrap<T>( clientFactory.getNewClient() );
+		T client = clientFactory.getNewClient();
+		if ( client == null )
+			return null;
+		return new TWrap<T>( client );
 	}
 
 	/**
