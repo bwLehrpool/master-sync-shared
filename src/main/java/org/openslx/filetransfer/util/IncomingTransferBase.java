@@ -289,6 +289,9 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		if ( sources != null && !sources.isEmpty() ) {
 			chunks.markLocalCopyCandidates( sources );
 		}
+		if ( state == TransferState.IDLE ) {
+			state = TransferState.WORKING;
+		}
 		localCopyManager.trigger();
 	}
 
