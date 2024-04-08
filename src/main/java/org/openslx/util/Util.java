@@ -118,9 +118,20 @@ public class Util
 		}
 	}
 
+	/**
+	 * Number of seconds elapsed since 1970-01-01 UTC.
+	 */
 	public static long unixTime()
 	{
 		return System.currentTimeMillis() / 1000;
+	}
+
+	/**
+	 * Monotonic tick count in milliseconds, not bound to RTC.
+	 */
+	public static long tickCount()
+	{
+		return System.nanoTime() / 1000;
 	}
 
 }
