@@ -8,21 +8,6 @@
   <include href="nwfilter_params.rng"/>
   <include href="privatedata.rng"/>
 
-  <!--
-    description and title element, may be placed anywhere under the root
-    -->
-  <define name="description">
-    <element name="description">
-      <text/>
-    </element>
-  </define>
-
-  <define name="title">
-    <element name="title">
-      <ref name="objectNameWithSlash"/>
-    </element>
-  </define>
-
   <define name="createMode">
     <data type="unsignedInt">
       <param name="pattern">0[0-7]{3}|[0-7]{1,3}</param>
@@ -721,9 +706,11 @@
       <optional>
         <element name="maxMemory">
           <ref name="scaledInteger"/>
-          <attribute name="slots">
-            <ref name="unsignedInt"/>
-          </attribute>
+          <optional>
+            <attribute name="slots">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </optional>
         </element>
       </optional>
       <optional>
@@ -884,6 +871,25 @@
                 <attribute name="thread_pool_max">
                   <ref name="unsignedInt"/>
                 </attribute>
+              </optional>
+              <optional>
+                <element name="poll">
+                  <optional>
+                    <attribute name="max">
+                      <ref name="unsignedLong"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="grow">
+                      <ref name="unsignedLong"/>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="shrink">
+                      <ref name="unsignedLong"/>
+                    </attribute>
+                  </optional>
+                </element>
               </optional>
             </element>
           </zeroOrMore>
@@ -1805,6 +1811,7 @@
       <ref name="diskSourceVolume"/>
       <ref name="diskSourceNvme"/>
       <ref name="diskSourceVhostUser"/>
+      <ref name="diskSourceVhostVdpa"/>
     </choice>
   </define>
 
@@ -2166,6 +2173,60 @@
     </element>
   </define>
 
+  <define name="diskSourceNetworkProtocolSSHHostVerify">
+    <element name="knownHosts">
+      <attribute name="path">
+        <ref name="absFilePath"/>
+      </attribute>
+    </element>
+  </define>
+
+  <define name="diskSourceNetworkProtocolSSHKeyDef">
+    <element name="identity">
+      <interleave>
+        <attribute name="username">
+          <ref name="genericName"/>
+        </attribute>
+        <choice>
+          <attribute name="keyfile">
+            <ref name="absFilePath"/>
+          </attribute>
+          <attribute name="agentsock">
+            <ref name="absFilePath"/>
+          </attribute>
+        </choice>
+      </interleave>
+    </element>
+  </define>
+
+  <define name="diskSourceNetworkProtocolSSH">
+    <element name="source">
+      <interleave>
+        <attribute name="protocol">
+          <choice>
+            <value>ssh</value>
+          </choice>
+        </attribute>
+        <attribute name="name"/>
+        <ref name="diskSourceCommon"/>
+        <ref name="diskSourceNetworkHost"/>
+        <optional>
+          <ref name="encryption"/>
+        </optional>
+        <ref name="diskSourceNetworkProtocolPropsCommon"/>
+        <optional>
+          <ref name="diskSourceNetworkProtocolSSHHostVerify"/>
+        </optional>
+        <optional>
+          <choice>
+            <ref name="diskSourceNetworkProtocolSSHKeyDef"/>
+            <ref name="diskAuth"/>
+          </choice>
+        </optional>
+      </interleave>
+    </element>
+  </define>
+
   <define name="diskSourceNetworkProtocolSimple">
     <element name="source">
       <interleave>
@@ -2282,6 +2343,7 @@
       <ref name="diskSourceNetworkProtocolHTTPS"/>
       <ref name="diskSourceNetworkProtocolFTPS"/>
       <ref name="diskSourceNetworkProtocolFTP"/>
+      <ref name="diskSourceNetworkProtocolSSH"/>
       <ref name="diskSourceNetworkProtocolSimple"/>
       <ref name="diskSourceNetworkProtocolVxHS"/>
       <ref name="diskSourceNetworkProtocolNFS"/>
@@ -2375,6 +2437,18 @@
     </element>
   </define>
 
+  <define name="diskSourceVhostVdpa">
+    <attribute name="type">
+      <value>vhostvdpa</value>
+    </attribute>
+    <element name="source">
+      <attribute name="dev">
+        <ref name="absFilePath"/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+
   <define name="diskTargetDev">
     <data type="string">
       <param name="pattern">(ioemu:)?(fd|hd|sd|vd|xvd|ubd)[a-zA-Z0-9_]+</param>
@@ -2455,11 +2529,33 @@
           <data type="integer"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="discard_granularity">
+          <data type="integer"/>
+        </attribute>
+      </optional>
     </element>
   </define>
-  <!--
-      Disk may use a special driver for access.
-    -->
+
+  <define name="diskDriverIothreads">
+    <element name="iothreads">
+      <oneOrMore>
+        <element name="iothread">
+          <attribute name="id">
+            <ref name="unsignedInt"/>
+          </attribute>
+          <zeroOrMore>
+            <element name="queue">
+              <attribute name="id">
+                <ref name="unsignedInt"/>
+              </attribute>
+            </element>
+          </zeroOrMore>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
   <define name="diskDriver">
     <element name="driver">
       <optional>
@@ -2496,6 +2592,11 @@
         <ref name="detect_zeroes"/>
       </optional>
       <optional>
+        <attribute name="discard_no_unref">
+          <ref name="virOnOff"/>
+        </attribute>
+      </optional>
+      <optional>
         <attribute name="queues">
           <ref name="positiveInteger"/>
         </attribute>
@@ -2506,17 +2607,23 @@
         </attribute>
       </optional>
       <ref name="virtioOptions"/>
-      <optional>
-        <element name="metadata_cache">
-          <optional>
-            <element name="max_size">
-              <ref name="scaledInteger"/>
-            </element>
-          </optional>
-        </element>
-      </optional>
+      <interleave>
+        <optional>
+          <element name="metadata_cache">
+            <optional>
+              <element name="max_size">
+                <ref name="scaledInteger"/>
+              </element>
+            </optional>
+          </element>
+        </optional>
+        <optional>
+          <ref name="diskDriverIothreads"/>
+        </optional>
+      </interleave>
     </element>
   </define>
+
   <define name="driverFormat">
     <optional>
       <attribute name="name">
@@ -2790,6 +2897,11 @@
                       <ref name="unsignedInt"/>
                     </element>
                   </optional>
+                  <optional>
+                    <attribute name="memReserve">
+                      <ref name="unsignedLong"/>
+                    </attribute>
+                  </optional>
                 </element>
               </optional>
               <!-- *-root controllers have an optional element "pcihole64"-->
@@ -3036,6 +3148,9 @@
               </choice>
               <empty/>
             </element>
+            <optional>
+              <ref name="idmap"/>
+            </optional>
             <ref name="filesystemCommon"/>
           </interleave>
         </group>
@@ -3142,6 +3257,11 @@
             </attribute>
           </optional>
           <ref name="virtioOptions"/>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>mtp</value>
+          </attribute>
         </group>
         <empty/>
       </choice>
@@ -3675,18 +3795,12 @@
         </element>
       </optional>
       <optional>
-        <element name="driver">
-          <choice>
-            <group>
-              <attribute name="name">
-                <choice>
-                  <value>kvm</value>
-                  <value>vfio</value>
-                  <value>xen</value>
-                </choice>
-              </attribute>
-            </group>
-            <group>
+        <choice>
+          <group>
+            <ref name="hostdevDriver"/>
+          </group>
+          <group>
+            <element name="driver">
               <optional>
                 <attribute name="name">
                   <choice>
@@ -3724,90 +3838,90 @@
               <optional>
                 <ref name="event_idx"/>
               </optional>
-            </group>
-          </choice>
-          <ref name="virtioOptions"/>
-          <interleave>
-            <optional>
-              <element name="host">
+              <ref name="virtioOptions"/>
+              <interleave>
                 <optional>
-                  <attribute name="csum">
+                  <element name="host">
+                    <optional>
+                      <attribute name="csum">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="gso">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="tso4">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="tso6">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="ecn">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="ufo">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="mrg_rxbuf">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                  </element>
+                </optional>
+                <optional>
+                  <element name="guest">
+                    <optional>
+                      <attribute name="csum">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="tso4">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="tso6">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="ecn">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                    <optional>
+                      <attribute name="ufo">
+                        <ref name="virOnOff"/>
+                      </attribute>
+                    </optional>
+                  </element>
+                </optional>
+                <optional>
+                  <attribute name="rss">
                     <ref name="virOnOff"/>
                   </attribute>
                 </optional>
                 <optional>
-                  <attribute name="gso">
+                  <attribute name="rss_hash_report">
                     <ref name="virOnOff"/>
                   </attribute>
                 </optional>
-                <optional>
-                  <attribute name="tso4">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="tso6">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="ecn">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="ufo">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="mrg_rxbuf">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-              </element>
-            </optional>
-            <optional>
-              <element name="guest">
-                <optional>
-                  <attribute name="csum">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="tso4">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="tso6">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="ecn">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-                <optional>
-                  <attribute name="ufo">
-                    <ref name="virOnOff"/>
-                  </attribute>
-                </optional>
-              </element>
-            </optional>
-            <optional>
-              <attribute name="rss">
-                <ref name="virOnOff"/>
-              </attribute>
-            </optional>
-            <optional>
-              <attribute name="rss_hash_report">
-                <ref name="virOnOff"/>
-              </attribute>
-            </optional>
-          </interleave>
-        </element>
+              </interleave>
+            </element>
+          </group>
+        </choice>
       </optional>
       <optional>
         <ref name="alias"/>
@@ -4950,6 +5064,11 @@
           <value>usb</value>
         </choice>
       </attribute>
+      <optional>
+        <attribute name="multichannel">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
       <interleave>
         <optional>
           <ref name="alias"/>
@@ -5092,6 +5211,26 @@
     <optional>
       <attribute name="tryPoll">
         <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <ref name="audiocommonchild"/>
+  </define>
+
+  <define name="audiopipewire">
+    <ref name="audiocommonattr"/>
+    <optional>
+      <attribute name="name">
+        <data type="string"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="streamName">
+        <data type="string"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="latency">
+        <ref name="uint32"/>
       </attribute>
     </optional>
     <ref name="audiocommonchild"/>
@@ -5269,6 +5408,28 @@
               <element name="output">
                 <ref name="audiooss"/>
               </element>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>pipewire</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiopipewire"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiopipewire"/>
+              </element>
+            </optional>
+            <optional>
+              <attribute name="runtimeDir">
+                <ref name="filePath"/>
+              </attribute>
             </optional>
           </interleave>
         </group>
@@ -6093,16 +6254,7 @@
     </attribute>
     <interleave>
       <optional>
-        <element name="driver">
-          <attribute name="name">
-            <choice>
-              <value>kvm</value>
-              <value>vfio</value>
-              <value>xen</value>
-            </choice>
-          </attribute>
-          <empty/>
-        </element>
+        <ref name="hostdevDriver"/>
       </optional>
       <optional>
         <ref name="teaming"/>
@@ -6120,6 +6272,7 @@
           <ref name="pciaddress"/>
         </element>
       </element>
+      <ref name="hostdevsubsysvfiodisplay"/>
     </interleave>
   </define>
 
@@ -6239,6 +6392,19 @@
     </element>
   </define>
 
+  <define name="hostdevsubsysvfiodisplay">
+    <optional>
+      <attribute name="ramfb">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="display">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
+  </define>
+
   <define name="hostdevsubsysmdev">
     <attribute name="type">
       <value>mdev</value>
@@ -6250,16 +6416,7 @@
         <value>vfio-ap</value>
       </choice>
     </attribute>
-    <optional>
-      <attribute name="ramfb">
-        <ref name="virOnOff"/>
-      </attribute>
-    </optional>
-    <optional>
-      <attribute name="display">
-        <ref name="virOnOff"/>
-      </attribute>
-    </optional>
+    <ref name="hostdevsubsysvfiodisplay"/>
     <element name="source">
       <ref name="mdevaddress"/>
     </element>
@@ -6628,6 +6785,15 @@
           </optional>
           <optional>
             <ref name="tcgfeatures"/>
+          </optional>
+          <optional>
+            <element name="async-teardown">
+              <optional>
+                <attribute name="enabled">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </optional>
+            </element>
           </optional>
         </interleave>
       </element>
@@ -7117,6 +7283,11 @@
 
   <define name="memorydev-target">
     <element name="target">
+      <optional>
+        <attribute name="dynamicMemslots">
+          <ref name="virYesNo"/>
+        </attribute>
+      </optional>
       <interleave>
         <element name="size">
           <ref name="scaledInteger"/>
@@ -7151,6 +7322,13 @@
         <optional>
           <element name="readonly">
             <empty/>
+          </element>
+        </optional>
+        <optional>
+          <element name="address">
+            <attribute name="base">
+              <ref name="hexuint"/>
+            </attribute>
           </element>
         </optional>
       </interleave>

@@ -37,6 +37,16 @@
           <text/>
         </element>
 
+        <!-- <title> element -->
+        <optional>
+          <ref name="title"/>
+        </optional>
+
+        <!-- <description> element -->
+        <optional>
+          <ref name="description"/>
+        </optional>
+
         <!-- <metadata> element -->
         <optional>
           <ref name="metadata"/>
@@ -169,15 +179,7 @@
                 </element>
               </optional>
               <optional>
-                <element name="driver">
-                  <attribute name="name">
-                    <choice>
-                      <value>kvm</value>
-                      <value>vfio</value>
-                    </choice>
-                  </attribute>
-                  <empty/>
-                </element>
+                <ref name="hostdevDriver"/>
               </optional>
               <optional>
                 <element name="nat">
@@ -255,6 +257,9 @@
             <attribute name="name"><ref name="dnsName"/></attribute>
             <optional>
               <attribute name="localOnly"><ref name="virYesNo"/></attribute>
+            </optional>
+            <optional>
+              <attribute name="register"><ref name="virYesNo"/></attribute>
             </optional>
           </element>
         </optional>
