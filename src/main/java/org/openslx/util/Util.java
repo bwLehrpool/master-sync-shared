@@ -147,7 +147,7 @@ public class Util
 	 */
 	public static long tickCount()
 	{
-		return System.nanoTime() / 1000;
+		return System.nanoTime() / 1000_000;
 	}
 
 	private static final String[] UNITS = new String[] { "B", "KB", "MB", "GB", "TB", "PB", "???" };
