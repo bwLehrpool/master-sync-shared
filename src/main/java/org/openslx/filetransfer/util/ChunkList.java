@@ -93,7 +93,7 @@ public class ChunkList
 	 * Get CRC32 list in DNBD3 format. All checksums are little
 	 * endian and prefixed by the crc32 sum of the list itself.
 	 */
-	public synchronized byte[] getDnbd3Crc32List() throws IOException
+	public synchronized byte[] getDnbd3Crc32List() throws IllegalStateException
 	{
 		byte buffer[] = new byte[ allChunks.size() * 4 + 4 ]; // 4 byte per chunk plus master
 		long nextChunkOffset = 0;
@@ -144,7 +144,6 @@ public class ChunkList
 	 * Returns true if this list contains a chunk with state MISSING,
 	 * which means the chunk doesn't have a sha1 known to exist in
 	 * another image.
-	 * @return
 	 */
 	public synchronized boolean hasLocallyMissingChunk()
 	{
