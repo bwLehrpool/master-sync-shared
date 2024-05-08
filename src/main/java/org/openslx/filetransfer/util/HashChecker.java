@@ -15,9 +15,11 @@ import org.apache.logging.log4j.Logger;
 public class HashChecker
 {
 	public static final int BLOCKING = 1;
-	public static final int CALC_HASH = 2;
+	public static final int CHECK_SHA1 = 2;
 	public static final int CALC_CRC32 = 4;
-	
+	public static final int CALC_SHA1 = 8;
+	public static final int NO_SLOW_WARN = 16;
+
 	private static final Logger LOGGER = LogManager.getLogger( HashChecker.class );
 
 	private final BlockingQueue<HashTask> queue;
@@ -27,7 +29,7 @@ public class HashChecker
 	private final String algorithm;
 
 	private boolean invalid = false;
-	
+
 	private final int queueCapacity;
 
 	public HashChecker( String algorithm ) throws NoSuchAlgorithmException
@@ -97,11 +99,12 @@ public class HashChecker
 	public boolean queue( FileChunk chunk, byte[] data, HashCheckCallback callback, int flags ) throws InterruptedException
 	{
 		boolean blocking = ( flags & BLOCKING ) != 0;
-		boolean doHash = ( flags & CALC_HASH ) != 0;
-		boolean doCrc32 = ( flags & CALC_CRC32 ) != 0;
-		if ( doHash && chunk.getSha1Sum() == null )
+		boolean checkSha1 = ( flags & CHECK_SHA1 ) != 0;
+		boolean calcCrc32 = ( flags & CALC_CRC32 ) != 0;
+		boolean calcSha1 = ( flags & CALC_SHA1 ) != 0;
+		if ( checkSha1 && chunk.getSha1Sum() == null )
 			throw new NullPointerException( "Chunk has no sha1 hash" );
-		HashTask task = new HashTask( data, chunk, callback, doHash, doCrc32 );
+		HashTask task = new HashTask( data, chunk, callback, checkSha1, calcCrc32, calcSha1 );
 		synchronized ( threads ) {
 			if ( invalid ) {
 				execCallback( task, HashResult.FAILURE );
@@ -133,15 +136,17 @@ public class HashChecker
 				}
 			}
 		}
-		if ( doHash ) {
+		if ( checkSha1 ) {
 			chunk.setStatus( ChunkStatus.HASHING );
 		}
 		if ( blocking ) {
 			long pre = System.currentTimeMillis();
 			queue.put( task );
-			long duration = System.currentTimeMillis() - pre;
-			if ( duration > 1000 ) {
-				LOGGER.warn( "HashChecker.queue() took " + duration + "ms" );
+			if ( ( flags & NO_SLOW_WARN ) == 0 ) {
+				long duration = System.currentTimeMillis() - pre;
+				if ( duration > 1000 ) {
+					LOGGER.warn( "HashChecker.queue() took " + duration + "ms" );
+				}
 			}
 		} else {
 			if ( !queue.offer( task ) ) {
@@ -158,7 +163,7 @@ public class HashChecker
 	{
 		return queue.size();
 	}
-	
+
 	public int getQueueCapacity()
 	{
 		return queueCapacity;
@@ -208,15 +213,19 @@ public class HashChecker
 					break;
 				}
 				HashResult result = HashResult.NONE;
-				if ( task.doHash ) {
+				if ( task.checkSha1 || task.calcSha1 ) {
 					// Calculate digest
-   				md.update( task.data, 0, task.chunk.range.getLength() );
-   				byte[] digest = md.digest();
-					result = Arrays.equals( digest, task.chunk.getSha1Sum() ) ? HashResult.VALID : HashResult.INVALID;
+					md.update( task.data, 0, task.chunk.range.getLength() );
+					byte[] digest = md.digest();
+					if ( task.checkSha1 ) {
+						result = Arrays.equals( digest, task.chunk.getSha1Sum() ) ? HashResult.VALID : HashResult.INVALID;
+					} else {
+						task.chunk.setSha1Sum( digest );
+					}
 				}
-				if ( task.doCrc32 ) {
-   				// Calculate CRC32
-   				task.chunk.calculateDnbd3Crc32( task.data );
+				if ( task.calcCrc32 ) {
+					// Calculate CRC32
+					task.chunk.calculateDnbd3Crc32( task.data );
 				}
 				execCallback( task, result );
 			}
@@ -240,16 +249,18 @@ public class HashChecker
 		public final byte[] data;
 		public final FileChunk chunk;
 		public final HashCheckCallback callback;
-		public final boolean doHash;
-		public final boolean doCrc32;
+		public final boolean checkSha1;
+		public final boolean calcCrc32;
+		public final boolean calcSha1;
 
-		public HashTask( byte[] data, FileChunk chunk, HashCheckCallback callback, boolean doHash, boolean doCrc32 )
+		public HashTask( byte[] data, FileChunk chunk, HashCheckCallback callback, boolean checkSha1, boolean calcCrc32, boolean calcSha1 )
 		{
 			this.data = data;
 			this.chunk = chunk;
 			this.callback = callback;
-			this.doHash = doHash;
-			this.doCrc32 = doCrc32;
+			this.checkSha1 = checkSha1;
+			this.calcCrc32 = calcCrc32;
+			this.calcSha1 = calcSha1;
 		}
 	}
 

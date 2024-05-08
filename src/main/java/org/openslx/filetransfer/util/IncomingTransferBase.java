@@ -252,7 +252,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 				continue;
 			}
 			try {
-				if ( !hashChecker.queue( chunk, data, this, HashChecker.CALC_HASH ) ) { // false == queue full, stop
+				if ( !hashChecker.queue( chunk, data, this, HashChecker.CHECK_SHA1 ) ) { // false == queue full, stop
 					chunks.markCompleted( chunk, false );
 					break;
 				}
@@ -435,7 +435,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		InterruptedException passEx = null;
 		if ( hashChecker != null && currentChunk.getSha1Sum() != null ) {
 			try {
-				hashChecker.queue( currentChunk, buffer, IncomingTransferBase.this, HashChecker.BLOCKING | HashChecker.CALC_HASH );
+				hashChecker.queue( currentChunk, buffer, IncomingTransferBase.this, HashChecker.BLOCKING | HashChecker.CHECK_SHA1 );
 				return true;
 			} catch ( InterruptedException e ) {
 				passEx = e;
@@ -650,7 +650,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 			return;
 		}
 		try {
-			int flags = HashChecker.CALC_HASH;
+			int flags = HashChecker.CHECK_SHA1;
 			if ( blocking ) {
 				flags |= HashChecker.BLOCKING;
 			}
@@ -686,7 +686,7 @@ public abstract class IncomingTransferBase extends AbstractTransfer implements H
 		}
 	}
 	
-	protected HashChecker getHashChecker()
+	public static HashChecker getHashChecker()
 	{
 		return hashChecker;
 	}
