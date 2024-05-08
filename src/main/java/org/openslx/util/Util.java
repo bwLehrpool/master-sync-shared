@@ -74,7 +74,6 @@ public class Util
 	 * 
 	 * @param value string representation to parse to an int
 	 * @param defaultValue fallback value if given string can't be parsed
-	 * @return
 	 */
 	public static int parseInt( String value, int defaultValue )
 	{
