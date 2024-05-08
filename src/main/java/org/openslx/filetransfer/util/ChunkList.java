@@ -1,5 +1,6 @@
 package org.openslx.filetransfer.util;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -519,6 +520,23 @@ public class ChunkList
 			return false;
 		FileChunk chunk = allChunks.get( allChunks.size() - 1 );
 		return chunk.sha1sum != null && Arrays.equals( FileChunk.NULL_BLOCK_SHA1, chunk.sha1sum );
+	}
+
+	/**
+	 * Write DNBD3 CRC32 list to given file.
+	 * 
+	 * @throws IllegalStateException
+	 * @throws IOException
+	 */
+	public void writeCrc32List( String crcfile ) throws IllegalStateException, IOException
+	{
+		byte[] dnbd3Crc32List = null;
+		dnbd3Crc32List = getDnbd3Crc32List();
+		if ( dnbd3Crc32List != null ) {
+			try ( FileOutputStream fos = new FileOutputStream( crcfile ) ) {
+				fos.write( dnbd3Crc32List );
+			}
+		}
 	}
 
 }
