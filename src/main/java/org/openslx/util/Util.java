@@ -84,6 +84,23 @@ public class Util
 		}
 	}
 
+	/**
+	 * Parse the given String as a base10 long.
+	 * If the string does not represent a valid long, return the given
+	 * default value.
+	 * 
+	 * @param value string representation to parse to a long
+	 * @param defaultValue fallback value if given string can't be parsed
+	 */
+	public static long parseLong( String value, long defaultValue )
+	{
+		try {
+			return Long.parseLong( value );
+		} catch ( Exception e ) {
+			return defaultValue;
+		}
+	}
+
 	public static void safeClose( AutoCloseable... closeable )
 	{
 		for ( AutoCloseable c : closeable ) {
@@ -131,6 +148,20 @@ public class Util
 	public static long tickCount()
 	{
 		return System.nanoTime() / 1000;
+	}
+
+	private static final String[] UNITS = new String[] { "B", "KB", "MB", "GB", "TB", "PB", "???" };
+
+	public static String formatBytes( double val )
+	{
+		int unit = 0;
+		while ( val > 1024 ) {
+			val /= 1024;
+			unit++;
+			if (unit >= UNITS.length)
+				break;
+		}
+		return String.format( "%.1f %s", val, UNITS[unit] );
 	}
 
 }
