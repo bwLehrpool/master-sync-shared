@@ -65,6 +65,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.openslx.util.GrowingThreadPoolExecutor;
 import org.openslx.util.PrioThreadFactory;
@@ -203,40 +204,40 @@ public abstract class NanoHTTPD implements Runnable
 
 		do {
 			try {
-				final Socket finalAccept = myServerSocket.accept();
-				registerConnection( finalAccept );
-				finalAccept.setSoTimeout( SOCKET_READ_TIMEOUT );
-				final InputStream inputStream = finalAccept.getInputStream();
-				asyncRunner.execute( new Runnable() {
-					@Override
-					public void run()
-					{
-						OutputStream outputStream = null;
-						try {
-							outputStream = finalAccept.getOutputStream();
-							HTTPSession session = new HTTPSession( inputStream, outputStream,
-									finalAccept.getInetAddress() );
-							while ( !finalAccept.isClosed() && !finalAccept.isInputShutdown() ) {
-								session.execute();
-							}
-						} catch ( RejectedExecutionException e ) {
+				final Socket sck = myServerSocket.accept();
+				registerConnection( sck );
+				sck.setSoTimeout( SOCKET_READ_TIMEOUT );
+				final InputStream inputStream = sck.getInputStream();
+				try {
+					asyncRunner.execute( new Runnable() {
+						@Override
+						public void run()
+						{
+							OutputStream outputStream = null;
 							try {
-								outputStream.write( "HTTP/1.1 503 Overloaded\r\nConnection: Close\r\n\r\n".getBytes() );
-							} catch ( Exception e2 ) {
+								outputStream = sck.getOutputStream();
+								HTTPSession session = new HTTPSession( inputStream, outputStream,
+										sck.getInetAddress() );
+								while ( !sck.isClosed() && !sck.isInputShutdown() && !sck.isOutputShutdown() ) {
+									session.execute();
+								}
+							} catch ( Exception e ) {
+								// When the socket is closed by the client, we throw our own SocketException
+								// to break the  "keep alive" loop above.
+								if ( ! ( e instanceof SocketTimeoutException )
+										&& ! ( e instanceof SocketException && "NanoHttpd Shutdown".equals( e.getMessage() ) ) ) {
+									e.printStackTrace();
+								}
+							} finally {
+								Util.safeClose( outputStream, inputStream, sck );
+								unRegisterConnection( sck );
 							}
-						} catch ( Exception e ) {
-							// When the socket is closed by the client, we throw our own SocketException
-							// to break the  "keep alive" loop above.
-							if ( ! ( e instanceof SocketTimeoutException )
-									&& ! ( e instanceof SocketException && "NanoHttpd Shutdown".equals( e.getMessage() ) ) ) {
-								e.printStackTrace();
-							}
-						} finally {
-							Util.safeClose( outputStream, inputStream, finalAccept );
-							unRegisterConnection( finalAccept );
 						}
-					}
-				} );
+					} );
+				} catch ( RejectedExecutionException e ) {
+					Util.safeClose( sck, inputStream );
+					unRegisterConnection( sck );
+				}
 			} catch ( IOException e ) {
 			}
 		} while ( !myServerSocket.isClosed() );
@@ -339,11 +340,10 @@ public abstract class NanoHTTPD implements Runnable
 	 */
 	public Response serve( IHTTPSession session )
 	{
-		Map<String, String> files = new HashMap<String, String>();
 		Method method = session.getMethod();
 		if ( Method.PUT.equals( method ) || Method.POST.equals( method ) ) {
 			try {
-				session.parseBody( files );
+				session.parseBody();
 			} catch ( IOException ioe ) {
 				return new Response( Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT,
 						"SERVER INTERNAL ERROR: IOException: " + ioe.getMessage() );
@@ -354,7 +354,7 @@ public abstract class NanoHTTPD implements Runnable
 
 		Map<String, String> parms = session.getParms();
 		parms.put( QUERY_STRING_PARAMETER, session.getQueryParameterString() );
-		return serve( session.getUri(), method, session.getHeaders(), parms, files );
+		return serve( session.getUri(), method, session.getHeaders(), parms, null );
 	}
 
 	/**
@@ -565,7 +565,7 @@ public abstract class NanoHTTPD implements Runnable
 			}
 			sb.append( "HTTP/1.1 " );
 			sb.append( status.getDescription() );
-			sb.append( " \r\n" );
+			sb.append( "\r\n" );
 
 			if ( mime != null ) {
 				sb.append( "Content-Type: " );
@@ -759,7 +759,8 @@ public abstract class NanoHTTPD implements Runnable
 			NOT_FOUND( 404, "Not Found" ),
 			METHOD_NOT_ALLOWED( 405, "Method Not Allowed" ),
 			RANGE_NOT_SATISFIABLE( 416, "Requested Range Not Satisfiable" ),
-			INTERNAL_ERROR( 500, "Internal Server Error" );
+			INTERNAL_ERROR( 500, "Internal Server Error" ),
+			SERVICE_UNAVAILABLE( 503, "Service Unavailable" );
 
 			private final int requestStatus;
 			private final String description;
@@ -835,7 +836,7 @@ public abstract class NanoHTTPD implements Runnable
 		 * 
 		 * @param files map to modify
 		 */
-		void parseBody( Map<String, String> files ) throws IOException, ResponseException;
+		void parseBody() throws IOException, ResponseException;
 	}
 
 	protected class HTTPSession implements IHTTPSession
@@ -843,20 +844,15 @@ public abstract class NanoHTTPD implements Runnable
 		public static final int BUFSIZE = 8192;
 		private final OutputStream outputStream;
 		private PushbackInputStream inputStream;
+		private InputStream wrappedInput;
 		private int splitbyte;
 		private int rlen;
-		private String uri;
 		private Method method;
 		private Map<String, String> parms;
 		private Map<String, String> headers;
 		private String queryParameterString;
 		private String remoteIp;
-
-		public HTTPSession( InputStream inputStream, OutputStream outputStream )
-		{
-			this.inputStream = new PushbackInputStream( inputStream, BUFSIZE );
-			this.outputStream = outputStream;
-		}
+		private boolean doClose;
 
 		public HTTPSession( InputStream inputStream, OutputStream outputStream, InetAddress inetAddress )
 		{
@@ -865,12 +861,13 @@ public abstract class NanoHTTPD implements Runnable
 			remoteIp = inetAddress.isLoopbackAddress() || inetAddress.isAnyLocalAddress() ? "127.0.0.1"
 					: inetAddress.getHostAddress().toString();
 			headers = new HashMap<String, String>();
+			parms = new HashMap<String, String>();
 		}
 
 		@Override
 		public void execute() throws IOException
 		{
-			boolean close = true;
+			doClose = true;
 			try {
 				// Read the first 8192 bytes.
 				// The full header should fit in here.
@@ -893,8 +890,9 @@ public abstract class NanoHTTPD implements Runnable
 					while ( read > 0 ) {
 						rlen += read;
 						splitbyte = findHeaderEnd( buf, rlen );
-						if ( splitbyte > 0 )
+						if ( splitbyte > 0 || rlen >= BUFSIZE )
 							break;
+						// Try to keep reading as long as we've got less than 8kb
 						read = inputStream.read( buf, rlen, BUFSIZE - rlen );
 						if ( maxRequestSize != 0 && rlen > maxRequestSize )
 							throw new SocketException( "Request too large" );
@@ -908,12 +906,8 @@ public abstract class NanoHTTPD implements Runnable
 					inputStream.unread( buf, splitbyte, rlen - splitbyte );
 				}
 
-				parms = new HashMap<String, String>();
-				if ( null == headers ) {
-					headers = new HashMap<String, String>();
-				} else {
-					headers.clear();
-				}
+				parms.clear();
+				headers.clear();
 
 				if ( null != remoteIp ) {
 					headers.put( "remote-addr", remoteIp );
@@ -922,19 +916,25 @@ public abstract class NanoHTTPD implements Runnable
 
 				// Create a BufferedReader for parsing the header.
 				BufferedReader hin = new BufferedReader( new InputStreamReader( new ByteArrayInputStream( buf,
-						0, rlen ) ) );
+						0, splitbyte ) ) );
 
 				// Decode the header into parms and header java properties
-				Map<String, String> pre = new HashMap<String, String>();
-				decodeHeader( hin, pre, parms, headers );
+				decodeHeader( hin, parms, headers );
 
-				method = Method.lookup( pre.get( "method" ) );
+				if ( !Util.isEmptyString( headers.get( "trailer" ) ) ) {
+					throw new ResponseException( Response.Status.BAD_REQUEST, "BAD REQUEST: Trailers not supported." );
+				}
+
+				method = Method.lookup( headers.get( "http-method" ) );
 				if ( method == null ) {
 					throw new ResponseException( Response.Status.BAD_REQUEST, "BAD REQUEST: Syntax error." );
 				}
 
-				uri = pre.get( "uri" );
-				close = "close".equalsIgnoreCase( headers.get( "connection" ) );
+				doClose = "close".equalsIgnoreCase( headers.get( "connection" ) ) || "1.0".equals( headers.get( "http-version" ) );
+				if ( !doClose && method != Method.GET
+						&& !headers.containsKey( "content-length" ) && !"chunked".equals( headers.get( "transfer-encoding" ) ) ) {
+					doClose = true;
+				}
 
 				// Ok, now do the serve()
 				Response r = serve( this );
@@ -943,10 +943,16 @@ public abstract class NanoHTTPD implements Runnable
 							"SERVER INTERNAL ERROR: Serve() returned a null response." );
 				} else {
 					r.setRequestMethod( method );
-					r.send( outputStream, close );
+					r.send( outputStream, doClose );
 				}
-				if ( close ) {
-					Util.safeClose( outputStream );
+				if ( doClose ) {
+					Util.safeClose( outputStream, inputStream );
+				} else {
+					InputStream is = getInputStream();
+					if ( is != null ) {
+						while ( is.read( buf ) > 0 ) {
+						}
+					}
 				}
 			} catch ( SocketException e ) {
 				// throw it out to close socket object (finalAccept)
@@ -956,86 +962,85 @@ public abstract class NanoHTTPD implements Runnable
 			} catch ( IOException ioe ) {
 				Response r = new Response( Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT,
 						"SERVER INTERNAL ERROR: IOException: " + ioe.getMessage() );
-				r.send( outputStream, close );
+				r.send( outputStream, doClose );
 				Util.safeClose( outputStream );
 			} catch ( ResponseException re ) {
 				Response r = new Response( re.getStatus(), MIME_PLAINTEXT, re.getMessage() );
-				r.send( outputStream, close );
+				r.send( outputStream, doClose );
 				Util.safeClose( outputStream );
 			}
 		}
 
 		@Override
-		public void parseBody( Map<String, String> files ) throws IOException, ResponseException
+		public void parseBody() throws IOException, ResponseException
 		{
-			long size;
-			if ( headers.containsKey( "content-length" ) ) {
-				size = Integer.parseInt( headers.get( "content-length" ) );
-			} else if ( splitbyte < rlen ) {
-				size = rlen - splitbyte;
-			} else {
-				size = 0;
-			}
-
 			// If the method is POST, there may be parameters
 			// in data section, too, read it:
-			if ( Method.POST.equals( method ) ) {
-				String contentType = null;
-				String contentEncoding = null;
-				String contentTypeHeader = headers.get( "content-type" );
+			if ( method != Method.POST )
+				return;
 
-				StringTokenizer st = null;
-				if ( contentTypeHeader != null ) {
-					st = new StringTokenizer( contentTypeHeader, "," );
-					if ( st.hasMoreTokens() ) {
-						String part[] = st.nextToken().split( ";\\s*", 2 );
-						contentType = part[0];
-						if ( part.length == 2 ) {
-							contentEncoding = part[1];
-						}
-					}
-				}
-				Charset cs = StandardCharsets.ISO_8859_1;
-				if ( contentEncoding != null ) {
-					try {
-						cs = Charset.forName( contentEncoding );
-					} catch ( Exception e ) {
-					}
-				}
-				//LOGGER.debug("Content type is '" + contentType + "', encoding '" + cs.name() + "'");
+			long size;
+			if ( headers.containsKey( "content-length" ) ) {
+				size = Util.parseInt( headers.get( "content-length" ), -1 );
+			} else {
+				size = -1;
+			}
 
-				if ( "multipart/form-data".equalsIgnoreCase( contentType ) ) {
-					throw new ResponseException( Response.Status.BAD_REQUEST,
-							"BAD REQUEST: Content type is multipart/form-data, which is not supported" );
-				} else {
-					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					byte pbuf[] = new byte[ 1000 ];
-					while ( size > 0 ) {
-						int ret = inputStream.read( pbuf, 0, (int)Math.min( size, pbuf.length ) );
-						if ( ret <= 0 )
-							break;
-						if ( ret >= 2 && pbuf[ret - 1] == '\n' && pbuf[ret - 2] == '\r' )
-							break;
-						size -= ret;
-						baos.write( pbuf, 0, ret );
-					}
-					String postLine = new String( baos.toByteArray(), cs );
-					baos.close();
-					// Handle application/x-www-form-urlencoded
-					if ( "application/x-www-form-urlencoded".equalsIgnoreCase( contentType ) ) {
-						decodeParms( postLine, parms );
-					} else if ( files != null && postLine.length() != 0 ) {
-						// Special case for raw POST data => create a special files entry "postData" with raw content data
-						files.put( "postData", postLine );
+			String contentType = null;
+			String contentEncoding = null;
+			String contentTypeHeader = headers.get( "content-type" );
+
+			StringTokenizer st = null;
+			if ( contentTypeHeader != null ) {
+				st = new StringTokenizer( contentTypeHeader, "," );
+				if ( st.hasMoreTokens() ) {
+					String part[] = st.nextToken().split( ";\\s*", 2 );
+					contentType = part[0].trim();
+					if ( part.length == 2 ) {
+						contentEncoding = part[1];
 					}
 				}
 			}
+			Charset cs = StandardCharsets.UTF_8;
+			if ( contentEncoding != null ) {
+				try {
+					cs = Charset.forName( contentEncoding );
+				} catch ( Exception e ) {
+				}
+			}
+
+			// Use method here so we get the limited/chunked stream if applicable
+			InputStream is = getInputStream();
+			if ( is == null )
+				return;
+
+			if ( "multipart/form-data".equalsIgnoreCase( contentType ) ) {
+				throw new ResponseException( Response.Status.BAD_REQUEST,
+						"BAD REQUEST: Content type is multipart/form-data, which is not supported" );
+			} else if ( "application/x-www-form-urlencoded".equalsIgnoreCase( contentType ) ) {
+				// Handle application/x-www-form-urlencoded
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				byte pbuf[] = new byte[ 2000 ];
+				while ( size > 0 ) {
+					int ret = is.read( pbuf, 0, (int)Math.min( size, pbuf.length ) );
+					if ( ret <= 0 )
+						break;
+					if ( ret >= 2 && pbuf[ret - 1] == '\n' && pbuf[ret - 2] == '\r' )
+						break;
+					size -= ret;
+					baos.write( pbuf, 0, ret );
+				}
+				String postLine = new String( baos.toByteArray(), cs );
+				baos.close();
+
+				decodeParms( postLine, parms );
+			} // Otherwise leave stream untouched so app can deal with it
 		}
 
 		/**
 		 * Decodes the sent headers and loads the data into Key/value pairs
 		 */
-		private void decodeHeader( BufferedReader in, Map<String, String> pre, Map<String, String> parms,
+		private void decodeHeader( BufferedReader in, Map<String, String> parms,
 				Map<String, String> headers )
 				throws ResponseException
 		{
@@ -1052,7 +1057,7 @@ public abstract class NanoHTTPD implements Runnable
 							"BAD REQUEST: Syntax error. Usage: GET /example/file.html" );
 				}
 
-				pre.put( "method", st.nextToken() );
+				String strMethod = st.nextToken();
 
 				if ( !st.hasMoreTokens() ) {
 					throw new ResponseException( Response.Status.BAD_REQUEST,
@@ -1071,21 +1076,28 @@ public abstract class NanoHTTPD implements Runnable
 				}
 
 				// If there's another token, its protocol version,
-				// followed by HTTP headers. Ignore version but parse headers.
+				// followed by HTTP headers.
 				// NOTE: this now forces header names lower case since they are
 				// case insensitive and vary by client.
 				if ( st.hasMoreTokens() ) {
+					String strVersion = st.nextToken();
 					String line = in.readLine();
-					while ( line != null && line.trim().length() > 0 ) {
+					while ( line != null && line.length() > 0 ) {
 						int p = line.indexOf( ':' );
 						if ( p >= 0 )
 							headers.put( line.substring( 0, p ).trim().toLowerCase( Locale.US ),
 									line.substring( p + 1 ).trim() );
 						line = in.readLine();
 					}
+					// Add version after, to override headers
+					int sl = strVersion.indexOf( '/' );
+					if ( sl != -1 ) {
+						headers.put( "http-version", strVersion.substring( sl + 1 ) );
+					}
 				}
 
-				pre.put( "uri", uri );
+				headers.put( "http-uri", uri );
+				headers.put( "http-method", strMethod );
 			} catch ( IOException ioe ) {
 				throw new ResponseException( Response.Status.INTERNAL_ERROR,
 						"SERVER INTERNAL ERROR: IOException: " + ioe.getMessage(), ioe );
@@ -1093,9 +1105,8 @@ public abstract class NanoHTTPD implements Runnable
 		}
 
 		/**
-		 * Find byte index separating header from body. It must be the last byte
-		 * of the first two
-		 * sequential new lines.
+		 * Find byte index separating header from body. Return value will point
+		 * to first byte after the final \r\n\r\n.
 		 */
 		private int findHeaderEnd( final byte[] buf, int rlen )
 		{
@@ -1107,7 +1118,7 @@ public abstract class NanoHTTPD implements Runnable
 				}
 				splitbyte++;
 			}
-			return 0;
+			return -1;
 		}
 
 		/**
@@ -1157,7 +1168,7 @@ public abstract class NanoHTTPD implements Runnable
 		@Override
 		public final String getUri()
 		{
-			return uri;
+			return headers.get( "http-uri" );
 		}
 
 		@Override
@@ -1166,9 +1177,36 @@ public abstract class NanoHTTPD implements Runnable
 			return method;
 		}
 
+		@SuppressWarnings( "deprecation" )
 		@Override
 		public final InputStream getInputStream()
 		{
+			if ( method == Method.GET )
+				return null;
+			if ( wrappedInput == null ) {
+				String s = headers.get( "content-length" );
+				if ( s != null ) {
+					long cl = Util.parseLong( s, -1 );
+					if ( cl == 0 )
+						return null;
+					if ( cl < 0 ) {
+						doClose = true;
+						return null;
+					}
+					BoundedInputStream bis = new BoundedInputStream( inputStream, cl );
+					bis.setPropagateClose( false );
+					return wrappedInput = bis;
+				}
+				s = headers.get( "transfer-encoding" );
+				if ( s != null ) {
+					if ( "chunked".equalsIgnoreCase( s.trim() ) )
+						return wrappedInput = new ChunkedInputStream( inputStream );
+				}
+			} else {
+				return wrappedInput;
+			}
+			if ( !doClose )
+				return null;
 			return inputStream;
 		}
 	}
