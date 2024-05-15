@@ -59,7 +59,9 @@ public class AppUtil
 				jarFileStream = AppUtil.class.getProtectionDomain().getCodeSource().getLocation().openStream();
 				jarStream = new JarInputStream( jarFileStream );
 				final Manifest mf = jarStream.getManifest();
-				manifestAttributes = mf.getMainAttributes();
+				if ( mf != null ) {
+					manifestAttributes = mf.getMainAttributes();
+				}
 			} catch ( Exception e ) {
 				LOGGER.warn( "Cannot read jar/manifest attributes", e );
 			} finally {
