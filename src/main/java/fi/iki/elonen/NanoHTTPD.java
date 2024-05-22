@@ -60,15 +60,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.openslx.util.GrowingThreadPoolExecutor;
-import org.openslx.util.PrioThreadFactory;
 import org.openslx.util.Util;
 
 /**
@@ -153,35 +149,6 @@ public abstract class NanoHTTPD implements Runnable
 	private final ExecutorService asyncRunner;
 
 	protected int maxRequestSize = 0;
-
-	/**
-	 * Constructs an HTTP server on given port.
-	 */
-	public NanoHTTPD( int port ) throws IOException
-	{
-		this( null, port );
-	}
-
-	/**
-	 * @param hostname Address to listen on
-	 * @param port Port to listen on
-	 */
-	public NanoHTTPD( String hostname, int port ) throws IOException
-	{
-		this( hostname, port, 24, 16 );
-	}
-
-	/**
-	 * @param hostname Address to listen on
-	 * @param port Port to listen on
-	 * @param maxThreads Maximum number of threads to spawn before we start queuing requests
-	 * @param maxQueue Maximum number of requests we queue before we start rejecting them with 503
-	 */
-	public NanoHTTPD( String hostname, int port, int maxThreads, int maxQueue ) throws IOException
-	{
-		this( hostname, port, new GrowingThreadPoolExecutor( 2, maxThreads, 1, TimeUnit.MINUTES,
-				new ArrayBlockingQueue<Runnable>( maxQueue ), new PrioThreadFactory( "httpd" ) ) );
-	}
 
 	/**
 	 * Constructs an HTTP server on given hostname and port.
