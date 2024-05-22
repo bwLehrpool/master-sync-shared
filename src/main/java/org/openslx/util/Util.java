@@ -155,11 +155,12 @@ public class Util
 	public static String formatBytes( double val )
 	{
 		int unit = 0;
-		while ( val > 1024 ) {
+		while ( Math.abs(val) > 1024 ) {
 			val /= 1024;
 			unit++;
-			if (unit >= UNITS.length)
-				break;
+		}
+		if (unit >= UNITS.length) {
+			unit = UNITS.length - 1;
 		}
 		return String.format( "%.1f %s", val, UNITS[unit] );
 	}
