@@ -2,7 +2,6 @@ package org.openslx.thrifthelper;
 
 import java.io.IOException;
 import java.lang.reflect.Proxy;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import javax.net.SocketFactory;
@@ -206,12 +205,9 @@ public class ThriftManager<T>
 			TSocket tsock;
 			Socket socket = null;
 			try {
-				if ( ctx == null ) {
-					socket = SocketFactory.getDefault().createSocket();
-				} else {
-					socket = ctx.getSocketFactory().createSocket();
-				}
-				socket.connect( new InetSocketAddress( host, port ), 4000 );
+				socket = Util.connectAllRecords(
+						ctx == null ? SocketFactory.getDefault() : ctx.getSocketFactory(),
+						host, port, 4000 );
 				socket.setSoTimeout( timeout );
 			} catch ( IOException e ) {
 				if ( socket != null ) {

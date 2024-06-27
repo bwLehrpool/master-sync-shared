@@ -4,20 +4,19 @@ import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-
-import net.jpountz.lz4.LZ4Factory;
 
 import org.apache.logging.log4j.Logger;
 import org.openslx.util.Util;
+
+import net.jpountz.lz4.LZ4Factory;
 
 public abstract class Transfer
 {
@@ -45,14 +44,10 @@ public abstract class Transfer
 	{
 		this.log = log;
 		// create socket.
-		if ( context == null ) {
-			transferSocket = new Socket();
-		} else {
-			SSLSocketFactory sslSocketFactory = context.getSocketFactory();
-			transferSocket = sslSocketFactory.createSocket();
-		}
+		transferSocket = Util.connectAllRecords(
+				context == null ? SocketFactory.getDefault() : context.getSocketFactory(),
+				host, port, 4000 );
 		transferSocket.setSoTimeout( readTimeoutMs );
-		transferSocket.connect( new InetSocketAddress( host, port ), 4000 );
 
 		outStream = new DataOutputStream( transferSocket.getOutputStream() );
 		dataFromServer = new DataInputStream( transferSocket.getInputStream() );
