@@ -119,13 +119,7 @@ public class TransformationManager<T, R>
 	{
 		for ( Transformation<T, R> transformation : this.transformations ) {
 			LOGGER.debug( "Apply transformation '" + transformation.getName() + "'" );
-			try {
-				transformation.apply( this.config, this.args );
-			} catch ( TransformationException e ) {
-				final String errorMsg =
-						"Error in configuration filter '" + transformation.getName() + "': " + e.getLocalizedMessage();
-				throw new TransformationException( errorMsg );
-			}
+			transformation.apply( this.config, this.args );
 		}
 	}
 
