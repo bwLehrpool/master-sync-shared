@@ -562,6 +562,26 @@ public class Domain extends LibvirtXmlDocument
 	}
 
 	/**
+	 * Returns OS firmware defined in the Libvirt domain XML document.
+	 * 
+	 * @return OS firmware of the virtual machine.
+	 */
+	public String getOsFirmware()
+	{
+		return this.getRootXmlNode().getXmlElementAttributeValue( "os", "firmware" );
+	}
+
+	/**
+	 * Set OS firmware in the Libvirt domain XML document.
+	 * 
+	 * @param firmware OS machine for the virtual machine.
+	 */
+	public void setOsFirmware( String firmware )
+	{
+		this.getRootXmlNode().setXmlElementAttributeValue( "os", "firmware", firmware );
+	}
+	
+	/**
 	 * Returns OS Nvram defined in the Libvirt domain XML document.
 	 * 
 	 * @return OS Nvram of the virtual machine.
