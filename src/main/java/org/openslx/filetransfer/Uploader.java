@@ -84,7 +84,7 @@ public class Uploader extends Transfer
 		public Lz4OutStream( DataOutputStream out )
 		{
 			parentStream = out;
-			log.info( "Compressor: " + compressor.getClass().getSimpleName() );
+			log.debug( "Compressor: " + compressor.getClass().getSimpleName() );
 		}
 
 		@Override

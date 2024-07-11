@@ -104,7 +104,7 @@ public class Downloader extends Transfer
 		public Lz4InStream( DataInputStream in )
 		{
 			parentStream = in;
-			log.info( "DeCompressor: " + decompressor.getClass().getSimpleName() );
+			log.debug( "DeCompressor: " + decompressor.getClass().getSimpleName() );
 		}
 
 		@Override
