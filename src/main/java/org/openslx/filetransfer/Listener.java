@@ -144,7 +144,7 @@ public class Listener
 								} catch ( SSLException e ) {
 									Transfer.safeClose( connection );
 									log.warn( "SSL error when acceping client " + connection.getInetAddress().getHostAddress() );
-								} catch ( SocketException e ) {
+								} catch ( SocketTimeoutException | SocketException e ) {
 									// No reason to log, probably - connection where client did nothing after connecting.
 									Transfer.safeClose( connection );
 								} catch ( Exception e ) {
