@@ -476,4 +476,26 @@ public class VirtualizationConfigurationQemuTest
 
 		assertDoesNotThrow( () -> vmConfig.validate() );
 	}
+
+	@ParameterizedTest
+	@DisplayName( "Remove any USB redirect devices" )
+	@ValueSource( strings = { "qemu-kvm_default-archlinux-vm.xml" } )
+	public void testQemuMetaDataDisableUsb( String xmlFileName )
+			throws VirtualizationConfigurationException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException
+	{
+		File file = LibvirtXmlTestResources.getLibvirtXmlFile( xmlFileName );
+		VirtualizationConfigurationQemu vmConfig = new VirtualizationConfigurationQemu( null, file );
+
+		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
+				.getPrivateDomainFromQemuMetaData( vmConfig );
+
+		assertEquals( vmLibvirtDomainConfig.getRedirectDevices().size(), 2 );
+
+		vmConfig.disableUsb();
+
+		assertEquals( vmLibvirtDomainConfig.getRedirectDevices().size(), 0 );
+
+		assertDoesNotThrow( () -> vmConfig.validate() );
+	}
 }

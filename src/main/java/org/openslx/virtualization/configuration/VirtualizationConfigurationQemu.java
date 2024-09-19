@@ -11,8 +11,9 @@ import org.openslx.firmware.FirmwareException;
 import org.openslx.firmware.QemuFirmwareUtil;
 import org.openslx.libvirt.domain.Domain;
 import org.openslx.libvirt.domain.DomainUtils;
+import org.openslx.libvirt.domain.device.BusType;
 import org.openslx.libvirt.domain.device.ControllerUsb;
-import org.openslx.libvirt.domain.device.Disk.BusType;
+import org.openslx.libvirt.domain.device.Disk;
 import org.openslx.libvirt.domain.device.Disk.StorageType;
 import org.openslx.libvirt.domain.device.DiskCdrom;
 import org.openslx.libvirt.domain.device.DiskFloppy;
@@ -20,6 +21,7 @@ import org.openslx.libvirt.domain.device.DiskStorage;
 import org.openslx.libvirt.domain.device.Graphics;
 import org.openslx.libvirt.domain.device.GraphicsSpice;
 import org.openslx.libvirt.domain.device.Interface;
+import org.openslx.libvirt.domain.device.RedirDevice;
 import org.openslx.libvirt.domain.device.Sound;
 import org.openslx.libvirt.domain.device.Video;
 import org.openslx.libvirt.libosinfo.LibOsInfo;
@@ -30,11 +32,11 @@ import org.openslx.libvirt.xml.LibvirtXmlValidationException;
 import org.openslx.util.LevenshteinDistance;
 import org.openslx.util.Util;
 import org.openslx.virtualization.Version;
-import org.openslx.virtualization.hardware.VirtOptionValue;
 import org.openslx.virtualization.hardware.ConfigurationGroups;
 import org.openslx.virtualization.hardware.Ethernet;
 import org.openslx.virtualization.hardware.SoundCard;
 import org.openslx.virtualization.hardware.Usb;
+import org.openslx.virtualization.hardware.VirtOptionValue;
 import org.openslx.virtualization.virtualizer.VirtualizerQemu;
 
 /**
@@ -273,7 +275,7 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		if ( storageDiskDevice == null ) {
 			// HDD does not exist, so create new storage (HDD) device
-			final BusType devBusType = BusType.VIRTIO;
+			final Disk.BusType devBusType = Disk.BusType.VIRTIO;
 			final String targetDevName = VirtualizationConfigurationQemuUtils.createDeviceName( this.vmConfig,
 					devBusType );
 			storageDiskDevice = this.vmConfig.addDiskStorageDevice();
@@ -349,7 +351,7 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		if ( floppyDiskDevice == null ) {
 			// floppy device does not exist, so create new floppy device
-			final BusType devBusType = BusType.FDC;
+			final Disk.BusType devBusType = Disk.BusType.FDC;
 			final String targetDevName = VirtualizationConfigurationQemuUtils.createDeviceName( this.vmConfig,
 					devBusType );
 			floppyDiskDevice = this.vmConfig.addDiskFloppyDevice();
@@ -396,7 +398,7 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		if ( cdromDiskDevice == null ) {
 			// CDROM device does not exist, so create new CDROM device
-			final BusType devBusType = BusType.SATA;
+			final Disk.BusType devBusType = Disk.BusType.SATA;
 			final String targetDevName = VirtualizationConfigurationQemuUtils.createDeviceName( this.vmConfig,
 					devBusType );
 			cdromDiskDevice = this.vmConfig.addDiskCdromDevice();
@@ -898,6 +900,13 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 	@Override
 	public void disableUsb()
 	{
-		new QemuUsbSpeed( ControllerUsb.Model.NONE, Usb.NONE ).apply();
+		// Remove all spice ports, so virt-viewer/-manager have no chance to
+		// attach any new USB devices.
+		ArrayList<RedirDevice> list = vmConfig.getRedirectDevices();
+		for (RedirDevice dev : list ) {
+			if ( dev.getBus() == BusType.USB ) {
+				dev.remove();
+			}
+		}
 	}
 }
