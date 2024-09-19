@@ -412,7 +412,7 @@ public class DomainTest
 	public void testGetDevices()
 	{
 		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
-		assertEquals( 22, vm.getDevices().size() );
+		assertEquals( 24, vm.getDevices().size() );
 	}
 
 	@Test
@@ -493,6 +493,14 @@ public class DomainTest
 	{
 		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
 		assertEquals( 1, vm.getVideoDevices().size() );
+	}
+
+	@Test
+	@DisplayName( "Get all Redir devices from libvirt XML file" )
+	public void testGetRedirDevices()
+	{
+		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
+		assertEquals( 2, vm.getRedirectDevices().size() );
 	}
 
 	@Test

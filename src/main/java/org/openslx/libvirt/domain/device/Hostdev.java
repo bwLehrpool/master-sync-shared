@@ -77,13 +77,13 @@ public class Hostdev extends Device
 		xmlNode.setXmlElementAttributeValue( "mode", "subsystem" );
 
 		if ( hostdev instanceof HostdevMdev ) {
-			xmlNode.setXmlElementAttributeValue( "type", Type.MDEV.toString() );
+			xmlNode.setXmlElementAttributeValue( "type", HostdevType.MDEV.toString() );
 			addedHostdev = HostdevMdev.createInstance( xmlNode );
 		} else if ( hostdev instanceof HostdevPci ) {
-			xmlNode.setXmlElementAttributeValue( "type", Type.PCI.toString() );
+			xmlNode.setXmlElementAttributeValue( "type", HostdevType.PCI.toString() );
 			addedHostdev = HostdevPci.createInstance( xmlNode );
 		} else if ( hostdev instanceof HostdevUsb ) {
-			xmlNode.setXmlElementAttributeValue( "type", Type.USB.toString() );
+			xmlNode.setXmlElementAttributeValue( "type", HostdevType.USB.toString() );
 			addedHostdev = HostdevUsb.createInstance( xmlNode );
 		}
 
@@ -99,7 +99,7 @@ public class Hostdev extends Device
 	public static Hostdev newInstance( LibvirtXmlNode xmlNode )
 	{
 		Hostdev deviceHostdev = null;
-		Type type = Type.fromString( xmlNode.getXmlElementAttributeValue( "type" ) );
+		HostdevType type = HostdevType.fromString( xmlNode.getXmlElementAttributeValue( "type" ) );
 
 		if ( type == null ) {
 			return null;
@@ -126,7 +126,7 @@ public class Hostdev extends Device
 	 * @author Manuel Bentele
 	 * @version 1.0
 	 */
-	enum Type
+	enum HostdevType
 	{
 		// @formatter:off
 		MDEV( "mdev" ),
@@ -144,7 +144,7 @@ public class Hostdev extends Device
 		 * 
 		 * @param type valid name of the hostdev device type in a Libvirt domain XML document.
 		 */
-		Type( String type )
+		HostdevType( String type )
 		{
 			this.type = type;
 		}
@@ -161,9 +161,9 @@ public class Hostdev extends Device
 		 * @param type name of the hostdev device storage in a Libvirt domain XML document.
 		 * @return valid hostdev device type.
 		 */
-		public static Type fromString( String type )
+		public static HostdevType fromString( String type )
 		{
-			for ( Type t : Type.values() ) {
+			for ( HostdevType t : HostdevType.values() ) {
 				if ( t.type.equalsIgnoreCase( type ) ) {
 					return t;
 				}

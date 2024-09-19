@@ -37,6 +37,7 @@ import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.InterfaceBridge;
 import org.openslx.libvirt.domain.device.InterfaceNetwork;
 import org.openslx.libvirt.domain.device.Parallel;
+import org.openslx.libvirt.domain.device.RedirDevice;
 import org.openslx.libvirt.domain.device.Serial;
 import org.openslx.libvirt.domain.device.Shmem;
 import org.openslx.libvirt.domain.device.Sound;
@@ -1267,6 +1268,11 @@ public class Domain extends LibvirtXmlDocument
 	public ArrayList<Video> getVideoDevices()
 	{
 		return Domain.filterDevices( Video.class, this.getDevices() );
+	}
+
+	public ArrayList<RedirDevice> getRedirectDevices()
+	{
+		return Domain.filterDevices( RedirDevice.class, this.getDevices() );
 	}
 
 	/**

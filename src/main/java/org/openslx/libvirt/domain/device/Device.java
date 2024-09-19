@@ -152,6 +152,9 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 			case PARALLEL:
 				device = Parallel.newInstance( xmlNode );
 				break;
+			case REDIRDEV:
+				device = RedirDevice.newInstance( xmlNode );
+				break;
 			case SERIAL:
 				device = Serial.newInstance( xmlNode );
 				break;
@@ -171,6 +174,19 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 	}
 
 	/**
+	 * Sets the USB device address for an XML address element selected by a XPath expression.
+	 * 
+	 * @param expression XPath expression to select the XML address element.
+	 * @param address USB device address for the selected XML address element.
+	 */
+	protected void setUsbAddress( final String expression, final HostdevUsbDeviceAddress address )
+	{
+		this.setXmlElementAttributeValue( expression, "bus", Integer.toString( address.getUsbBus() ) );
+		this.setXmlElementAttributeValue( expression, "port", Integer.toString( address.getUsbPort() ) );
+		this.setXmlElementAttributeValue( expression, "type", BusType.USB.toString() );
+	}
+
+	/**
 	 * Sets the PCI device address for an XML address element selected by a XPath expression.
 	 * 
 	 * @param expression XPath expression to select the XML address element.
@@ -187,6 +203,7 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 		this.setXmlElementAttributeValue( expression, "bus", pciBus );
 		this.setXmlElementAttributeValue( expression, "slot", pciDevice );
 		this.setXmlElementAttributeValue( expression, "function", pciFunction );
+		this.setXmlElementAttributeValue( expression, "type", BusType.PCI.toString() );
 	}
 
 	/**
@@ -224,6 +241,36 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 	public void setPciTarget( HostdevPciDeviceAddress address )
 	{
 		this.setPciAddress( "address", address );
+	}
+
+	/**
+	 * Returns the USB device address from an address XML element selected by a XPath expression.
+	 * 
+	 * @param expression XPath expression to select the XML address element.
+	 * @return USB device address from the selected XML address element.
+	 */
+	protected HostdevUsbDeviceAddress getUsbAddress( final String expression )
+	{
+		String bus = this.getXmlElementAttributeValue( expression, "bus" );
+		String port = this.getXmlElementAttributeValue( expression, "port" );
+
+		return HostdevUsbDeviceAddress.valueOf( bus, port );
+	}
+	
+	/**
+	 * Returns this devices USB bus/port address, or null if it doesn't have an explicit one
+	 * set, or if the address type isn't USB.
+	 */
+	public HostdevUsbDeviceAddress getUsbTarget()
+	{
+		if ( !"usb".equals( this.getXmlElementAttributeValue( "address", "type" ) ) )
+			return null;
+		return this.getUsbAddress( "address" );
+	}
+
+	public void setUsbTarget( HostdevUsbDeviceAddress address )
+	{
+		this.setUsbAddress( "address", address );
 		this.setXmlElementAttributeValue( "address", "type", "pci" );
 	}
 
@@ -243,6 +290,7 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 		INTERFACE ( "interface" ),
 		GRAPHICS  ( "graphics" ),
 		PARALLEL  ( "parallel" ),
+		REDIRDEV  ( "redirdev" ),
 		SERIAL    ( "serial" ),
 		SHMEM     ( "shmem" ),
 		SOUND     ( "sound" ),
