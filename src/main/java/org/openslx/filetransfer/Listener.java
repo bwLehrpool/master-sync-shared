@@ -28,7 +28,7 @@ public class Listener
 	private Thread acceptThread = null;
 	private final int readTimeoutMs;
 	private final ExecutorService processingPool = new ThreadPoolExecutor( 0, 8, 5, TimeUnit.MINUTES, new SynchronousQueue<Runnable>(),
-			new PrioThreadFactory( "BFTP-BS" ) );
+			new PrioThreadFactory( "BFTP-Init" ) );
 
 	private static final byte CONNECTING_PEER_WANTS_TO_UPLOAD = 85; // ASCII 'U' = 85.
 	private static final byte CONNECTING_PEER_WANTS_TO_DOWNLOAD = 68; // ASCII 'D' = 68.
