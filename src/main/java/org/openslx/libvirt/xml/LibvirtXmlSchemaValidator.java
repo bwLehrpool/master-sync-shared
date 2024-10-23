@@ -277,7 +277,7 @@ public class LibvirtXmlSchemaValidator
 				StreamSource source = LibvirtXmlSchemaValidator.toStreamSource( domSource );
 				this.rngSchemaValidator.validate( source );
 			} catch ( SAXException | TransformerException | IOException e ) {
-				throw new LibvirtXmlValidationException( e.getLocalizedMessage() );
+				throw new LibvirtXmlValidationException( e );
 			}
 		}
 	}

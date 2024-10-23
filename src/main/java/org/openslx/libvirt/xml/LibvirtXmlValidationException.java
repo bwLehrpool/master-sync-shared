@@ -22,4 +22,10 @@ public class LibvirtXmlValidationException extends Exception
 	{
 		super( errorMsg );
 	}
+	
+	public LibvirtXmlValidationException( Exception other )
+	{
+		super( other );
+	}
+
 }
