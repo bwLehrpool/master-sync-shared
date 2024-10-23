@@ -319,7 +319,9 @@ public class LibvirtXmlNode implements LibvirtXmlCreatable, LibvirtXmlEditable
 
 		if ( node != null ) {
 			Node attribute = node.getAttributes().getNamedItem( attributeName );
-			node.getAttributes().removeNamedItem( attribute.getNodeName() );
+			if ( attribute != null ) {
+				node.getAttributes().removeNamedItem( attribute.getNodeName() );
+			}
 		}
 	}
 

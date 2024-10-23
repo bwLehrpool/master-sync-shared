@@ -37,7 +37,7 @@ public class HostdevPci extends Hostdev implements HostdevAddressableSource<Host
 	@Override
 	public void setSource( HostdevPciDeviceAddress address )
 	{
-		this.setPciAddress( "source/address", address );
+		this.setPciAddress( "source/address", address, false );
 	}
 
 	/**

@@ -192,7 +192,7 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 	 * @param expression XPath expression to select the XML address element.
 	 * @param address PCI device address for the selected XML address element.
 	 */
-	protected void setPciAddress( final String expression, final HostdevPciDeviceAddress address )
+	protected void setPciAddress( final String expression, final HostdevPciDeviceAddress address, boolean includeType )
 	{
 		final String pciDomain = HostdevUtils.appendHexPrefix( address.getPciDomainAsString() );
 		final String pciBus = HostdevUtils.appendHexPrefix( address.getPciBusAsString() );
@@ -203,7 +203,11 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 		this.setXmlElementAttributeValue( expression, "bus", pciBus );
 		this.setXmlElementAttributeValue( expression, "slot", pciDevice );
 		this.setXmlElementAttributeValue( expression, "function", pciFunction );
-		this.setXmlElementAttributeValue( expression, "type", BusType.PCI.toString() );
+		if ( includeType ) {
+			this.setXmlElementAttributeValue( expression, "type", BusType.PCI.toString() );
+		} else {
+			this.removeXmlElementAttribute( expression, "type" );
+		}
 	}
 
 	/**
@@ -240,7 +244,7 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 
 	public void setPciTarget( HostdevPciDeviceAddress address )
 	{
-		this.setPciAddress( "address", address );
+		this.setPciAddress( "address", address, true );
 	}
 
 	/**
