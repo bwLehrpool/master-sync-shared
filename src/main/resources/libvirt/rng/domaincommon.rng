@@ -348,6 +348,11 @@
                 <attribute name="template">
                   <ref name="absFilePath"/>
                 </attribute>
+                <optional>
+                  <attribute name="templateFormat">
+                    <ref name="pflashFormatTypes"/>
+                  </attribute>
+                </optional>
               </optional>
               <optional>
                 <ref name="pflashFormat"/>
@@ -516,12 +521,28 @@
           <ref name="launchSecuritySEV"/>
         </group>
         <group>
+          <ref name="launchSecuritySEVSNP"/>
+        </group>
+        <group>
           <attribute name="type">
             <value>s390-pv</value>
           </attribute>
         </group>
       </choice>
     </element>
+  </define>
+
+  <define name="launchSecuritySEVCommon">
+    <optional>
+      <element name="cbitpos">
+        <data type="unsignedInt"/>
+      </element>
+    </optional>
+    <optional>
+      <element name="reducedPhysBits">
+        <data type="unsignedInt"/>
+      </element>
+    </optional>
   </define>
 
   <define name="launchSecuritySEV">
@@ -534,16 +555,7 @@
       </attribute>
     </optional>
     <interleave>
-      <optional>
-        <element name="cbitpos">
-          <data type="unsignedInt"/>
-        </element>
-      </optional>
-      <optional>
-        <element name="reducedPhysBits">
-          <data type="unsignedInt"/>
-        </element>
-      </optional>
+      <ref name="launchSecuritySEVCommon"/>
       <element name="policy">
         <ref name="hexuint"/>
       </element>
@@ -565,6 +577,52 @@
     </interleave>
   </define>
 
+  <define name="launchSecuritySEVSNP">
+    <attribute name="type">
+      <value>sev-snp</value>
+    </attribute>
+    <optional>
+      <attribute name="kernelHashes">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="authorKey">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="vcek">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
+    <interleave>
+      <ref name="launchSecuritySEVCommon"/>
+      <element name="policy">
+        <ref name="hexuint"/>
+      </element>
+      <optional>
+        <element name="guestVisibleWorkarounds">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="idBlock">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="idAuth">
+          <data type="string"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="hostData">
+          <data type="string"/>
+        </element>
+      </optional>
+    </interleave>
+  </define>
   <!--
       Enable or disable perf events for the domain. For each
       of the events the following rules apply:
@@ -1799,6 +1857,15 @@
         </element>
       </element>
     </optional>
+    <optional>
+      <element name="dataStore">
+        <interleave>
+          <ref name="diskFormat"/>
+          <ref name="diskSource"/>
+        </interleave>
+      </element>
+    </optional>
+
     <ref name="privateDataStorageSource"/>
   </define>
 
@@ -1943,18 +2010,20 @@
   </define>
 
   <define name="diskSourceNetworkNFS">
-    <element name="identity">
-      <optional>
-        <attribute name="user">
-          <ref name="genericName"/>
-        </attribute>
-      </optional>
-      <optional>
-        <attribute name="group">
-          <ref name="genericName"/>
-        </attribute>
-      </optional>
-    </element>
+    <optional>
+      <element name="identity">
+        <optional>
+          <attribute name="user">
+            <ref name="genericName"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="group">
+            <ref name="genericName"/>
+          </attribute>
+        </optional>
+      </element>
+    </optional>
   </define>
 
   <define name="diskSourceNetworkProtocolRBD">
@@ -3327,6 +3396,15 @@
             </optional>
           </element>
         </optional>
+        <optional>
+          <element name="openfiles">
+            <optional>
+              <attribute name="max">
+                <data type="positiveInteger"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -3631,15 +3709,21 @@
               <attribute name="switchid">
                 <ref name="UUID"/>
               </attribute>
-              <attribute name="portid">
-                <data type="long"/>
-              </attribute>
-              <attribute name="portgroupid">
-                <data type="string"/>
-              </attribute>
-              <attribute name="connectionid">
-                <data type="long"/>
-              </attribute>
+              <optional>
+                <attribute name="portid">
+                  <data type="long"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="portgroupid">
+                  <data type="string"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="connectionid">
+                  <data type="long"/>
+                </attribute>
+              </optional>
             </element>
             <ref name="interface-options"/>
           </interleave>
@@ -3773,6 +3857,7 @@
           <optional>
             <attribute name="type">
               <choice>
+                <value>default</value>
                 <value>passt</value>
               </choice>
             </attribute>
@@ -5062,11 +5147,17 @@
           <value>ich7</value>
           <value>ich9</value>
           <value>usb</value>
+          <value>virtio</value>
         </choice>
       </attribute>
       <optional>
         <attribute name="multichannel">
           <ref name="virYesNo"/>
+        </attribute>
+      </optional>
+      <optional>
+        <attribute name="streams">
+          <ref name="uint32"/>
         </attribute>
       </optional>
       <interleave>
@@ -5089,6 +5180,11 @@
         <zeroOrMore>
           <ref name="codec"/>
         </zeroOrMore>
+        <optional>
+          <element name="driver">
+            <ref name="virtioOptions"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -5843,10 +5939,17 @@
           <interleave>
             <ref name="tpm-backend-emulator-encryption"/>
             <ref name="tpm-backend-emulator-active-pcr-banks"/>
+            <ref name="tpm-backend-emulator-source"/>
+            <ref name="tpm-backend-emulator-profile"/>
           </interleave>
           <optional>
             <attribute name="persistent_state">
               <ref name="virYesNo"/>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="debug">
+              <ref name="uint8"/>
             </attribute>
           </optional>
         </group>
@@ -5896,6 +5999,31 @@
     </optional>
   </define>
 
+  <define name="tpm-backend-emulator-source">
+    <optional>
+      <element name="source">
+        <choice>
+          <group>
+            <attribute name="type">
+              <value>file</value>
+            </attribute>
+            <attribute name="path">
+              <ref name="absFilePath"/>
+            </attribute>
+          </group>
+          <group>
+            <attribute name="type">
+              <value>dir</value>
+            </attribute>
+            <attribute name="path">
+              <ref name="absDirPath"/>
+            </attribute>
+          </group>
+        </choice>
+      </element>
+    </optional>
+  </define>
+
   <define name="tpm-backend-emulator-encryption">
     <optional>
       <element name="encryption">
@@ -5931,6 +6059,37 @@
             </element>
           </optional>
         </interleave>
+      </element>
+    </optional>
+  </define>
+
+  <define name="profileName">
+    <data type="string">
+      <param name="pattern">[A-Za-z0-9.\-:]+</param>
+    </data>
+  </define>
+
+  <define name="tpm-backend-emulator-profile">
+    <optional>
+      <element name="profile">
+        <optional>
+          <attribute name="source">
+            <ref name="profileName"/>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="removeDisabled">
+            <choice>
+              <value>check</value>
+              <value>fips-host</value>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="name">
+            <ref name="profileName"/>
+          </attribute>
+        </optional>
       </element>
     </optional>
   </define>
@@ -6013,6 +6172,11 @@
             <optional>
               <attribute name="aw_bits">
                 <ref name="uint8"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="dma_translation">
+                <ref name="virOnOff"/>
               </attribute>
             </optional>
           </element>
@@ -6167,6 +6331,30 @@
       <zeroOrMore>
         <ref name="usbdevfilter"/>
       </zeroOrMore>
+    </element>
+  </define>
+
+  <define name="pstore">
+    <element name="pstore">
+      <attribute name="backend">
+        <value>acpi-erst</value>
+      </attribute>
+      <interleave>
+        <optional>
+          <element name="path">
+            <ref name="absFilePath"/>
+          </element>
+        </optional>
+        <element name="size">
+          <ref name="scaledInteger"/>
+        </element>
+        <optional>
+          <ref name="address"/>
+        </optional>
+        <optional>
+          <ref name="alias"/>
+        </optional>
+      </interleave>
     </element>
   </define>
 
@@ -6639,6 +6827,9 @@
         <optional>
           <ref name="vsock"/>
         </optional>
+        <optional>
+          <ref name="pstore"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -6793,6 +6984,16 @@
                   <ref name="virYesNo"/>
                 </attribute>
               </optional>
+            </element>
+          </optional>
+          <optional>
+            <element name="ras">
+              <ref name="featurestate"/>
+            </element>
+          </optional>
+          <optional>
+            <element name="ps2">
+              <ref name="featurestate"/>
             </element>
           </optional>
         </interleave>
@@ -7730,12 +7931,16 @@
     </element>
   </define>
 
+  <define name="pflashFormatTypes">
+    <choice>
+      <value>raw</value>
+      <value>qcow2</value>
+    </choice>
+  </define>
+
   <define name="pflashFormat">
     <attribute name="format">
-      <choice>
-        <value>raw</value>
-        <value>qcow2</value>
-      </choice>
+      <ref name="pflashFormatTypes"/>
     </attribute>
   </define>
 
@@ -7822,7 +8027,7 @@
             </optional>
             <optional>
               <element name="tlbflush">
-                <ref name="featurestate"/>
+                <ref name="tlbflush"/>
               </element>
             </optional>
             <optional>
@@ -7840,6 +8045,16 @@
                 <ref name="featurestate"/>
               </element>
             </optional>
+            <optional>
+              <element name="emsr_bitmap">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="xmm_input">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
           </interleave>
         </group>
       </choice>
@@ -7854,6 +8069,25 @@
       </optional>
       <optional>
         <element name="direct">
+          <ref name="featurestate"/>
+        </element>
+      </optional>
+    </interleave>
+  </define>
+
+  <!-- Hyper-V tlbflush features -->
+  <define name="tlbflush">
+    <interleave>
+      <optional>
+        <ref name="featurestate"/>
+      </optional>
+      <optional>
+        <element name="direct">
+          <ref name="featurestate"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="extended">
           <ref name="featurestate"/>
         </element>
       </optional>
