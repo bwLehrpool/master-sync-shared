@@ -1,6 +1,7 @@
 package org.openslx.libvirt.domain.device;
 
 import org.openslx.libvirt.xml.LibvirtXmlNode;
+import org.openslx.util.Util;
 
 /**
  * A video (GPU) device node in a Libvirt domain XML document.
@@ -194,4 +195,39 @@ public class Video extends Device
 			return null;
 		}
 	}
+
+	/**
+	 * Get size of VGA memory in KB, or 0 if unset/invalid.
+	 */
+	public int getVgaMem()
+	{
+		String mem = this.getXmlElementAttributeValue( "model", "vgamem" );
+		return mem == null ? 0 : Util.parseInt( mem, 0 );
+	}
+
+	/**
+	 * Set size of VGA memory, in KB
+	 */
+	public void setVgaMem( int kb )
+	{
+		this.setXmlElementAttributeValue( "model", "vgamem", Integer.toString( kb ) );
+	}
+
+	/**
+	 * Get total RAM of video card in KB, or 0 if unset/invalid.
+	 */
+	public int getRam()
+	{
+		String mem = this.getXmlElementAttributeValue( "model", "ram" );
+		return mem == null ? 0 : Util.parseInt( mem, 0 );
+	}
+
+	/**
+	 * Set size of video card RAM, in KB.
+	 */
+	public void setRam( int kb )
+	{
+		this.setXmlElementAttributeValue( "model", "ram", Integer.toString( kb ) );
+	}
+
 }
