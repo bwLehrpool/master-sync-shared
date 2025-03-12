@@ -559,7 +559,11 @@ public class Domain extends LibvirtXmlDocument
 	 */
 	public void setOsLoader( String loader )
 	{
-		this.getRootXmlNode().setXmlElementValue( "os/loader", loader );
+		if ( loader == null ) {
+			this.getRootXmlNode().removeXmlElement( "os/loader" );
+		} else {
+			this.getRootXmlNode().setXmlElementValue( "os/loader", loader );
+		}
 	}
 
 	/**
