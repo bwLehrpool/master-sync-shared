@@ -199,35 +199,52 @@ public class Video extends Device
 	/**
 	 * Get size of VGA memory in KB, or 0 if unset/invalid.
 	 */
-	public int getVgaMem()
+	public long getVgaMem()
 	{
 		String mem = this.getXmlElementAttributeValue( "model", "vgamem" );
-		return mem == null ? 0 : Util.parseInt( mem, 0 );
+		return mem == null ? 0 : Util.parseLong( mem, 0 );
 	}
 
 	/**
 	 * Set size of VGA memory, in KB
 	 */
-	public void setVgaMem( int kb )
+	public void setVgaMem( long kb )
 	{
-		this.setXmlElementAttributeValue( "model", "vgamem", Integer.toString( kb ) );
+		this.setXmlElementAttributeValue( "model", "vgamem", Long.toString( kb ) );
 	}
 
 	/**
 	 * Get total RAM of video card in KB, or 0 if unset/invalid.
 	 */
-	public int getRam()
+	public long getRam()
 	{
 		String mem = this.getXmlElementAttributeValue( "model", "ram" );
-		return mem == null ? 0 : Util.parseInt( mem, 0 );
+		return mem == null ? 0 : Util.parseLong( mem, 0 );
 	}
 
 	/**
 	 * Set size of video card RAM, in KB.
 	 */
-	public void setRam( int kb )
+	public void setRam( long kb )
 	{
-		this.setXmlElementAttributeValue( "model", "ram", Integer.toString( kb ) );
+		this.setXmlElementAttributeValue( "model", "ram", Long.toString( kb ) );
+	}
+
+	/**
+	 * Get total VRAM of video card in KB, or 0 if unset/invalid.
+	 */
+	public long getVRam()
+	{
+		String mem = this.getXmlElementAttributeValue( "model", "vram" );
+		return mem == null ? 0 : Util.parseLong( mem, 0 );
+	}
+
+	/**
+	 * Set size of video card VRAM, in KB.
+	 */
+	public void setVRam( long kb )
+	{
+		this.setXmlElementAttributeValue( "model", "vram", Long.toString( kb ) );
 	}
 
 }
