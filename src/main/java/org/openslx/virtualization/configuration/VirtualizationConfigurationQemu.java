@@ -214,13 +214,23 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 	public void transformOsLoader() throws VirtualizationConfigurationException
 	{
+		// If we got firmware="efi" in the os tag, we don't need the loader
+		// at all, in fact it can lead to
+		// libvirt: QEMU Driver Fehler : operation failed: Unable to find any firmware to satisfy 'efi'
+		// so we remove the loader tag in that case and bail out
+		if ( "efi".equalsIgnoreCase( vmConfig.getOsFirmware() ) ) {
+			vmConfig.setOsLoader( null );
+			return;
+		}
+
+		// Other/unknown loader, try to determine what to do
 		final String sourceOsLoader = this.vmConfig.getOsLoader();
 		final String sourceOsArch = this.vmConfig.getOsArch();
 		final String sourceOsMachine = this.vmConfig.getOsMachine();
 
 		// transform OS loader for local editing
 		// check if OS loader is specified
-		if ( sourceOsLoader != null && !sourceOsLoader.isEmpty() ) {
+		if ( !Util.isEmptyString( sourceOsLoader ) ) {
 			// OS loader is specified so transform path to specified firmware path
 			// First, lookup QEMU firmware loader for target
 			String targetOsLoader = null;
@@ -228,11 +238,11 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 				targetOsLoader = QemuFirmwareUtil.lookupTargetOsLoaderDefaultFwSpecDir( sourceOsLoader, sourceOsArch,
 						sourceOsMachine );
 			} catch ( FirmwareException e ) {
-				throw new VirtualizationConfigurationException( e.getLocalizedMessage() );
+				throw new VirtualizationConfigurationException( e );
 			}
 
 			// Second, set target QEMU firmware loader if specified
-			if ( targetOsLoader != null && !targetOsLoader.isEmpty() ) {
+			if ( !Util.isEmptyString( targetOsLoader ) ) {
 				this.vmConfig.setOsLoader( targetOsLoader );
 			}
 		}

@@ -10,4 +10,8 @@ public class VirtualizationConfigurationException extends Exception
 	public VirtualizationConfigurationException(String message) {
 		super(message);
 	}
+	
+	public VirtualizationConfigurationException(Throwable cause) {
+		super(cause);
+	}
 }
