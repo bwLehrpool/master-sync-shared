@@ -42,14 +42,6 @@ public class RedirDevice extends Device
 	{
 		this.setXmlElementAttributeValue( "type", type.toString() );
 	}
-	
-	/**
-	 * Get bus type.
-	 */
-	public BusType getBus()
-	{
-		return BusType.fromString( this.getXmlElementAttributeValue( "bus" ) );
-	}
 
 	/**
 	 * Creates a non-existent video device as Libvirt XML device element.
@@ -125,5 +117,10 @@ public class RedirDevice extends Device
 
 			return null;
 		}
+	}
+
+	public void setBusType( BusType usb )
+	{
+		this.setXmlElementAttributeValue( "bus", usb.toString() );
 	}
 }

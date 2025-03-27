@@ -1,5 +1,6 @@
 package org.openslx.libvirt.domain.device;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.openslx.libvirt.xml.LibvirtXmlNode;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,7 +49,7 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 	 * @param deviceType type of the Libvirt XML device element.
 	 * @return created Libvirt XML device node.
 	 */
-	private static LibvirtXmlNode createDeviceElement( LibvirtXmlNode xmlParentNode, Type deviceType )
+	private static LibvirtXmlNode createDeviceElement( LibvirtXmlNode xmlParentNode, DeviceClass deviceType )
 	{
 		// create XML element as part of the Libvirt XML document
 		Document xmlDocument = xmlParentNode.getXmlDocument();
@@ -72,38 +73,41 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 		Device createdDevice = null;
 
 		if ( device instanceof Controller ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.CONTROLLER );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.CONTROLLER );
 			createdDevice = Controller.createInstance( Controller.class.cast( device ), xmlNode );
 		} else if ( device instanceof Disk ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.DISK );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.DISK );
 			createdDevice = Disk.createInstance( Disk.class.cast( device ), xmlNode );
 		} else if ( device instanceof FileSystem ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.FILESYSTEM );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.FILESYSTEM );
 			createdDevice = FileSystem.createInstance( xmlNode );
 		} else if ( device instanceof Hostdev ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.HOSTDEV );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.HOSTDEV );
 			createdDevice = Hostdev.createInstance( Hostdev.class.cast( device ), xmlNode );
 		} else if ( device instanceof Interface ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.INTERFACE );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.INTERFACE );
 			createdDevice = Interface.createInstance( Interface.class.cast( device ), xmlNode );
 		} else if ( device instanceof Graphics ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.GRAPHICS );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.GRAPHICS );
 			createdDevice = Graphics.createInstance( Graphics.class.cast( device ), xmlNode );
 		} else if ( device instanceof Parallel ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.PARALLEL );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.PARALLEL );
 			createdDevice = Parallel.createInstance( xmlNode );
 		} else if ( device instanceof Serial ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.SERIAL );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.SERIAL );
 			createdDevice = Serial.createInstance( xmlNode );
 		} else if ( device instanceof Shmem ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.SHMEM );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.SHMEM );
 			createdDevice = Shmem.createInstance( xmlNode );
 		} else if ( device instanceof Sound ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.SOUND );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.SOUND );
 			createdDevice = Sound.createInstance( xmlNode );
 		} else if ( device instanceof Video ) {
-			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, Type.VIDEO );
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.VIDEO );
 			createdDevice = Video.createInstance( xmlNode );
+		} else if ( device instanceof RedirDevice ) {
+			LibvirtXmlNode xmlNode = Device.createDeviceElement( xmlParentNode, DeviceClass.REDIRDEV );
+			createdDevice = RedirDevice.createInstance( xmlNode );
 		}
 
 		return createdDevice;
@@ -124,10 +128,10 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 			return null;
 		} else {
 			Device device = null;
-			Type type = Type.fromString( element.getNodeName() );
+			DeviceClass type = DeviceClass.fromString( element.getNodeName() );
 
 			if ( type == null ) {
-				return null;
+				return new Device( xmlNode );
 			}
 
 			switch ( type ) {
@@ -167,6 +171,8 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 			case VIDEO:
 				device = Video.newInstance( xmlNode );
 				break;
+			default:
+				throw new NotImplementedException( "Class not implemented" );
 			}
 
 			return device;
@@ -260,7 +266,23 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 
 		return HostdevUsbDeviceAddress.valueOf( bus, port );
 	}
-	
+
+	/**
+	 * Returns which bus this device is connected to, or null if unknown
+	 */
+	public BusType getDeviceBusType()
+	{
+		return BusType.fromString( this.getXmlElementAttributeValue( "bus" ) );
+	}
+
+	/**
+	 * Get class of device, i.e. enum value representing the XML tag
+	 */
+	public DeviceClass getDeviceClass()
+	{
+		return DeviceClass.fromString( this.getXmlBaseNode().getLocalName() );
+	}
+
 	/**
 	 * Returns this devices USB bus/port address, or null if it doesn't have an explicit one
 	 * set, or if the address type isn't USB.
@@ -275,7 +297,6 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 	public void setUsbTarget( HostdevUsbDeviceAddress address )
 	{
 		this.setUsbAddress( "address", address );
-		this.setXmlElementAttributeValue( "address", "type", "pci" );
 	}
 
 	/**
@@ -284,7 +305,7 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 	 * @author Manuel Bentele
 	 * @version 1.0
 	 */
-	enum Type
+	public enum DeviceClass
 	{
 		// @formatter:off
 		CONTROLLER( "controller" ),
@@ -311,7 +332,7 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 		 * 
 		 * @param type valid name of the virtual machine device type in a Libvirt domain XML document.
 		 */
-		Type( String type )
+		DeviceClass( String type )
 		{
 			this.type = type;
 		}
@@ -328,9 +349,9 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 		 * @param type name of the virtual machine device type in a Libvirt domain XML document.
 		 * @return valid virtual machine device type.
 		 */
-		public static Type fromString( String type )
+		public static DeviceClass fromString( String type )
 		{
-			for ( Type t : Type.values() ) {
+			for ( DeviceClass t : DeviceClass.values() ) {
 				if ( t.type.equalsIgnoreCase( type ) ) {
 					return t;
 				}
@@ -339,4 +360,5 @@ public class Device extends LibvirtXmlNode implements HostdevAddressableTarget<H
 			return null;
 		}
 	}
+
 }

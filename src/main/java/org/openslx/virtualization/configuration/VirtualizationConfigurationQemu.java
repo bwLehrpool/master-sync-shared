@@ -13,6 +13,7 @@ import org.openslx.libvirt.domain.Domain;
 import org.openslx.libvirt.domain.DomainUtils;
 import org.openslx.libvirt.domain.device.BusType;
 import org.openslx.libvirt.domain.device.ControllerUsb;
+import org.openslx.libvirt.domain.device.Device;
 import org.openslx.libvirt.domain.device.Disk;
 import org.openslx.libvirt.domain.device.Disk.StorageType;
 import org.openslx.libvirt.domain.device.DiskCdrom;
@@ -20,8 +21,10 @@ import org.openslx.libvirt.domain.device.DiskFloppy;
 import org.openslx.libvirt.domain.device.DiskStorage;
 import org.openslx.libvirt.domain.device.Graphics;
 import org.openslx.libvirt.domain.device.GraphicsSpice;
+import org.openslx.libvirt.domain.device.HostdevUsbDeviceAddress;
 import org.openslx.libvirt.domain.device.Interface;
 import org.openslx.libvirt.domain.device.RedirDevice;
+import org.openslx.libvirt.domain.device.RedirDevice.SrcType;
 import org.openslx.libvirt.domain.device.Sound;
 import org.openslx.libvirt.domain.device.Video;
 import org.openslx.libvirt.libosinfo.LibOsInfo;
@@ -47,6 +50,7 @@ import org.openslx.virtualization.virtualizer.VirtualizerQemu;
  */
 public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 {
+	
 	/**
 	 * Name of the network bridge for the LAN.
 	 */
@@ -117,13 +121,68 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 
 		try {
 			// read and parse Libvirt domain XML configuration document
-			this.vmConfig = new Domain( new String( vmContent, StandardCharsets.UTF_8 ) );
+			this.vmConfig = new Domain( new String( vmContent, 0, length, StandardCharsets.UTF_8 ) );
 		} catch ( LibvirtXmlDocumentException | LibvirtXmlSerializationException | LibvirtXmlValidationException e ) {
 			throw new VirtualizationConfigurationException( e.getLocalizedMessage() );
 		}
 
 		// parse VM config and initialize fields of QemuMetaData class
 		this.parseVmConfig();
+	}
+
+	/**
+	 * See if a USB controller is present and if so, make sure we have
+	 * a bunch of spicevmc ports for dynamic pass-through.
+	 * 
+	 * @param onlyIfAtLeastOne Only add more spicevmc usb devices if we have at least one existing
+	 */
+	private void preconfigureUsb( boolean onlyIfAtLeastOne )
+	{
+		final int MAX_BUSES = 4; // We assume max. 4 USB controllers
+		final int MAX_DEV_PER_BUS = 16; // ...and max. 16 ports on a controller
+		final int MIN_USB_REDIR_DEVS = 5; // 5 additional USB devices ought to be enough for everyone
+		int devs = 0;
+		byte busPort[][] = new byte[ MAX_BUSES ][];
+
+		for ( int i = 0; i < busPort.length; ++i ) {
+			busPort[i] = new byte[ MAX_DEV_PER_BUS ];
+		}
+		// Check how many we got, and what they are connected to
+		for ( Device d : vmConfig.getDevices() ) {
+			// is spicevmc?
+			if ( d.getDeviceBusType() == BusType.USB && d.getDeviceClass() == Device.DeviceClass.REDIRDEV
+					&& "spicevmc".equals( d.getXmlElementAttributeValue( "type" ) ) ) {
+				devs++;
+			}
+			// Which bus/port?
+			HostdevUsbDeviceAddress addr = d.getUsbTarget();
+			if ( addr == null )
+				continue;
+			int bus = addr.getUsbBus();
+			int port = addr.getUsbPort();
+			if ( bus >= 0 && port > 0 && bus < busPort.length && port < busPort[bus].length ) {
+				busPort[bus][port] = 1;
+			}
+		}
+		if ( devs >= MIN_USB_REDIR_DEVS )
+			return;
+		for ( ControllerUsb c : vmConfig.getUsbControllerDevices() ) {
+			int bus = c.getIndex();
+			if ( bus < 0 || bus >= busPort.length )
+				continue;
+			int ports = c.getPortCount();
+			for ( int port = 1; port < ports; ++port ) {
+				if ( busPort[bus][port] == 0 ) {
+					// Free port on this controller, use
+					RedirDevice dev = (RedirDevice)vmConfig.addDevice( new RedirDevice() );
+					dev.setSrcType( SrcType.SPICEVMC );
+					dev.setBusType( BusType.USB );
+					dev.setUsbTarget( new HostdevUsbDeviceAddress( bus, port ) );
+					if ( ++devs >= MIN_USB_REDIR_DEVS )
+						return; // Enough
+				}
+			}
+		}
 	}
 
 	/**
@@ -832,7 +891,7 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 	@Override
 	public void transformNonPersistent() throws VirtualizationConfigurationException
 	{
-		// NOT implemented yet
+		this.preconfigureUsb( false );
 	}
 
 	@Override
@@ -914,7 +973,7 @@ public class VirtualizationConfigurationQemu extends VirtualizationConfiguration
 		// attach any new USB devices.
 		ArrayList<RedirDevice> list = vmConfig.getRedirectDevices();
 		for (RedirDevice dev : list ) {
-			if ( dev.getBus() == BusType.USB ) {
+			if ( dev.getDeviceBusType() == BusType.USB ) {
 				dev.remove();
 			}
 		}

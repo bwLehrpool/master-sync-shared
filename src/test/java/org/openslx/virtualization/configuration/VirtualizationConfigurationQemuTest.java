@@ -490,11 +490,11 @@ public class VirtualizationConfigurationQemuTest
 		final Domain vmLibvirtDomainConfig = VirtualizationConfigurationQemuTest
 				.getPrivateDomainFromQemuMetaData( vmConfig );
 
-		assertEquals( vmLibvirtDomainConfig.getRedirectDevices().size(), 2 );
+		assertEquals( 2, vmLibvirtDomainConfig.getRedirectDevices().size() );
 
 		vmConfig.disableUsb();
 
-		assertEquals( vmLibvirtDomainConfig.getRedirectDevices().size(), 0 );
+		assertEquals( 0, vmLibvirtDomainConfig.getRedirectDevices().size() );
 
 		assertDoesNotThrow( () -> vmConfig.validate() );
 	}

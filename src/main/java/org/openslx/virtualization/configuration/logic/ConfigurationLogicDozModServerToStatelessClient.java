@@ -73,6 +73,8 @@ public class ConfigurationLogicDozModServerToStatelessClient
 		this.validateInputs( config, args );
 
 		// apply settings to run virtualized system in a stateless manner
+		// call this one early on as methods further down might customize
+		// remove things we do here...
 		try {
 			config.transformNonPersistent();
 		} catch ( VirtualizationConfigurationException e ) {

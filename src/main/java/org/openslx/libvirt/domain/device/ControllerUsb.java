@@ -1,6 +1,7 @@
 package org.openslx.libvirt.domain.device;
 
 import org.openslx.libvirt.xml.LibvirtXmlNode;
+import org.openslx.util.Util;
 
 /**
  * A USB controller device node in a Libvirt domain XML document.
@@ -135,5 +136,13 @@ public class ControllerUsb extends Controller
 
 			return null;
 		}
+	}
+
+	/**
+	 * Get number of ports this controller provides.
+	 */
+	public int getPortCount()
+	{
+		return Util.parseInt( this.getXmlElementAttributeValue( "ports" ), -1 );
 	}
 }

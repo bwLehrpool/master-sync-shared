@@ -412,7 +412,7 @@ public class DomainTest
 	public void testGetDevices()
 	{
 		Domain vm = DomainTest.getDomain( "qemu-kvm_default-ubuntu-20-04-vm.xml" );
-		assertEquals( 24, vm.getDevices().size() );
+		assertEquals( 33, vm.getDevices().size() );
 	}
 
 	@Test
