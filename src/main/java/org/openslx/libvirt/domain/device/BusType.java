@@ -41,10 +41,8 @@ public enum BusType
 	}
 
 	/**
-	 * Creates hostdev device type from its name with error check.
-	 * 
-	 * @param type name of the hostdev device storage in a Libvirt domain XML document.
-	 * @return valid hostdev device type.
+	 * Get enum element from string, case insensitive.
+	 * Returns null if not found.
 	 */
 	public static BusType fromString( String type )
 	{
