@@ -227,6 +227,7 @@ struct ImageDetailsRead {
 	15: bool isTemplate,
 	16: ImagePermissions defaultPermissions,
 	18: optional ImagePermissions userPermissions,
+	19: optional string imagePath, // Null if no download permission, internal image path otherwise
 }
 
 struct ImagePublishData {
