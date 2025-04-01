@@ -27,7 +27,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   private static final org.apache.thrift.protocol.TField IS_TEMPLATE_FIELD_DESC = new org.apache.thrift.protocol.TField("isTemplate", org.apache.thrift.protocol.TType.BOOL, (short)15);
   private static final org.apache.thrift.protocol.TField DEFAULT_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("defaultPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)16);
   private static final org.apache.thrift.protocol.TField USER_PERMISSIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("userPermissions", org.apache.thrift.protocol.TType.STRUCT, (short)18);
-  private static final org.apache.thrift.protocol.TField IMAGE_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("imagePath", org.apache.thrift.protocol.TType.STRING, (short)19);
 
   private static final org.apache.thrift.scheme.SchemeFactory STANDARD_SCHEME_FACTORY = new ImageDetailsReadStandardSchemeFactory();
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new ImageDetailsReadTupleSchemeFactory();
@@ -52,7 +51,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   public boolean isTemplate; // required
   public @org.apache.thrift.annotation.Nullable ImagePermissions defaultPermissions; // required
   public @org.apache.thrift.annotation.Nullable ImagePermissions userPermissions; // optional
-  public @org.apache.thrift.annotation.Nullable java.lang.String imagePath; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -75,8 +73,7 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     SHARE_MODE((short)14, "shareMode"),
     IS_TEMPLATE((short)15, "isTemplate"),
     DEFAULT_PERMISSIONS((short)16, "defaultPermissions"),
-    USER_PERMISSIONS((short)18, "userPermissions"),
-    IMAGE_PATH((short)19, "imagePath");
+    USER_PERMISSIONS((short)18, "userPermissions");
 
     private static final java.util.Map<java.lang.String, _Fields> byName = new java.util.HashMap<java.lang.String, _Fields>();
 
@@ -124,8 +121,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
           return DEFAULT_PERMISSIONS;
         case 18: // USER_PERMISSIONS
           return USER_PERMISSIONS;
-        case 19: // IMAGE_PATH
-          return IMAGE_PATH;
         default:
           return null;
       }
@@ -174,7 +169,7 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
   private static final int __UPDATETIME_ISSET_ID = 2;
   private static final int __ISTEMPLATE_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private static final _Fields optionals[] = {_Fields.USER_PERMISSIONS,_Fields.IMAGE_PATH};
+  private static final _Fields optionals[] = {_Fields.USER_PERMISSIONS};
   public static final java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     java.util.Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new java.util.EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -212,8 +207,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ImagePermissions.class)));
     tmpMap.put(_Fields.USER_PERMISSIONS, new org.apache.thrift.meta_data.FieldMetaData("userPermissions", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ImagePermissions.class)));
-    tmpMap.put(_Fields.IMAGE_PATH, new org.apache.thrift.meta_data.FieldMetaData("imagePath", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ImageDetailsRead.class, metaDataMap);
   }
@@ -310,9 +303,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     if (other.isSetUserPermissions()) {
       this.userPermissions = new ImagePermissions(other.userPermissions);
     }
-    if (other.isSetImagePath()) {
-      this.imagePath = other.imagePath;
-    }
   }
 
   @Override
@@ -342,7 +332,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     this.isTemplate = false;
     this.defaultPermissions = null;
     this.userPermissions = null;
-    this.imagePath = null;
   }
 
   @org.apache.thrift.annotation.Nullable
@@ -777,31 +766,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     }
   }
 
-  @org.apache.thrift.annotation.Nullable
-  public java.lang.String getImagePath() {
-    return this.imagePath;
-  }
-
-  public ImageDetailsRead setImagePath(@org.apache.thrift.annotation.Nullable java.lang.String imagePath) {
-    this.imagePath = imagePath;
-    return this;
-  }
-
-  public void unsetImagePath() {
-    this.imagePath = null;
-  }
-
-  /** Returns true if field imagePath is set (has been assigned a value) and false otherwise */
-  public boolean isSetImagePath() {
-    return this.imagePath != null;
-  }
-
-  public void setImagePathIsSet(boolean value) {
-    if (!value) {
-      this.imagePath = null;
-    }
-  }
-
   @Override
   public void setFieldValue(_Fields field, @org.apache.thrift.annotation.Nullable java.lang.Object value) {
     switch (field) {
@@ -933,14 +897,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       }
       break;
 
-    case IMAGE_PATH:
-      if (value == null) {
-        unsetImagePath();
-      } else {
-        setImagePath((java.lang.String)value);
-      }
-      break;
-
     }
   }
 
@@ -996,9 +952,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     case USER_PERMISSIONS:
       return getUserPermissions();
 
-    case IMAGE_PATH:
-      return getImagePath();
-
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1043,8 +996,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       return isSetDefaultPermissions();
     case USER_PERMISSIONS:
       return isSetUserPermissions();
-    case IMAGE_PATH:
-      return isSetImagePath();
     }
     throw new java.lang.IllegalStateException();
   }
@@ -1206,15 +1157,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         return false;
     }
 
-    boolean this_present_imagePath = true && this.isSetImagePath();
-    boolean that_present_imagePath = true && that.isSetImagePath();
-    if (this_present_imagePath || that_present_imagePath) {
-      if (!(this_present_imagePath && that_present_imagePath))
-        return false;
-      if (!this.imagePath.equals(that.imagePath))
-        return false;
-    }
-
     return true;
   }
 
@@ -1277,10 +1219,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
     hashCode = hashCode * 8191 + ((isSetUserPermissions()) ? 131071 : 524287);
     if (isSetUserPermissions())
       hashCode = hashCode * 8191 + userPermissions.hashCode();
-
-    hashCode = hashCode * 8191 + ((isSetImagePath()) ? 131071 : 524287);
-    if (isSetImagePath())
-      hashCode = hashCode * 8191 + imagePath.hashCode();
 
     return hashCode;
   }
@@ -1453,16 +1391,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         return lastComparison;
       }
     }
-    lastComparison = java.lang.Boolean.compare(isSetImagePath(), other.isSetImagePath());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetImagePath()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.imagePath, other.imagePath);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -1597,16 +1525,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         sb.append("null");
       } else {
         sb.append(this.userPermissions);
-      }
-      first = false;
-    }
-    if (isSetImagePath()) {
-      if (!first) sb.append(", ");
-      sb.append("imagePath:");
-      if (this.imagePath == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.imagePath);
       }
       first = false;
     }
@@ -1814,14 +1732,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 19: // IMAGE_PATH
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.imagePath = iprot.readString();
-              struct.setImagePathIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1926,13 +1836,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
           oprot.writeFieldEnd();
         }
       }
-      if (struct.imagePath != null) {
-        if (struct.isSetImagePath()) {
-          oprot.writeFieldBegin(IMAGE_PATH_FIELD_DESC);
-          oprot.writeString(struct.imagePath);
-          oprot.writeFieldEnd();
-        }
-      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2000,10 +1903,7 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (struct.isSetUserPermissions()) {
         optionals.set(15);
       }
-      if (struct.isSetImagePath()) {
-        optionals.set(16);
-      }
-      oprot.writeBitSet(optionals, 17);
+      oprot.writeBitSet(optionals, 16);
       if (struct.isSetImageBaseId()) {
         oprot.writeString(struct.imageBaseId);
       }
@@ -2064,15 +1964,12 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
       if (struct.isSetUserPermissions()) {
         struct.userPermissions.write(oprot);
       }
-      if (struct.isSetImagePath()) {
-        oprot.writeString(struct.imagePath);
-      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ImageDetailsRead struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TTupleProtocol iprot = (org.apache.thrift.protocol.TTupleProtocol) prot;
-      java.util.BitSet incoming = iprot.readBitSet(17);
+      java.util.BitSet incoming = iprot.readBitSet(16);
       if (incoming.get(0)) {
         struct.imageBaseId = iprot.readString();
         struct.setImageBaseIdIsSet(true);
@@ -2157,10 +2054,6 @@ public class ImageDetailsRead implements org.apache.thrift.TBase<ImageDetailsRea
         struct.userPermissions = new ImagePermissions();
         struct.userPermissions.read(iprot);
         struct.setUserPermissionsIsSet(true);
-      }
-      if (incoming.get(16)) {
-        struct.imagePath = iprot.readString();
-        struct.setImagePathIsSet(true);
       }
     }
   }

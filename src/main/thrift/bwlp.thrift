@@ -208,6 +208,7 @@ struct ImageVersionDetails {
 	8: bool isValid,
 	9: bool isProcessed,
 	10: list<string> software,
+	11: optional string imagePath, // Null if no download permission, internal image path otherwise
 }
 
 struct ImageDetailsRead {
@@ -227,7 +228,6 @@ struct ImageDetailsRead {
 	15: bool isTemplate,
 	16: ImagePermissions defaultPermissions,
 	18: optional ImagePermissions userPermissions,
-	19: optional string imagePath, // Null if no download permission, internal image path otherwise
 }
 
 struct ImagePublishData {
