@@ -237,6 +237,9 @@
       <optional>
         <ref name="panic"/>
       </optional>
+      <optional>
+        <ref name="console"/>
+      </optional>
     </element>
   </define>
 
@@ -317,6 +320,13 @@
     </element>
   </define>
 
+  <define name="console">
+    <element name="console">
+      <ref name="supported"/>
+      <ref name="enum"/>
+    </element>
+  </define>
+
   <define name="interface">
     <element name="interface">
       <ref name="supported"/>
@@ -356,6 +366,9 @@
       </optional>
       <optional>
         <ref name="ps2"/>
+      </optional>
+      <optional>
+        <ref name="tdx"/>
       </optional>
       <optional>
         <ref name="sev"/>
@@ -421,6 +434,12 @@
     </element>
   </define>
 
+  <define name="tdx">
+    <element name="tdx">
+      <ref name="supported"/>
+    </element>
+  </define>
+
   <define name="sev">
     <element name="sev">
       <ref name="supported"/>
@@ -436,6 +455,11 @@
         </element>
         <element name="maxESGuests">
           <data type="unsignedInt"/>
+        </element>
+      </optional>
+      <optional>
+        <element name="cpu0Id">
+          <data type="string"/>
         </element>
       </optional>
     </element>

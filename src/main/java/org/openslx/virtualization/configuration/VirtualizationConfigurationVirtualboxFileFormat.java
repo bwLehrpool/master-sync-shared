@@ -69,6 +69,9 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 			put( Version.valueOf( "1.16" ), "VirtualBox-settings_v1-16.xsd" );
 			put( Version.valueOf( "1.17" ), "VirtualBox-settings_v1-17.xsd" );
 			put( Version.valueOf( "1.18" ), "VirtualBox-settings_v1-18.xsd" );
+			put( Version.valueOf( "1.19" ), "VirtualBox-settings_v1-21.xsd" ); // Use 1.21 until we find those
+			put( Version.valueOf( "1.20" ), "VirtualBox-settings_v1-21.xsd" );
+			put( Version.valueOf( "1.21" ), "VirtualBox-settings_v1-21.xsd" );
 		}
 	};
 
