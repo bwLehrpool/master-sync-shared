@@ -505,23 +505,42 @@ public class VirtualizationConfigurationVirtualboxFileFormat
 				LOGGER.error( "HDD node had a null parent, shouldn't happen" );
 				continue;
 			}
-			String controllerMode = hddController.getAttribute( "type" );
-			String controllerType = hddController.getAttribute( "name" );
-			DriveBusType busType;
-			if ( controllerType.equals( "NVMe" ) ) {
-				busType = DriveBusType.NVME;
-			} else {
-				try {
-					// This assumes the type in the xml matches our enum constants.
-					busType = DriveBusType.valueOf( controllerType );
-				} catch (Exception e) {
-					LOGGER.warn( "Skipping unknown HDD controller type '" + controllerType + "'" );
-					continue;
-				}
+			String controllerType = hddController.getAttribute( "type" );
+			DriveBusType busType = controllerToBus( controllerType );
+			if ( busType == null ) {
+				LOGGER.warn( "Skipping unknown or unsupported HDD controller type '" + controllerType + "'" );
+				continue;
 			}
-			LOGGER.info( "Adding hard disk with controller: " + busType + " (" + controllerMode + ") from file '" + fileName + "'." );
-			hddsArray.add( new HardDisk( controllerMode, busType, fileName ) );
+			LOGGER.info( "Adding hard disk with controller: " + busType + " from file '" + fileName + "'." );
+			hddsArray.add( new HardDisk( controllerType, busType, fileName ) );
 		}
+	}
+
+	private DriveBusType controllerToBus( String controller )
+	{
+		// See TStorageControllerType around this line:
+		// https://github.com/VirtualBox/virtualbox/blob/HEAD/src/VBox/Main/xml/VirtualBox-settings.xsd#L281
+		switch ( controller ) {
+		case "AHCI":
+			return DriveBusType.SATA;
+		case "LsiLogic":
+		case "BusLogic":
+		case "LsiLogicSas": // Handle as SCSI for now
+		case "VirtioSCSI":
+			return DriveBusType.SCSI;
+		case "PIIX3":
+		case "PIIX4":
+		case "ICH6":
+			return DriveBusType.IDE;
+		case "I82078": // This is a floppy controller, but we should never end up at suck a controller during iteration in setHdds()
+			return null;
+		case "USB": // Not supported (yet?)
+			return null;
+		case "NVMe":
+			return DriveBusType.NVME;
+		}
+		// New type in VBox? If so, add to block above
+		return null;
 	}
 
 	/**
