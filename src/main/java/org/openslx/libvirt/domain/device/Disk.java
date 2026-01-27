@@ -202,6 +202,16 @@ public class Disk extends Device
 		this.setXmlElementAttributeValue( "target", "dev", targetDevice );
 	}
 
+	public String getDriverCacheMode()
+	{
+		return this.getXmlElementAttributeValue( "driver", "cache" );
+	}
+
+	public void setDriverCacheMode( String mode )
+	{
+		this.setXmlElementAttributeValue( "driver", "cache", "unsafe" );
+	}
+
 	/**
 	 * Creates a non-existent disk device as Libvirt XML device element.
 	 * 
