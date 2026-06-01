@@ -111,6 +111,23 @@ public class Util
 			return defaultValue;
 		}
 	}
+	
+	/**
+	 * Parse the given String as a base10 double.
+	 * If the string does not represent a valid double, return the given
+	 * default value.
+	 * 
+	 * @param value string representation to parse to a double
+	 * @param defaultValue fallback value if given string can't be parsed
+	 */
+	public static double parseDouble( String value, double defaultValue )
+	{
+		try {
+			return Double.parseDouble( value );
+		} catch ( Exception e ) {
+			return defaultValue;
+		}
+	}
 
 	public static void safeClose( AutoCloseable... closeable )
 	{
